@@ -1,13 +1,16 @@
 package fibbyBot2;
 
 import battlecode.common.*;
+
 import java.util.*;
+
+import fibbyBot2.Navigation;
 
 public class RobotPlayer implements Runnable {
 
 	private final RobotController myRC;
 	private final int SMGS = 3;
-	private final int MARINES = 2;
+	private final int MARINES = 3;
 
     public RobotPlayer(RobotController rc) {
         myRC = rc;
@@ -106,7 +109,7 @@ public class RobotPlayer implements Runnable {
             	else
             	{
 					nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
-					System.out.println("nearbyRobots : "+Integer.toString(nearbyRobots.length));
+					//System.out.println("nearbyRobots : "+Integer.toString(nearbyRobots.length));
 					for (GameObject r:nearbyRobots)
 					{
 						if(r.getTeam()!=Team.NEUTRAL && myRC.getTeamResources()>=2*ComponentType.SMG.cost)
@@ -200,9 +203,10 @@ public class RobotPlayer implements Runnable {
 	}
 
     public void imSCV(ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons) {
-		SensorController sensor = (SensorController)sensors.get(0);
-		MovementController motor = (MovementController)motors.get(0);
-		BuilderController builder = (BuilderController)builders.get(0);
+		//SensorController sensor = (SensorController)sensors.get(0);
+		//MovementController motor = (MovementController)motors.get(0);
+		//BuilderController builder = (BuilderController)builders.get(0);
+		//Navigation robotNavigation=new Navigation(this,myRC,motor);
         while (true) {
             try {
                 /*** beginning of main loop ***/
@@ -226,15 +230,20 @@ public class RobotPlayer implements Runnable {
     
     public void imMarine(ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons) {
 		MovementController motor = (MovementController)motors.get(0);
+		Navigation robotNavigation=new Navigation(this,myRC,motor);
+		MapLocation destination = myRC.getLocation().add(Direction.SOUTH,500);
         int guns;
         WeaponController smg;
         GameObject[] nearbyRobots;
         RobotInfo rInfo;
         SensorController sensor = null;
         boolean hasSensor;
+        ArrayList<?>[] componentList;
         while (true) {
             try {
                 /*** beginning of main loop ***/
+            	componentList = getComponents(myRC.components());
+            	weapons = componentList[3];
                 guns = 0;
                 hasSensor = false;
 				for(ComponentController c:myRC.components())
@@ -257,24 +266,33 @@ public class RobotPlayer implements Runnable {
                 		smg = (WeaponController) c;
     					for (GameObject r:nearbyRobots)
     					{
-    						if(!smg.isActive() && r.getTeam()!=myRC.getTeam())
+    						if(!smg.isActive() && r.getTeam()==myRC.getTeam().opponent())
     						{
     							rInfo = sensor.senseRobotInfo((Robot)r);
-    							if(rInfo.hitpoints>0 && myRC.getLocation().distanceSquaredTo(rInfo.location)<smg.type().range)
+    							myRC.setIndicatorString(0,"Enemy found!");
+    							if(sensor.withinRange(rInfo.location))
+    								rInfo = sensor.senseRobotInfo((Robot)r);
+    							if(rInfo.hitpoints>0 && smg.withinRange(rInfo.location))
     							{
     								smg.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+    								myRC.setIndicatorString(0,"Pew pew pew!");
     							}
     						}
+    						myRC.yield();
     					}
                 	}
                 	myRC.yield();
                 	if (!motor.isActive())
                     {
-    					if (motor.canMove(myRC.getDirection())) {
+    					/*if (motor.canMove(myRC.getDirection())) {
     	                   motor.moveForward();
     	                } else {
     	                    motor.setDirection(myRC.getDirection().rotateLeft());
-    	                }
+    	                }*/
+                		Direction direction = robotNavigation.bugTo(destination);
+                		motor.setDirection(direction);
+						myRC.yield();
+						motor.moveForward();
                     }
                 }
                 myRC.yield();
