@@ -13,8 +13,9 @@ public abstract class Behavior {
 	
 	/**
 	 * Main Run Method
+	 * @throws Exception 
 	 */
-	public abstract void run();
+	public abstract void run() throws Exception;
 	
 	
 	/**

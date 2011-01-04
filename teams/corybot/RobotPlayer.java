@@ -69,20 +69,29 @@ public class RobotPlayer implements Runnable {
 			
 			
 			//First check if we've added new components to the robot
+			//and execute the necessary callback
 			components=myRC.newComponents();
 			if(components.length!=0) {
 				allocateControllers(components);
 				myBehavior.newComponentCallback(components);
 			}
 			
-			//Next, run the main code			
-			myBehavior.run();
 			
+			//Next, run the robot's behaviors
+			try {
+				myBehavior.run();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 			
 			
 			//Lastly, set some debug strings
 			myRC.setIndicatorString(0, myBehavior.toString());
 			myRC.setIndicatorString(1, Utility.printComponentList(myRC.components()));
+			myRC.setIndicatorString(2, Utility.robotMoveInfo(this));
+			
+			//Then yield
+			myRC.yield();
 			
 		}
 		
