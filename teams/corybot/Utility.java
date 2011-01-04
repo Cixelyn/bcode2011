@@ -92,7 +92,7 @@ public class Utility {
 	 */
 	public static String robotMoveInfo(RobotPlayer player) {
 		String output = dirStr[player.myRC.getDirection().ordinal()];
-		return (output + Integer.toString(player.myMotor.roundsUntilIdle()));
+		return (output + ":" + Integer.toString(player.myMotor.roundsUntilIdle()));
 	}
 	
 	

@@ -52,11 +52,9 @@ public class RobotPlayer implements Runnable {
 			myBehavior = new LightBehavior(this);
 			break;
 		case MEDIUM:
-			break;
 		case HEAVY:
-			break;
 		default:
-			break;
+			System.out.println("Error");
 		}
 		
 		

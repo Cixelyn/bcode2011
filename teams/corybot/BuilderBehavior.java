@@ -1,6 +1,7 @@
 package corybot;
 
 import battlecode.common.*;
+import battlecode.world.InternalRobot;
 
 public class BuilderBehavior extends Behavior{
 
@@ -26,29 +27,41 @@ public class BuilderBehavior extends Behavior{
 		
 		//If there is a robot in front of me
 		if(obj!=null) {
-			if(obj.getClass()==Robot.class) {
-				if(obj.getTeam()==myPlayer.myRC.getTeam()) { //if it is on my team 
-				
-				//Sense components on the robot
-				RobotInfo rinfo = myPlayer.mySensor.senseRobotInfo((Robot) obj);
-				int sensorCount = Utility.componentTypeCounter(rinfo.components)[ComponentClass.SENSOR.ordinal()];
-				int weaponCount = Utility.componentTypeCounter(rinfo.components)[ComponentClass.WEAPON.ordinal()];
-				
-				if(sensorCount==0 && Utility.canAdd(ComponentType.RADAR, rinfo)) {  //then build a sensor on the robot
-					Utility.buildComponentAt(myPlayer, ComponentType.RADAR, inFront,RobotLevel.ON_GROUND);
-				} else if(weaponCount==0 && Utility.canAdd(ComponentType.SMG, rinfo)) { //then build a weapon on the robot
-					Utility.buildComponentAt(myPlayer, ComponentType.SMG, inFront, RobotLevel.ON_GROUND);
+			
+				if(obj instanceof Robot ) {
+	
+					if(obj.getTeam()==myPlayer.myRC.getTeam()) { //if it is on my team 
+						
+						//Sense components on the robot
+						RobotInfo rinfo = myPlayer.mySensor.senseRobotInfo((Robot)obj);
+						int sensorCount = Utility.componentTypeCounter(rinfo.components)[ComponentClass.SENSOR.ordinal()];
+						int weaponCount = Utility.componentTypeCounter(rinfo.components)[ComponentClass.WEAPON.ordinal()];
+		
+						if(sensorCount==0 && Utility.canAdd(ComponentType.RADAR, rinfo)) {  //then build a sensor on the robot
+							Utility.buildComponentAt(myPlayer, ComponentType.RADAR, inFront,RobotLevel.ON_GROUND);
+							return;
+						} else if(weaponCount==0 && Utility.canAdd(ComponentType.SMG, rinfo)) { //then build a weapon on the robot
+							Utility.buildComponentAt(myPlayer, ComponentType.SMG, inFront, RobotLevel.ON_GROUND);
+							return;
+						}
+					}
 				}
-				}
-			}
+			
 		}
 	
-		
 		//Otherwise, turn until I can see forward
 		if(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 			myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 			return;
 		}
+		
+		//Spawn a robot
+		if(Utility.buildChassisAt(myPlayer, Chassis.LIGHT, inFront)) {
+			return;
+		}
+		
+		//Else we can't do anything.		
+		return;
 				
 		
 	}
