@@ -1,4 +1,4 @@
-package examplefuncsplayer;
+package maxbot;
 
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
@@ -24,9 +24,6 @@ public class RobotPlayer implements Runnable {
             		if (componentControl.type().equals(ComponentType.SMG)) {
             			guns=guns+1;
             		}
-            	}
-            	if (myRC.components().length) {
-            		
             	}
             	myRC.setIndicatorString(0, Integer.toString(guns));
 				myRC.yield();
