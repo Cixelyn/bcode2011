@@ -10,8 +10,43 @@ public class RobotPlayer implements Runnable {
     public RobotPlayer(RobotController rc) {
         myRC = rc;
     }
+    
+    public void run() {
+		ComponentController [] components = myRC.newComponents();
+		System.out.println(java.util.Arrays.toString(components));
+		System.out.flush();
+		MovementController motor=(MovementController)components[0];
+		Navigation robotNavigation=new Navigation(this,myRC,motor);
+		MapLocation destination=myRC.getLocation().add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH);
+		if(myRC.getChassis()==Chassis.LIGHT) {
+			for (ComponentController componentController : components) {
+				if (componentController.type().equals(ComponentType.CONSTRUCTOR)) {
+					while (true) {
+						myRC.yield();
+						Direction direction = robotNavigation.bugTo(destination);
+						try {
+							motor.setDirection(direction);
+							myRC.yield();
+							motor.moveForward();
+							myRC.yield();
+						} catch (GameActionException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			while (true) {
+				myRC.yield();
+			}
+		}
+		else {
+			while (true) {
+				myRC.yield();
+			}
+		}
+    }
 
-	public void run() {
+	/*public void run() {
 		ComponentController [] components = myRC.newComponents();
 		System.out.println(java.util.Arrays.toString(components));
 		System.out.flush();
@@ -48,9 +83,6 @@ public class RobotPlayer implements Runnable {
             			guns=guns+1;
             		}
             	}
-            	if (guns>=0) {
-            		
-            	}
             	myRC.setIndicatorString(0, Integer.toString(guns));
 
 				myRC.yield();
@@ -64,18 +96,6 @@ public class RobotPlayer implements Runnable {
 					MapLocation location=myRC.getLocation().add(myRC.getDirection());
 					
 					builder.build(Chassis.LIGHT,location);
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
-					myRC.yield();
 					myRC.yield();
 					
 					location=myRC.getLocation().add(myRC.getDirection());
@@ -93,7 +113,7 @@ public class RobotPlayer implements Runnable {
         
         while (true) {
             try {
-                /*** beginning of main loop ***/
+                *//*** beginning of main loop ***//*
                 while (motor.isActive()) {
                     myRC.yield();
                 }
@@ -105,12 +125,12 @@ public class RobotPlayer implements Runnable {
                     motor.setDirection(myRC.getDirection().rotateRight());
                 }
 
-                /*** end of main loop ***/
+                *//*** end of main loop ***//*
             } catch (Exception e) {
                 System.out.println("caught exception:");
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 }
 
