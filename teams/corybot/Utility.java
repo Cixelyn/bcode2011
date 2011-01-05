@@ -173,9 +173,21 @@ public class Utility {
 		} else { //Too heavy
 			return false;
 		}
-		
 	}
 	
+	
+	public static boolean hasComponent(ComponentType query, ComponentType[] list) {
+		for(ComponentType c:list) {
+			if(c==query) return true;
+		}
+		return false;
+	}
+	public static boolean hasComponent(ComponentType query, ComponentController[] list) {
+		for(ComponentController c:list) {
+			if(c.type()==query) return true;
+		}
+		return false;
+	}
 	
 }
 

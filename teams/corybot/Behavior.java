@@ -4,10 +4,17 @@ import battlecode.common.*;
 
 public abstract class Behavior {
 	
-	final RobotPlayer myPlayer;	
+	final RobotPlayer myPlayer;		//Our myplayer object
+	int runtime;					//Our runtime counter
+	
 	
 	public Behavior(RobotPlayer player){
 		myPlayer = player;
+		runtime = 0;
+		
+		//Execute Callbacks for starting units that start off with stuff
+		newComponentCallback(myPlayer.myRC.components());
+		
 	}
 	
 	

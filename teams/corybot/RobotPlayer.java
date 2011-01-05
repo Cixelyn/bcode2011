@@ -45,10 +45,10 @@ public class RobotPlayer implements Runnable {
 		//	Currently decided based on chassis.
 		switch(myRC.getChassis()) {
 		case BUILDING:
-			myBehavior = new BuilderBehavior(this);
+			myBehavior = new RecyclerBehavior(this);
 			break;
 		case LIGHT:
-			myBehavior = new LightBehavior(this);
+			myBehavior = new DefaultLightBehavior(this);
 			break;
 		case MEDIUM:
 		case HEAVY:
@@ -79,6 +79,9 @@ public class RobotPlayer implements Runnable {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
+			
+			//Increment the robot's timer
+			myBehavior.runtime++;
 			
 			
 			//Lastly, set some debug strings

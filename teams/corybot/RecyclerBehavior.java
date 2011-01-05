@@ -3,9 +3,9 @@ package corybot;
 import battlecode.common.*;
 import battlecode.world.InternalRobot;
 
-public class BuilderBehavior extends Behavior{
+public class RecyclerBehavior extends Behavior{
 
-	public BuilderBehavior(RobotPlayer player) {
+	public RecyclerBehavior(RobotPlayer player) {
 		super(player);
 	}
 	
