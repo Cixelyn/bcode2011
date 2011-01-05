@@ -27,4 +27,10 @@ public class ScoutBehavior extends Behavior{
 		return null;
 	}
 
+	@Override
+	public void newMessageCallback(MsgType msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

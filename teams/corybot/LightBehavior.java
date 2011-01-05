@@ -28,9 +28,16 @@ public class LightBehavior extends Behavior {
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
 		
-		// TODO Auto-generated method stub
-		
+		if(Utility.componentClassCounter(components)[ComponentClass.WEAPON.ordinal()]>1) {
+			
+		}
+	}
 
+
+
+	@Override
+	public void newMessageCallback(MsgType msg) {
+		// TODO Auto-generated method stub
 		
 	}
 }

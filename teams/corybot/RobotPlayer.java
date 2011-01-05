@@ -7,7 +7,6 @@ import battlecode.common.*;
 public class RobotPlayer implements Runnable {
 	
 	
-	
 	//Controllers
 	final RobotController myRC;
 	final ArrayList<WeaponController> myWeapons;
@@ -56,7 +55,6 @@ public class RobotPlayer implements Runnable {
 		default:
 			System.out.println("Error");
 		}
-		
 		
 		
 		/**

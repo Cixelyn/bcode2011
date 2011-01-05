@@ -18,16 +18,27 @@ public abstract class Behavior {
 	public abstract void run() throws Exception;
 	
 	
+	
 	/**
 	 * Returns name of behavior
 	 */
 	public abstract String toString();
 	
 	
+	
 	/**
 	 * Callback when new component is detected
 	 */
 	public abstract void newComponentCallback(ComponentController[] components);
+	
+	
+	
+	/**
+	 * Callback when new messages are received
+	 * @param msg received message (that warrants a callback)
+	 */
+	public abstract void newMessageCallback(MsgType msg);
+
 	
 	
 	
