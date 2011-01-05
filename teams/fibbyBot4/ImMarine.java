@@ -35,79 +35,77 @@ public class ImMarine
         boolean hasArmor;
         ArrayList<?>[] componentList;
         
-        while (true) {
+        while (true)
+        {
             try {
-            	//myRC.setIndicatorString(0, Integer.toString(Clock.getRoundNum())); // DEBUG
-            	componentList = Utilities.getComponents(myRC.components());
-            	weapons = componentList[4];
-                guns = 0;
-                hasSensor = false;
-                hasArmor = false;
-				for(ComponentController c:myRC.components())
-				{
-					if (c.type()==GUNTYPE)
-						guns = guns+1;
-					if (c.type()==SENSORTYPE)
+	            	componentList = Utilities.getComponents(myRC.components());
+	            	weapons = componentList[4];
+	                guns = 0;
+	                hasSensor = false;
+	                hasArmor = false;
+					for(ComponentController c:myRC.components())
 					{
-						hasSensor = true;
-						sensor = (SensorController)c;
+						if (c.type()==GUNTYPE)
+							guns = guns+1;
+						if (c.type()==SENSORTYPE)
+						{
+							hasSensor = true;
+							sensor = (SensorController)c;
+						}
+						if (c.type()==ARMORTYPE)
+						{
+							hasArmor = true;
+						}
 					}
-					if (c.type()==ARMORTYPE)
-					{
-						hasArmor = true;
-					}
-				}
-				myRC.yield();
-                if (guns >= GUNS && hasSensor && hasArmor)
-                {
-                	nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
-                	for(GameObject r:nearbyRobots)
-                	{
-    					for (Object c:weapons)
-    					{
-    						gun = (WeaponController) c;
-    						if(!gun.isActive() && r.getTeam()==myRC.getTeam().opponent())
-    						{
-    							rInfo = sensor.senseRobotInfo((Robot)r);
-    							myRC.setIndicatorString(0,"Enemy found!");
-    							destination = rInfo.location;
-    							staleness = 0;
-    							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
-    							{
-    								gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-    								myRC.setIndicatorString(0,"Pew pew pew!");
-    							}
-    						}
-    					}
-                	}
-                	myRC.yield();
-                	if (!motor.isActive())
-                    {
-    					/*if (motor.canMove(myRC.getDirection())) {
-    	                   motor.moveForward();
-    	                } else {
-    	                    motor.setDirection(myRC.getDirection().rotateLeft());
-    	                }*/
-                		direction = robotNavigation.bugTo(destination);
-                		staleness++;
-                		if (staleness >= OLDNEWS)
-                		{
-                			destination = prevDestination;
-                		}
-                		if (direction != Direction.OMNI && direction != Direction.NONE)
-                		{
-	                		motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+					myRC.yield();
+	                if (guns >= GUNS && hasSensor && hasArmor)
+	                {
+	                	myRC.setIndicatorString(1,"Moving out.");
+	                	nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
+	                	for(GameObject r:nearbyRobots)
+	                	{
+	    					for (Object c:weapons)
+	    					{
+	    						gun = (WeaponController) c;
+	    						if(!gun.isActive() && r.getTeam()==myRC.getTeam().opponent())
+	    						{
+	    							rInfo = sensor.senseRobotInfo((Robot)r);
+	    							myRC.setIndicatorString(0,"Enemy found!");
+	    							destination = rInfo.location;
+	    							staleness = 0;
+	    							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
+	    							{
+	    								gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+	    								myRC.setIndicatorString(0,"Pew pew pew!");
+	    							}
+	    						}
+	    					}
+	                	}
+	                	myRC.yield();
+	                	if (!motor.isActive())
+	                    {
+	                		direction = robotNavigation.bugTo(destination);
+	                		staleness++;
+	                		if (staleness >= OLDNEWS)
+	                		{
+	                			destination = prevDestination;
+	                		}
+	                		if (direction != Direction.OMNI && direction != Direction.NONE)
+	                		{
+		                		motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
-                		}
-                    }
-                }
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	                		}
+	                    }
+	                }
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 System.out.println("caught exception:");
                 e.printStackTrace();
             }

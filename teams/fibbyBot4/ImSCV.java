@@ -22,6 +22,7 @@ public class ImSCV
 		SensorController sensor = (SensorController)sensors.get(0);
 		MovementController motor = (MovementController)motors.get(0);
 		BuilderController builder = (BuilderController)builders.get(0);
+		BroadcastController comm = null;
 		
 		Navigation robotNavigation=new Navigation(player,myRC,motor);
 		MapLocation destination = myRC.getLocation().add(Direction.NORTH,500);
@@ -35,6 +36,8 @@ public class ImSCV
 		int minesCapped = 2;
 		int dizziness = 0;
 		int tiredness = 0;
+		Message msg;
+		int[] gogogo = {0};
 		
         while (true)
         {
@@ -60,7 +63,8 @@ public class ImSCV
             			}
             			if(!mineFound && dizziness < 8)
             			{
-            				motor.setDirection(myRC.getDirection().rotateRight());
+            				while (!motor.isActive())
+            					motor.setDirection(myRC.getDirection().rotateRight());
             				dizziness++;
             			}
             			if(!mineFound && dizziness == 8)
@@ -84,7 +88,10 @@ public class ImSCV
             			for(ComponentController c:myRC.components())
             			{
             				if (c.type()==ComponentType.ANTENNA)
+            				{
+            					comm = (BroadcastController)c;
             					obj = SCVBuildOrder.CAP_MINE;
+            				}
             			}
             			myRC.yield();
             			break;
@@ -121,8 +128,13 @@ public class ImSCV
             			builder.build(ComponentType.RECYCLER, destination, RobotLevel.ON_GROUND);
             			myRC.setIndicatorString(1, "Recycler complete!");
             			minesCapped++;
-            			if(minesCapped>4)
+            			if(minesCapped>=4)
+            			{
 	            			obj = SCVBuildOrder.EXPAND;
+	            			msg = new Message();
+	        				msg.ints = gogogo;
+	        				comm.broadcast(msg);
+            			}
             			else
             				obj = SCVBuildOrder.FIND_MINE;
             			break;
@@ -141,7 +153,7 @@ public class ImSCV
 							}
 							motor.moveForward();
 							tiredness++;
-							if (tiredness >= 8)
+							if (tiredness >= 4)
 							{
 								tiredness = 0;
 								obj = SCVBuildOrder.FIND_MINE;
