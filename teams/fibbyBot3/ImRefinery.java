@@ -70,14 +70,17 @@ public class ImRefinery
 								rGuns = 0;
 								rSensor = false;
 								rArmor = false;
-								for(ComponentType c:rInfo.components)
+								if (rInfo.components!=null)
 								{
-									if (c==GUNTYPE)
-										rGuns = rGuns+1;
-									if (c==SENSORTYPE)
-										rSensor = true;
-									if (c==ARMORTYPE)
-										rArmor = true;
+									for(ComponentType c:rInfo.components)
+									{
+										if (c==GUNTYPE)
+											rGuns = rGuns+1;
+										if (c==SENSORTYPE)
+											rSensor = true;
+										if (c==ARMORTYPE)
+											rArmor = true;
+									}
 								}
 								if (myRobots.contains(rID) && !rSensor)
 								{
