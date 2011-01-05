@@ -9,13 +9,18 @@ public class RobotPlayer implements Runnable {
 	
 	//Controllers
 	final RobotController myRC;
-	final ArrayList<WeaponController> myWeapons;
+	
+	
 	SensorController mySensor;
 	BuilderController myBuilder;
 	MovementController myMotor;
+	BroadcastController myBroadcaster;
+	final ArrayList<WeaponController> myWeapons;
 	
 	//Helper Subsystems
 	final Messenger myMessenger;
+	final Navigation myNavigation;
+	
 	
 	//Higher level strategy
 	Behavior myBehavior;
@@ -25,19 +30,26 @@ public class RobotPlayer implements Runnable {
 
     public RobotPlayer(RobotController rc) {
     	
+    	//this absolutely must be set first
+    	myRC = rc;
+    	
     	//initialize base controllers
     	myBuilder = null;
     	myMotor = null;
     	mySensor = null;
+    	myBroadcaster = null;
+    	
     	myWeapons = new ArrayList<WeaponController>();
+    	
     	myMessenger = new Messenger(this);
-        myRC = rc;
+    	myNavigation = new Navigation(this);
+    	
+       
         
         Behavior myBehavior = null;
         
         
-		//allocate initial controllers (sets movement, sensors, etc.)
-		allocateControllers(myRC.newComponents());
+
         
     }
 
@@ -67,25 +79,36 @@ public class RobotPlayer implements Runnable {
 		ComponentController[] components;
 		while(true) {
 			
+			//Receive all messages
+			try {
+				myMessenger.receiveAll();
+			} catch(Exception e) {e.printStackTrace();}
+
 			
 			//First check if we've added new components to the robot
 			//and execute the necessary callback
-			components=myRC.newComponents();
-			if(components.length!=0) {
-				allocateControllers(components);
-				myBehavior.newComponentCallback(components);
-			}
-			
+			try{
+				components=myRC.newComponents();
+				if(components.length!=0) {
+					allocateControllers(components);
+					myBehavior.newComponentCallback(components);
+				}
+			} catch(Exception e) {e.printStackTrace();}
+				
 			
 			//Next, run the robot's behaviors
 			try {
 				myBehavior.run();
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
+			} catch(Exception e) {e.printStackTrace();}
 			
 			//Increment the robot's timer
 			myBehavior.runtime++;
+			
+			
+			//Send all messages
+			try {
+				myMessenger.sendAll();
+			} catch(Exception e) {e.printStackTrace();}
 			
 			
 			//Lastly, set some debug strings
@@ -121,6 +144,12 @@ public class RobotPlayer implements Runnable {
 			case MOTOR:
 				myMotor = (MovementController)c;
 				break;
+			case COMM:
+				myBroadcaster = (BroadcastController)c;
+				break;
+			default:
+				System.out.println("Error");
+				
 			}
 		}		
 	}

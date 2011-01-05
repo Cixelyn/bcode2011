@@ -2,16 +2,11 @@ package corybot;
 import battlecode.common.*;
 
 public class Navigation {
-	private final RobotPlayer player;
-	private final RobotController myRC;
-	private final MovementController motor;
-	
+	private final RobotPlayer myPlayer;
 
 
-	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
-		this.player = player;
-		myRC = RC;
-		motor=motorController;
+	public Navigation(RobotPlayer player) {
+		this.myPlayer = player;
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////BUGNAV/////////////////////////////////////////////////////////
@@ -21,8 +16,8 @@ public class Navigation {
 	private int roundsTracing = 0;
 	public Direction bugTo(MapLocation destLoc) {
 		
-		MapLocation currLoc = myRC.getLocation();
-		Direction currDir=myRC.getDirection();
+		MapLocation currLoc = myPlayer.myRC.getLocation();
+		Direction currDir=myPlayer.myRC.getDirection();
 		Direction destDir = currLoc.directionTo(destLoc);
 		
 //		player.myRC.setIndicatorString(1, "Dest: "+destDir);
@@ -37,7 +32,7 @@ public class Navigation {
 		if(isTracing) {
 			
 			//if we can move, go in that direction, stop tracing
-			if(currDir==destDir || (roundsTracing > 20 && motor.canMove(destDir))) { 
+			if(currDir==destDir || (roundsTracing > 20 && myPlayer.myMotor.canMove(destDir))) { 
 				isTracing = false;
 				return destDir;
 			}
@@ -51,7 +46,7 @@ public class Navigation {
 				
 				//These statements can be replaced with binary manipulations
 				if(tracingRight) {  //rotate as far left as possible. If not, rotate outwards.
-					if(motor.canMove(currDir)) {
+					if(myPlayer.myMotor.canMove(currDir)) {
 						rotateLeft = true;
 						isBlocked = false;
 					} else {
@@ -61,7 +56,7 @@ public class Navigation {
 				}
 				
 				else { //we're tracing left.  Rotate as far right, then rotate left.
-					if(motor.canMove(currDir)) {
+					if(myPlayer.myMotor.canMove(currDir)) {
 						rotateLeft = false;
 						isBlocked = false;
 					} else {
@@ -82,16 +77,16 @@ public class Navigation {
 					else traceDir = traceDir.rotateRight();
 					
 					if(isBlocked){ //We want to rotate to the first available space
-						if(motor.canMove(traceDir)) 
+						if(myPlayer.myMotor.canMove(traceDir)) 
 							return traceDir;
 					} 
 								
 					else { //We want to rotate until we reach the wall again
 						
-						if(traceDir==destDir && motor.canMove(destDir)) { //but break early if we can get on target
+						if(traceDir==destDir && myPlayer.myMotor.canMove(destDir)) { //but break early if we can get on target
 							return traceDir;
 						}				
-						if(!motor.canMove(traceDir)) 
+						if(!myPlayer.myMotor.canMove(traceDir)) 
 							return oldDir;
 					}
 				}
@@ -103,7 +98,7 @@ public class Navigation {
 		}
 		else { //not tracing
 		
-			if(motor.canMove(destDir)) {
+			if(myPlayer.myMotor.canMove(destDir)) {
 				return destDir;
 			} 
 				
@@ -119,13 +114,13 @@ public class Navigation {
 				//Left Check
 				for(int i=0; i<8; i++) {
 					leftDir = leftDir.rotateLeft();	
-					if(motor.canMove(leftDir)) {
+					if(myPlayer.myMotor.canMove(leftDir)) {
 						break;
 					}
 				}
 				for(int i=0; i<8; i++) {
 					rightDir = rightDir.rotateRight();	
-					if(motor.canMove(rightDir)) {
+					if(myPlayer.myMotor.canMove(rightDir)) {
 						break;
 					}
 				}

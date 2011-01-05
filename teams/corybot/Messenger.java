@@ -3,6 +3,7 @@ package corybot;
 import java.util.LinkedList;
 
 import battlecode.common.Clock;
+import battlecode.common.MapLocation;
 import battlecode.common.Message;
 
 
@@ -30,14 +31,16 @@ public class Messenger {
 	
 	//static limits
 	private static final int ID_MOD = 1024;
+	private final int teamKey;
 	
 	
-	final LinkedList<Packet> packets;
+	final LinkedList<Message> messageQueue;
 	
 	
 	
 	public Messenger(RobotPlayer player) {
-		packets = new LinkedList<Packet>();
+		teamKey=player.myRC.getTeam().hashCode();
+		messageQueue = new LinkedList<Message>();
 		myPlayer = player;		
 		canSend = false;		
 	}
@@ -52,30 +55,58 @@ public class Messenger {
 	
 	
 	
+	public void sendMsg(Message m) {
+		messageQueue.add(m);
+	}
+	
+
+	
+	
+	
+	
 	/**
-	 * This is the only thing you should be calling.
-	 * @param p
+	 * Very primitive receive function
 	 */
-	public void sendPacket(Packet p) {}
-	
-	
-	
 	public void receiveAll() {
-		
 		int currTime = Clock.getRoundNum();
 		
+		Message[] rcv = myPlayer.myRC.getAllMessages();
 		
-		
-		
-		
+		for(Message m: rcv) {
+			if(validate(m)) {
+				myPlayer.myBehavior.newMessageCallback(m);
+			}
+	
+		}
 	}
 	
-	public void sendAll() {
-		
-		
+	
+	public void sendAll() throws Exception{
+		if(!messageQueue.isEmpty()) {
+			myPlayer.myBroadcaster.broadcast(messageQueue.pop());
+		}
 	}
 	
 	
+	
+	
+	
+	
+	
+	/**
+	 * Very dirty validation system
+	 * @param m
+	 * @return
+	 */
+	public boolean validate(Message m) {
+		for(MapLocation l:m.locations) {
+			if(l==null) return false;
+		}
+		return true;
+	}
+	
+	
+
 	
 
 }

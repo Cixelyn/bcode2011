@@ -6,7 +6,7 @@ package corybot;
  * @author Cory
  *
  */
-public enum PacketHeader {
+public enum MsgType {
 	
 							//ttl , cback,  mem
 	PKT_ROBOT 			(     1   ,	false,  false ),
@@ -17,7 +17,7 @@ public enum PacketHeader {
 	public boolean shouldCallback;
 	public boolean shouldRemember;
 	
-	PacketHeader(int ttl, boolean shouldCallback, boolean shouldRemember) {
+	MsgType(int ttl, boolean shouldCallback, boolean shouldRemember) {
 		this.ttl = ttl;
 		this.shouldCallback = shouldCallback;
 		this.shouldRemember = shouldRemember;

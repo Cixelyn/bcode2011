@@ -2,6 +2,7 @@ package corybot;
 
 import battlecode.common.ComponentController;
 import battlecode.common.ComponentType;
+import battlecode.common.Message;
 
 public class DefaultBuildingBehavior extends Behavior {
 
@@ -13,25 +14,16 @@ public class DefaultBuildingBehavior extends Behavior {
 	
 	public void newComponentCallback(ComponentController[] components) {
 		
-		
-		
-		
+	
 		//Switch to Recycler Behavior
 		if(Utility.hasComponent(ComponentType.RECYCLER,components)) {
-			myPlayer.myBehavior = new RecyclerBehavior(myPlayer);
+			myPlayer.swapBehavior(new RecyclerBehavior(myPlayer));
 		}
 		
-		
-		
-		
 
 	}
 
 
-	public void newMessageCallback(PacketHeader msg) {
-		// TODO Auto-generated method stub
-
-	}
 
 
 	public void run() throws Exception {
@@ -43,10 +35,9 @@ public class DefaultBuildingBehavior extends Behavior {
 		return "DefaultBuildingBehavior";
 	}
 
-
-	@Override
-	public void newMessageCallback(Packet packet) {
-		// TODO Auto-generated method stub
+	
+	public void newMessageCallback(Message msg) {
+		
 		
 	}
 

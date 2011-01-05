@@ -2,6 +2,8 @@ package corybot;
 
 import battlecode.common.ComponentClass;
 import battlecode.common.ComponentController;
+import battlecode.common.ComponentType;
+import battlecode.common.Message;
 
 public class DefaultLightBehavior extends Behavior {
 
@@ -27,16 +29,17 @@ public class DefaultLightBehavior extends Behavior {
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
-		
+		if(Utility.hasComponent(ComponentType.SMG,components)) {
+			myPlayer.swapBehavior(new ScoutBehavior(myPlayer));
+		}
 	}
 
 
 
 
 
-
 	@Override
-	public void newMessageCallback(Packet packet) {
+	public void newMessageCallback(Message msg) {
 		// TODO Auto-generated method stub
 		
 	}
