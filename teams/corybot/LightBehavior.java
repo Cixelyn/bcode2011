@@ -1,5 +1,6 @@
 package corybot;
 
+import battlecode.common.ComponentClass;
 import battlecode.common.ComponentController;
 
 public class LightBehavior extends Behavior {
@@ -26,7 +27,10 @@ public class LightBehavior extends Behavior {
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
+		
 		// TODO Auto-generated method stub
+		
+
 		
 	}
 }
