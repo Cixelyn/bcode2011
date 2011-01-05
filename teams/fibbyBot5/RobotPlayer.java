@@ -1,4 +1,4 @@
-package fibbyBot4;
+package fibbyBot5;
 
 import battlecode.common.*;
 import java.util.*;
