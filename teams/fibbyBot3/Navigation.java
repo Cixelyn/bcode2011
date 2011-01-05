@@ -1,4 +1,4 @@
-package fibbyBot2;
+package fibbyBot3;
 import battlecode.common.*;
 
 public class Navigation {
@@ -8,8 +8,8 @@ public class Navigation {
 	
 
 
-	public Navigation(RobotPlayer robotPlayer, RobotController RC, MovementController motorController) {
-		this.player = robotPlayer;
+	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
+		this.player = player;
 		myRC = RC;
 		motor=motorController;
 	}

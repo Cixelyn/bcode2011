@@ -10,7 +10,7 @@ public class RobotPlayer implements Runnable {
 
 	private final RobotController myRC;
 	private final int SMGS = 3;
-	private final int MARINES = 3;
+	private final int MARINES = 1;
 
     public RobotPlayer(RobotController rc) {
         myRC = rc;
