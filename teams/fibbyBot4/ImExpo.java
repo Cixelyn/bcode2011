@@ -99,7 +99,7 @@ public class ImExpo
             			nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
     					for (GameObject r:nearbyRobots)
     					{
-    						if(r.getTeam()==myRC.getTeam())
+    						if(sensor.canSenseObject(r) && r.getTeam()==myRC.getTeam())
     						{
     							rID = r.getID();
     							if(sensor.canSenseObject(r))
@@ -123,8 +123,11 @@ public class ImExpo
     								}
     								if (myRobots.contains(rID) && !rSensor)
     								{
-    									if(sensor.canSenseObject(r))
-    	    								rInfo = sensor.senseRobotInfo((Robot)r);
+    									while(motor.isActive())
+    	    								myRC.yield();
+    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    							myRC.yield();
+    	    							rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -137,8 +140,15 @@ public class ImExpo
     											builder.build(SENSORTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											if(sensor.canSenseObject(r))
-    			    								rInfo = sensor.senseRobotInfo((Robot)r);
+    										{
+    											while(motor.isActive())
+    	    	    								myRC.yield();
+    	    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    	    							myRC.yield();
+    	    	    							rInfo = sensor.senseRobotInfo((Robot)r);
+    	    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    									myRC.yield();
+    										}
     										myRC.yield();
     									}
     									if (!built)
@@ -148,8 +158,11 @@ public class ImExpo
     								}
     								else if (myRobots.contains(rID) && rGuns<GUNS)
     								{
-    									if(sensor.canSenseObject(r))
-    	    								rInfo = sensor.senseRobotInfo((Robot)r);
+    									while(motor.isActive())
+    	    								myRC.yield();
+    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    							myRC.yield();
+    	    							rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -162,8 +175,15 @@ public class ImExpo
     											builder.build(GUNTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											if(sensor.canSenseObject(r))
-    			    								rInfo = sensor.senseRobotInfo((Robot)r);
+    										{
+    											while(motor.isActive())
+    	    	    								myRC.yield();
+    	    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    	    							myRC.yield();
+    	    	    							rInfo = sensor.senseRobotInfo((Robot)r);
+    	    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    									myRC.yield();
+    										}
     										myRC.yield();
     									}
     									if (!built)
@@ -173,8 +193,11 @@ public class ImExpo
     								}
     								else if (myRobots.contains(rID) && !rArmor)
     								{
-    									if(sensor.canSenseObject(r))
-    	    								rInfo = sensor.senseRobotInfo((Robot)r);
+    									while(motor.isActive())
+    	    								myRC.yield();
+    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    							myRC.yield();
+    	    							rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -187,8 +210,15 @@ public class ImExpo
     											builder.build(ARMORTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											if(sensor.canSenseObject(r))
-    			    								rInfo = sensor.senseRobotInfo((Robot)r);
+    										{
+    											while(motor.isActive())
+    	    	    								myRC.yield();
+    	    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    	    							myRC.yield();
+    	    	    							rInfo = sensor.senseRobotInfo((Robot)r);
+    	    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
+    	    									myRC.yield();
+    										}
     										myRC.yield();
     									}
     									if (!built)
