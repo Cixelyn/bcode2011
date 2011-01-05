@@ -90,7 +90,7 @@ public class ImRefinery
 									built = false;
 									while (builder.withinRange(rInfo.location) && !built)
 									{
-										myRC.setIndicatorString(2, "Building sensor...");
+										//myRC.setIndicatorString(2, "Building sensor...");
 										if (myRC.getTeamResources()>=2*SENSORTYPE.cost)
 										{
 											built = true;
@@ -100,10 +100,10 @@ public class ImRefinery
 											rInfo = sensor.senseRobotInfo((Robot)r);
 										myRC.yield();
 									}
-									if (!built)
-										myRC.setIndicatorString(2, "Target moved away.");
-									else
-										myRC.setIndicatorString(2, "Placed sensor on "+Integer.toString(rID)+".");
+									//if (!built)
+										//myRC.setIndicatorString(2, "Target moved away.");
+									//else
+										//myRC.setIndicatorString(2, "Placed sensor on "+Integer.toString(rID)+".");
 								}
 								else if (myRobots.contains(rID) && rGuns<GUNS)
 								{
@@ -113,7 +113,7 @@ public class ImRefinery
 									built = false;
 									while (builder.withinRange(rInfo.location) && !built)
 									{
-										myRC.setIndicatorString(2, "Building gun...");
+										//myRC.setIndicatorString(2, "Building gun...");
 										if (myRC.getTeamResources()>=2*GUNTYPE.cost)
 										{
 											built = true;
@@ -123,10 +123,10 @@ public class ImRefinery
 											rInfo = sensor.senseRobotInfo((Robot)r);
 										myRC.yield();
 									}
-									if (!built)
-										myRC.setIndicatorString(2, "Target moved away.");
-									else
-										myRC.setIndicatorString(2, "Placed gun on "+Integer.toString(rID)+".");
+									//if (!built)
+										//myRC.setIndicatorString(2, "Target moved away.");
+									//else
+										//myRC.setIndicatorString(2, "Placed gun on "+Integer.toString(rID)+".");
 								}
 								else if (myRobots.contains(rID) && !rArmor)
 								{
@@ -136,7 +136,7 @@ public class ImRefinery
 									built = false;
 									while (builder.withinRange(rInfo.location) && !built)
 									{
-										myRC.setIndicatorString(2, "Building armor...");
+										//myRC.setIndicatorString(2, "Building armor...");
 										if (myRC.getTeamResources()>=2*ARMORTYPE.cost)
 										{
 											built = true;
@@ -146,10 +146,10 @@ public class ImRefinery
 											rInfo = sensor.senseRobotInfo((Robot)r);
 										myRC.yield();
 									}
-									if (!built)
-										myRC.setIndicatorString(2, "Target moved away.");
-									else
-										myRC.setIndicatorString(2, "Placed armor on "+Integer.toString(rID)+".");
+									//if (!built)
+										//myRC.setIndicatorString(2, "Target moved away.");
+									//else
+										//myRC.setIndicatorString(2, "Placed armor on "+Integer.toString(rID)+".");
 								}
 								break;
 							}
