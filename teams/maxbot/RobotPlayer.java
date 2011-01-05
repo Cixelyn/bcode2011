@@ -17,7 +17,7 @@ public class RobotPlayer implements Runnable {
 		System.out.flush();
 		MovementController motor=(MovementController)components[0];
 		Navigation robotNavigation=new Navigation(this,myRC,motor);
-		MapLocation destination=myRC.getLocation().add(Direction.NORTH,500);
+		MapLocation destination=myRC.getLocation().add(Direction.SOUTH,500);
 		if(myRC.getChassis()==Chassis.LIGHT) {
 			for (ComponentController componentController : components) {
 				if (componentController.type().equals(ComponentType.CONSTRUCTOR)) {

@@ -30,17 +30,17 @@ public class RobotPlayer implements Runnable {
 		ArrayList<?> weapons = componentList[3];
 		if(myRC.getChassis()==Chassis.BUILDING)
 		{
-			myRC.setIndicatorString(0, "(refinery)");
+			//myRC.setIndicatorString(0, "(refinery)");
 			ImRefinery.run(this, myRC, builders, motors, sensors, weapons);
 		}
 		else if (builders.size()>0)
 		{
-			myRC.setIndicatorString(0, "In the rear with the gear!");
+			//myRC.setIndicatorString(0, "In the rear with the gear!");
 			ImSCV.run(this, myRC, builders, motors, sensors, weapons);
 		}
 		else
 		{
-			myRC.setIndicatorString(0, "Go, go, go!");
+			//myRC.setIndicatorString(0, "Go, go, go!");
 			ImMarine.run(this, myRC, builders, motors, sensors, weapons);
 		}
 	}

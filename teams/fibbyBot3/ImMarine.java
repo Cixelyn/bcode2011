@@ -49,9 +49,9 @@ public class ImMarine
 						hasArmor = true;
 					}
 				}
-				if (hasSensor && hasArmor)
-					myRC.setIndicatorString(1, "Sensor and armor installed!");
-				myRC.setIndicatorString(2, "I haz "+Integer.toString(guns)+" guns!");
+				//if (hasSensor && hasArmor)
+					//myRC.setIndicatorString(1, "Sensor and armor installed!");
+				//myRC.setIndicatorString(2, "I haz "+Integer.toString(guns)+" guns!");
 				myRC.yield();
                 if (guns >= GUNS && hasSensor && hasArmor)
                 {
@@ -85,8 +85,10 @@ public class ImMarine
     	                }*/
                 		Direction direction = robotNavigation.bugTo(destination);
                 		motor.setDirection(direction);
-						myRC.yield();
-						motor.moveForward();
+                		myRC.yield();
+                		if (motor.canMove(myRC.getDirection())) {
+                			motor.moveForward();
+                		}
                     }
                 }
 

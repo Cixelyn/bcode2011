@@ -5,6 +5,7 @@ public class Navigation {
 	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final MovementController motor;
+	Integer[][] memory;
 	
 
 
@@ -12,6 +13,7 @@ public class Navigation {
 		this.player = player;
 		myRC = RC;
 		motor=motorController;
+		memory = new Integer[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////BUGNAV/////////////////////////////////////////////////////////
@@ -25,7 +27,7 @@ public class Navigation {
 		Direction currDir=myRC.getDirection();
 		Direction destDir = currLoc.directionTo(destLoc);
 		
-//		player.myRC.setIndicatorString(1, "Dest: "+destDir);
+//=		player.myRC.setIndicatorString(1, "Dest: "+destDir);
 //		player.myRC.setIndicatorString(2, ""+isTracing);
 		
 		
@@ -33,14 +35,21 @@ public class Navigation {
 			isTracing=false;
 			return Direction.OMNI;
 		}
-		//myRC.setIndicatorString(1, roundsTracing+"");
-		//myRC.setIndicatorString(2, new Boolean(isTracing).toString());
+		myRC.setIndicatorString(1, roundsTracing+"");
+		myRC.setIndicatorString(2, new Boolean(isTracing).toString());
+		//System.out.println("first: (" + currLoc.x + "," + currLoc.y + ")");
+		//MapLocation inFront = myRC.getLocation().add(currDir);
+		//System.out.println("second: (" + inFront.x + "," + inFront.y + ")");
 		
 		if(isTracing) {
 			
 			//if we can move, go in that direction, stop tracing
-			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 20 && motor.canMove(destDir))) { 
+			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 50 && motor.canMove(destDir))) {
+				//System.out.println("mapLocation: (" + currLoc.x + "," + currLoc.y + ")");
+				//System.out.flush();
+				//memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
 				isTracing = false;
+				myRC.setIndicatorString(2, new Boolean(isTracing).toString());
 				return destDir;
 			}
 
@@ -110,8 +119,12 @@ public class Navigation {
 			} 
 				
 			else {//we hit a wall, need to trace
-			
+				
 				isTracing = true;
+				myRC.setIndicatorString(2, new Boolean(isTracing).toString());
+				if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=null) {
+					System.out.println("Seen location: (" + currLoc.x + "," + currLoc.y + ")");
+				}
 			
 				//Figure out whether left or right is better.
 				Direction leftDir=currDir;
@@ -137,15 +150,26 @@ public class Navigation {
 				MapLocation leftLoc = currLoc.add(leftDir).add(leftDir);
 				MapLocation rightLoc = currLoc.add(rightDir).add(rightDir);
 				roundsTracing = 0;
-
 				if(destLoc.distanceSquaredTo(leftLoc)<destLoc.distanceSquaredTo(rightLoc)) {
 					tracingRight = false;
 					//System.out.println("Tracing Left");
-					return leftDir;
+					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]==null) {
+						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
+						return leftDir;
+					}
+					System.out.println("changed directions");
+					tracingRight=true;
+					return rightDir;
 				} else {
 					tracingRight = true;
 					//System.out.println("Tracing Right");
-					return rightDir;
+					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]==null) { 
+						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0;
+						return rightDir;
+					}
+					System.out.println("changed directions");
+					tracingRight=false;
+					return leftDir;
 				}				
 			}		
 		}
