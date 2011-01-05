@@ -44,7 +44,7 @@ public abstract class Behavior {
 	 * Callback when new messages are received
 	 * @param msg received message (that warrants a callback)
 	 */
-	public abstract void newMessageCallback(MsgType msg);
+	public abstract void newMessageCallback(Packet packet);
 
 	
 	

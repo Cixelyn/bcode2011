@@ -32,8 +32,11 @@ public class DefaultLightBehavior extends Behavior {
 
 
 
+
+
+
 	@Override
-	public void newMessageCallback(MsgType msg) {
+	public void newMessageCallback(Packet packet) {
 		// TODO Auto-generated method stub
 		
 	}

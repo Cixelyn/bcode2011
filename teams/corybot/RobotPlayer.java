@@ -14,6 +14,9 @@ public class RobotPlayer implements Runnable {
 	BuilderController myBuilder;
 	MovementController myMotor;
 	
+	//Helper Subsystems
+	final Messenger myMessenger;
+	
 	//Higher level strategy
 	Behavior myBehavior;
 	
@@ -26,7 +29,8 @@ public class RobotPlayer implements Runnable {
     	myBuilder = null;
     	myMotor = null;
     	mySensor = null;
-    	myWeapons = new ArrayList<WeaponController>();  	
+    	myWeapons = new ArrayList<WeaponController>();
+    	myMessenger = new Messenger(this);
         myRC = rc;
         
         Behavior myBehavior = null;
@@ -45,7 +49,7 @@ public class RobotPlayer implements Runnable {
 		//	Currently decided based on chassis.
 		switch(myRC.getChassis()) {
 		case BUILDING:
-			myBehavior = new RecyclerBehavior(this);
+			myBehavior = new DefaultBuildingBehavior(this);
 			break;
 		case LIGHT:
 			myBehavior = new DefaultLightBehavior(this);
@@ -109,6 +113,7 @@ public class RobotPlayer implements Runnable {
 				break;
 			case SENSOR:
 				mySensor = (SensorController)c;
+				myMessenger.enableSender();
 				break;
 			case BUILDER:
 				myBuilder = (BuilderController)c;
