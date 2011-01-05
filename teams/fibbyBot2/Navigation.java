@@ -1,4 +1,4 @@
-package maxbot;
+package fibbyBot2;
 import battlecode.common.*;
 
 public class Navigation {
@@ -8,8 +8,8 @@ public class Navigation {
 	
 
 
-	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
-		this.player = player;
+	public Navigation(RobotPlayer robotPlayer, RobotController RC, MovementController motorController) {
+		this.player = robotPlayer;
 		myRC = RC;
 		motor=motorController;
 	}
@@ -33,13 +33,11 @@ public class Navigation {
 			isTracing=false;
 			return Direction.OMNI;
 		}
-		myRC.setIndicatorString(1, roundsTracing+"");
-		myRC.setIndicatorString(2, new Boolean(isTracing).toString());
 		
 		if(isTracing) {
 			
 			//if we can move, go in that direction, stop tracing
-			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 20 && motor.canMove(destDir))) { 
+			if(currDir==destDir || (roundsTracing > 20 && motor.canMove(destDir))) { 
 				isTracing = false;
 				return destDir;
 			}

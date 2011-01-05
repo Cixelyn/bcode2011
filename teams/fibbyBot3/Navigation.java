@@ -1,4 +1,4 @@
-package maxbot;
+package fibbyBot3;
 import battlecode.common.*;
 
 public class Navigation {
@@ -33,8 +33,8 @@ public class Navigation {
 			isTracing=false;
 			return Direction.OMNI;
 		}
-		myRC.setIndicatorString(1, roundsTracing+"");
-		myRC.setIndicatorString(2, new Boolean(isTracing).toString());
+		//myRC.setIndicatorString(1, roundsTracing+"");
+		//myRC.setIndicatorString(2, new Boolean(isTracing).toString());
 		
 		if(isTracing) {
 			
