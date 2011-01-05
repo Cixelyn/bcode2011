@@ -1,4 +1,4 @@
-package fibbyBot3;
+package maxbot;
 import battlecode.common.*;
 
 public class Navigation {
