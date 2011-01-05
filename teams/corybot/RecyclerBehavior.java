@@ -3,9 +3,9 @@ package corybot;
 import battlecode.common.*;
 import battlecode.world.InternalRobot;
 
-public class BuilderBehavior extends Behavior{
+public class RecyclerBehavior extends Behavior{
 
-	public BuilderBehavior(RobotPlayer player) {
+	public RecyclerBehavior(RobotPlayer player) {
 		super(player);
 	}
 	
@@ -34,8 +34,8 @@ public class BuilderBehavior extends Behavior{
 						
 						//Sense components on the robot
 						RobotInfo rinfo = myPlayer.mySensor.senseRobotInfo((Robot)obj);
-						int sensorCount = Utility.componentTypeCounter(rinfo.components)[ComponentClass.SENSOR.ordinal()];
-						int weaponCount = Utility.componentTypeCounter(rinfo.components)[ComponentClass.WEAPON.ordinal()];
+						int sensorCount = Utility.componentClassCounter(rinfo.components)[ComponentClass.SENSOR.ordinal()];
+						int weaponCount = Utility.componentClassCounter(rinfo.components)[ComponentClass.WEAPON.ordinal()];
 		
 						if(sensorCount==0 && Utility.canAdd(ComponentType.RADAR, rinfo)) {  //then build a sensor on the robot
 							Utility.buildComponentAt(myPlayer, ComponentType.RADAR, inFront,RobotLevel.ON_GROUND);
@@ -78,6 +78,14 @@ public class BuilderBehavior extends Behavior{
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void newMessageCallback(MsgType msg) {
 		// TODO Auto-generated method stub
 		
 	}

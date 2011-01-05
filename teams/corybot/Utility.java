@@ -72,17 +72,25 @@ public class Utility {
 	 * @param component
 	 * @return
 	 */	
-	public static int[] componentTypeCounter(ComponentType[] component) {
+	public static int[] componentClassCounter(ComponentType[] component) {
 		
 		int[] output = new int[ComponentClass.values().length];
 		
 		for(ComponentType c:component) {
 			output[c.componentClass.ordinal()]++;
 		}
-		
 		return output;
-		
 	}
+	public static int[] componentClassCounter(ComponentController[] component) {
+		
+		int[] output = new int[ComponentClass.values().length];
+		
+		for(ComponentController c:component) {
+			output[c.componentClass().ordinal()]++;
+		}
+		return output;
+	}
+	
 	
 	
 	/**
@@ -165,9 +173,21 @@ public class Utility {
 		} else { //Too heavy
 			return false;
 		}
-		
 	}
 	
+	
+	public static boolean hasComponent(ComponentType query, ComponentType[] list) {
+		for(ComponentType c:list) {
+			if(c==query) return true;
+		}
+		return false;
+	}
+	public static boolean hasComponent(ComponentType query, ComponentController[] list) {
+		for(ComponentController c:list) {
+			if(c.type()==query) return true;
+		}
+		return false;
+	}
 	
 }
 

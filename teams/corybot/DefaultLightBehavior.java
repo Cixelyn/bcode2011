@@ -1,10 +1,11 @@
 package corybot;
 
+import battlecode.common.ComponentClass;
 import battlecode.common.ComponentController;
 
-public class LightBehavior extends Behavior {
+public class DefaultLightBehavior extends Behavior {
 
-	public LightBehavior(RobotPlayer player) {
+	public DefaultLightBehavior(RobotPlayer player) {
 		super(player);
 	}
 
@@ -26,6 +27,13 @@ public class LightBehavior extends Behavior {
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
+		
+	}
+
+
+
+	@Override
+	public void newMessageCallback(MsgType msg) {
 		// TODO Auto-generated method stub
 		
 	}
