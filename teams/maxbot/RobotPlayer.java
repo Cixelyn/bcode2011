@@ -17,18 +17,23 @@ public class RobotPlayer implements Runnable {
 		System.out.flush();
 		MovementController motor=(MovementController)components[0];
 		Navigation robotNavigation=new Navigation(this,myRC,motor);
-		MapLocation destination=myRC.getLocation().add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH).add(Direction.NORTH);
+		MapLocation destination=myRC.getLocation().add(Direction.NORTH,500);
 		if(myRC.getChassis()==Chassis.LIGHT) {
 			for (ComponentController componentController : components) {
 				if (componentController.type().equals(ComponentType.CONSTRUCTOR)) {
 					while (true) {
 						myRC.yield();
 						Direction direction = robotNavigation.bugTo(destination);
+							
 						try {
-							motor.setDirection(direction);
-							myRC.yield();
-							motor.moveForward();
-							myRC.yield();
+							if (!motor.isActive()) {
+								motor.setDirection(direction);
+								myRC.yield();
+								if (!motor.isActive()) {
+									motor.moveForward();
+								}
+								myRC.yield();
+							}
 						} catch (GameActionException e) {
 							e.printStackTrace();
 						}
