@@ -38,6 +38,7 @@ public class ImMarine
         while (true)
         {
             try {
+            		myRC.setIndicatorString(2,Integer.toString(Clock.getRoundNum()));
 	            	componentList = Utilities.getComponents(myRC.components());
 	            	weapons = componentList[4];
 	                guns = 0;
@@ -57,6 +58,7 @@ public class ImMarine
 							hasArmor = true;
 						}
 					}
+					myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
 					myRC.yield();
 	                if (guns >= GUNS && hasSensor && hasArmor)
 	                {
