@@ -56,7 +56,9 @@ public class Messenger {
 	
 	
 	public void sendMsg(Message m) {
-		messageQueue.add(m);
+		if(canSend) {
+			messageQueue.add(m);
+		}
 	}
 	
 

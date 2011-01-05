@@ -20,6 +20,7 @@ public class RobotPlayer implements Runnable {
 	//Helper Subsystems
 	final Messenger myMessenger;
 	final Navigation myNavigation;
+	final Scanner myScanner;
 	
 	
 	//Higher level strategy
@@ -43,6 +44,7 @@ public class RobotPlayer implements Runnable {
     	
     	myMessenger = new Messenger(this);
     	myNavigation = new Navigation(this);
+    	myScanner = new Scanner(this);
     	
        
         
@@ -79,12 +81,16 @@ public class RobotPlayer implements Runnable {
 		ComponentController[] components;
 		while(true) {
 			
+			
+			///////////////////////////////////////////////////////////////
 			//Receive all messages
 			try {
 				myMessenger.receiveAll();
 			} catch(Exception e) {e.printStackTrace();}
 
 			
+			
+			///////////////////////////////////////////////////////////////
 			//First check if we've added new components to the robot
 			//and execute the necessary callback
 			try{
@@ -94,28 +100,43 @@ public class RobotPlayer implements Runnable {
 					myBehavior.newComponentCallback(components);
 				}
 			} catch(Exception e) {e.printStackTrace();}
-				
 			
+			
+			/////////////////////////////////////////////////////////////
+			//Run the scanning subsystems
+			try {
+				myScanner.InitialScan();				
+			} catch(Exception e) {e.printStackTrace();}
+
+
+			/////////////////////////////////////////////////////////////
 			//Next, run the robot's behaviors
 			try {
 				myBehavior.run();
 			} catch(Exception e) {e.printStackTrace();}
 			
+			
+			
+			/////////////////////////////////////////////////////////////
 			//Increment the robot's timer
 			myBehavior.runtime++;
 			
 			
+			/////////////////////////////////////////////////////////////
 			//Send all messages
 			try {
 				myMessenger.sendAll();
 			} catch(Exception e) {e.printStackTrace();}
 			
 			
+			/////////////////////////////////////////////////////////////
 			//Lastly, set some debug strings
 			myRC.setIndicatorString(0, myBehavior.toString());
 			myRC.setIndicatorString(1, Utility.printComponentList(myRC.components()));
 			myRC.setIndicatorString(2, Utility.robotMoveInfo(this));
 			
+			
+			/////////////////////////////////////////////////////////////
 			//Then yield
 			myRC.yield();
 			
@@ -136,7 +157,7 @@ public class RobotPlayer implements Runnable {
 				break;
 			case SENSOR:
 				mySensor = (SensorController)c;
-				myMessenger.enableSender();
+				myScanner.enableScanner();
 				break;
 			case BUILDER:
 				myBuilder = (BuilderController)c;
@@ -146,6 +167,7 @@ public class RobotPlayer implements Runnable {
 				break;
 			case COMM:
 				myBroadcaster = (BroadcastController)c;
+				myMessenger.enableSender();
 				break;
 			default:
 				System.out.println("Error");
