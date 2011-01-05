@@ -20,6 +20,7 @@ public class ImSCV
 		//MovementController motor = (MovementController)motors.get(0);
 		//BuilderController builder = (BuilderController)builders.get(0);
 		//Navigation robotNavigation=new Navigation(this,myRC,motor);
+		
         while (true)
         {
             try
