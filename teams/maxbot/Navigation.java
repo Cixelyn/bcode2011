@@ -39,7 +39,7 @@ public class Navigation {
 		if(isTracing) {
 			
 			//if we can move, go in that direction, stop tracing
-			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 20 && motor.canMove(destDir))) { 
+			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 50 && motor.canMove(destDir))) { 
 				isTracing = false;
 				return destDir;
 			}
