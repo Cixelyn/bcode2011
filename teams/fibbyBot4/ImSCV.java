@@ -112,6 +112,7 @@ public class ImSCV
             			if (!motor.isActive() && myRC.getLocation().distanceSquaredTo(destination)<=builder.type().range)
             			{
             				motor.setDirection(myRC.getLocation().directionTo(destination));
+            				myRC.yield();
             				while(myRC.getTeamResources() < Chassis.BUILDING.cost + RESERVE || builder.isActive())
             					myRC.yield();
             				builder.build(Chassis.BUILDING, destination);

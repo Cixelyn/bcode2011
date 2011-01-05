@@ -9,10 +9,19 @@ public class RobotPlayer implements Runnable {
 	
 	//Controllers
 	final RobotController myRC;
-	final ArrayList<WeaponController> myWeapons;
+	
+	
 	SensorController mySensor;
 	BuilderController myBuilder;
 	MovementController myMotor;
+	BroadcastController myBroadcaster;
+	final ArrayList<WeaponController> myWeapons;
+	
+	//Helper Subsystems
+	final Messenger myMessenger;
+	final Navigation myNavigation;
+	final Scanner myScanner;
+	
 	
 	//Higher level strategy
 	Behavior myBehavior;
@@ -22,18 +31,27 @@ public class RobotPlayer implements Runnable {
 
     public RobotPlayer(RobotController rc) {
     	
+    	//this absolutely must be set first
+    	myRC = rc;
+    	
     	//initialize base controllers
     	myBuilder = null;
     	myMotor = null;
     	mySensor = null;
-    	myWeapons = new ArrayList<WeaponController>();  	
-        myRC = rc;
+    	myBroadcaster = null;
+    	
+    	myWeapons = new ArrayList<WeaponController>();
+    	
+    	myMessenger = new Messenger(this);
+    	myNavigation = new Navigation(this);
+    	myScanner = new Scanner(this);
+    	
+       
         
         Behavior myBehavior = null;
         
         
-		//allocate initial controllers (sets movement, sensors, etc.)
-		allocateControllers(myRC.newComponents());
+
         
     }
 
@@ -45,7 +63,7 @@ public class RobotPlayer implements Runnable {
 		//	Currently decided based on chassis.
 		switch(myRC.getChassis()) {
 		case BUILDING:
-			myBehavior = new RecyclerBehavior(this);
+			myBehavior = new DefaultBuildingBehavior(this);
 			break;
 		case LIGHT:
 			myBehavior = new DefaultLightBehavior(this);
@@ -64,31 +82,61 @@ public class RobotPlayer implements Runnable {
 		while(true) {
 			
 			
+			///////////////////////////////////////////////////////////////
+			//Receive all messages
+			try {
+				myMessenger.receiveAll();
+			} catch(Exception e) {e.printStackTrace();}
+
+			
+			
+			///////////////////////////////////////////////////////////////
 			//First check if we've added new components to the robot
 			//and execute the necessary callback
-			components=myRC.newComponents();
-			if(components.length!=0) {
-				allocateControllers(components);
-				myBehavior.newComponentCallback(components);
-			}
+			try{
+				components=myRC.newComponents();
+				if(components.length!=0) {
+					allocateControllers(components);
+					myBehavior.newComponentCallback(components);
+				}
+			} catch(Exception e) {e.printStackTrace();}
 			
 			
+			/////////////////////////////////////////////////////////////
+			//Run the scanning subsystems
+			try {
+				myScanner.InitialScan();				
+			} catch(Exception e) {e.printStackTrace();}
+
+
+			/////////////////////////////////////////////////////////////
 			//Next, run the robot's behaviors
 			try {
 				myBehavior.run();
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
+			} catch(Exception e) {e.printStackTrace();}
 			
+			
+			
+			/////////////////////////////////////////////////////////////
 			//Increment the robot's timer
 			myBehavior.runtime++;
 			
 			
+			/////////////////////////////////////////////////////////////
+			//Send all messages
+			try {
+				myMessenger.sendAll();
+			} catch(Exception e) {e.printStackTrace();}
+			
+			
+			/////////////////////////////////////////////////////////////
 			//Lastly, set some debug strings
 			myRC.setIndicatorString(0, myBehavior.toString());
 			myRC.setIndicatorString(1, Utility.printComponentList(myRC.components()));
 			myRC.setIndicatorString(2, Utility.robotMoveInfo(this));
 			
+			
+			/////////////////////////////////////////////////////////////
 			//Then yield
 			myRC.yield();
 			
@@ -109,6 +157,7 @@ public class RobotPlayer implements Runnable {
 				break;
 			case SENSOR:
 				mySensor = (SensorController)c;
+				myScanner.enableScanner();
 				break;
 			case BUILDER:
 				myBuilder = (BuilderController)c;
@@ -116,9 +165,20 @@ public class RobotPlayer implements Runnable {
 			case MOTOR:
 				myMotor = (MovementController)c;
 				break;
+			case COMM:
+				myBroadcaster = (BroadcastController)c;
+				myMessenger.enableSender();
+				break;
+			default:
+				System.out.println("Error");
+				
 			}
 		}		
 	}
+	
+	
+	
+	
 	
 	
 	public void swapBehavior(Behavior b) {

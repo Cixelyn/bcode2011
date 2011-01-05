@@ -84,8 +84,13 @@ public class RecyclerBehavior extends Behavior{
 
 
 
+
+
+
+
+
 	@Override
-	public void newMessageCallback(MsgType msg) {
+	public void newMessageCallback(Message msg) {
 		// TODO Auto-generated method stub
 		
 	}

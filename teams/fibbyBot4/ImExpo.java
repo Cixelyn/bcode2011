@@ -30,7 +30,7 @@ public class ImExpo
 		int rID;
 		boolean rSensor;
 		boolean rArmor;
-		RobotInfo rInfo;
+		RobotInfo rInfo = null;
 		GameObject[] nearbyRobots;
 		boolean built = false;
 		boolean isLeader;
@@ -60,7 +60,7 @@ public class ImExpo
             			
 	            	case GET_RADAR:
 	        			myRC.setIndicatorString(2, "GET_RADAR");
-	        			while(myRC.getTeamResources()<ComponentType.RADAR.cost + RESERVE)
+	        			while(builder.isActive() || myRC.getTeamResources()<ComponentType.RADAR.cost + RESERVE)
 	        				myRC.yield();
 	        			builder.build(ComponentType.RADAR,myRC.getLocation(),RobotLevel.ON_GROUND);
 	        			myRC.setIndicatorString(1, "Radar installed!");
@@ -89,6 +89,7 @@ public class ImExpo
     						marinesMade++;
     						babyRobot = (Robot)sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.ON_GROUND);
     						myRobots.add(babyRobot.getID());
+    						obj = RefineryBuildOrder.EQUIP_MARINE;
     					}
             			myRC.yield();
             			break;
@@ -101,7 +102,8 @@ public class ImExpo
     						if(r.getTeam()==myRC.getTeam())
     						{
     							rID = r.getID();
-    							rInfo = sensor.senseRobotInfo((Robot)r);
+    							if(sensor.canSenseObject(r))
+    								rInfo = sensor.senseRobotInfo((Robot)r);
     							if(rInfo.chassis == Chassis.LIGHT && myRC.getLocation().distanceSquaredTo(rInfo.location)<=2)
     							{
     								rGuns = 0;
@@ -121,7 +123,8 @@ public class ImExpo
     								}
     								if (myRobots.contains(rID) && !rSensor)
     								{
-    									rInfo = sensor.senseRobotInfo((Robot)r);
+    									if(sensor.canSenseObject(r))
+    	    								rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -134,7 +137,8 @@ public class ImExpo
     											builder.build(SENSORTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											rInfo = sensor.senseRobotInfo((Robot)r);
+    											if(sensor.canSenseObject(r))
+    			    								rInfo = sensor.senseRobotInfo((Robot)r);
     										myRC.yield();
     									}
     									if (!built)
@@ -144,7 +148,8 @@ public class ImExpo
     								}
     								else if (myRobots.contains(rID) && rGuns<GUNS)
     								{
-    									rInfo = sensor.senseRobotInfo((Robot)r);
+    									if(sensor.canSenseObject(r))
+    	    								rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -157,7 +162,8 @@ public class ImExpo
     											builder.build(GUNTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											rInfo = sensor.senseRobotInfo((Robot)r);
+    											if(sensor.canSenseObject(r))
+    			    								rInfo = sensor.senseRobotInfo((Robot)r);
     										myRC.yield();
     									}
     									if (!built)
@@ -167,7 +173,8 @@ public class ImExpo
     								}
     								else if (myRobots.contains(rID) && !rArmor)
     								{
-    									rInfo = sensor.senseRobotInfo((Robot)r);
+    									if(sensor.canSenseObject(r))
+    	    								rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -180,7 +187,8 @@ public class ImExpo
     											builder.build(ARMORTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											rInfo = sensor.senseRobotInfo((Robot)r);
+    											if(sensor.canSenseObject(r))
+    			    								rInfo = sensor.senseRobotInfo((Robot)r);
     										myRC.yield();
     									}
     									if (!built)
@@ -191,9 +199,19 @@ public class ImExpo
     								break;
     							}
     						}
+    						myRC.yield();
     					}
     					if (!built)
-    						obj = RefineryBuildOrder.MAKE_MARINE;
+    					{
+    						if (marinesMade == MARINES)
+    							obj = RefineryBuildOrder.SLEEP;
+    						else
+    							obj = RefineryBuildOrder.MAKE_MARINE;
+    					}
+            			break;
+            			
+            		case SLEEP:
+            			myRC.yield();
             			break;
             	}
             } 
