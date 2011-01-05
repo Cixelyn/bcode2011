@@ -2,6 +2,7 @@ package fibbyBot4;
 
 
 import battlecode.common.*;
+
 import java.util.ArrayList;
 
 public class ImRefinery
@@ -29,7 +30,7 @@ public class ImRefinery
 		int rID;
 		boolean rSensor;
 		boolean rArmor;
-		RobotInfo rInfo;
+		RobotInfo rInfo = null;
 		GameObject[] nearbyRobots;
 		boolean built = false;
 		boolean isLeader;
@@ -125,10 +126,11 @@ public class ImRefinery
             			nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
     					for (GameObject r:nearbyRobots)
     					{
-    						if(sensor.canSenseObject(r) && r.getTeam()==myRC.getTeam())
+    						if(r.getTeam()==myRC.getTeam())
     						{
     							rID = r.getID();
-    							rInfo = sensor.senseRobotInfo((Robot)r);
+    							if (sensor.canSenseObject(r))
+    								rInfo = sensor.senseRobotInfo((Robot)r);
     							if(rInfo.chassis == Chassis.LIGHT && myRC.getLocation().distanceSquaredTo(rInfo.location)<=2)
     							{
     								rGuns = 0;
@@ -148,7 +150,8 @@ public class ImRefinery
     								}
     								if (myRobots.contains(rID) && !rSensor)
     								{
-    									rInfo = sensor.senseRobotInfo((Robot)r);
+    									if(sensor.canSenseObject(r))
+    	    								rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -161,7 +164,8 @@ public class ImRefinery
     											builder.build(SENSORTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											rInfo = sensor.senseRobotInfo((Robot)r);
+    											if(sensor.canSenseObject(r))
+    			    								rInfo = sensor.senseRobotInfo((Robot)r);
     										myRC.yield();
     									}
     									if (!built)
@@ -171,7 +175,8 @@ public class ImRefinery
     								}
     								else if (myRobots.contains(rID) && rGuns<GUNS)
     								{
-    									rInfo = sensor.senseRobotInfo((Robot)r);
+    									if(sensor.canSenseObject(r))
+    	    								rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -184,7 +189,8 @@ public class ImRefinery
     											builder.build(GUNTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											rInfo = sensor.senseRobotInfo((Robot)r);
+    											if(sensor.canSenseObject(r))
+    			    								rInfo = sensor.senseRobotInfo((Robot)r);
     										myRC.yield();
     									}
     									if (!built)
@@ -194,7 +200,8 @@ public class ImRefinery
     								}
     								else if (myRobots.contains(rID) && !rArmor)
     								{
-    									rInfo = sensor.senseRobotInfo((Robot)r);
+    									if(sensor.canSenseObject(r))
+    	    								rInfo = sensor.senseRobotInfo((Robot)r);
     									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
     									myRC.yield();
     									built = false;
@@ -207,7 +214,8 @@ public class ImRefinery
     											builder.build(ARMORTYPE,rInfo.location,RobotLevel.ON_GROUND);
     										}
     										else
-    											rInfo = sensor.senseRobotInfo((Robot)r);
+    											if(sensor.canSenseObject(r))
+    			    								rInfo = sensor.senseRobotInfo((Robot)r);
     										myRC.yield();
     									}
     									if (!built)
@@ -218,9 +226,19 @@ public class ImRefinery
     								break;
     							}
     						}
+    						myRC.yield();
     					}
     					if (!built)
-    						obj = RefineryBuildOrder.MAKE_MARINE;
+    					{
+    						if (marinesMade == MARINES)
+    							obj = RefineryBuildOrder.SLEEP;
+    						else
+    							obj = RefineryBuildOrder.MAKE_MARINE;
+    					}
+            			break;
+            			
+            		case SLEEP:
+            			myRC.yield();
             			break;
             	}
             } 
