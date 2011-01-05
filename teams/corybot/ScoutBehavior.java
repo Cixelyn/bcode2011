@@ -27,13 +27,14 @@ public class ScoutBehavior extends Behavior{
 		if(!myPlayer.myMotor.isActive()) {
 			if(myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 				myPlayer.myMotor.moveForward();
-				return;
 			} else{
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
-				return;
 			}
-			
 		}
+		
+		
+		
+		
 	}
 
 	@Override
