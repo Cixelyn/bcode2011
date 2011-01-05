@@ -22,8 +22,10 @@ public class ImSCV
 		
         while (true)
         {
+        	System.out.println("hello");
             try
             {
+            	myRC.yield();
             	motor.setDirection(Direction.NORTH);
             	myRC.yield();
             	motor.setDirection(Direction.EAST);
@@ -76,8 +78,11 @@ public class ImSCV
             	}
             	myRC.setIndicatorString(0, destination.toString());
             	MapLocation finalDestination=new MapLocation(myRC.getLocation().x+destination.x,myRC.getLocation().y+destination.y);
+            	myRC.setIndicatorString(1, "bug nav!");
                 while (true) {
-                	myRC.setIndicatorString(1, "bug nav!");
+                	myRC.yield();
+                	myRC.yield();
+                	myRC.yield();
                 	myRC.yield();
                 	motor.setDirection(robotNavigation.bugTo(finalDestination));
                 	myRC.yield();
