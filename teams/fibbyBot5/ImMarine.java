@@ -13,7 +13,7 @@ public class ImMarine
 	private static final ComponentType COMMTYPE = ComponentType.ANTENNA;
 	private static final ComponentType ARMORTYPE = ComponentType.SHIELD; 
 	private static final int MARINES = 2;
-	private static final int OLDNEWS = 5;
+	private static final int OLDNEWS = 15;
 	private static final int RESERVE = 5;
 	
 	public static void run(RobotPlayer player, RobotController myRC, ArrayList<?> broadcasters, ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons)
@@ -39,46 +39,53 @@ public class ImMarine
         String spawn;
         Direction enemyDirection;
         boolean eeHanTiming = false;
+        boolean moveOut = false;
         
         while (true)
         {
             try {
-	            	componentList = Utilities.getComponents(myRC.components());
-	            	weapons = componentList[4];
-	                guns = 0;
-	                hasSensor = false;
-	                hasArmor = false;
-					for(ComponentController c:myRC.components())
-					{
-						if (c.type()==GUNTYPE)
-							guns = guns+1;
-						if (c.type()==SENSORTYPE)
+            		if(!moveOut)
+            		{
+		            	componentList = Utilities.getComponents(myRC.components());
+		            	weapons = componentList[4];
+		                guns = 0;
+		                hasSensor = false;
+		                hasArmor = false;
+						for(ComponentController c:myRC.components())
 						{
-							hasSensor = true;
-							sensor = (SensorController)c;
+							if (c.type()==GUNTYPE)
+								guns = guns+1;
+							if (c.type()==SENSORTYPE)
+							{
+								hasSensor = true;
+								sensor = (SensorController)c;
+							}
+							if (c.type()==ARMORTYPE)
+							{
+								hasArmor = true;
+							}
 						}
-						if (c.type()==ARMORTYPE)
+						myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
+						myRC.yield();
+						msgs = myRC.getAllMessages();
+						for(Message m:msgs)
 						{
-							hasArmor = true;
+							if (m.ints != null && m.ints[0] == 4774 && m.strings != null && m.strings[0] != "idk")
+							{
+								spawn = m.strings[0];
+								myRC.setIndicatorString(0,"(marine) | knows spawn");
+								enemyDirection = Utilities.spawnOpposite(spawn);
+								destination = myRC.getLocation().add(enemyDirection, 500);
+								prevDestination = destination;
+								eeHanTiming = true;
+								myRC.setIndicatorString(1, "Going to the enemy.");
+							}
 						}
-					}
-					myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
-					myRC.yield();
-					msgs = myRC.getAllMessages();
-					for(Message m:msgs)
-					{
-						if (m.ints != null && m.ints[0] == 4774 && m.strings != null && m.strings[0] != "idk")
-						{
-							spawn = m.strings[0];
-							myRC.setIndicatorString(0,"(marine) | knows spawn");
-							enemyDirection = Utilities.spawnOpposite(spawn);
-							destination = myRC.getLocation().add(enemyDirection, 500);
-							eeHanTiming = true;
-						}
-					}
-	                if (eeHanTiming && guns >= GUNS && hasSensor && hasArmor)
+						moveOut = eeHanTiming && guns >= GUNS && hasSensor && hasArmor;
+            		}
+            		else
 	                {
-	                	myRC.setIndicatorString(1,"EE HAN TIMING!");
+	                	myRC.setIndicatorString(2,"EE HAN TIMING!");
 	                	nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
 	                	for(GameObject r:nearbyRobots)
 	                	{
@@ -106,6 +113,7 @@ public class ImMarine
 	                		staleness++;
 	                		if (staleness >= OLDNEWS)
 	                		{
+	                			myRC.setIndicatorString(1, "Going to the enemy.");
 	                			destination = prevDestination;
 	                		}
 	                		if (direction != Direction.OMNI && direction != Direction.NONE)
@@ -120,6 +128,7 @@ public class ImMarine
 	                		}
 	                    }
 	                }
+            		
 
             }
             catch (Exception e)

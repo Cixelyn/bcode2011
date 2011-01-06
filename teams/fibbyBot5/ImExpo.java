@@ -14,7 +14,7 @@ public class ImExpo
 	private static final ComponentType COMMTYPE = ComponentType.ANTENNA;
 	private static final ComponentType ARMORTYPE = ComponentType.SHIELD; 
 	private static final int MARINES = 2;
-	private static final int OLDNEWS = 5;
+	private static final int OLDNEWS = 15;
 	private static final int RESERVE = 5;
 	
 	public static void run(RobotPlayer player, RobotController myRC, ArrayList<?> broadcasters, ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons)
@@ -49,12 +49,21 @@ public class ImExpo
             	{
             		case WAIT_FOR_SIGNAL:
             			myRC.setIndicatorString(2, "WAIT_FOR_SIGNAL");
-            			if(myRC.getAllMessages().length>0)
+            			msgs = myRC.getAllMessages();
+            			for (Message m:msgs)
             			{
-            				myRC.setIndicatorString(1,"Time to build!");
-            				componentList = Utilities.getComponents(myRC.components());
-            				builder = (BuilderController)componentList[1].get(0);
-            				obj = RefineryBuildOrder.INITIALIZE;
+            				if(m.ints != null && m.ints[0] == 9090)
+            				{
+            					myRC.setIndicatorString(1,"Message received!");
+                				obj = RefineryBuildOrder.INITIALIZE;
+            				}
+            				if(m.ints != null && m.ints[0] == 4774 && m.strings != null && m.strings[0] != "idk")
+            				{
+    							myRC.setIndicatorString(0,"(refinery) | knows spawn");
+    							attackMsg = m;
+            					eeHanTiming = true;
+                				obj = RefineryBuildOrder.INITIALIZE;
+            				}
             			}
             			myRC.yield();
             			break;
@@ -82,8 +91,8 @@ public class ImExpo
     					{
     						motor.setDirection(myRC.getDirection().rotateRight());
     						dizziness++;
-    						if (dizziness >= 8)
-    							obj = RefineryBuildOrder.SLEEP;
+    						//if (dizziness >= 8)
+    							//obj = RefineryBuildOrder.SLEEP;
     					}
             			else if(marinesMade < MARINES && myRC.getTeamResources() >= Chassis.LIGHT.cost + RESERVE)
     					{

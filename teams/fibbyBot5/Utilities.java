@@ -100,6 +100,5 @@ public class Utilities
 		if(spawn == "southeast")
 			return Direction.NORTH_WEST;
 		return Direction.OMNI;
-		
 	}
 }

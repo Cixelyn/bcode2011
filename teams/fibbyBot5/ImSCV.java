@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class ImSCV
 {
 	
-	//private static final int OLDNEWS = 5;
+	//private static final int OLDNEWS = 15;
 	private static final int RESERVE = 5;
 	private static final int SCOUTING_DISTANCE = 7;
 	
@@ -41,6 +41,7 @@ public class ImSCV
 		int eastEdge = -1;
 		int southEdge = -1;
 		String spawn;
+		Direction enemyDirection = null;
 		
         while (true)
         {
@@ -270,7 +271,6 @@ public class ImSCV
 								}
 								motor.moveForward();
 	            			}
-							motor.moveForward();
 							if (Math.abs(myRC.getLocation().y - hometown.y) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -295,7 +295,7 @@ public class ImSCV
 								}
 								motor.moveForward();
 	            			}
-							if (myRC.getLocation().distanceSquaredTo(hometown) <= 9)
+							if (myRC.getLocation().distanceSquaredTo(hometown) <= 4)
 							{
 								if(westEdge == -1)
 									return; // FAILURE
@@ -310,6 +310,7 @@ public class ImSCV
 										spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 										myRC.setIndicatorString(0,"(SCV) | knows spawn");
 										msg = new Message();
+										msg.ints = attack;
 										String[] spawnMsg = {spawn};
 										msg.strings = spawnMsg;
 										broadcaster.broadcast(msg);
@@ -326,6 +327,7 @@ public class ImSCV
 										spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 										myRC.setIndicatorString(0,"(SCV) | knows spawn");
 										msg = new Message();
+										msg.ints = attack;
 										String[] spawnMsg = {spawn};
 										msg.strings = spawnMsg;
 										broadcaster.broadcast(msg);
@@ -337,6 +339,7 @@ public class ImSCV
 								else
 								{
 									spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
+									enemyDirection = Utilities.spawnOpposite(spawn);
 									myRC.setIndicatorString(0,"(SCV) | knows spawn");
 									msg = new Message();
 									msg.ints = attack;
@@ -354,7 +357,7 @@ public class ImSCV
             			myRC.setIndicatorString(2, "EXPAND");
             			if(!motor.isActive())
             			{
-	            			destination = myRC.getLocation().add(Direction.NORTH,500);
+	            			destination = myRC.getLocation().add(enemyDirection,500);
 	            			direction = robotNavigation.bugTo(destination);
 	            			if(direction != Direction.OMNI && direction != Direction.NONE)
 	            			{
