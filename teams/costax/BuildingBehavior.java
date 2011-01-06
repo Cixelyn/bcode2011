@@ -4,9 +4,9 @@ import battlecode.common.ComponentController;
 import battlecode.common.ComponentType;
 import battlecode.common.Message;
 
-public class DefaultBuildingBehavior extends Behavior {
+public class BuildingBehavior extends Behavior {
 
-	public DefaultBuildingBehavior(RobotPlayer player) {
+	public BuildingBehavior(RobotPlayer player) {
 		super(player);
 		// TODO Auto-generated constructor stub
 	}
@@ -15,9 +15,12 @@ public class DefaultBuildingBehavior extends Behavior {
 	public void newComponentCallback(ComponentController[] components) {
 		
 	
-		//Switch to Recycler Behavior
+		//Switch to Refinery Behavior
 		if(Utility.hasComponent(ComponentType.RECYCLER,components)) {
-			myPlayer.swapBehavior(new RecyclerBehavior(myPlayer));
+			if (runtime == 0) // Building started with recycler
+				myPlayer.swapBehavior(new MainRefineryBehavior(myPlayer));
+			else
+				myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));		
 		}
 		
 

@@ -1,7 +1,6 @@
 package costax;
 
 import java.util.ArrayList;
-
 import battlecode.common.*;
 
 public class RobotPlayer implements Runnable {
@@ -49,9 +48,6 @@ public class RobotPlayer implements Runnable {
        
         Behavior myBehavior = null;
         
-        
-
-        
     }
 
     
@@ -62,10 +58,10 @@ public class RobotPlayer implements Runnable {
 		//	Currently decided based on chassis.
 		switch(myRC.getChassis()) {
 		case BUILDING:
-			myBehavior = new DefaultBuildingBehavior(this);
+			myBehavior = new BuildingBehavior(this);
 			break;
 		case LIGHT:
-			myBehavior = new DefaultLightBehavior(this);
+			myBehavior = new LightBehavior(this);
 			break;
 		case MEDIUM:
 		case HEAVY:

@@ -1,13 +1,10 @@
 package costax;
 
-import battlecode.common.ComponentClass;
-import battlecode.common.ComponentController;
-import battlecode.common.ComponentType;
-import battlecode.common.Message;
+import battlecode.common.*;
 
-public class DefaultLightBehavior extends Behavior {
+public class LightBehavior extends Behavior {
 
-	public DefaultLightBehavior(RobotPlayer player) {
+	public LightBehavior(RobotPlayer player) {
 		super(player);
 	}
 
@@ -29,9 +26,10 @@ public class DefaultLightBehavior extends Behavior {
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
-		if(Utility.hasComponent(ComponentType.SMG,components)) {
-			myPlayer.swapBehavior(new ScoutBehavior(myPlayer));
-		}
+		if(Utility.hasComponent(ComponentType.CONSTRUCTOR,components))
+			myPlayer.swapBehavior(new SCVBehavior(myPlayer));
+		if(Utility.hasComponent(Constants.GUNTYPE,components)) 
+			myPlayer.swapBehavior(new MarineBehavior(myPlayer));
 	}
 
 

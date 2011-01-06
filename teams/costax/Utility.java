@@ -1,4 +1,6 @@
 package costax;
+import java.util.ArrayList;
+
 import battlecode.common.*;
 
 
@@ -64,6 +66,42 @@ public class Utility {
 		return output;
 	}
 	
+	/**
+	 * Convert array of ComponentControllers into ArrayLists of controllers
+	 * separated by class
+	 * @param components
+	 * @return array of ArrayLists of component controllers
+	 */	
+	public static ArrayList<?>[] getComponents(ComponentController[] components)
+	{
+		ArrayList<BroadcastController> broadcasters = new ArrayList<BroadcastController>();
+		ArrayList<BuilderController> builders = new ArrayList<BuilderController>();
+		ArrayList<MovementController> motors = new ArrayList<MovementController>();
+		ArrayList<SensorController> sensors = new ArrayList<SensorController>();
+		ArrayList<WeaponController> weapons = new ArrayList<WeaponController>();
+		for(ComponentController c:components)
+		{
+			switch (c.componentClass())
+			{
+				case ARMOR:
+					break;
+				case BUILDER: builders.add((BuilderController)c);
+					break;
+				case COMM: broadcasters.add((BroadcastController)c);
+					break;
+				case MISC:
+					break;
+				case MOTOR: motors.add((MovementController)c);
+					break;
+				case SENSOR: sensors.add((SensorController)c);
+					break;
+				case WEAPON: weapons.add((WeaponController)c);
+					break;
+			}
+		}
+		ArrayList<?>[] componentList = {broadcasters,builders,motors,sensors,weapons};
+		return componentList;
+	}
 	
 	/**
 	 * This utility function counts the number of weapons and returns back a presized array with component type counts.
@@ -155,6 +193,31 @@ public class Utility {
 		return true;
 	}
 	
+	/**
+	 * Helper function to build a component by JVen
+	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * @param player
+	 * @param component
+	 * @return
+	 * @throws GameActionException
+	 */
+	public static void buildComponent(RobotPlayer player, ComponentType component)
+	{
+		try
+		{
+			while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
+			{
+				player.myRC.yield();
+			}
+			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+		}
+        catch (Exception e)
+        {
+            System.out.println("caught exception:");
+            e.printStackTrace();
+        }
+	}
+	
 	
 	/**
 	 * This helper function determines whether adding a component is permissible given the weight of a robot
@@ -187,6 +250,64 @@ public class Utility {
 			if(c.type()==query) return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Uses black magic to determine spawn location based on whether off map squares are found in each direction
+	 * @param off map square to the west? 0 = no, 1 = yes
+	 * @param off map square to the north? 0 = no, 1 = yes
+	 * @param off map square to the east? 0 = no, 1 = yes
+	 * @param off map square to the south? 0 = no, 1 = yes
+	 * @return String stating spawn location... why String? idk
+	 */
+	public static String getSpawn(int westEdge, int northEdge, int eastEdge, int southEdge)
+	{
+		switch ((westEdge+1)*(2*northEdge+1)*(4*eastEdge+1)*(6*southEdge+1))
+		{
+			case 2:
+				return "west";
+			case 3:
+				return "north";
+			case 5:
+				return "east";
+			case 7:
+				return "south";
+			case 6:
+				return "northwest";
+			case 14:
+				return "southwest";
+			case 15:
+				return "northeast";
+			case 35:
+				return "southeast";
+		}
+		return "idk"; // should be unreachable
+	}
+	
+	/**
+	 * Outputs enemy direction based on strings returned from getSpawn
+	 * @param strings returned from getSpawn
+	 * @return direction where enemy is
+	 */
+	public static Direction spawnOpposite(String spawn)
+	{
+		if(spawn == "north")
+			return Direction.SOUTH;
+		if(spawn == "east")
+			return Direction.WEST;
+		if(spawn == "south")
+			return Direction.NORTH;
+		if(spawn == "west")
+			return Direction.EAST;
+		if(spawn == "northwest")
+			return Direction.SOUTH_EAST;
+		if(spawn == "northeast")
+			return Direction.SOUTH_WEST;
+		if(spawn == "southwest")
+			return Direction.NORTH_EAST;
+		if(spawn == "southeast")
+			return Direction.NORTH_WEST;
+		return Direction.OMNI;
 	}
 	
 }
