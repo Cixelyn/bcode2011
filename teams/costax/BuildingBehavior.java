@@ -1,8 +1,6 @@
 package costax;
 
-import battlecode.common.ComponentController;
-import battlecode.common.ComponentType;
-import battlecode.common.Message;
+import battlecode.common.*;
 
 public class BuildingBehavior extends Behavior {
 
@@ -30,7 +28,10 @@ public class BuildingBehavior extends Behavior {
 
 
 	public void run() throws Exception {
-
+		if (Clock.getRoundNum() <= 2)
+			myPlayer.swapBehavior(new MainRefineryBehavior(myPlayer));
+		else
+			myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
 	}
 
 	public String toString() {

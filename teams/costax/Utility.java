@@ -199,25 +199,31 @@ public class Utility {
 	 * @param player
 	 * @param component
 	 * @return
-	 * @throws GameActionException
 	 */
-	public static void buildComponent(RobotPlayer player, ComponentType component)
+	public static void buildComponent(RobotPlayer player, ComponentType component) throws Exception
 	{
-		try
+		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
 		{
-			while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
-			{
-				player.myRC.yield();
-			}
-			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+			player.myRC.yield();
 		}
-        catch (Exception e)
-        {
-            System.out.println("caught exception:");
-            e.printStackTrace();
-        }
+		player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 	}
 	
+	/**
+	 * Helper function to build a chassis by JVen
+	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * @param player
+	 * @param chassis
+	 * @return
+	 */
+	public static void buildChassis(RobotPlayer player, Chassis chassis) throws Exception
+	{
+		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
+		{
+			player.myRC.yield();
+		}
+		player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
+	}
 	
 	/**
 	 * This helper function determines whether adding a component is permissible given the weight of a robot
