@@ -60,13 +60,13 @@ public class SCVBehavior extends Behavior {
         				}
         			}
     			}
-    			if(!mineFound && dizziness < 8)
+    			if(!mineFound && dizziness < 4)
     			{
     				while (!myPlayer.myMotor.isActive())
-    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
     				dizziness++;
     			}
-    			if(!mineFound && dizziness == 8)
+    			if(!mineFound && dizziness == 4)
     			{
     				dizziness = 0;
     				obj = SCVBuildOrder.EXPAND;
@@ -294,7 +294,7 @@ public class SCVBehavior extends Behavior {
 						}
 						myPlayer.myMotor.moveForward();
         			}
-					if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) <= 9)
+					if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) <= Constants.HOME_PROXIMITY)
 					{
 						if(westEdge == -1)
 							return; // FAILURE

@@ -19,7 +19,7 @@ public class Constants
 	public static final int OLDNEWS = 15; // number of rounds until marine stops chasing enemy out of range
 	public static final int RESERVE = 5; // desired min flux
 	public static final int SCOUTING_DISTANCE = 7; // distance SCV should go from home
-	public static final int HOME_PROXIMITY = 9; // distance from start SCV considers home
+	public static final int HOME_PROXIMITY = 16; // distance from start SCV considers home
 	public static final int[] POWER_ON = {9090}; // code for messages
 	public static final int[] ATTACK = {4774}; // code for messages
 }

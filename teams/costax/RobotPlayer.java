@@ -79,9 +79,9 @@ public class RobotPlayer implements Runnable {
 			
 			///////////////////////////////////////////////////////////////
 			//Receive all messages
-			try {
+			/*try {
 				myMessenger.receiveAll();
-			} catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {e.printStackTrace();}*/
 
 			
 			
@@ -119,9 +119,9 @@ public class RobotPlayer implements Runnable {
 			
 			/////////////////////////////////////////////////////////////
 			//Send all messages
-			try {
+			/*try {
 				myMessenger.sendAll();
-			} catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {e.printStackTrace();}*/
 			
 			
 			/////////////////////////////////////////////////////////////

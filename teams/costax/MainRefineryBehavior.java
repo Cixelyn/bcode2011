@@ -8,7 +8,6 @@ public class MainRefineryBehavior extends Behavior {
 	RefineryBuildOrder obj = RefineryBuildOrder.INITIALIZE;
 	
 	int rGuns;
-	int dizziness = 0;
 	int marinesMade = 0;
 	ArrayList<Integer> myRobots = new ArrayList<Integer>();
 	
@@ -117,13 +116,9 @@ public class MainRefineryBehavior extends Behavior {
     			if(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null)
 				{
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
-					dizziness++;
-					//if (dizziness >= 8)
-						//obj = RefineryBuildOrder.SLEEP;
 				}
     			else if(marinesMade < Constants.MARINES && myPlayer.myRC.getTeamResources() >= Chassis.LIGHT.cost + Constants.RESERVE)
 				{
-    				dizziness = 0;
 					myPlayer.myBuilder.build(Chassis.LIGHT,myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()));
 					babyRobot = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 					myRobots.add(babyRobot.getID());
@@ -131,7 +126,6 @@ public class MainRefineryBehavior extends Behavior {
 				}
     			else if(marinesMade >= Constants.MARINES + 1)
     			{
-    				dizziness = 0;
     				obj = RefineryBuildOrder.SLEEP;
     			}
     			myPlayer.myRC.yield();

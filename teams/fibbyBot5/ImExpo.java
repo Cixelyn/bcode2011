@@ -35,7 +35,6 @@ public class ImExpo
 		Message[] msgs;
 		boolean eeHanTiming = false;
 		Message attackMsg = null;
-		int dizziness = 0;
 		
 		int marinesMade = 0;
 		ArrayList<Integer> myRobots = new ArrayList<Integer>();
@@ -92,13 +91,9 @@ public class ImExpo
             			if(!motor.canMove(myRC.getDirection()) || sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.MINE) != null)
     					{
     						motor.setDirection(myRC.getDirection().rotateRight());
-    						dizziness++;
-    						//if (dizziness >= 8)
-    							//obj = RefineryBuildOrder.SLEEP;
     					}
             			else if(marinesMade < MARINES && myRC.getTeamResources() >= Chassis.LIGHT.cost + RESERVE)
     					{
-            				dizziness = 0;
     						builder.build(Chassis.LIGHT,myRC.getLocation().add(myRC.getDirection()));
     						babyRobot = (Robot)sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.ON_GROUND);
     						myRobots.add(babyRobot.getID());
@@ -106,7 +101,6 @@ public class ImExpo
     					}
             			else if(marinesMade >= MARINES)
             			{
-            				dizziness = 0;
             				obj = RefineryBuildOrder.SLEEP;
             			}
             			myRC.yield();

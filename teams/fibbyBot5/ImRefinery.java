@@ -31,7 +31,6 @@ public class ImRefinery
 		RobotInfo rInfo = null;
 		Robot[] nearbyRobots;
 		boolean isLeader = false;
-		int dizziness = 0;
 		Message[] msgs;
 		boolean eeHanTiming = false;
 		String spawn;
@@ -122,13 +121,9 @@ public class ImRefinery
             			if(!motor.canMove(myRC.getDirection()) || sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.MINE) != null)
     					{
     						motor.setDirection(myRC.getDirection().rotateRight());
-    						dizziness++;
-    						//if (dizziness >= 8)
-    							//obj = RefineryBuildOrder.SLEEP;
     					}
             			else if(marinesMade < MARINES && myRC.getTeamResources() >= Chassis.LIGHT.cost + RESERVE)
     					{
-            				dizziness = 0;
     						builder.build(Chassis.LIGHT,myRC.getLocation().add(myRC.getDirection()));
     						babyRobot = (Robot)sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.ON_GROUND);
     						myRobots.add(babyRobot.getID());
@@ -136,7 +131,6 @@ public class ImRefinery
     					}
             			else if(marinesMade >= MARINES + 1)
             			{
-            				dizziness = 0;
             				obj = RefineryBuildOrder.SLEEP;
             			}
             			myRC.yield();

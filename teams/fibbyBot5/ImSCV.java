@@ -66,13 +66,13 @@ public class ImSCV
 	            				}
 	            			}
             			}
-            			if(!mineFound && dizziness < 8)
+            			if(!mineFound && dizziness < 4)
             			{
             				while (!motor.isActive())
-            					motor.setDirection(myRC.getDirection().rotateRight());
+            					motor.setDirection(myRC.getDirection().rotateRight().rotateRight());
             				dizziness++;
             			}
-            			if(!mineFound && dizziness == 8)
+            			if(!mineFound && dizziness == 4)
             			{
             				dizziness = 0;
             				obj = SCVBuildOrder.EXPAND;
