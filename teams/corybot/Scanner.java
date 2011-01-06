@@ -1,7 +1,6 @@
 package corybot;
 
 import java.util.LinkedList;
-
 import battlecode.common.*;
 
 public class Scanner {
