@@ -41,8 +41,6 @@ public class ImRefinery
 		ArrayList<Integer> myRobots = new ArrayList<Integer>();
 		Robot babyRobot = null;
 		GameObject rFront = null;
-		GameObject rEast = null;
-		GameObject rSouth = null;
 		
 		while (true)
 		{
@@ -69,17 +67,10 @@ public class ImRefinery
             			
             		case GIVE_ANTENNA:
             			myRC.setIndicatorString(2, "GIVE_ANTENNA");
-            			rEast = sensor.senseObjectAtLocation(myRC.getLocation().add(Direction.EAST), RobotLevel.ON_GROUND);
-            			rSouth = sensor.senseObjectAtLocation(myRC.getLocation().add(Direction.SOUTH), RobotLevel.ON_GROUND);
-            			if(rEast != null)
+            			nearbyRobots = sensor.senseNearbyGameObjects(Robot.class);
+            			for (Robot r:nearbyRobots)
             			{
-            				rInfo = sensor.senseRobotInfo((Robot)rEast);
-            				if (rInfo.chassis == Chassis.BUILDING && myRC.getRobot().getID() < rInfo.robot.getID())
-            					isLeader = true;
-            			}
-            			if(!isLeader && rSouth != null)
-            			{
-            				rInfo = sensor.senseRobotInfo((Robot)rSouth);
+            				rInfo = sensor.senseRobotInfo(r);
             				if (rInfo.chassis == Chassis.BUILDING && myRC.getRobot().getID() < rInfo.robot.getID())
             					isLeader = true;
             			}
