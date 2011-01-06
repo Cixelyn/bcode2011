@@ -64,20 +64,6 @@ public class MarineBehavior extends Behavior {
 			}
 			myPlayer.myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
 			myPlayer.myRC.yield();
-			msgs = myPlayer.myRC.getAllMessages();
-			for(Message m:msgs)
-			{
-				if (m.ints != null && m.ints[0] == 4774 && m.strings != null && m.strings[0] != "idk")
-				{
-					spawn = m.strings[0];
-					myPlayer.myRC.setIndicatorString(0,"(marine) | knows spawn");
-					enemyDirection = Utility.spawnOpposite(spawn);
-					destination = myPlayer.myRC.getLocation().add(enemyDirection, 500);
-					prevDestination = destination;
-					eeHanTiming = true;
-					myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
-				}
-			}
 			moveOut = eeHanTiming && guns >= Constants.GUNS && hasSensor && hasArmor;
 		}
 		else
@@ -148,7 +134,16 @@ public class MarineBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(Message msg) {
-		// TODO Auto-generated method stub
+		if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.strings != null && msg.strings[0] != "idk")
+		{
+			spawn = msg.strings[0];
+			myPlayer.myRC.setIndicatorString(0,"(marine) | knows spawn");
+			enemyDirection = Utility.spawnOpposite(spawn);
+			destination = myPlayer.myRC.getLocation().add(enemyDirection, Constants.MAP_MAX_SIZE);
+			prevDestination = destination;
+			eeHanTiming = true;
+			myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
+		}
 		
 	}
 }

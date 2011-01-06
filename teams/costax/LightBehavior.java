@@ -8,13 +8,11 @@ public class LightBehavior extends Behavior {
 		super(player);
 	}
 
-	
-	
-	/**
-	 * This robot doesn't do anything for the time being.
-	 */
 	public void run() {
-		// TODO Auto-generated method stub
+		if (Clock.getRoundNum() <= 2)
+			myPlayer.swapBehavior(new SCVBehavior(myPlayer));
+		else
+			myPlayer.swapBehavior(new MarineBehavior(myPlayer));
 	}
 	
 	

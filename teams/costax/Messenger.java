@@ -84,7 +84,9 @@ public class Messenger {
 	
 	
 	public void sendAll() throws Exception{
-		if(!messageQueue.isEmpty()) {
+		while(!messageQueue.isEmpty()) {
+			while(myPlayer.myBroadcaster.isActive())
+				myPlayer.myRC.yield();
 			myPlayer.myBroadcaster.broadcast(messageQueue.pop());
 		}
 	}
@@ -101,10 +103,7 @@ public class Messenger {
 	 * @return
 	 */
 	public boolean validate(Message m) {
-		for(MapLocation l:m.locations) {
-			if(l==null) return false;
-		}
-		return true;
+		return m.locations == null;
 	}
 	
 	

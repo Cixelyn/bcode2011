@@ -9,10 +9,12 @@ public class ExpoRefineryBehavior extends Behavior {
 	
 	int rGuns;
 	int marinesMade = 0;
+	int sheep = 0; // counts while sleeping!
 	ArrayList<Integer> myRobots = new ArrayList<Integer>();
 	
 	boolean rSensor;
 	boolean rArmor;
+	boolean powered = false;
 	boolean eeHanTiming = false;
 	
 	RobotInfo rInfo;
@@ -26,7 +28,6 @@ public class ExpoRefineryBehavior extends Behavior {
 	
 	public ExpoRefineryBehavior(RobotPlayer player) {
 		super(player);
-		// TODO Auto-generated constructor stub
 	}
 
 	
@@ -44,23 +45,8 @@ public class ExpoRefineryBehavior extends Behavior {
     	{
     		case WAIT_FOR_SIGNAL:
     			myPlayer.myRC.setIndicatorString(2, "WAIT_FOR_SIGNAL");
-    			msgs = myPlayer.myRC.getAllMessages();
-    			for (Message m:msgs)
-    			{
-    				if(m.ints != null && m.ints[0] == 9090)
-    				{
-    					myPlayer.myRC.setIndicatorString(1,"Message received!");
-        				obj = RefineryBuildOrder.INITIALIZE;
-        				componentList = Utility.getComponents(myPlayer.myRC.components());
-        				myPlayer.myBuilder = (BuilderController)componentList[1].get(0);
-    				}
-    				if(m.ints != null && m.ints[0] == 4774 && m.strings != null && m.strings[0] != "idk")
-    				{
-						myPlayer.myRC.setIndicatorString(0,"(refinery) | knows spawn");
-						attackMsg = m;
-    					eeHanTiming = true;
-    				}
-    			}
+    			if(powered)
+        			obj = RefineryBuildOrder.INITIALIZE;
     			myPlayer.myRC.yield();
     			break;
     			
@@ -75,6 +61,7 @@ public class ExpoRefineryBehavior extends Behavior {
 					if (c.type()==Constants.COMMTYPE)
 					{
 						myPlayer.myBroadcaster = (BroadcastController)c;
+						myPlayer.myMessenger.enableSender();
 					}
 				}
     			obj = RefineryBuildOrder.MAKE_MARINE;
@@ -133,21 +120,8 @@ public class ExpoRefineryBehavior extends Behavior {
     					myPlayer.myRC.setIndicatorString(1, "Equipped a marine!");
     					marinesMade++;
     					obj = RefineryBuildOrder.MAKE_MARINE;
-    					msgs = myPlayer.myRC.getAllMessages();
-    					for(Message m:msgs)
-    					{
-    						if(m.ints != null && m.ints[0] == 4774 && m.strings != null)
-            				{
-    							myPlayer.myRC.setIndicatorString(0,"(expo) | knows spawn");
-    							attackMsg = m;
-            					eeHanTiming = true;
-                				obj = RefineryBuildOrder.MAKE_MARINE;
-            				}
-    					}
     					if (eeHanTiming)
-    					{
-    						myPlayer.myBroadcaster.broadcast(attackMsg);
-    					}
+    						myPlayer.myMessenger.sendMsg(attackMsg);
     				}
     			}
     			else
@@ -157,6 +131,13 @@ public class ExpoRefineryBehavior extends Behavior {
     			break;
     			
     		case SLEEP:
+    			myPlayer.myRC.setIndicatorString(2, "SLEEP");
+    			sheep++;
+    			if (sheep >= Constants.MAX_SHEEP && eeHanTiming)
+    			{
+    				sheep = 0;
+    				myPlayer.myMessenger.sendMsg(attackMsg);
+    			}
     			myPlayer.myRC.yield();
     			break;
     	}
@@ -169,8 +150,17 @@ public class ExpoRefineryBehavior extends Behavior {
 
 	
 	public void newMessageCallback(Message msg) {
-		
-		
+		if(msg.ints != null && msg.ints[0] == Constants.POWER_ON[0])
+		{
+			myPlayer.myRC.setIndicatorString(1,"Message received!");
+			powered = true;
+		}
+		else if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.strings != null && msg.strings[0] != "idk")
+		{
+			myPlayer.myRC.setIndicatorString(0,"(refinery) | knows spawn");
+			attackMsg = msg;
+			eeHanTiming = true;
+		}
 	}
 
 }
