@@ -9,10 +9,10 @@ public class Navigation {
 	
 
 
-	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
+	public Navigation(RobotPlayer player) {
 		this.player = player;
-		myRC = RC;
-		motor=motorController;
+		myRC = player.myRC;
+		motor=player.myMotor;
 		memory = new Integer[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
