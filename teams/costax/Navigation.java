@@ -28,10 +28,8 @@ public class Navigation {
 		MapLocation currLoc = myRC.getLocation();
 		Direction currDir=myRC.getDirection();
 		Direction destDir = currLoc.directionTo(destLoc);
-		
-		player.myRC.setIndicatorString(0, "My loc: " +currLoc + "Dest: " + destLoc + "Rounds Tracing: " + roundsTracing);
-		player.myRC.setIndicatorString(1, "destDirection: " + destDir);
-		player.myRC.setIndicatorString(2, ""+isTracing);
+	
+		player.myRC.setIndicatorString(2, "My loc: " +currLoc + "Dest: " + destLoc + " " + isTracing + " " + roundsTracing + destDir);
 		
 		
 		if(currLoc.equals(destLoc)) {
@@ -141,10 +139,10 @@ public class Navigation {
 				MapLocation leftLoc = currLoc.add(leftDir);
 				MapLocation rightLoc = currLoc.add(rightDir);
 				roundsTracing = 0;
-				if (trapped==1) {
+				/*if (trapped==1) {
 					trapped=0;
 					return Direction.NONE;
-				}
+				}*/
 				if(destLoc.distanceSquaredTo(leftLoc)<destLoc.distanceSquaredTo(rightLoc)) {
 					tracingRight = false;
 					//System.out.println("Tracing Left");
@@ -152,7 +150,7 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
 						return leftDir;
 					}
-					trapped=1;
+					//trapped=1;
 					//System.out.println("changed directions");
 					tracingRight=true;
 					return rightDir;
@@ -163,7 +161,7 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0;
 						return rightDir;
 					}
-					trapped=1;
+					//trapped=1;
 					//System.out.println("changed directions");
 					tracingRight=false;
 					return leftDir;
