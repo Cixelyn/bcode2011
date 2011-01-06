@@ -164,7 +164,7 @@ public class Messenger {
 				MsgType t = Encoder.decodeMsgType(m.ints[idxHeader]);
 				
 				if(t.shouldCallback) {
-					myPlayer.myBehavior.newMessageCallback(type,m);
+					myPlayer.myBehavior.newMessageCallback(t,m);
 				}
 			}
 	

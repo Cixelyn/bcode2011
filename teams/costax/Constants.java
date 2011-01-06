@@ -21,7 +21,5 @@ public class Constants
 	public static final int RESERVE = 5; // desired min flux
 	public static final int SCOUTING_DISTANCE = 7; // distance SCV should go from home
 	public static final int HOME_PROXIMITY = 9; // distance from start SCV considers home
-	public static final int[] POWER_ON = {9090}; // code for messages
-	public static final int[] ATTACK = {4774}; // code for messages
 	public static final int MAX_SHEEP = 50; // how many sheep to count before transmitting while sleeping
 }
