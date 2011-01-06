@@ -29,9 +29,9 @@ public class Navigation {
 		Direction currDir=myRC.getDirection();
 		Direction destDir = currLoc.directionTo(destLoc);
 		
-		player.myRC.setIndicatorString(0, "My loc: " +currLoc + "Dest: " + destLoc);
-		player.myRC.setIndicatorString(1, "destDirection: " + destDir);
-		player.myRC.setIndicatorString(2, ""+isTracing);
+		//player.myRC.setIndicatorString(0, "My loc: " +currLoc + "Dest: " + destLoc);
+		//player.myRC.setIndicatorString(1, "destDirection: " + destDir);
+		//player.myRC.setIndicatorString(2, ""+isTracing);
 		
 		
 		if(currLoc.equals(destLoc)) {
