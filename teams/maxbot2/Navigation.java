@@ -164,7 +164,7 @@ public class Navigation {
 						return leftDir;
 					}
 					trapped=false;
-					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=currDir) {
+					if (!memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT].equals(currDir)) {
 						return rightDir;
 					}
 					tracingRight=true;
@@ -177,7 +177,7 @@ public class Navigation {
 						return rightDir;
 					}
 					trapped=true;
-					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=currDir) {
+					if (!memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT].equals(currDir)) {
 						return rightDir;
 					}
 					tracingRight=false;
