@@ -21,7 +21,7 @@ public class Navigation {
 	private boolean isTracing;
 	private boolean tracingRight;
 	private int roundsTracing = 0;
-	private int trapped=0;
+	private boolean trapped=false;
 	public Direction bugTo(MapLocation destLoc) {
 		
 		
@@ -152,8 +152,8 @@ public class Navigation {
 				MapLocation leftLoc = currLoc.add(leftDir).add(leftDir);
 				MapLocation rightLoc = currLoc.add(rightDir).add(rightDir);
 				roundsTracing = 0;
-				if (trapped==1) {
-					trapped=0;
+				if (trapped) {
+					trapped=false;
 					return Direction.NONE;
 				}
 				if(destLoc.distanceSquaredTo(leftLoc)<destLoc.distanceSquaredTo(rightLoc)) {
@@ -163,7 +163,7 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=currDir; 
 						return leftDir;
 					}
-					trapped=1;
+					trapped=false;
 					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=currDir) {
 						return rightDir;
 					}
@@ -176,7 +176,7 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=currDir;
 						return rightDir;
 					}
-					trapped=1;
+					trapped=true;
 					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=currDir) {
 						return rightDir;
 					}
