@@ -2,7 +2,6 @@ package fibbyBot5;
 
 
 import battlecode.common.*;
-
 import java.util.ArrayList;
 
 public class ImSCV
@@ -19,7 +18,7 @@ public class ImSCV
 		BuilderController builder = (BuilderController)builders.get(0);
 		BroadcastController broadcaster = null;
 		
-		Navigation robotNavigation=new Navigation(player,myRC,motor);
+		Navigation robotNavigation = new Navigation(player,myRC,motor);
 		MapLocation hometown = myRC.getLocation();
 		MapLocation destination = myRC.getLocation().add(Direction.NORTH,500);
 		Direction direction;
@@ -32,7 +31,8 @@ public class ImSCV
 		int minesCapped = 2;
 		int dizziness = 0;
 		int tiredness = 0;
-		Message msg;
+		Message msg = null;
+		Message attackMsg = null;
 		int[] gogogo = {9090};
 		int[] attack = {4774};
 		
@@ -142,9 +142,14 @@ public class ImSCV
             				if (minesCapped == 4)
             					obj = SCVBuildOrder.SCOUT_WEST;
             				else
+            				{
             					obj = SCVBuildOrder.FIND_MINE;
-	            			msg = new Message();
-	        				msg.ints = gogogo;
+            					broadcaster.broadcast(attackMsg);
+            				}
+            				msg = new Message();
+            				msg.ints = gogogo;
+            				while(broadcaster.isActive())
+            					myRC.yield();
 	        				broadcaster.broadcast(msg);
             			}
             			else
@@ -295,7 +300,7 @@ public class ImSCV
 								}
 								motor.moveForward();
 	            			}
-							if (myRC.getLocation().distanceSquaredTo(hometown) <= 4)
+							if (myRC.getLocation().distanceSquaredTo(hometown) <= 9)
 							{
 								if(westEdge == -1)
 									return; // FAILURE
@@ -308,12 +313,13 @@ public class ImSCV
 										eastEdge = 0;
 										southEdge = 0;
 										spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
+										enemyDirection = Utilities.spawnOpposite(spawn);
 										myRC.setIndicatorString(0,"(SCV) | knows spawn");
-										msg = new Message();
-										msg.ints = attack;
+										attackMsg = new Message();
+										attackMsg.ints = attack;
 										String[] spawnMsg = {spawn};
-										msg.strings = spawnMsg;
-										broadcaster.broadcast(msg);
+										attackMsg.strings = spawnMsg;
+										broadcaster.broadcast(attackMsg);
 										obj = SCVBuildOrder.EXPAND;
 									}
 									else
@@ -325,12 +331,13 @@ public class ImSCV
 									{
 										southEdge = 0;
 										spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
+										enemyDirection = Utilities.spawnOpposite(spawn);
 										myRC.setIndicatorString(0,"(SCV) | knows spawn");
-										msg = new Message();
-										msg.ints = attack;
+										attackMsg = new Message();
+										attackMsg.ints = attack;
 										String[] spawnMsg = {spawn};
-										msg.strings = spawnMsg;
-										broadcaster.broadcast(msg);
+										attackMsg.strings = spawnMsg;
+										broadcaster.broadcast(attackMsg);
 										obj = SCVBuildOrder.EXPAND;
 									}
 									else
@@ -341,11 +348,11 @@ public class ImSCV
 									spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 									enemyDirection = Utilities.spawnOpposite(spawn);
 									myRC.setIndicatorString(0,"(SCV) | knows spawn");
-									msg = new Message();
-									msg.ints = attack;
+									attackMsg = new Message();
+									attackMsg.ints = attack;
 									String[] spawnMsg = {spawn};
-									msg.strings = spawnMsg;
-									broadcaster.broadcast(msg);
+									attackMsg.strings = spawnMsg;
+									broadcaster.broadcast(attackMsg);
 									obj = SCVBuildOrder.EXPAND;
 								}
 							}

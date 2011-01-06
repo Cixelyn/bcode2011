@@ -120,11 +120,14 @@ public class ImMarine
 	                		{
 		                		motor.setDirection(direction);
 								myRC.yield();
-								while(!motor.canMove(myRC.getDirection()))
+								if (staleness >= OLDNEWS || myRC.getLocation().distanceSquaredTo(destination) >= GUNTYPE.range)
 								{
-									myRC.yield();
-								}
-								motor.moveForward();
+									while(!motor.canMove(myRC.getDirection()))
+									{
+										myRC.yield();
+									}
+									motor.moveForward();
+	                			}
 	                		}
 	                    }
 	                }

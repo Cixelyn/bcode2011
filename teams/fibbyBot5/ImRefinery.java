@@ -121,7 +121,6 @@ public class ImRefinery
     							myRC.setIndicatorString(0,"(refinery) | knows spawn");
     							attackMsg = m;
             					eeHanTiming = true;
-                				obj = RefineryBuildOrder.MAKE_MARINE;
             				}
             			}
             			myRC.yield();
@@ -133,8 +132,8 @@ public class ImRefinery
     					{
     						motor.setDirection(myRC.getDirection().rotateRight());
     						dizziness++;
-    						if (dizziness >= 8)
-    							obj = RefineryBuildOrder.SLEEP;
+    						//if (dizziness >= 8)
+    							//obj = RefineryBuildOrder.SLEEP;
     					}
             			else if(marinesMade < MARINES && myRC.getTeamResources() >= Chassis.LIGHT.cost + RESERVE)
     					{

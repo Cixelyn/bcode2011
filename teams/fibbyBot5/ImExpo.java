@@ -2,8 +2,9 @@ package fibbyBot5;
 
 
 import battlecode.common.*;
-
 import java.util.ArrayList;
+import fibbyBot5.RefineryBuildOrder;
+import fibbyBot5.Utilities;
 
 public class ImExpo
 {
@@ -41,6 +42,8 @@ public class ImExpo
 		Robot babyRobot = null;
 		Robot rFront = null;
 		
+		int sleepTalkTimer = 0;
+		
 		while (true)
 		{
             try
@@ -56,13 +59,14 @@ public class ImExpo
             				{
             					myRC.setIndicatorString(1,"Message received!");
                 				obj = RefineryBuildOrder.INITIALIZE;
+                				componentList = Utilities.getComponents(myRC.components());
+                				builder = (BuilderController)componentList[1].get(0);
             				}
             				if(m.ints != null && m.ints[0] == 4774 && m.strings != null && m.strings[0] != "idk")
             				{
     							myRC.setIndicatorString(0,"(refinery) | knows spawn");
     							attackMsg = m;
             					eeHanTiming = true;
-                				obj = RefineryBuildOrder.INITIALIZE;
             				}
             			}
             			myRC.yield();
@@ -167,6 +171,24 @@ public class ImExpo
             			
             		case SLEEP:
             			myRC.setIndicatorString(2, "SLEEP");
+            			msgs = myRC.getAllMessages();
+    					for(Message m:msgs)
+    					{
+    						if(m.ints != null && m.ints[0] == 4774 && m.strings != null)
+            				{
+    							myRC.setIndicatorString(0,"(expo) | knows spawn");
+    							attackMsg = m;
+            					eeHanTiming = true;
+            					sleepTalkTimer = 0;
+                				obj = RefineryBuildOrder.MAKE_MARINE;
+            				}
+    					}
+            			if (eeHanTiming && sleepTalkTimer >= 100)
+    					{
+            				sleepTalkTimer = 0;
+    						broadcaster.broadcast(attackMsg);
+    					}
+            			sleepTalkTimer++;
             			myRC.yield();
             			break;
             	}
