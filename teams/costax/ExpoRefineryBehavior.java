@@ -155,7 +155,7 @@ public class ExpoRefineryBehavior extends Behavior {
 			myPlayer.myRC.setIndicatorString(1,"Message received!");
 			powered = true;
 		}
-		else if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.strings != null && msg.strings[0] != "idk")
+		if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.locations != null)
 		{
 			myPlayer.myRC.setIndicatorString(0,"(refinery) | knows spawn");
 			attackMsg = msg;

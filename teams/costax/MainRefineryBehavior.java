@@ -193,7 +193,6 @@ public class MainRefineryBehavior extends Behavior {
 			attackMsg = msg;
 			eeHanTiming = true;
 		}
-		
 	}
 
 }

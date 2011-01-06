@@ -316,6 +316,16 @@ public class Utility {
 		return hometown;
 	}
 	
+	public static Message sendAttackMsg(RobotPlayer myPlayer, MapLocation hometown, MapLocation enemyLocation)
+	{
+		Message attackMsg = new Message();
+		attackMsg.ints = Constants.ATTACK;
+		MapLocation[] spawnMsg = {hometown, enemyLocation};
+		attackMsg.locations = spawnMsg;
+		myPlayer.myMessenger.sendMsg(attackMsg);
+		return attackMsg;
+	}
+	
 }
 
 
