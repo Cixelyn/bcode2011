@@ -18,7 +18,7 @@ public class ImMarine
 	{
 		MovementController motor = (MovementController)motors.get(0);
 		Navigation robotNavigation=new Navigation(player,myRC,motor);
-		MapLocation destination = myRC.getLocation().add(Direction.SOUTH,500);
+		MapLocation destination = myRC.getLocation().add(Direction.NORTH,500);
         int guns;
         WeaponController gun;
         GameObject[] nearbyRobots;

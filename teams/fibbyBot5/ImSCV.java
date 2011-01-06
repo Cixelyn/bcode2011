@@ -2,19 +2,12 @@ package fibbyBot5;
 
 
 import battlecode.common.*;
-
 import java.util.ArrayList;
 
 public class ImSCV
 {
 	
-	private static final int GUNS = 2;
-	private static final ComponentType GUNTYPE = ComponentType.BLASTER;
-	private static final ComponentType SENSORTYPE = ComponentType.SIGHT;
-	private static final ComponentType COMMTYPE = ComponentType.ANTENNA;
-	private static final ComponentType ARMORTYPE = ComponentType.SHIELD; 
-	private static final int MARINES = 2;
-	private static final int OLDNEWS = 5;
+	//private static final int OLDNEWS = 15;
 	private static final int RESERVE = 5;
 	private static final int SCOUTING_DISTANCE = 7;
 	
@@ -23,52 +16,55 @@ public class ImSCV
 		SensorController sensor = (SensorController)sensors.get(0);
 		MovementController motor = (MovementController)motors.get(0);
 		BuilderController builder = (BuilderController)builders.get(0);
-		BroadcastController comm = null;
+		BroadcastController broadcaster = null;
 		
-		Navigation robotNavigation=new Navigation(player,myRC,motor);
+		Navigation robotNavigation = new Navigation(player,myRC,motor);
 		MapLocation hometown = myRC.getLocation();
 		MapLocation destination = myRC.getLocation().add(Direction.NORTH,500);
 		Direction direction;
 		
 		SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 		
-		GameObject[] nearbyMines;
-		MineInfo mInfo;
+		Mine[] nearbyMines;
+		MineInfo mInfo = null;
 		boolean mineFound;
 		int minesCapped = 2;
 		int dizziness = 0;
 		int tiredness = 0;
-		Message msg;
-		int[] gogogo = {0};
+		Message msg = null;
+		Message attackMsg = null;
+		int[] gogogo = {9090};
+		int[] attack = {4774};
 		
 		int westEdge = -1;
 		int northEdge = -1;
 		int eastEdge = -1;
 		int southEdge = -1;
 		String spawn;
+		Direction enemyDirection = null;
 		
         while (true)
         {
             try
             {
+            	myRC.setIndicatorString(1,"Mines capped: "+Integer.toString(minesCapped));
             	switch (obj)
             	{
             		case FIND_MINE:
             			myRC.setIndicatorString(2, "FIND_MINE");
             			mineFound = false;
-            			nearbyMines = sensor.senseNearbyGameObjects(GameObject.class);
-            			for(GameObject m:nearbyMines)
+            			nearbyMines = sensor.senseNearbyGameObjects(Mine.class);
+            			for (Mine m:nearbyMines)
             			{
-            				//if(!mineFound && m.getTeam()==Team.NEUTRAL) // fails with debris!
-            				if(!mineFound && m.getRobotLevel()==RobotLevel.MINE)
-            				{
-            					mInfo = sensor.senseMineInfo((Mine)m);
-            					if(sensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
-            					{
-	            					mineFound = true;
-	            					destination = mInfo.mine.getLocation();
-            					}
-            				}
+            				if(!mineFound && m.getTeam()==Team.NEUTRAL)
+	            			{
+	            				mInfo = sensor.senseMineInfo(m);
+	            				if(sensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
+	            				{
+		            				mineFound = true;
+		            				destination = mInfo.mine.getLocation();
+	            				}
+	            			}
             			}
             			if(!mineFound && dizziness < 8)
             			{
@@ -98,7 +94,7 @@ public class ImSCV
             			{
             				if (c.type()==ComponentType.ANTENNA)
             				{
-            					comm = (BroadcastController)c;
+            					broadcaster = (BroadcastController)c;
             					obj = SCVBuildOrder.CAP_MINE;
             				}
             			}
@@ -107,27 +103,31 @@ public class ImSCV
             			
             		case CAP_MINE:
             			myRC.setIndicatorString(2, "CAP_MINE");
-            			direction = robotNavigation.bugTo(destination);
-            			if (!motor.isActive() && myRC.getLocation().distanceSquaredTo(destination)>builder.type().range && direction != Direction.OMNI && direction != Direction.NONE)
-                		{
-	                		motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
-								myRC.yield();
-							}
-							motor.moveForward();
-                		}
-            			if (!motor.isActive() && myRC.getLocation().distanceSquaredTo(destination)<=builder.type().range)
+            			if(!sensor.withinRange(mInfo.mine.getLocation()) || sensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
             			{
-            				motor.setDirection(myRC.getLocation().directionTo(destination));
-            				myRC.yield();
-            				while(myRC.getTeamResources() < Chassis.BUILDING.cost + RESERVE || builder.isActive())
-            					myRC.yield();
-            				builder.build(Chassis.BUILDING, destination);
-            				myRC.setIndicatorString(1, "Expo complete!");
-            				obj = SCVBuildOrder.ADDON_MINE;
+	            			direction = robotNavigation.bugTo(destination);
+	            			if (!motor.isActive() && myRC.getLocation().distanceSquaredTo(destination)>builder.type().range && direction != Direction.OMNI && direction != Direction.NONE)
+	                		{
+		                		motor.setDirection(direction);
+								myRC.yield();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	                		}
+	            			if (!motor.isActive() && myRC.getLocation().distanceSquaredTo(destination)<=builder.type().range)
+	            			{
+	            				motor.setDirection(myRC.getLocation().directionTo(destination));
+	            				myRC.yield();
+	            				while(myRC.getTeamResources() < Chassis.BUILDING.cost + RESERVE || builder.isActive())
+	            					myRC.yield();
+	            				builder.build(Chassis.BUILDING, destination);
+	            				obj = SCVBuildOrder.ADDON_MINE;
+	            			}
             			}
+            			else
+            				obj = SCVBuildOrder.FIND_MINE;
             			myRC.yield();
             			break;
             			
@@ -136,18 +136,21 @@ public class ImSCV
             			while(builder.isActive() || myRC.getTeamResources() < ComponentType.RECYCLER.cost + RESERVE)
             				myRC.yield();
             			builder.build(ComponentType.RECYCLER, destination, RobotLevel.ON_GROUND);
-            			myRC.setIndicatorString(1, "Recycler complete!");
             			minesCapped++;
-            			myRC.setIndicatorString(1,"Mines capped: "+Integer.toString(minesCapped));
             			if(minesCapped>=4)
             			{
             				if (minesCapped == 4)
             					obj = SCVBuildOrder.SCOUT_WEST;
             				else
-            					obj = SCVBuildOrder.EXPAND;
-	            			msg = new Message();
-	        				msg.ints = gogogo;
-	        				comm.broadcast(msg);
+            				{
+            					obj = SCVBuildOrder.FIND_MINE;
+            					broadcaster.broadcast(attackMsg);
+            				}
+            				msg = new Message();
+            				msg.ints = gogogo;
+            				while(broadcaster.isActive())
+            					myRC.yield();
+	        				broadcaster.broadcast(msg);
             			}
             			else
             				obj = SCVBuildOrder.FIND_MINE;
@@ -167,13 +170,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.WEST,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							if (Math.abs(myRC.getLocation().x - hometown.x) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -196,13 +202,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.NORTH,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							if (Math.abs(myRC.getLocation().y - hometown.y) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -225,13 +234,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.EAST,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							if (Math.abs(myRC.getLocation().x - hometown.x) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -254,13 +266,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.SOUTH,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							if (Math.abs(myRC.getLocation().y - hometown.y) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -298,7 +313,13 @@ public class ImSCV
 										eastEdge = 0;
 										southEdge = 0;
 										spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-										myRC.setIndicatorString(1, "We spawned " + spawn + ".");
+										enemyDirection = Utilities.spawnOpposite(spawn);
+										myRC.setIndicatorString(0,"(SCV) | knows spawn");
+										attackMsg = new Message();
+										attackMsg.ints = attack;
+										String[] spawnMsg = {spawn};
+										attackMsg.strings = spawnMsg;
+										broadcaster.broadcast(attackMsg);
 										obj = SCVBuildOrder.EXPAND;
 									}
 									else
@@ -310,7 +331,13 @@ public class ImSCV
 									{
 										southEdge = 0;
 										spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-										myRC.setIndicatorString(1, "We spawned " + spawn + ".");
+										enemyDirection = Utilities.spawnOpposite(spawn);
+										myRC.setIndicatorString(0,"(SCV) | knows spawn");
+										attackMsg = new Message();
+										attackMsg.ints = attack;
+										String[] spawnMsg = {spawn};
+										attackMsg.strings = spawnMsg;
+										broadcaster.broadcast(attackMsg);
 										obj = SCVBuildOrder.EXPAND;
 									}
 									else
@@ -319,7 +346,13 @@ public class ImSCV
 								else
 								{
 									spawn = Utilities.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-									myRC.setIndicatorString(1, "We spawned " + spawn + ".");
+									enemyDirection = Utilities.spawnOpposite(spawn);
+									myRC.setIndicatorString(0,"(SCV) | knows spawn");
+									attackMsg = new Message();
+									attackMsg.ints = attack;
+									String[] spawnMsg = {spawn};
+									attackMsg.strings = spawnMsg;
+									broadcaster.broadcast(attackMsg);
 									obj = SCVBuildOrder.EXPAND;
 								}
 							}
@@ -331,15 +364,18 @@ public class ImSCV
             			myRC.setIndicatorString(2, "EXPAND");
             			if(!motor.isActive())
             			{
-	            			destination = myRC.getLocation().add(Direction.NORTH,500);
+	            			destination = myRC.getLocation().add(enemyDirection,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							tiredness++;
 							if (tiredness >= 4)
 							{

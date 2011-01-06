@@ -1,8 +1,8 @@
-package fibbyBot5;
+package maxbot2;
 
 public enum RefineryBuildOrder 
 {
-	INITIALIZE,
+	GET_RADAR,
 	GIVE_ANTENNA,
 	WAIT_FOR_SIGNAL,
 	MAKE_MARINE,

@@ -1,16 +1,12 @@
 package fibbyBot5;
 
 import java.util.ArrayList;
-
-import battlecode.common.BroadcastController;
-import battlecode.common.BuilderController;
-import battlecode.common.ComponentController;
-import battlecode.common.MovementController;
-import battlecode.common.SensorController;
-import battlecode.common.WeaponController;
+import battlecode.common.*;
 
 public class Utilities
 {
+	private static final int RESERVE = 5;
+	
 	public static ArrayList<?>[] getComponents(ComponentController[] components)
 	{
 		ArrayList<BroadcastController> broadcasters = new ArrayList<BroadcastController>();
@@ -63,6 +59,46 @@ public class Utilities
 			case 35:
 				return "southeast";
 		}
-		return "FAILURE"; // should be unreachable
+		return "idk"; // should be unreachable
+	}
+	
+	public static void buildComponent(RobotController myRC, BuilderController builder, ComponentType component, String desc, int rID)
+	{
+		try
+		{
+			myRC.setIndicatorString(2, "Building " + desc + "...");
+			while (myRC.getTeamResources() < component.cost + RESERVE || builder.isActive())
+			{
+				myRC.yield();
+			}
+			builder.build(component, myRC.getLocation().add(myRC.getDirection()), RobotLevel.ON_GROUND);
+			myRC.setIndicatorString(2, "Built " + desc + " on " + Integer.toString(rID));
+		}
+        catch (Exception e)
+        {
+            System.out.println("caught exception:");
+            e.printStackTrace();
+        }
+	}
+	
+	public static Direction spawnOpposite(String spawn)
+	{
+		if(spawn == "north")
+			return Direction.SOUTH;
+		if(spawn == "east")
+			return Direction.WEST;
+		if(spawn == "south")
+			return Direction.NORTH;
+		if(spawn == "west")
+			return Direction.EAST;
+		if(spawn == "northwest")
+			return Direction.SOUTH_EAST;
+		if(spawn == "northeast")
+			return Direction.SOUTH_WEST;
+		if(spawn == "southwest")
+			return Direction.NORTH_EAST;
+		if(spawn == "southeast")
+			return Direction.NORTH_WEST;
+		return Direction.OMNI;
 	}
 }
