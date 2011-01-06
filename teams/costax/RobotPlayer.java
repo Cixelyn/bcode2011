@@ -163,6 +163,10 @@ public class RobotPlayer implements Runnable {
 				myBroadcaster = (BroadcastController)c;
 				myMessenger.enableSender();
 				break;
+			case ARMOR:
+				break;
+			case MISC:
+				break;
 			default:
 				System.out.println("NotController");
 				

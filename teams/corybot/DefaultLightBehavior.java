@@ -1,9 +1,6 @@
 package corybot;
 
-import battlecode.common.ComponentClass;
-import battlecode.common.ComponentController;
-import battlecode.common.ComponentType;
-import battlecode.common.Message;
+import battlecode.common.*;
 
 public class DefaultLightBehavior extends Behavior {
 

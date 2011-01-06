@@ -295,25 +295,25 @@ public class Utility {
 	 * @param strings returned from getSpawn
 	 * @return direction where enemy is
 	 */
-	public static Direction spawnOpposite(String spawn)
+	public static MapLocation spawnOpposite(MapLocation hometown, String spawn)
 	{
 		if(spawn == "north")
-			return Direction.SOUTH;
+			return hometown.add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
 		if(spawn == "east")
-			return Direction.WEST;
+			return hometown.add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
 		if(spawn == "south")
-			return Direction.NORTH;
+			return hometown.add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
 		if(spawn == "west")
-			return Direction.EAST;
+			return hometown.add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
 		if(spawn == "northwest")
-			return Direction.SOUTH_EAST;
+			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
 		if(spawn == "northeast")
-			return Direction.SOUTH_WEST;
+			return hometown.add(Direction.SOUTH_WEST, Constants.MAP_MAX_SIZE);
 		if(spawn == "southwest")
-			return Direction.NORTH_EAST;
+			return hometown.add(Direction.NORTH_EAST, Constants.MAP_MAX_SIZE);
 		if(spawn == "southeast")
-			return Direction.NORTH_WEST;
-		return Direction.OMNI;
+			return hometown.add(Direction.NORTH_WEST, Constants.MAP_MAX_SIZE);
+		return hometown;
 	}
 	
 }

@@ -103,7 +103,8 @@ public class Messenger {
 	 * @return
 	 */
 	public boolean validate(Message m) {
-		return m.locations == null;
+		//return m.locations == null;
+		return true; // (for now :D) -jven
 	}
 	
 	

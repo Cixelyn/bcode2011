@@ -7,10 +7,10 @@ public class SCVBehavior extends Behavior {
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
 	MapLocation hometown = myPlayer.myRC.getLocation();
-	MapLocation destination = myPlayer.myRC.getLocation().add(Direction.NORTH,500);
+	MapLocation destination;
+	MapLocation enemyLocation; 
 	
 	Direction direction;
-	Direction enemyDirection;
 	
 	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 	
@@ -295,12 +295,12 @@ public class SCVBehavior extends Behavior {
 								eastEdge = 0;
 								southEdge = 0;
 								spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-								enemyDirection = Utility.spawnOpposite(spawn);
+								enemyLocation = Utility.spawnOpposite(hometown, spawn);
 								myPlayer.myRC.setIndicatorString(0,"(SCV) | knows spawn");
 								attackMsg = new Message();
 								attackMsg.ints = Constants.ATTACK;
-								String[] spawnMsg = {spawn};
-								attackMsg.strings = spawnMsg;
+								MapLocation[] spawnMsg = {hometown, enemyLocation};
+								attackMsg.locations = spawnMsg;
 								myPlayer.myMessenger.sendMsg(attackMsg);
 								obj = SCVBuildOrder.EXPAND;
 							}
@@ -313,7 +313,7 @@ public class SCVBehavior extends Behavior {
 							{
 								southEdge = 0;
 								spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-								enemyDirection = Utility.spawnOpposite(spawn);
+								enemyLocation = Utility.spawnOpposite(hometown, spawn);
 								myPlayer.myRC.setIndicatorString(0,"(SCV) | knows spawn");
 								attackMsg = new Message();
 								attackMsg.ints = Constants.ATTACK;
@@ -328,7 +328,7 @@ public class SCVBehavior extends Behavior {
 						else
 						{
 							spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-							enemyDirection = Utility.spawnOpposite(spawn);
+							enemyLocation = Utility.spawnOpposite(hometown, spawn);
 							myPlayer.myRC.setIndicatorString(0,"(SCV) | knows spawn");
 							attackMsg = new Message();
 							attackMsg.ints = Constants.ATTACK;
@@ -345,7 +345,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(2, "EXPAND");
     			if(!myPlayer.myMotor.isActive())
     			{
-        			destination = myPlayer.myRC.getLocation().add(enemyDirection,Constants.MAP_MAX_SIZE);
+        			destination = enemyLocation;
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
