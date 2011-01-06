@@ -1,29 +1,79 @@
-package maxbot;
+package maxbot2;
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+
 import battlecode.common.*;
 
-public class Navigation {
+public class NavigationTangent {
 	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final MovementController motor;
-	Integer[][] memory;
+	private Integer[][] memory;
+	private Integer[][] closed;
+	private MapLocation current;
+	PriorityQueue<MapLocation> open;
+	
 	
 
 
-	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
+	public NavigationTangent(RobotPlayer player, RobotController RC, MovementController motorController) {
 		this.player = player;
 		myRC = RC;
 		motor=motorController;
 		memory = new Integer[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
+		closed = new Integer[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
+		open = new PriorityQueue<MapLocation>();
 	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////BUGNAV/////////////////////////////////////////////////////////
+	///////////////////////////////////////TANGENTBUGNAV/////////////////////////////////////////////////////////
+/*	add start to open 
+ * while open not empty:
+		current = lowest cost square of open
+		if current == goal: we're done 
+		else:
+			move current from open to closed
+			if current.tracing:
+				if we still need to trace: 
+				next = next square along boundary of obstacle
+				 add next to open
+			else:
+				recursively find path to current
+		else: 
+			if we can still dead reckon:
+				next = next square in direction of goal
+				add next to open
+			else:
+				nextCW = next square CW along boundary 
+				nextCCW = next square CCW along boundary 
+				add nextCW, nextCCW to open
+	*/
+	// initial attempt at tangent bugnav, the video is daunting, but here we go! 
 	
 	private boolean isTracing;
+	public Direction tangentBugTo(MapLocation destLoc) {
+		open.offer(myRC.getLocation());
+		while (open.size()>0) {
+			current=open.poll();
+			if (current.equals(destLoc)) {
+				return Direction.OMNI;
+			}
+			else {
+				closed[current.x%GameConstants.MAP_MAX_WIDTH][current.y%GameConstants.MAP_MAX_HEIGHT]=0;
+				if (isTracing) {
+					
+				}
+			}
+		}
+		return null;
+		
+	}
+	
+	
+/*	private boolean isTracing;
 	private boolean tracingRight;
 	private int roundsTracing = 0;
-	private int trapped=0;
 	public Direction bugTo(MapLocation destLoc) {
-		
 		
 		MapLocation currLoc = myRC.getLocation();
 		Direction currDir=myRC.getDirection();
@@ -152,10 +202,6 @@ public class Navigation {
 				MapLocation leftLoc = currLoc.add(leftDir).add(leftDir);
 				MapLocation rightLoc = currLoc.add(rightDir).add(rightDir);
 				roundsTracing = 0;
-				if (trapped==1) {
-					trapped=0;
-					return Direction.NONE;
-				}
 				if(destLoc.distanceSquaredTo(leftLoc)<destLoc.distanceSquaredTo(rightLoc)) {
 					tracingRight = false;
 					//System.out.println("Tracing Left");
@@ -163,7 +209,6 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
 						return leftDir;
 					}
-					trapped=1;
 					System.out.println("changed directions");
 					tracingRight=true;
 					return rightDir;
@@ -174,12 +219,11 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0;
 						return rightDir;
 					}
-					trapped=1;
 					System.out.println("changed directions");
 					tracingRight=false;
 					return leftDir;
 				}				
 			}		
 		}
-	}
+	}*/
 }
