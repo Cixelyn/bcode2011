@@ -41,11 +41,11 @@ public class SCVBehavior extends Behavior {
 
 	public void run() throws Exception {
 		
-		myPlayer.myRC.setIndicatorString(1,"Mines capped: "+Integer.toString(minesCapped));
+		//myPlayer.myRC.setIndicatorString(1,"Mines capped: "+Integer.toString(minesCapped));
     	switch (obj)
     	{
     		case FIND_MINE:
-    			myPlayer.myRC.setIndicatorString(2, "FIND_MINE");
+    			//myPlayer.myRC.setIndicatorString(2, "FIND_MINE");
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)
@@ -82,7 +82,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case WAIT_FOR_ANTENNA:
-    			myPlayer.myRC.setIndicatorString(2, "WAIT_FOR_ANTENNA");
+    			//myPlayer.myRC.setIndicatorString(2, "WAIT_FOR_ANTENNA");
     			for(ComponentController c:myPlayer.myRC.components())
     			{
     				if (c.type()==ComponentType.ANTENNA)
@@ -95,7 +95,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case CAP_MINE:
-    			myPlayer.myRC.setIndicatorString(2, "CAP_MINE");
+    			//myPlayer.myRC.setIndicatorString(2, "CAP_MINE");
     			if(!myPlayer.mySensor.withinRange(mInfo.mine.getLocation()) || myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
     			{
         			direction = robotNavigation.bugTo(destination);
@@ -122,7 +122,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case ADDON_MINE:
-    			myPlayer.myRC.setIndicatorString(2, "ADDON_MINE");
+    			//myPlayer.myRC.setIndicatorString(2, "ADDON_MINE");
     			Utility.buildComponent(myPlayer, ComponentType.RECYCLER);
     			minesCapped++;
     			if(minesCapped>=4)
@@ -143,7 +143,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case SCOUT_WEST:
-    			myPlayer.myRC.setIndicatorString(2, "SCOUT_WEST");
+    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_WEST");
     			westEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -174,7 +174,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case SCOUT_NORTH:
-    			myPlayer.myRC.setIndicatorString(2, "SCOUT_NORTH");
+    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_NORTH");
     			northEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -205,7 +205,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case SCOUT_EAST:
-    			myPlayer.myRC.setIndicatorString(2, "SCOUT_EAST");
+    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_EAST");
     			eastEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -236,7 +236,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case SCOUT_SOUTH:
-    			myPlayer.myRC.setIndicatorString(2, "SCOUT_SOUTH");
+    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_SOUTH");
     			southEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -267,7 +267,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case RETURN_HOME:
-    			myPlayer.myRC.setIndicatorString(2,"RETURN_HOME");
+    			//myPlayer.myRC.setIndicatorString(2,"RETURN_HOME");
     			if(!myPlayer.myMotor.isActive())
     			{
         			destination = hometown;
@@ -342,7 +342,7 @@ public class SCVBehavior extends Behavior {
     			break;
     			
     		case EXPAND:
-    			myPlayer.myRC.setIndicatorString(2, "EXPAND");
+    			//myPlayer.myRC.setIndicatorString(2, "EXPAND");
     			if(!myPlayer.myMotor.isActive())
     			{
         			destination = myPlayer.myRC.getLocation().add(enemyDirection,Constants.MAP_MAX_SIZE);

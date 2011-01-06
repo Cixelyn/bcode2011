@@ -29,7 +29,7 @@ public class Navigation {
 		Direction currDir=myRC.getDirection();
 		Direction destDir = currLoc.directionTo(destLoc);
 		
-		player.myRC.setIndicatorString(0, "My loc: " +currLoc + "Dest: " + destLoc);
+		player.myRC.setIndicatorString(0, "My loc: " +currLoc + "Dest: " + destLoc + "Rounds Tracing: " + roundsTracing);
 		player.myRC.setIndicatorString(1, "destDirection: " + destDir);
 		player.myRC.setIndicatorString(2, ""+isTracing);
 		
@@ -42,7 +42,7 @@ public class Navigation {
 		if(isTracing) {
 			
 			//if we can move, go in that direction, stop tracing
-			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 20 && motor.canMove(destDir))) {
+			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 50 && motor.canMove(destDir))) {
 				isTracing = false;
 				return destDir;
 			}
