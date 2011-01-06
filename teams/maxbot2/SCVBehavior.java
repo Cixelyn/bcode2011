@@ -41,11 +41,11 @@ public class SCVBehavior extends Behavior {
 
 	public void run() throws Exception {
 		
-		//myPlayer.myRC.setIndicatorString(1,"Mines capped: "+Integer.toString(minesCapped));
+		myPlayer.myRC.setIndicatorString(1,"Mines capped: "+Integer.toString(minesCapped));
     	switch (obj)
     	{
     		case FIND_MINE:
-    			//myPlayer.myRC.setIndicatorString(2, "FIND_MINE");
+    			myPlayer.myRC.setIndicatorString(2, "FIND_MINE");
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)
@@ -79,24 +79,23 @@ public class SCVBehavior extends Behavior {
     				else
     					obj = SCVBuildOrder.CAP_MINE;
     			}
-    			myPlayer.myRC.yield();
     			break;
     			
     		case WAIT_FOR_ANTENNA:
-    			//myPlayer.myRC.setIndicatorString(2, "WAIT_FOR_ANTENNA");
+    			myPlayer.myRC.setIndicatorString(2, "WAIT_FOR_ANTENNA");
     			for(ComponentController c:myPlayer.myRC.components())
     			{
     				if (c.type()==ComponentType.ANTENNA)
     				{
     					myPlayer.myBroadcaster = (BroadcastController)c;
+    					myPlayer.myMessenger.enableSender();
     					obj = SCVBuildOrder.CAP_MINE;
     				}
     			}
-    			myPlayer.myRC.yield();
     			break;
     			
     		case CAP_MINE:
-    			//myPlayer.myRC.setIndicatorString(2, "CAP_MINE");
+    			myPlayer.myRC.setIndicatorString(2, "CAP_MINE");
     			if(!myPlayer.mySensor.withinRange(mInfo.mine.getLocation()) || myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
     			{
         			direction = robotNavigation.bugTo(destination);
@@ -114,22 +113,17 @@ public class SCVBehavior extends Behavior {
         			{
         				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(destination));
         				myPlayer.myRC.yield();
-        				while(myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + Constants.RESERVE || myPlayer.myBuilder.isActive())
-        					myPlayer.myRC.yield();
-        				myPlayer.myBuilder.build(Chassis.BUILDING, destination);
+        				Utility.buildChassis(myPlayer, Chassis.BUILDING);
         				obj = SCVBuildOrder.ADDON_MINE;
         			}
     			}
     			else
     				obj = SCVBuildOrder.FIND_MINE;
-    			myPlayer.myRC.yield();
     			break;
     			
     		case ADDON_MINE:
-    			//myPlayer.myRC.setIndicatorString(2, "ADDON_MINE");
-    			while(myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < ComponentType.RECYCLER.cost + Constants.RESERVE)
-    				myPlayer.myRC.yield();
-    			myPlayer.myBuilder.build(ComponentType.RECYCLER, destination, RobotLevel.ON_GROUND);
+    			myPlayer.myRC.setIndicatorString(2, "ADDON_MINE");
+    			Utility.buildComponent(myPlayer, ComponentType.RECYCLER);
     			minesCapped++;
     			if(minesCapped>=4)
     			{
@@ -138,20 +132,18 @@ public class SCVBehavior extends Behavior {
     				else
     				{
     					obj = SCVBuildOrder.FIND_MINE;
-    					myPlayer.myBroadcaster.broadcast(attackMsg);
+    					myPlayer.myMessenger.sendMsg(attackMsg);
     				}
     				msg = new Message();
     				msg.ints = Constants.POWER_ON;
-    				while(myPlayer.myBroadcaster.isActive())
-    					myPlayer.myRC.yield();
-    				myPlayer.myBroadcaster.broadcast(msg);
+    				myPlayer.myMessenger.sendMsg(msg);
     			}
     			else
     				obj = SCVBuildOrder.FIND_MINE;
     			break;
     			
     		case SCOUT_WEST:
-    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_WEST");
+    			myPlayer.myRC.setIndicatorString(2, "SCOUT_WEST");
     			westEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -174,16 +166,15 @@ public class SCVBehavior extends Behavior {
 						}
 						myPlayer.myMotor.moveForward();
         			}
-					if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE)
+					if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE)
 					{
 						obj = SCVBuildOrder.RETURN_HOME;
 					}
     			}
-    			myPlayer.myRC.yield();
     			break;
     			
     		case SCOUT_NORTH:
-    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_NORTH");
+    			myPlayer.myRC.setIndicatorString(2, "SCOUT_NORTH");
     			northEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -206,16 +197,15 @@ public class SCVBehavior extends Behavior {
 						}
 						myPlayer.myMotor.moveForward();
         			}
-					if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE)
+					if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE)
 					{
 						obj = SCVBuildOrder.RETURN_HOME;
 					}
     			}
-    			myPlayer.myRC.yield();
     			break;
     			
     		case SCOUT_EAST:
-    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_EAST");
+    			myPlayer.myRC.setIndicatorString(2, "SCOUT_EAST");
     			eastEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -238,16 +228,15 @@ public class SCVBehavior extends Behavior {
 						}
 						myPlayer.myMotor.moveForward();
         			}
-					if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE)
+					if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE)
 					{
 						obj = SCVBuildOrder.RETURN_HOME;
 					}
     			}
-    			myPlayer.myRC.yield();
     			break;
     			
     		case SCOUT_SOUTH:
-    			//myPlayer.myRC.setIndicatorString(2, "SCOUT_SOUTH");
+    			myPlayer.myRC.setIndicatorString(2, "SCOUT_SOUTH");
     			southEdge = 0;
     			if(!myPlayer.myMotor.isActive())
     			{
@@ -270,16 +259,15 @@ public class SCVBehavior extends Behavior {
 						}
 						myPlayer.myMotor.moveForward();
         			}
-					if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE)
+					if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE)
 					{
 						obj = SCVBuildOrder.RETURN_HOME;
 					}
     			}
-    			myPlayer.myRC.yield();
     			break;
     			
     		case RETURN_HOME:
-    			//myPlayer.myRC.setIndicatorString(2,"RETURN_HOME");
+    			myPlayer.myRC.setIndicatorString(2,"RETURN_HOME");
     			if(!myPlayer.myMotor.isActive())
     			{
         			destination = hometown;
@@ -313,7 +301,7 @@ public class SCVBehavior extends Behavior {
 								attackMsg.ints = Constants.ATTACK;
 								String[] spawnMsg = {spawn};
 								attackMsg.strings = spawnMsg;
-								myPlayer.myBroadcaster.broadcast(attackMsg);
+								myPlayer.myMessenger.sendMsg(attackMsg);
 								obj = SCVBuildOrder.EXPAND;
 							}
 							else
@@ -331,7 +319,7 @@ public class SCVBehavior extends Behavior {
 								attackMsg.ints = Constants.ATTACK;
 								String[] spawnMsg = {spawn};
 								attackMsg.strings = spawnMsg;
-								myPlayer.myBroadcaster.broadcast(attackMsg);
+								myPlayer.myMessenger.sendMsg(attackMsg);
 								obj = SCVBuildOrder.EXPAND;
 							}
 							else
@@ -346,19 +334,18 @@ public class SCVBehavior extends Behavior {
 							attackMsg.ints = Constants.ATTACK;
 							String[] spawnMsg = {spawn};
 							attackMsg.strings = spawnMsg;
-							myPlayer.myBroadcaster.broadcast(attackMsg);
+							myPlayer.myMessenger.sendMsg(attackMsg);
 							obj = SCVBuildOrder.EXPAND;
 						}
 					}
     			}
-    			myPlayer.myRC.yield();
     			break;
     			
     		case EXPAND:
-    			//myPlayer.myRC.setIndicatorString(2, "EXPAND");
+    			myPlayer.myRC.setIndicatorString(2, "EXPAND");
     			if(!myPlayer.myMotor.isActive())
     			{
-        			destination = myPlayer.myRC.getLocation().add(enemyDirection,500);
+        			destination = myPlayer.myRC.getLocation().add(enemyDirection,Constants.MAP_MAX_SIZE);
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
@@ -377,11 +364,9 @@ public class SCVBehavior extends Behavior {
 						obj = SCVBuildOrder.FIND_MINE;
 					}
     			}
-    			myPlayer.myRC.yield();
     			break;
     	}
-        myPlayer.myRC.yield();
-        
+        return;
 	}
 	
 	
@@ -401,7 +386,6 @@ public class SCVBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(Message msg) {
-		// TODO Auto-generated method stub
 		
 	}
 }

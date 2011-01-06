@@ -79,9 +79,9 @@ public class RobotPlayer implements Runnable {
 			
 			///////////////////////////////////////////////////////////////
 			//Receive all messages
-			/*try {
+			try {
 				myMessenger.receiveAll();
-			} catch(Exception e) {e.printStackTrace();}*/
+			} catch(Exception e) {e.printStackTrace();}
 
 			
 			
@@ -119,9 +119,9 @@ public class RobotPlayer implements Runnable {
 			
 			/////////////////////////////////////////////////////////////
 			//Send all messages
-			/*try {
+			try {
 				myMessenger.sendAll();
-			} catch(Exception e) {e.printStackTrace();}*/
+			} catch(Exception e) {e.printStackTrace();}
 			
 			
 			/////////////////////////////////////////////////////////////
@@ -142,7 +142,7 @@ public class RobotPlayer implements Runnable {
 	
 	public void allocateControllers(ComponentController[] components) {
 		
-		System.out.println("Added: "+java.util.Arrays.toString(components));
+		//System.out.println("Added: "+java.util.Arrays.toString(components));
 		
 		for(ComponentController c : components) {
 			switch(c.componentClass()) {
