@@ -21,7 +21,9 @@ public class Navigation {
 	private boolean isTracing;
 	private boolean tracingRight;
 	private int roundsTracing = 0;
+	private int trapped=0;
 	public Direction bugTo(MapLocation destLoc) {
+		
 		
 		MapLocation currLoc = myRC.getLocation();
 		Direction currDir=myRC.getDirection();
@@ -150,6 +152,10 @@ public class Navigation {
 				MapLocation leftLoc = currLoc.add(leftDir).add(leftDir);
 				MapLocation rightLoc = currLoc.add(rightDir).add(rightDir);
 				roundsTracing = 0;
+				if (trapped==1) {
+					trapped=0;
+					return Direction.NONE;
+				}
 				if(destLoc.distanceSquaredTo(leftLoc)<destLoc.distanceSquaredTo(rightLoc)) {
 					tracingRight = false;
 					//System.out.println("Tracing Left");
@@ -157,6 +163,7 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
 						return leftDir;
 					}
+					trapped=1;
 					System.out.println("changed directions");
 					tracingRight=true;
 					return rightDir;
@@ -167,6 +174,7 @@ public class Navigation {
 						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0;
 						return rightDir;
 					}
+					trapped=1;
 					System.out.println("changed directions");
 					tracingRight=false;
 					return leftDir;
