@@ -9,6 +9,8 @@ public class MarineBehavior extends Behavior {
 	
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
+	MapLocation hometown;
+	MapLocation enemyLocation;
 	MapLocation destination;
 	MapLocation prevDestination = destination;
 	
@@ -64,7 +66,6 @@ public class MarineBehavior extends Behavior {
 						hasArmor = true;
 					}
 				}
-				myPlayer.myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
 				myPlayer.myRC.yield();
 				if (guns >= Constants.GUNS && hasSensor && hasArmor) {
 					obj=MarineBuildOrder.WAITING;
@@ -78,13 +79,11 @@ public class MarineBehavior extends Behavior {
 						if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
 						{
 							rInfo = myPlayer.mySensor.senseRobotInfo((Robot)r);
-							myPlayer.myRC.setIndicatorString(1,"Enemy found!");
 						 	destination = rInfo.location;
 							staleness = 0;
 							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
 							{
 								gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-								myPlayer.myRC.setIndicatorString(1,"Pew pew pew!");
 							}
 						}
 					}
@@ -157,14 +156,14 @@ public class MarineBehavior extends Behavior {
 
 
 	@Override
-	public void newMessageCallback(Message msg) {
-		if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.locations != null)
+	public void newMessageCallback(MsgType t, Message msg) {
+		if(t == MsgType.MSG_MOVE_OUT)
 		{
-			myPlayer.myRC.setIndicatorString(0,"(marine) | knows spawn");
-			destination = msg.locations[1];
+			hometown = msg.locations[Messenger.firstData];
+			enemyLocation = msg.locations[Messenger.firstData+1];
+			destination = enemyLocation;
 			prevDestination = destination;
 			eeHanTiming = true;
-			myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
 		}
 		
 	}

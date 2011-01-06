@@ -13,7 +13,9 @@ public enum MsgType {
 	//cback	- should this function trigger callback?
 	
 				//	ttl, cback
-	MSG_HELLO	(	1  , true	);
+	MSG_HELLO	(	1  , true	),
+	MSG_POWER_UP(   0  , true   ),
+	MSG_MOVE_OUT(   0  , true   );
 	
 	
 	

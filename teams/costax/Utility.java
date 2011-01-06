@@ -316,7 +316,9 @@ public class Utility {
 		return hometown;
 	}
 	
-	public static Message sendAttackMsg(RobotPlayer myPlayer, MapLocation hometown, MapLocation enemyLocation)
+	// this method was before the abstraction of Messenger in r~100
+	
+	/*public static Message sendAttackMsg(RobotPlayer myPlayer, MapLocation hometown, MapLocation enemyLocation)
 	{
 		Message attackMsg = new Message();
 		attackMsg.ints = Constants.ATTACK;
@@ -324,7 +326,7 @@ public class Utility {
 		attackMsg.locations = spawnMsg;
 		myPlayer.myMessenger.sendMsg(attackMsg);
 		return attackMsg;
-	}
+	}*/
 	
 }
 

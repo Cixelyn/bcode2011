@@ -39,7 +39,7 @@ public class BuildingBehavior extends Behavior {
 	}
 
 	
-	public void newMessageCallback(Message msg) {
+	public void newMessageCallback(MsgType t, Message msg) {
 		
 		
 	}
