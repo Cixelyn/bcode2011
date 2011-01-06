@@ -27,7 +27,6 @@ public class DefaultBuildingBehavior extends Behavior {
 
 
 	public void run() throws Exception {
-		// TODO Auto-generated method stub
 
 	}
 

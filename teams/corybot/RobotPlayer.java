@@ -47,7 +47,6 @@ public class RobotPlayer implements Runnable {
     	myScanner = new Scanner(this);
     	
        
-        
         Behavior myBehavior = null;
         
         
@@ -131,9 +130,8 @@ public class RobotPlayer implements Runnable {
 			
 			/////////////////////////////////////////////////////////////
 			//Lastly, set some debug strings
-			myRC.setIndicatorString(0, myBehavior.toString());
+			myRC.setIndicatorString(0, myBehavior.toString() +" "+ Utility.robotMoveInfo(this));
 			myRC.setIndicatorString(1, Utility.printComponentList(myRC.components()));
-			myRC.setIndicatorString(2, Utility.robotMoveInfo(this));
 			
 			
 			/////////////////////////////////////////////////////////////
@@ -170,7 +168,7 @@ public class RobotPlayer implements Runnable {
 				myMessenger.enableSender();
 				break;
 			default:
-				System.out.println("Error");
+				System.out.println("NotController");
 				
 			}
 		}		

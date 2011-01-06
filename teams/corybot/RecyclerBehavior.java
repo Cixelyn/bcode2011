@@ -60,6 +60,8 @@ public class RecyclerBehavior extends Behavior{
 			return;
 		}
 		
+		myPlayer.myRC.setIndicatorString(2,Double.toString(myPlayer.myScanner.averageResourceRate()));
+		
 		//Else we can't do anything.		
 		return;
 				
