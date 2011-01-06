@@ -2,7 +2,7 @@ package maxbot2;
 
 public enum RefineryBuildOrder 
 {
-	GET_RADAR,
+	INITIALIZE,
 	GIVE_ANTENNA,
 	WAIT_FOR_SIGNAL,
 	MAKE_MARINE,

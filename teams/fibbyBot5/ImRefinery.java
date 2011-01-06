@@ -180,6 +180,8 @@ public class ImRefinery
             					}
             					if (eeHanTiming)
             					{
+            						while(broadcaster.isActive())
+            							myRC.yield();
             						broadcaster.broadcast(attackMsg);
             					}
             				}

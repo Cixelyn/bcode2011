@@ -1,4 +1,4 @@
-package costax;
+package maxbot2;
 import java.util.ArrayList;
 
 import battlecode.common.*;
@@ -295,35 +295,25 @@ public class Utility {
 	 * @param strings returned from getSpawn
 	 * @return direction where enemy is
 	 */
-	public static MapLocation spawnOpposite(MapLocation hometown, String spawn)
+	public static Direction spawnOpposite(String spawn)
 	{
 		if(spawn == "north")
-			return hometown.add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
+			return Direction.SOUTH;
 		if(spawn == "east")
-			return hometown.add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
+			return Direction.WEST;
 		if(spawn == "south")
-			return hometown.add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
+			return Direction.NORTH;
 		if(spawn == "west")
-			return hometown.add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
+			return Direction.EAST;
 		if(spawn == "northwest")
-			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
+			return Direction.SOUTH_EAST;
 		if(spawn == "northeast")
-			return hometown.add(Direction.SOUTH_WEST, Constants.MAP_MAX_SIZE);
+			return Direction.SOUTH_WEST;
 		if(spawn == "southwest")
-			return hometown.add(Direction.NORTH_EAST, Constants.MAP_MAX_SIZE);
+			return Direction.NORTH_EAST;
 		if(spawn == "southeast")
-			return hometown.add(Direction.NORTH_WEST, Constants.MAP_MAX_SIZE);
-		return hometown;
-	}
-	
-	public static Message sendAttackMsg(RobotPlayer myPlayer, MapLocation hometown, MapLocation enemyLocation)
-	{
-		Message attackMsg = new Message();
-		attackMsg.ints = Constants.ATTACK;
-		MapLocation[] spawnMsg = {hometown, enemyLocation};
-		attackMsg.locations = spawnMsg;
-		myPlayer.myMessenger.sendMsg(attackMsg);
-		return attackMsg;
+			return Direction.NORTH_WEST;
+		return Direction.OMNI;
 	}
 	
 }

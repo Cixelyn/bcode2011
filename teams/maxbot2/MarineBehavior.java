@@ -1,4 +1,4 @@
-package costax;
+package maxbot2;
 
 import battlecode.common.*;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ public class MarineBehavior extends Behavior {
 	MapLocation prevDestination = destination;
 	
 	Direction direction;
+	Direction enemyDirection;
 	
 	int staleness = 0;
 	int guns;
@@ -133,10 +134,12 @@ public class MarineBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(Message msg) {
-		if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.locations != null)
+		if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.strings != null && msg.strings[0] != "idk")
 		{
+			spawn = msg.strings[0];
 			myPlayer.myRC.setIndicatorString(0,"(marine) | knows spawn");
-			destination = msg.locations[1];
+			enemyDirection = Utility.spawnOpposite(spawn);
+			destination = myPlayer.myRC.getLocation().add(enemyDirection, Constants.MAP_MAX_SIZE);
 			prevDestination = destination;
 			eeHanTiming = true;
 			myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");

@@ -1,4 +1,4 @@
-package costax;
+package maxbot2;
 
 import battlecode.common.*;
 

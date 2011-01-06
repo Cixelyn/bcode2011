@@ -1,4 +1,4 @@
-package costax;
+package maxbot2;
 
 import battlecode.common.*;
 
@@ -7,10 +7,10 @@ public class SCVBehavior extends Behavior {
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
 	MapLocation hometown = myPlayer.myRC.getLocation();
-	MapLocation destination;
-	MapLocation enemyLocation; 
+	MapLocation destination = myPlayer.myRC.getLocation().add(Direction.NORTH,500);
 	
 	Direction direction;
+	Direction enemyDirection;
 	
 	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 	
@@ -294,6 +294,14 @@ public class SCVBehavior extends Behavior {
 							{
 								eastEdge = 0;
 								southEdge = 0;
+								spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
+								enemyDirection = Utility.spawnOpposite(spawn);
+								myPlayer.myRC.setIndicatorString(0,"(SCV) | knows spawn");
+								attackMsg = new Message();
+								attackMsg.ints = Constants.ATTACK;
+								String[] spawnMsg = {spawn};
+								attackMsg.strings = spawnMsg;
+								myPlayer.myMessenger.sendMsg(attackMsg);
 								obj = SCVBuildOrder.EXPAND;
 							}
 							else
@@ -304,19 +312,30 @@ public class SCVBehavior extends Behavior {
 							if (northEdge == 1)
 							{
 								southEdge = 0;
+								spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
+								enemyDirection = Utility.spawnOpposite(spawn);
+								myPlayer.myRC.setIndicatorString(0,"(SCV) | knows spawn");
+								attackMsg = new Message();
+								attackMsg.ints = Constants.ATTACK;
+								String[] spawnMsg = {spawn};
+								attackMsg.strings = spawnMsg;
+								myPlayer.myMessenger.sendMsg(attackMsg);
 								obj = SCVBuildOrder.EXPAND;
 							}
 							else
 								obj = SCVBuildOrder.SCOUT_SOUTH;
 						}
 						else
-							obj = SCVBuildOrder.EXPAND;
-						if (westEdge != -1 && northEdge != -1 && eastEdge != -1 && southEdge != -1)
 						{
 							spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-							enemyLocation = Utility.spawnOpposite(hometown, spawn);
+							enemyDirection = Utility.spawnOpposite(spawn);
 							myPlayer.myRC.setIndicatorString(0,"(SCV) | knows spawn");
-							attackMsg = Utility.sendAttackMsg(myPlayer, hometown, enemyLocation);
+							attackMsg = new Message();
+							attackMsg.ints = Constants.ATTACK;
+							String[] spawnMsg = {spawn};
+							attackMsg.strings = spawnMsg;
+							myPlayer.myMessenger.sendMsg(attackMsg);
+							obj = SCVBuildOrder.EXPAND;
 						}
 					}
     			}
@@ -326,7 +345,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(2, "EXPAND");
     			if(!myPlayer.myMotor.isActive())
     			{
-        			destination = enemyLocation;
+        			destination = myPlayer.myRC.getLocation().add(enemyDirection,Constants.MAP_MAX_SIZE);
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
