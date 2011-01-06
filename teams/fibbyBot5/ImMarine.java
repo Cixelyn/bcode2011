@@ -21,7 +21,7 @@ public class ImMarine
 		MovementController motor = (MovementController)motors.get(0);
 		
 		Navigation robotNavigation=new Navigation(player,myRC,motor);
-		MapLocation destination = myRC.getLocation().add(Direction.SOUTH,500);
+		MapLocation destination = null;
 		MapLocation prevDestination = destination;
 		Direction direction;
 		int staleness = 0;
@@ -35,12 +35,14 @@ public class ImMarine
         boolean hasArmor;
         ArrayList<?>[] componentList;
         
-        boolean moveOut = false;
+        Message[] msgs;
+        String spawn;
+        Direction enemyDirection;
+        boolean eeHanTiming = false;
         
         while (true)
         {
             try {
-            		myRC.setIndicatorString(2,Integer.toString(Clock.getRoundNum()));
 	            	componentList = Utilities.getComponents(myRC.components());
 	            	weapons = componentList[4];
 	                guns = 0;
@@ -62,9 +64,21 @@ public class ImMarine
 					}
 					myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
 					myRC.yield();
-	                if (moveOut && guns >= GUNS && hasSensor && hasArmor)
+					msgs = myRC.getAllMessages();
+					for(Message m:msgs)
+					{
+						if (m.ints != null && m.ints[0] == 4774 && m.strings != null && m.strings[0] != "idk")
+						{
+							spawn = m.strings[0];
+							myRC.setIndicatorString(0,"(marine) | knows spawn");
+							enemyDirection = Utilities.spawnOpposite(spawn);
+							destination = myRC.getLocation().add(enemyDirection, 500);
+							eeHanTiming = true;
+						}
+					}
+	                if (eeHanTiming && guns >= GUNS && hasSensor && hasArmor)
 	                {
-	                	myRC.setIndicatorString(1,"Moving out.");
+	                	myRC.setIndicatorString(1,"EE HAN TIMING!");
 	                	nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
 	                	for(GameObject r:nearbyRobots)
 	                	{
@@ -74,13 +88,13 @@ public class ImMarine
 	    						if(!gun.isActive() && r.getTeam()==myRC.getTeam().opponent())
 	    						{
 	    							rInfo = sensor.senseRobotInfo((Robot)r);
-	    							myRC.setIndicatorString(0,"Enemy found!");
+	    							myRC.setIndicatorString(1,"Enemy found!");
 	    							destination = rInfo.location;
 	    							staleness = 0;
 	    							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
 	    							{
 	    								gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-	    								myRC.setIndicatorString(0,"Pew pew pew!");
+	    								myRC.setIndicatorString(1,"Pew pew pew!");
 	    							}
 	    						}
 	    					}

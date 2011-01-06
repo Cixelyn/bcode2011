@@ -6,14 +6,6 @@ import java.util.*;
 public class RobotPlayer implements Runnable {
 
 	private final RobotController myRC;
-	private final int GUNS = 2;
-	private final ComponentType GUNTYPE = ComponentType.BLASTER;
-	private final ComponentType SENSORTYPE = ComponentType.SIGHT;
-	private final ComponentType COMMTYPE = ComponentType.ANTENNA;
-	private final ComponentType ARMORTYPE = ComponentType.SHIELD; 
-	private final int MARINES = 2;
-	private static final int OLDNEWS = 5;
-	private static final int RESERVE = 5;
 
     public RobotPlayer(RobotController rc) {
         myRC = rc;
@@ -39,12 +31,12 @@ public class RobotPlayer implements Runnable {
 		}
 		else if (builders.size()>0)
 		{
-			myRC.setIndicatorString(0, "In the rear with the gear!");
+			myRC.setIndicatorString(0, "(SCV)");
 			ImSCV.run(this, myRC, broadcasters, builders, motors, sensors, weapons);
 		}
 		else
 		{
-			myRC.setIndicatorString(0, "Go, go, go!");
+			myRC.setIndicatorString(0, "(marine)");
 			ImMarine.run(this, myRC, broadcasters, builders, motors, sensors, weapons);
 		}
 	}

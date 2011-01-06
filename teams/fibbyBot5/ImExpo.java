@@ -19,26 +19,27 @@ public class ImExpo
 	
 	public static void run(RobotPlayer player, RobotController myRC, ArrayList<?> broadcasters, ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons)
 	{		
-		BuilderController builder = null;
+		SensorController sensor = (SensorController) sensors.get(0);
 		MovementController motor = (MovementController) motors.get(0);
-		SensorController sensor = null;
+		BuilderController builder = null;
+		BroadcastController broadcaster = null;
 		
 		RefineryBuildOrder obj = RefineryBuildOrder.WAIT_FOR_SIGNAL;
 		
-		boolean hasRadar = false;
 		int rGuns;
-		int rID;
 		boolean rSensor;
 		boolean rArmor;
 		RobotInfo rInfo = null;
-		GameObject[] nearbyRobots;
-		boolean built = false;
-		boolean isLeader;
 		ArrayList<?>[] componentList;
+		Message[] msgs;
+		boolean eeHanTiming = false;
+		Message attackMsg = null;
+		int dizziness = 0;
 		
 		int marinesMade = 0;
 		ArrayList<Integer> myRobots = new ArrayList<Integer>();
-		Robot babyRobot;
+		Robot babyRobot = null;
+		Robot rFront = null;
 		
 		while (true)
 		{
@@ -50,197 +51,113 @@ public class ImExpo
             			myRC.setIndicatorString(2, "WAIT_FOR_SIGNAL");
             			if(myRC.getAllMessages().length>0)
             			{
-            				myRC.setIndicatorString(1,"Message received!");
+            				myRC.setIndicatorString(1,"Time to build!");
             				componentList = Utilities.getComponents(myRC.components());
             				builder = (BuilderController)componentList[1].get(0);
-            				obj = RefineryBuildOrder.GET_RADAR;
+            				obj = RefineryBuildOrder.INITIALIZE;
             			}
             			myRC.yield();
             			break;
             			
-	            	case GET_RADAR:
-	        			myRC.setIndicatorString(2, "GET_RADAR");
-	        			while(builder.isActive() || myRC.getTeamResources()<ComponentType.RADAR.cost + RESERVE)
-	        				myRC.yield();
-	        			builder.build(ComponentType.RADAR,myRC.getLocation(),RobotLevel.ON_GROUND);
-	        			myRC.setIndicatorString(1, "Radar installed!");
-	        			for(ComponentController c:myRC.components())
-						{
-							if (c.type()==ComponentType.RADAR)
-							{
-								sensor = (SensorController)c;
-							}
-						}
-	        			obj = RefineryBuildOrder.MAKE_MARINE;
-	        			myRC.setIndicatorString(1,"Message received!");
-        				obj = RefineryBuildOrder.MAKE_MARINE;
-	        			myRC.yield();
-	        			break;
+            		case INITIALIZE:
+            			myRC.setIndicatorString(2, "INITIALIZE");
+            			while(myRC.getTeamResources() < COMMTYPE.cost + RESERVE || builder.isActive())
+            				myRC.yield();
+            			builder.build(COMMTYPE,myRC.getLocation(),RobotLevel.ON_GROUND);
+            			myRC.setIndicatorString(1, "Antenna installed!");
+            			for(ComponentController c:myRC.components())
+    					{
+    						if (c.type()==COMMTYPE)
+    						{
+    							broadcaster = (BroadcastController)c;
+    						}
+    					}
+            			obj = RefineryBuildOrder.MAKE_MARINE;
+            			myRC.yield();
+            			break;
 	        	
             		case MAKE_MARINE:
             			myRC.setIndicatorString(2, "MAKE_MARINE");
-            			if(!motor.canMove(myRC.getDirection()))
+            			if(!motor.canMove(myRC.getDirection()) || sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.MINE) != null)
     					{
     						motor.setDirection(myRC.getDirection().rotateRight());
+    						dizziness++;
+    						if (dizziness >= 8)
+    							obj = RefineryBuildOrder.SLEEP;
     					}
-    					else if(marinesMade < MARINES && myRC.getTeamResources()>=2*Chassis.LIGHT.cost)
+            			else if(marinesMade < MARINES && myRC.getTeamResources() >= Chassis.LIGHT.cost + RESERVE)
     					{
+            				dizziness = 0;
     						builder.build(Chassis.LIGHT,myRC.getLocation().add(myRC.getDirection()));
-    						marinesMade++;
     						babyRobot = (Robot)sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.ON_GROUND);
     						myRobots.add(babyRobot.getID());
     						obj = RefineryBuildOrder.EQUIP_MARINE;
     					}
+            			else if(marinesMade >= MARINES)
+            			{
+            				dizziness = 0;
+            				obj = RefineryBuildOrder.SLEEP;
+            			}
             			myRC.yield();
             			break;
             			
             		case EQUIP_MARINE:
             			myRC.setIndicatorString(2, "EQUIP_MARINE");
-            			nearbyRobots = sensor.senseNearbyGameObjects(GameObject.class);
-    					for (GameObject r:nearbyRobots)
-    					{
-    						if(sensor.canSenseObject(r) && r.getTeam()==myRC.getTeam())
-    						{
-    							rID = r.getID();
-    							if(sensor.canSenseObject(r))
-    								rInfo = sensor.senseRobotInfo((Robot)r);
-    							if(rInfo.chassis == Chassis.LIGHT && myRC.getLocation().distanceSquaredTo(rInfo.location)<=2)
-    							{
-    								rGuns = 0;
-    								rSensor = false;
-    								rArmor = false;
-    								if (rInfo.components!=null)
-    								{
-    									for(ComponentType c:rInfo.components)
-    									{
-    										if (c==GUNTYPE)
-    											rGuns = rGuns+1;
-    										if (c==SENSORTYPE)
-    											rSensor = true;
-    										if (c==ARMORTYPE)
-    											rArmor = true;
-    									}
-    								}
-    								if (myRobots.contains(rID) && !rSensor)
-    								{
-    									while(motor.isActive())
-    	    								myRC.yield();
-    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    							myRC.yield();
-    	    							rInfo = sensor.senseRobotInfo((Robot)r);
-    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    									myRC.yield();
-    									built = false;
-    									while (builder.withinRange(rInfo.location) && !built)
-    									{
-    										myRC.setIndicatorString(2, "Building sensor...");
-    										if (myRC.getTeamResources()>=2*SENSORTYPE.cost)
-    										{
-    											built = true;
-    											builder.build(SENSORTYPE,rInfo.location,RobotLevel.ON_GROUND);
-    										}
-    										else
-    										{
-    											while(motor.isActive())
-    	    	    								myRC.yield();
-    	    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    	    							myRC.yield();
-    	    	    							rInfo = sensor.senseRobotInfo((Robot)r);
-    	    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    									myRC.yield();
-    										}
-    										myRC.yield();
-    									}
-    									if (!built)
-    										myRC.setIndicatorString(2, "Target moved away.");
-    									else
-    										myRC.setIndicatorString(2, "Placed sensor on "+Integer.toString(rID)+".");
-    								}
-    								else if (myRobots.contains(rID) && rGuns<GUNS)
-    								{
-    									while(motor.isActive())
-    	    								myRC.yield();
-    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    							myRC.yield();
-    	    							rInfo = sensor.senseRobotInfo((Robot)r);
-    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    									myRC.yield();
-    									built = false;
-    									while (builder.withinRange(rInfo.location) && !built)
-    									{
-    										myRC.setIndicatorString(2, "Building gun...");
-    										if (myRC.getTeamResources()>=2*GUNTYPE.cost)
-    										{
-    											built = true;
-    											builder.build(GUNTYPE,rInfo.location,RobotLevel.ON_GROUND);
-    										}
-    										else
-    										{
-    											while(motor.isActive())
-    	    	    								myRC.yield();
-    	    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    	    							myRC.yield();
-    	    	    							rInfo = sensor.senseRobotInfo((Robot)r);
-    	    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    									myRC.yield();
-    										}
-    										myRC.yield();
-    									}
-    									if (!built)
-    										myRC.setIndicatorString(2, "Target moved away.");
-    									else
-    										myRC.setIndicatorString(2, "Placed gun on "+Integer.toString(rID)+".");
-    								}
-    								else if (myRobots.contains(rID) && !rArmor)
-    								{
-    									while(motor.isActive())
-    	    								myRC.yield();
-    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    							myRC.yield();
-    	    							rInfo = sensor.senseRobotInfo((Robot)r);
-    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    									myRC.yield();
-    									built = false;
-    									while (builder.withinRange(rInfo.location) && !built)
-    									{
-    										myRC.setIndicatorString(2, "Building armor...");
-    										if (myRC.getTeamResources()>=2*ARMORTYPE.cost)
-    										{
-    											built = true;
-    											builder.build(ARMORTYPE,rInfo.location,RobotLevel.ON_GROUND);
-    										}
-    										else
-    										{
-    											while(motor.isActive())
-    	    	    								myRC.yield();
-    	    	    							motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    	    							myRC.yield();
-    	    	    							rInfo = sensor.senseRobotInfo((Robot)r);
-    	    									motor.setDirection(myRC.getLocation().directionTo(rInfo.location));
-    	    									myRC.yield();
-    										}
-    										myRC.yield();
-    									}
-    									if (!built)
-    										myRC.setIndicatorString(2, "Target moved away.");
-    									else
-    										myRC.setIndicatorString(2, "Placed armor on "+Integer.toString(rID)+".");
-    								}
-    								break;
-    							}
-    						}
-    						myRC.yield();
-    					}
-    					if (!built)
-    					{
-    						if (marinesMade == MARINES)
-    							obj = RefineryBuildOrder.SLEEP;
-    						else
-    							obj = RefineryBuildOrder.MAKE_MARINE;
-    					}
+            			rFront = (Robot)sensor.senseObjectAtLocation(myRC.getLocation().add(myRC.getDirection()), RobotLevel.ON_GROUND);
+            			if(rFront != null && rFront.getID() == babyRobot.getID())
+            			{
+            				rInfo = sensor.senseRobotInfo(rFront);
+            				rGuns = 0;
+            				rSensor = false;
+            				rArmor = false;
+            				if(rInfo.components != null)
+            				{
+            					for (ComponentType c:rInfo.components)
+            					{
+            						if (c == GUNTYPE)
+            							rGuns++;
+            						if (c == SENSORTYPE)
+            							rSensor = true;
+            						if (c == ARMORTYPE)
+            							rArmor = true;
+            					}
+            				}
+            				if (rGuns < GUNS)
+            					Utilities.buildComponent(myRC, builder, GUNTYPE, "blaster", rFront.getID());
+            				else if (!rSensor)
+            					Utilities.buildComponent(myRC, builder, SENSORTYPE, "sight", rFront.getID());
+            				else if (!rArmor)
+            					Utilities.buildComponent(myRC, builder, ARMORTYPE, "shield", rFront.getID());
+            				else
+            				{
+            					myRC.setIndicatorString(1, "Equipped a marine!");
+            					marinesMade++;
+            					obj = RefineryBuildOrder.MAKE_MARINE;
+            					msgs = myRC.getAllMessages();
+            					for(Message m:msgs)
+            					{
+            						if(m.ints != null && m.ints[0] == 4774 && m.strings != null)
+                    				{
+            							myRC.setIndicatorString(0,"(expo) | knows spawn");
+            							attackMsg = m;
+                    					eeHanTiming = true;
+                        				obj = RefineryBuildOrder.MAKE_MARINE;
+                    				}
+            					}
+            					if (eeHanTiming)
+            					{
+            						broadcaster.broadcast(attackMsg);
+            					}
+            				}
+            			}
+            			else
+            			{
+            				obj = RefineryBuildOrder.MAKE_MARINE;
+            			}
             			break;
             			
             		case SLEEP:
+            			myRC.setIndicatorString(2, "SLEEP");
             			myRC.yield();
             			break;
             	}
