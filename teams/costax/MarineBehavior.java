@@ -12,6 +12,8 @@ public class MarineBehavior extends Behavior {
 	MapLocation destination;
 	MapLocation prevDestination = destination;
 	
+	MarineBuildOrder obj = MarineBuildOrder.CONSTRUCTING;
+	
 	Direction direction;
 	
 	int staleness = 0;
@@ -37,83 +39,106 @@ public class MarineBehavior extends Behavior {
 
 
 	public void run() throws Exception {
-
-		if(!moveOut)
-		{
-            guns = 0;
-            hasSensor = false;
-            hasArmor = false;
-			for(ComponentController c:myPlayer.myRC.components())
-			{
-				if (c.type()==Constants.GUNTYPE)
+		
+		
+		switch (obj) {
+			case CONSTRUCTING:
+	            guns = 0;
+	            hasSensor = false;
+	            hasArmor = false;
+				for(ComponentController c:myPlayer.myRC.components())
 				{
-					guns = guns+1;
-					if (!myPlayer.myWeapons.contains((WeaponController)c))
-						myPlayer.myWeapons.add((WeaponController)c);
-				}
-				if (c.type()==Constants.SENSORTYPE)
-				{
-					hasSensor = true;
-					myPlayer.mySensor = (SensorController)c;
-				}
-				if (c.type()==Constants.ARMORTYPE)
-				{
-					hasArmor = true;
-				}
-			}
-			myPlayer.myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
-			myPlayer.myRC.yield();
-			moveOut = eeHanTiming && guns >= Constants.GUNS && hasSensor && hasArmor;
-		}
-		else
-        {
-        	myPlayer.myRC.setIndicatorString(2,"EE HAN TIMING!");
-        	nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
-        	for(GameObject r:nearbyRobots)
-        	{
-				for (Object c:myPlayer.myWeapons)
-				{
-					gun = (WeaponController) c;
-					if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
+					if (c.type()==Constants.GUNTYPE)
 					{
-						rInfo = myPlayer.mySensor.senseRobotInfo((Robot)r);
-						myPlayer.myRC.setIndicatorString(1,"Enemy found!");
-						destination = rInfo.location;
-						staleness = 0;
-						if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
-						{
-							gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-							myPlayer.myRC.setIndicatorString(1,"Pew pew pew!");
-						}
+						guns = guns+1;
+						if (!myPlayer.myWeapons.contains((WeaponController)c))
+							myPlayer.myWeapons.add((WeaponController)c);
+					}
+					if (c.type()==Constants.SENSORTYPE)
+					{
+						hasSensor = true;
+						myPlayer.mySensor = (SensorController)c;
+					}
+					if (c.type()==Constants.ARMORTYPE)
+					{
+						hasArmor = true;
 					}
 				}
-        	}
-        	myPlayer.myRC.yield();
-        	if (!myPlayer.myMotor.isActive())
-            {
-        		direction = robotNavigation.bugTo(destination);
-        		staleness++;
-        		if (staleness >= Constants.OLDNEWS)
-        		{
-        			myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
-        			destination = prevDestination;
-        		}
-        		if (direction != Direction.OMNI && direction != Direction.NONE)
-        		{
-            		myPlayer.myMotor.setDirection(direction);
-					myPlayer.myRC.yield();
-					if (staleness >= Constants.OLDNEWS || myPlayer.myRC.getLocation().distanceSquaredTo(destination) >= Constants.GUNTYPE.range)
+				myPlayer.myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
+				myPlayer.myRC.yield();
+				if (guns >= Constants.GUNS && hasSensor && hasArmor) {
+					obj=MarineBuildOrder.WAITING;
+				}
+			case WAITING:
+	        	for(GameObject r:nearbyRobots)
+	        	{
+					for (Object c:myPlayer.myWeapons)
 					{
-						while(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+						gun = (WeaponController) c;
+						if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
 						{
-							myPlayer.myRC.yield();
+							rInfo = myPlayer.mySensor.senseRobotInfo((Robot)r);
+							myPlayer.myRC.setIndicatorString(1,"Enemy found!");
+						 	destination = rInfo.location;
+							staleness = 0;
+							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
+							{
+								gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+								myPlayer.myRC.setIndicatorString(1,"Pew pew pew!");
+							}
 						}
-						myPlayer.myMotor.moveForward();
-        			}
-        		}
-            }
-        }
-		
+					}
+	        	}
+	        	if (eeHanTiming) {
+	        		obj=MarineBuildOrder.FIND_ENEMY;
+	        	}
+			case FIND_ENEMY:
+	        	//myPlayer.myRC.setIndicatorString(2,"EE HAN TIMING!");
+	        	nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
+	        	for(GameObject r:nearbyRobots)
+	        	{
+					for (Object c:myPlayer.myWeapons)
+					{
+						gun = (WeaponController) c;
+						if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
+						{
+							rInfo = myPlayer.mySensor.senseRobotInfo((Robot)r);
+							myPlayer.myRC.setIndicatorString(1,"Enemy found!");
+						 	destination = rInfo.location;
+							staleness = 0;
+							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
+							{
+								gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+								myPlayer.myRC.setIndicatorString(1,"Pew pew pew!");
+							}
+						}
+					}
+	        	}
+	        	myPlayer.myRC.yield();
+	        	if (!myPlayer.myMotor.isActive())
+	            {
+	        		direction = robotNavigation.bugTo(destination);
+	        		staleness++;
+	        		if (staleness >= Constants.OLDNEWS)
+	        		{
+	        			myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
+	        			destination = prevDestination;
+	        		}
+	        		if (direction != Direction.OMNI && direction != Direction.NONE)
+	        		{
+	            		myPlayer.myMotor.setDirection(direction);
+						myPlayer.myRC.yield();
+						if (staleness >= Constants.OLDNEWS || myPlayer.myRC.getLocation().distanceSquaredTo(destination) >= Constants.GUNTYPE.range)
+						{
+							while(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+							{
+								myPlayer.myRC.yield();
+							}
+							myPlayer.myMotor.moveForward();
+	        			}
+	        		}
+	            }
+		}
 	}
 	
 	
