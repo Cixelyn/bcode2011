@@ -62,13 +62,13 @@ public class MarineBehavior extends Behavior {
 					hasArmor = true;
 				}
 			}
-			myPlayer.myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
+			//myPlayer.myRC.setIndicatorString(1,"I haz "+Integer.toString(guns)+" guns.");
 			myPlayer.myRC.yield();
 			moveOut = eeHanTiming && guns >= Constants.GUNS && hasSensor && hasArmor;
 		}
 		else
         {
-        	myPlayer.myRC.setIndicatorString(2,"EE HAN TIMING!");
+        	//myPlayer.myRC.setIndicatorString(2,"EE HAN TIMING!");
         	nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
         	for(GameObject r:nearbyRobots)
         	{
@@ -78,13 +78,13 @@ public class MarineBehavior extends Behavior {
 					if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
 					{
 						rInfo = myPlayer.mySensor.senseRobotInfo((Robot)r);
-						myPlayer.myRC.setIndicatorString(1,"Enemy found!");
+						//myPlayer.myRC.setIndicatorString(1,"Enemy found!");
 						destination = rInfo.location;
 						staleness = 0;
 						if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
 						{
 							gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-							myPlayer.myRC.setIndicatorString(1,"Pew pew pew!");
+							//myPlayer.myRC.setIndicatorString(1,"Pew pew pew!");
 						}
 					}
 				}
@@ -96,7 +96,7 @@ public class MarineBehavior extends Behavior {
         		staleness++;
         		if (staleness >= Constants.OLDNEWS)
         		{
-        			myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
+        			//myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
         			destination = prevDestination;
         		}
         		if (direction != Direction.OMNI && direction != Direction.NONE)
@@ -137,7 +137,7 @@ public class MarineBehavior extends Behavior {
 		if(msg.ints != null && msg.ints[0] == Constants.ATTACK[0] && msg.strings != null && msg.strings[0] != "idk")
 		{
 			spawn = msg.strings[0];
-			myPlayer.myRC.setIndicatorString(0,"(marine) | knows spawn");
+			//myPlayer.myRC.setIndicatorString(0,"(marine) | knows spawn");
 			enemyDirection = Utility.spawnOpposite(spawn);
 			destination = myPlayer.myRC.getLocation().add(enemyDirection, Constants.MAP_MAX_SIZE);
 			prevDestination = destination;
