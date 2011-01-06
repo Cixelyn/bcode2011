@@ -5,15 +5,15 @@ public class Navigation {
 	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final MovementController motor;
-	Direction[][] memory;
+	Integer[][] memory;
 	
 
 
-	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
+	public Navigation(RobotPlayer player) {
 		this.player = player;
-		myRC = RC;
-		motor=motorController;
-		memory = new Direction[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
+		myRC = player.myRC;
+		motor=player.myMotor;
+		memory = new Integer[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////BUGNAV/////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ public class Navigation {
 	private boolean isTracing;
 	private boolean tracingRight;
 	private int roundsTracing = 0;
-	private boolean trapped=false;
+	private int trapped=0;
 	public Direction bugTo(MapLocation destLoc) {
 		
 		
@@ -29,29 +29,21 @@ public class Navigation {
 		Direction currDir=myRC.getDirection();
 		Direction destDir = currLoc.directionTo(destLoc);
 		
-//=		player.myRC.setIndicatorString(1, "Dest: "+destDir);
-//		player.myRC.setIndicatorString(2, ""+isTracing);
+		player.myRC.setIndicatorString(0, "My loc: " +currLoc + "Dest: " + destLoc);
+		player.myRC.setIndicatorString(1, "destDirection: " + destDir);
+		player.myRC.setIndicatorString(2, ""+isTracing);
 		
 		
 		if(currLoc.equals(destLoc)) {
 			isTracing=false;
 			return Direction.OMNI;
 		}
-		myRC.setIndicatorString(1, roundsTracing+"");
-		myRC.setIndicatorString(2, new Boolean(isTracing).toString());
-		//System.out.println("first: (" + currLoc.x + "," + currLoc.y + ")");
-		//MapLocation inFront = myRC.getLocation().add(currDir);
-		//System.out.println("second: (" + inFront.x + "," + inFront.y + ")");
 		
 		if(isTracing) {
 			
 			//if we can move, go in that direction, stop tracing
-			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 50 && motor.canMove(destDir))) {
-				//System.out.println("mapLocation: (" + currLoc.x + "," + currLoc.y + ")");
-				//System.out.flush();
-				//memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
+			if((motor.canMove(currDir) && currDir==destDir) || (roundsTracing > 20 && motor.canMove(destDir))) {
 				isTracing = false;
-				myRC.setIndicatorString(2, new Boolean(isTracing).toString());
 				return destDir;
 			}
 
@@ -115,7 +107,7 @@ public class Navigation {
 
 		}
 		else { //not tracing
-		
+			
 			if(motor.canMove(destDir)) {
 				return destDir;
 			} 
@@ -123,10 +115,6 @@ public class Navigation {
 			else {//we hit a wall, need to trace
 				
 				isTracing = true;
-				myRC.setIndicatorString(2, new Boolean(isTracing).toString());
-				if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=null) {
-					System.out.println("Seen location: (" + currLoc.x + "," + currLoc.y + ")");
-				}
 			
 				//Figure out whether left or right is better.
 				Direction leftDir=currDir;
@@ -140,6 +128,7 @@ public class Navigation {
 						break;
 					}
 				}
+				//Dir 
 				for(int i=0; i<8; i++) {
 					rightDir = rightDir.rotateRight();	
 					if(motor.canMove(rightDir)) {
@@ -149,40 +138,36 @@ public class Navigation {
 			
 			
 				//Check which distance is shorter.
-				MapLocation leftLoc = currLoc.add(leftDir).add(leftDir);
-				MapLocation rightLoc = currLoc.add(rightDir).add(rightDir);
+				MapLocation leftLoc = currLoc.add(leftDir);
+				MapLocation rightLoc = currLoc.add(rightDir);
 				roundsTracing = 0;
-				if (trapped) {
-					trapped=false;
+				if (trapped==1) {
+					trapped=0;
 					return Direction.NONE;
 				}
 				if(destLoc.distanceSquaredTo(leftLoc)<destLoc.distanceSquaredTo(rightLoc)) {
 					tracingRight = false;
 					//System.out.println("Tracing Left");
 					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]==null) {
-						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=currDir; 
+						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
 						return leftDir;
 					}
-					trapped=false;
-					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=currDir) {
-						return rightDir;
-					}
+					trapped=1;
+					//System.out.println("changed directions");
 					tracingRight=true;
 					return rightDir;
 				} else {
 					tracingRight = true;
 					//System.out.println("Tracing Right");
 					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]==null) { 
-						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=currDir;
+						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0;
 						return rightDir;
 					}
-					trapped=true;
-					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]!=currDir) {
-						return rightDir;
-					}
+					trapped=1;
+					//System.out.println("changed directions");
 					tracingRight=false;
 					return leftDir;
-				}						
+				}				
 			}		
 		}
 	}
