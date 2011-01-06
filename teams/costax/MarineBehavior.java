@@ -70,6 +70,7 @@ public class MarineBehavior extends Behavior {
 				if (guns >= Constants.GUNS && hasSensor && hasArmor) {
 					obj=MarineBuildOrder.WAITING;
 				}
+				break;
 			case WAITING:
 				nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
 	        	for(Robot r:nearbyRobots)
@@ -93,6 +94,7 @@ public class MarineBehavior extends Behavior {
 	        	if (eeHanTiming) {
 	        		obj=MarineBuildOrder.FIND_ENEMY;
 	        	}
+	        	break;
 			case FIND_ENEMY:
 	        	myPlayer.myRC.setIndicatorString(1,"EE HAN TIMING!");
 	        	nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
@@ -136,6 +138,7 @@ public class MarineBehavior extends Behavior {
 	        			}
 	        		}
 	            }
+	        	break;
 		}
 	}
 	
