@@ -164,13 +164,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.WEST,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							if (Math.abs(myRC.getLocation().x - hometown.x) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -193,13 +196,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.NORTH,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							if (Math.abs(myRC.getLocation().y - hometown.y) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -222,13 +228,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.EAST,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							if (Math.abs(myRC.getLocation().x - hometown.x) > SCOUTING_DISTANCE)
 							{
 								obj = SCVBuildOrder.RETURN_HOME;
@@ -251,12 +260,16 @@ public class ImSCV
             				myRC.yield();
 	            			destination = myRC.getLocation().add(Direction.SOUTH,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							motor.moveForward();
 							if (Math.abs(myRC.getLocation().y - hometown.y) > SCOUTING_DISTANCE)
 							{
@@ -343,13 +356,16 @@ public class ImSCV
             			{
 	            			destination = myRC.getLocation().add(Direction.NORTH,500);
 	            			direction = robotNavigation.bugTo(destination);
-	            			motor.setDirection(direction);
-							myRC.yield();
-							while(!motor.canMove(myRC.getDirection()))
-							{
+	            			if(direction != Direction.OMNI && direction != Direction.NONE)
+	            			{
+		            			motor.setDirection(direction);
 								myRC.yield();
-							}
-							motor.moveForward();
+								while(!motor.canMove(myRC.getDirection()))
+								{
+									myRC.yield();
+								}
+								motor.moveForward();
+	            			}
 							tiredness++;
 							if (tiredness >= 4)
 							{
