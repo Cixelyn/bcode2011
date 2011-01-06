@@ -12,7 +12,7 @@ public class MarineBehavior extends Behavior {
 	MapLocation hometown;
 	MapLocation enemyLocation;
 	MapLocation destination;
-	MapLocation prevDestination = destination;
+	MapLocation prevDestination;
 	
 	MarineBuildOrder obj = MarineBuildOrder.CONSTRUCTING;
 	
@@ -26,7 +26,7 @@ public class MarineBehavior extends Behavior {
 	boolean eeHanTiming = false;
     boolean moveOut = false;
     
-    GameObject[] nearbyRobots;
+    Robot[] nearbyRobots;
     RobotInfo rInfo;
     
     ArrayList<?>[] componentList;
@@ -71,14 +71,16 @@ public class MarineBehavior extends Behavior {
 					obj=MarineBuildOrder.WAITING;
 				}
 			case WAITING:
-	        	for(GameObject r:nearbyRobots)
+				nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+	        	for(Robot r:nearbyRobots)
 	        	{
 					for (Object c:myPlayer.myWeapons)
 					{
 						gun = (WeaponController) c;
 						if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
 						{
-							rInfo = myPlayer.mySensor.senseRobotInfo((Robot)r);
+							myPlayer.myRC.suicide();
+							rInfo = myPlayer.mySensor.senseRobotInfo(r);
 						 	destination = rInfo.location;
 							staleness = 0;
 							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
@@ -92,23 +94,21 @@ public class MarineBehavior extends Behavior {
 	        		obj=MarineBuildOrder.FIND_ENEMY;
 	        	}
 			case FIND_ENEMY:
-	        	//myPlayer.myRC.setIndicatorString(2,"EE HAN TIMING!");
-	        	nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
-	        	for(GameObject r:nearbyRobots)
+	        	myPlayer.myRC.setIndicatorString(1,"EE HAN TIMING!");
+	        	nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+	        	for(Robot r:nearbyRobots)
 	        	{
 					for (Object c:myPlayer.myWeapons)
 					{
 						gun = (WeaponController) c;
 						if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
 						{
-							rInfo = myPlayer.mySensor.senseRobotInfo((Robot)r);
-							myPlayer.myRC.setIndicatorString(1,"Enemy found!");
+							rInfo = myPlayer.mySensor.senseRobotInfo(r);
 						 	destination = rInfo.location;
 							staleness = 0;
 							if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
 							{
 								gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-								myPlayer.myRC.setIndicatorString(1,"Pew pew pew!");
 							}
 						}
 					}
@@ -120,7 +120,6 @@ public class MarineBehavior extends Behavior {
 	        		staleness++;
 	        		if (staleness >= Constants.OLDNEWS)
 	        		{
-	        			myPlayer.myRC.setIndicatorString(1, "Going to the enemy.");
 	        			destination = prevDestination;
 	        		}
 	        		if (direction != Direction.OMNI && direction != Direction.NONE)

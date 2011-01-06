@@ -187,9 +187,6 @@ public class Messenger {
 	 * @return
 	 */
 	public boolean validate(Message m) {
-		for(MapLocation l:m.locations) {
-			if(l==null) return false;
-		}
 		return true;
 	}
 }
