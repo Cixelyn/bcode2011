@@ -5,7 +5,6 @@ import java.util.*;
 public class Navigation2
 {
 	
-	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final SensorController sensor;
 	
@@ -26,7 +25,6 @@ public class Navigation2
 	
 	public Navigation2(RobotPlayer player, MapLocation goal_)
 	{
-		this.player = player;
 		myRC = player.myRC;
 		sensor = player.mySensor;
 		goal = goal_;

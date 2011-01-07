@@ -1,7 +1,6 @@
 package costax2;
 
 import battlecode.common.*;
-import battlecode.world.InternalRobot;
 
 public class RecyclerBehavior extends Behavior{
 
