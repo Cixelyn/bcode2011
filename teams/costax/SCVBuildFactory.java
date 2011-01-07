@@ -3,8 +3,16 @@ package costax;
 import battlecode.common.*;
 import java.util.*;
 
-public class SCVBehaviorFactoryUnits extends Behavior {
+public class SCVBuildFactory extends Behavior {
 	
+	public SCVBuildFactory(RobotPlayer player) {
+		super(player);
+	}
+
+
+
+
+
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
 	MapLocation hometown = myPlayer.myRC.getLocation();
@@ -35,11 +43,6 @@ public class SCVBehaviorFactoryUnits extends Behavior {
 	Message attackMsg;
 	
 	String spawn;
-	
-	
-	public SCVBehaviorFactoryUnits(RobotPlayer player) {
-		super(player);
-	}
 
 	
 
