@@ -11,10 +11,8 @@ public class ImExpo
 	private static final int GUNS = 2;
 	private static final ComponentType GUNTYPE = ComponentType.BLASTER;
 	private static final ComponentType SENSORTYPE = ComponentType.SIGHT;
-	private static final ComponentType COMMTYPE = ComponentType.ANTENNA;
 	private static final ComponentType ARMORTYPE = ComponentType.SHIELD; 
 	private static final int MARINES = 2;
-	private static final int OLDNEWS = 5;
 	private static final int RESERVE = 5;
 	
 	public static void run(RobotPlayer player, RobotController myRC, ArrayList<?> broadcasters, ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons)
@@ -25,7 +23,6 @@ public class ImExpo
 		
 		RefineryBuildOrder obj = RefineryBuildOrder.WAIT_FOR_SIGNAL;
 		
-		boolean hasRadar = false;
 		int rGuns;
 		int rID;
 		boolean rSensor;
@@ -33,7 +30,6 @@ public class ImExpo
 		RobotInfo rInfo = null;
 		GameObject[] nearbyRobots;
 		boolean built = false;
-		boolean isLeader;
 		ArrayList<?>[] componentList;
 		
 		int marinesMade = 0;

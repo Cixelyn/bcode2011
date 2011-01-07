@@ -7,18 +7,15 @@ public class ScoutBehavior extends Behavior{
 
 	public ScoutBehavior(RobotPlayer player) {
 		super(player);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void newMessageCallback(MsgType t, Message msg) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -30,16 +27,11 @@ public class ScoutBehavior extends Behavior{
 			} else{
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 			}
-		}
-		
-		
-		
-		
+		}	
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -36,7 +36,6 @@ public class LightBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(Message msg) {
-		// TODO Auto-generated method stub
 		
 	}
 }

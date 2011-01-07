@@ -2,14 +2,12 @@ package fibbyBot4;
 import battlecode.common.*;
 
 public class Navigation {
-	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final MovementController motor;
 	
 
 
 	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
-		this.player = player;
 		myRC = RC;
 		motor=motorController;
 	}

@@ -14,7 +14,7 @@ public class ExpoRefineryBehavior extends Behavior {
 	int rGuns;
 	int marinesMade = 0;
 	int sheep = 0; // counts while sleeping!
-	ArrayList<Integer> myRobots = new ArrayList<Integer>();
+	ArrayList<Integer> myRobots = new ArrayList<Integer>(1024); //high initial capacity
 	
 	boolean rSensor;
 	boolean rArmor;
@@ -48,8 +48,7 @@ public class ExpoRefineryBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_SIGNAL");
     			if(powered)
         			obj = RefineryBuildOrder.INITIALIZE;
-    			myPlayer.myRC.yield();
-    			break;
+    			return;
     			
     		case INITIALIZE:
     			myPlayer.myRC.setIndicatorString(1, "INITIALIZE");
@@ -65,8 +64,8 @@ public class ExpoRefineryBehavior extends Behavior {
 					}
 				}
     			obj = RefineryBuildOrder.MAKE_MARINE;
-    			myPlayer.myRC.yield();
-    			break;
+    			
+    			return;
     	
     		case MAKE_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "MAKE_MARINE");
@@ -85,8 +84,7 @@ public class ExpoRefineryBehavior extends Behavior {
     			{
     				obj = RefineryBuildOrder.SLEEP;
     			}
-    			myPlayer.myRC.yield();
-    			break;
+    			return;
     			
     		case EQUIP_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
@@ -127,7 +125,7 @@ public class ExpoRefineryBehavior extends Behavior {
     			{
     				obj = RefineryBuildOrder.MAKE_MARINE;
     			}
-    			break;
+    			return;
     			
     		case SLEEP:
     			myPlayer.myRC.setIndicatorString(1, "SLEEP");
@@ -137,8 +135,7 @@ public class ExpoRefineryBehavior extends Behavior {
     				sheep = 0;
     				myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
     			}
-    			myPlayer.myRC.yield();
-    			break;
+    			return;
     	}
 		
 	}

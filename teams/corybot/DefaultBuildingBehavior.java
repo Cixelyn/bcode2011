@@ -8,7 +8,6 @@ public class DefaultBuildingBehavior extends Behavior {
 
 	public DefaultBuildingBehavior(RobotPlayer player) {
 		super(player);
-		// TODO Auto-generated constructor stub
 	}
 
 	

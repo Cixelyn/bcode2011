@@ -5,12 +5,17 @@ import battlecode.common.*;
 public abstract class Behavior {
 	
 	final RobotPlayer myPlayer;		//Our myplayer object
-	int runtime;					//Our runtime counter
+	int behaviorStartTime;			//Start of the new behavior
 	
 	
+	
+	/**
+	 * Constructor for the behavior system
+	 * @param player
+	 */
 	public Behavior(RobotPlayer player){
 		myPlayer = player;
-		runtime = 0;
+		behaviorStartTime = Clock.getRoundNum();
 		
 		//Execute Callbacks for starting units that start off with stuff
 		newComponentCallback(myPlayer.myRC.components());

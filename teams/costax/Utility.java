@@ -119,6 +119,14 @@ public class Utility {
 		}
 		return output;
 	}
+	
+	/**
+	 * This utility function counts the number of weapons and returns back a presized array with component type counts.
+	 * in an array ordered by ComponentClass Enum ordinals
+	 * Very basic utility function, don't use for anything complicated.
+	 * @param component
+	 * @return
+	 */
 	public static int[] componentClassCounter(ComponentController[] component) {
 		
 		int[] output = new int[ComponentClass.values().length];
@@ -196,6 +204,7 @@ public class Utility {
 	/**
 	 * Helper function to build a component by JVen
 	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * Currently modified to use sleep() though ~coryli
 	 * @param player
 	 * @param component
 	 * @return
@@ -204,7 +213,7 @@ public class Utility {
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
 		{
-			player.myRC.yield();
+			player.sleep();
 		}
 		player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 	}
@@ -212,6 +221,7 @@ public class Utility {
 	/**
 	 * Helper function to build a chassis by JVen
 	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * Current modified to use sleep() thought ~coryli
 	 * @param player
 	 * @param chassis
 	 * @return
@@ -220,7 +230,7 @@ public class Utility {
 	{
 		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
 		{
-			player.myRC.yield();
+			player.sleep();
 		}
 		player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
 	}
@@ -245,12 +255,25 @@ public class Utility {
 	}
 	
 	
+	/**
+	 * Does <code>query</code> component exist in <code>list</code>
+	 * @param query
+	 * @param list
+	 * @return
+	 */
 	public static boolean hasComponent(ComponentType query, ComponentType[] list) {
 		for(ComponentType c:list) {
 			if(c==query) return true;
 		}
 		return false;
 	}
+	
+	/**
+	 * Does <code>query></code> component exist in <code>list</code>
+	 * @param query
+	 * @param list
+	 * @return
+	 */
 	public static boolean hasComponent(ComponentType query, ComponentController[] list) {
 		for(ComponentController c:list) {
 			if(c.type()==query) return true;
@@ -289,6 +312,7 @@ public class Utility {
 		}
 		return "idk"; // should be unreachable
 	}
+	
 	
 	/**
 	 * Outputs enemy direction based on strings returned from getSpawn

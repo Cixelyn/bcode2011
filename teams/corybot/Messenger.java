@@ -29,8 +29,7 @@ public class Messenger {
 	//send component needs to be enabled
 	boolean canSend;
 	
-	//static limits
-	private static final int ID_MOD = 1024;
+	@SuppressWarnings("unused")
 	private final int teamKey;
 	
 	
@@ -70,7 +69,7 @@ public class Messenger {
 	 * Very primitive receive function
 	 */
 	public void receiveAll() {
-		int currTime = Clock.getRoundNum();
+		Clock.getRoundNum();
 		
 		Message[] rcv = myPlayer.myRC.getAllMessages();
 		

@@ -6,14 +6,7 @@ import java.util.*;
 public class RobotPlayer implements Runnable {
 
 	private final RobotController myRC;
-	private final int GUNS = 2;
-	private final ComponentType GUNTYPE = ComponentType.BLASTER;
-	private final ComponentType SENSORTYPE = ComponentType.SIGHT;
-	private final ComponentType COMMTYPE = ComponentType.ANTENNA;
-	private final ComponentType ARMORTYPE = ComponentType.SHIELD; 
-	private final int MARINES = 2;
-
-    public RobotPlayer(RobotController rc) {
+	public RobotPlayer(RobotController rc) {
         myRC = rc;
     }
 
