@@ -10,9 +10,8 @@ import battlecode.common.*;
  * @version 1.0
  * @since Battlecode 2011
  * 
- * @lyrics
- * <pre>
- * So…
+ * @lyrics 
+ * <pre> So…
  * Don’t you worry ’bout me
  * I won’ let you be alone
  * One day we’ll live in peace
@@ -21,8 +20,7 @@ import battlecode.common.*;
  * Let this song be our goodbye
  * Ohhhhhhh
  * Your love will always be my guide
- * back to the mineral line…. <3
- * </pre>
+ * back to the mineral line…. <3 </pre>
  * 
  * 
  * @see <a href="http://www.youtube.com/watch?v=8zwP9ErgIWs">SCV Love Song</a>
@@ -56,7 +54,7 @@ public class RobotPlayer implements Runnable {
 	
 	/**
 	 * The main entry-point into the battlecode vm.
-	 * @param rc
+	 * @param rc the robot's base robot controller
 	 */
     public RobotPlayer(RobotController rc) {
     	
@@ -84,6 +82,7 @@ public class RobotPlayer implements Runnable {
     
     /**
 	 * This code sets the default behavior based on the initial detected {@link battlecode.common.Chassis}
+	 * @see Behavior
 	 */
 	private Behavior setDefaultBehavior() {
 		//This is the base entry point for the robot
