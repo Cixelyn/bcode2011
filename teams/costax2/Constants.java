@@ -1,4 +1,4 @@
-package costax3;
+package costax2;
 
 import battlecode.common.*;
 
