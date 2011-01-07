@@ -79,7 +79,6 @@ public class RecyclerBehavior extends Behavior{
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -92,7 +91,6 @@ public class RecyclerBehavior extends Behavior{
 
 	@Override
 	public void newMessageCallback(MsgType t, Message msg) {
-		// TODO Auto-generated method stub
 		
 	}
 	
