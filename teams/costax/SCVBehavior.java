@@ -348,7 +348,6 @@ public class SCVBehavior extends Behavior {
     				if (r.getTeam() == myPlayer.myRC.getTeam())
     				{
     					rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    					System.out.println("Distance: "+Integer.toString(myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location)) + ", Range: " + Integer.toString(Constants.COMMTYPE.range));
     					if (myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location) < Constants.COMMTYPE.range && rInfo.chassis == Chassis.BUILDING)
     					{
     						obj = SCVBuildOrder.EXPAND;
