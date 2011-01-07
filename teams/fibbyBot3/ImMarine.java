@@ -10,10 +10,7 @@ public class ImMarine
 	private static final int GUNS = 2;
 	private static final ComponentType GUNTYPE = ComponentType.BLASTER;
 	private static final ComponentType SENSORTYPE = ComponentType.SIGHT;
-	private static final ComponentType COMMTYPE = ComponentType.ANTENNA;
 	private static final ComponentType ARMORTYPE = ComponentType.SHIELD; 
-	private static final int MARINES = 2;
-	
 	public static void run(RobotPlayer player, RobotController myRC, ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons)
 	{
 		MovementController motor = (MovementController)motors.get(0);

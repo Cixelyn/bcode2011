@@ -21,7 +21,6 @@ public class Navigation {
 	private boolean isTracing;
 	private boolean tracingRight;
 	private int roundsTracing = 0;
-	private int trapped=0;
 	public Direction bugTo(MapLocation destLoc) {
 		
 		

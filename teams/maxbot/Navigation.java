@@ -2,7 +2,6 @@ package maxbot;
 import battlecode.common.*;
 
 public class Navigation {
-	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final MovementController motor;
 	Integer[][] memory;
@@ -10,7 +9,6 @@ public class Navigation {
 
 
 	public Navigation(RobotPlayer player, RobotController RC, MovementController motorController) {
-		this.player = player;
 		myRC = RC;
 		motor=motorController;
 		memory = new Integer[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];

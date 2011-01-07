@@ -13,7 +13,6 @@ public class ImRefinery
 	private static final ComponentType COMMTYPE = ComponentType.ANTENNA;
 	private static final ComponentType ARMORTYPE = ComponentType.SHIELD; 
 	private static final int MARINES = 2;
-	private static final int OLDNEWS = 15;
 	private static final int RESERVE = 5;
 	
 	public static void run(RobotPlayer player, RobotController myRC, ArrayList<?> broadcasters, ArrayList<?> builders, ArrayList<?> motors, ArrayList<?> sensors, ArrayList<?> weapons)
@@ -33,7 +32,6 @@ public class ImRefinery
 		boolean isLeader = false;
 		Message[] msgs;
 		boolean eeHanTiming = false;
-		String spawn;
 		Message attackMsg = null;
 		
 		int marinesMade = 0;

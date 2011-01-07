@@ -44,9 +44,6 @@ public class RobotPlayer implements Runnable {
     	myMessenger = new Messenger(this);
     	myNavigation = new Navigation(this);
     	myScanner = new Scanner(this);
-    	
-       
-        Behavior myBehavior = null;
         
     }
 

@@ -265,6 +265,15 @@ public class RobotPlayer implements Runnable {
 	}
 	
 	
+	/**
+	 * Returns the robot's age (number of rounds it has lived)
+	 * @return
+	 */
+	public int getAge() {
+		return Clock.getRoundNum() - myBirthday;
+	}
+	
+	
 	
 	
 	
