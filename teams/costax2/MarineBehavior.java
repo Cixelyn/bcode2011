@@ -1,4 +1,4 @@
-package costax;
+package costax2;
 
 import battlecode.common.*;
 
@@ -8,7 +8,7 @@ public class MarineBehavior extends Behavior {
 	
 	WeaponController gun;
 	
-	final Navigation robotNavigation = new Navigation(myPlayer);
+	Navigation2 robotNavigation;
 	
 	MapLocation hometown;
 	MapLocation enemyLocation;
@@ -23,8 +23,6 @@ public class MarineBehavior extends Behavior {
 	int staleness = 0;
 	int guns;
 	int dizziness = 0;
-	
-	//double lastHP = myPlayer.myRC.get;
 	
 	boolean hasSensor;
     boolean hasArmor;
@@ -87,13 +85,17 @@ public class MarineBehavior extends Behavior {
 	        	{
 	        		staleness = 0;
 	        		currDestination = newDestination;
+	        		robotNavigation = new Navigation2(myPlayer, currDestination);
 	        	}
 	        	if (!myPlayer.myMotor.isActive())
 	            {
-	        		direction = robotNavigation.bugTo(currDestination);
+        			direction = robotNavigation.getDir();
 	        		staleness++;
 	        		if (staleness > Constants.OLDNEWS)
+	        		{
 	        			currDestination = mainDestination;
+	        			robotNavigation = new Navigation2(myPlayer, currDestination);
+	        		}
 	        		if (direction != Direction.OMNI && direction != Direction.NONE)
 	        		{
 	            		myPlayer.myMotor.setDirection(direction);
