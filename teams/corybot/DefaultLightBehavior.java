@@ -14,7 +14,6 @@ public class DefaultLightBehavior extends Behavior {
 	 * This robot doesn't do anything for the time being.
 	 */
 	public void run() {
-		// TODO Auto-generated method stub
 	}
 	
 	
@@ -37,7 +36,6 @@ public class DefaultLightBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(Message msg) {
-		// TODO Auto-generated method stub
 		
 	}
 }
