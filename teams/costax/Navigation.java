@@ -5,7 +5,7 @@ public class Navigation {
 	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final MovementController motor;
-	Integer[][] memory;
+	MapLocation[][] memory;
 	
 
 
@@ -13,7 +13,7 @@ public class Navigation {
 		this.player = player;
 		myRC = player.myRC;
 		motor=player.myMotor;
-		memory = new Integer[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
+		memory = new MapLocation[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////BUGNAV/////////////////////////////////////////////////////////
@@ -146,25 +146,41 @@ public class Navigation {
 				if(destLoc.distanceSquaredTo(leftLoc)<destLoc.distanceSquaredTo(rightLoc)) {
 					tracingRight = false;
 					//System.out.println("Tracing Left");
+					
+					
+					//I've never been to this spot while I'm looking for this destination, gonna go to the side with the shorter distance
 					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]==null) {
-						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0; 
+						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=destLoc;
+						tracingRight = false;
 						return leftDir;
 					}
-					//trapped=1;
-					//System.out.println("changed directions");
-					tracingRight=true;
-					return rightDir;
-				} else {
-					tracingRight = true;
-					//System.out.println("Tracing Right");
-					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]==null) { 
-						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=0;
+					//Uh oh, I've been to this spot since I've started looking for this location, better go the other way.
+					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT].equals(destLoc)) {
+						tracingRight=true;
 						return rightDir;
 					}
-					//trapped=1;
-					//System.out.println("changed directions");
+					//I've already been to this spot, but now I'm going to a different destination, better just go to the side with the shorter distance.
+					memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=destLoc;
 					tracingRight=false;
 					return leftDir;
+				} else {
+					//System.out.println("Tracing Right");
+					
+					//I've never been to this spot while I'm looking for this destination, gonna go to the side with the shorter distance
+					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]==null) { 
+						memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=destLoc;
+						tracingRight = true;
+						return rightDir;
+					}
+					//Uh oh, I've been to this spot since I've started looking for this location, better go the other way.
+					if (memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT].equals(destLoc)) {
+						tracingRight=false;
+						return leftDir;
+					}
+					//I've already been to this spot, but now I'm going to a different destination, better just go to the side with the shorter distance.
+					memory[currLoc.x%GameConstants.MAP_MAX_WIDTH][currLoc.y%GameConstants.MAP_MAX_HEIGHT]=destLoc;
+					tracingRight=true;
+					return rightDir;
 				}				
 			}		
 		}
