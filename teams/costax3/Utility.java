@@ -458,6 +458,19 @@ public class Utility {
 			return Constants.MAP_MAX_SIZE;
 	}
 	
+	public static void navStep(RobotPlayer myPlayer, Navigation robotNavigation, MapLocation dest) throws Exception
+	{
+		Direction direction = robotNavigation.bugTo(dest);
+		if(direction != Direction.OMNI && direction != Direction.NONE)
+		{
+			while(myPlayer.myMotor.isActive())
+				myPlayer.myRC.yield();
+			myPlayer.myMotor.setDirection(direction);
+			while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+				myPlayer.myRC.yield();
+			myPlayer.myMotor.moveForward();
+		}
+	}
 }
 
 

@@ -7,5 +7,6 @@ public enum RefineryBuildOrder
 	WAIT_FOR_SIGNAL,
 	MAKE_MARINE,
 	EQUIP_MARINE,
-	SLEEP
+	SLEEP,
+	BROKEN
 }

@@ -59,7 +59,7 @@ public class MainRefineryBehavior extends Behavior {
 				}
     			obj = RefineryBuildOrder.GIVE_ANTENNA;
     			myPlayer.myRC.yield();
-    			break;
+    			return;
     			
     		case GIVE_ANTENNA:
     			myPlayer.myRC.setIndicatorString(1, "GIVE_ANTENNA");
@@ -91,14 +91,17 @@ public class MainRefineryBehavior extends Behavior {
     			else
     				obj = RefineryBuildOrder.WAIT_FOR_SIGNAL;
     			myPlayer.myRC.yield();
-    			break;
+    			return;
     			
     		case WAIT_FOR_SIGNAL:
     			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_SIGNAL");
     			if(powered)
+    			{
+    				myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
         			obj = RefineryBuildOrder.MAKE_MARINE;
+    			}
     			myPlayer.myRC.yield();
-    			break;
+    			return;
     			
     		case MAKE_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "MAKE_MARINE");
@@ -118,7 +121,7 @@ public class MainRefineryBehavior extends Behavior {
     				obj = RefineryBuildOrder.SLEEP;
     			}
     			myPlayer.myRC.yield();
-    			break;
+    			return;
     			
     		case EQUIP_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
@@ -160,7 +163,7 @@ public class MainRefineryBehavior extends Behavior {
     				obj = RefineryBuildOrder.MAKE_MARINE;
     			}
     			myPlayer.myRC.yield();
-    			break;
+    			return;
     			
     		case SLEEP:
     			myPlayer.myRC.setIndicatorString(1, "SLEEP");
@@ -171,7 +174,7 @@ public class MainRefineryBehavior extends Behavior {
     				myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
     			}
     			myPlayer.myRC.yield();
-    			break;
+    			return;
     	}
 		
 	}

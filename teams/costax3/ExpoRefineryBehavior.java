@@ -52,19 +52,25 @@ public class ExpoRefineryBehavior extends Behavior {
     			
     		case INITIALIZE:
     			myPlayer.myRC.setIndicatorString(1, "INITIALIZE");
-    			while(myPlayer.myRC.getTeamResources() < Constants.COMMTYPE.cost + Constants.RESERVE || myPlayer.myBuilder.isActive())
-    				myPlayer.myRC.yield();
-    			myPlayer.myBuilder.build(Constants.COMMTYPE,myPlayer.myRC.getLocation(),RobotLevel.ON_GROUND);
-    			for(ComponentController c:myPlayer.myRC.components())
-				{
-					if (c.type()==Constants.COMMTYPE)
+    			if(myPlayer.myBuilder == null)
+    			{
+    				obj = RefineryBuildOrder.BROKEN;
+    			}
+    			else
+    			{
+	    			while(myPlayer.myRC.getTeamResources() < Constants.COMMTYPE.cost + Constants.RESERVE || myPlayer.myBuilder.isActive())
+	    				myPlayer.myRC.yield();
+	    			myPlayer.myBuilder.build(Constants.COMMTYPE,myPlayer.myRC.getLocation(),RobotLevel.ON_GROUND);
+	    			for(ComponentController c:myPlayer.myRC.components())
 					{
-						myPlayer.myBroadcaster = (BroadcastController)c;
-						myPlayer.myMessenger.enableSender();
+						if (c.type()==Constants.COMMTYPE)
+						{
+							myPlayer.myBroadcaster = (BroadcastController)c;
+							myPlayer.myMessenger.enableSender();
+						}
 					}
-				}
-    			obj = RefineryBuildOrder.MAKE_MARINE;
-    			
+	    			obj = RefineryBuildOrder.MAKE_MARINE;
+    			}
     			return;
     	
     		case MAKE_MARINE:
@@ -135,6 +141,10 @@ public class ExpoRefineryBehavior extends Behavior {
     				sheep = 0;
     				myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
     			}
+    			return;
+    			
+    		case BROKEN:
+    			myPlayer.myRC.setIndicatorString(1, "BROKEN");
     			return;
     	}
 		
