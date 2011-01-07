@@ -1,7 +1,8 @@
 package costax;
 
 public enum MarineBuildOrder {
-	CONSTRUCTING,
+	EQUIPPING,
 	WAITING,
-	FIND_ENEMY,
+	MOVE_OUT,
+	SEARCH_FOR_ENEMY
 }

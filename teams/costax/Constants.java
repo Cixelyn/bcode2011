@@ -14,12 +14,14 @@ public class Constants
 	public static final int GUNS = 2; // number of guns per marine
 	public static final ComponentType GUNTYPE = ComponentType.BLASTER; // gun on marines
 	public static final ComponentType SENSORTYPE = ComponentType.SIGHT; // sensor on marines
-	public static final ComponentType COMMTYPE = ComponentType.ANTENNA; // broadcaster on marines
+	public static final ComponentType COMMTYPE = ComponentType.ANTENNA; // broadcaster on SCVs
 	public static final ComponentType ARMORTYPE = ComponentType.SHIELD; // armor on marines
 	public static final int MARINES = 2; // maximum number of marines per expo refinery
 	public static final int OLDNEWS = 15; // number of rounds until marine stops chasing enemy out of range
 	public static final int RESERVE = 5; // desired min flux
 	public static final int SCOUTING_DISTANCE = 7; // distance SCV should go from home
-	public static final int HOME_PROXIMITY = 9; // distance from start SCV considers home
+	public static final int HOME_PROXIMITY = 16; // distance from start SCV considers home
 	public static final int MAX_SHEEP = 50; // how many sheep to count before transmitting while sleeping
+	public static final int MARINE_SEARCH_FREQ = 3; // how often marines should stop and spin to find enemy.. make really high to disable
+	public static final int MINE_AFFINITY = 50; // how long to chase after empty gas before giving up
 }

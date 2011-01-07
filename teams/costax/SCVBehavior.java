@@ -1,6 +1,7 @@
 package costax;
 
 import battlecode.common.*;
+import java.util.*;
 
 public class SCVBehavior extends Behavior {
 	
@@ -26,6 +27,10 @@ public class SCVBehavior extends Behavior {
 	
 	MineInfo mInfo;
 	Mine[] nearbyMines;
+	RobotInfo rInfo;
+	Robot[] nearbyRobots;
+	
+	ArrayList<Integer> badMines = new ArrayList<Integer>(); // mines SCV will not consider capping for whatever reason
 	
 	Message attackMsg;
 	
@@ -50,7 +55,7 @@ public class SCVBehavior extends Behavior {
     				if(!mineFound && m.getTeam()==Team.NEUTRAL)
         			{
         				mInfo = myPlayer.mySensor.senseMineInfo(m);
-        				if(myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
+        				if(myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(mInfo.mine.getID()))
         				{
             				mineFound = true;
             				destination = mInfo.mine.getLocation();
@@ -111,17 +116,32 @@ public class SCVBehavior extends Behavior {
         				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(destination));
         				myPlayer.myRC.yield();
         				Utility.buildChassis(myPlayer, Chassis.BUILDING);
+        				minesCapped++;
         				obj = SCVBuildOrder.ADDON_MINE;
+        				tiredness = 0;
         			}
     			}
     			else
+    			{
     				obj = SCVBuildOrder.FIND_MINE;
+    				tiredness = 0;
+    			}
+    			tiredness++;
+    			if(tiredness > Constants.MINE_AFFINITY)
+    			{
+    				minesCapped++; // in case one or more of initial mines are bad
+    				badMines.add(mInfo.mine.getID());
+    				if(minesCapped == 4)
+    					obj = SCVBuildOrder.RETURN_HOME;
+    				else
+    					obj = SCVBuildOrder.FIND_MINE;
+    				tiredness = 0;
+    			}
     			break;
     			
     		case ADDON_MINE:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_MINE");
     			Utility.buildComponent(myPlayer, ComponentType.RECYCLER);
-    			minesCapped++;
     			if(minesCapped>=4)
     			{
     				if (minesCapped == 4)
@@ -149,7 +169,7 @@ public class SCVBehavior extends Behavior {
     					obj = SCVBuildOrder.RETURN_HOME;
     				}
     				myPlayer.myRC.yield();
-        			destination = myPlayer.myRC.getLocation().add(Direction.WEST,500);
+        			destination = myPlayer.myRC.getLocation().add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
@@ -180,7 +200,7 @@ public class SCVBehavior extends Behavior {
     					obj = SCVBuildOrder.RETURN_HOME;
     				}
     				myPlayer.myRC.yield();
-        			destination = myPlayer.myRC.getLocation().add(Direction.NORTH,500);
+        			destination = myPlayer.myRC.getLocation().add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
@@ -211,7 +231,7 @@ public class SCVBehavior extends Behavior {
     					obj = SCVBuildOrder.RETURN_HOME;
     				}
     				myPlayer.myRC.yield();
-        			destination = myPlayer.myRC.getLocation().add(Direction.EAST,500);
+        			destination = myPlayer.myRC.getLocation().add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
@@ -242,7 +262,7 @@ public class SCVBehavior extends Behavior {
     					obj = SCVBuildOrder.RETURN_HOME;
     				}
     				myPlayer.myRC.yield();
-        			destination = myPlayer.myRC.getLocation().add(Direction.SOUTH,500);
+        			destination = myPlayer.myRC.getLocation().add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
@@ -280,7 +300,10 @@ public class SCVBehavior extends Behavior {
 					if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) <= Constants.HOME_PROXIMITY)
 					{
 						if(westEdge == -1)
-							return; // FAILURE
+						{
+							myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+							obj = SCVBuildOrder.SCOUT_WEST;
+						}
 						else if(northEdge == -1)
 							obj = SCVBuildOrder.SCOUT_NORTH;
 						else if(eastEdge == -1)
@@ -289,7 +312,7 @@ public class SCVBehavior extends Behavior {
 							{
 								eastEdge = 0;
 								southEdge = 0;
-								obj = SCVBuildOrder.EXPAND;
+								obj = SCVBuildOrder.BROADCAST_SPAWN;
 							}
 							else
 								obj = SCVBuildOrder.SCOUT_EAST;
@@ -299,20 +322,52 @@ public class SCVBehavior extends Behavior {
 							if (northEdge == 1)
 							{
 								southEdge = 0;
-								obj = SCVBuildOrder.EXPAND;
+								obj = SCVBuildOrder.BROADCAST_SPAWN;
 							}
 							else
 								obj = SCVBuildOrder.SCOUT_SOUTH;
 						}
 						else
-							obj = SCVBuildOrder.EXPAND;
+							obj = SCVBuildOrder.BROADCAST_SPAWN;
 						if (westEdge != -1 && northEdge != -1 && eastEdge != -1 && southEdge != -1)
 						{
 							spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 							enemyLocation = Utility.spawnOpposite(hometown, spawn);
-							myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+							destination = enemyLocation;
 						}
 					}
+    			}
+    			break;
+    			
+    		case BROADCAST_SPAWN:
+    			myPlayer.myRC.setIndicatorString(1,"BROADCAST_SPAWN");
+    			myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for (Robot r: nearbyRobots)
+    			{
+    				if (r.getTeam() == myPlayer.myRC.getTeam())
+    				{
+    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    					System.out.println("Distance: "+Integer.toString(myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location)) + ", Range: " + Integer.toString(Constants.COMMTYPE.range));
+    					if (myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location) < Constants.COMMTYPE.range && rInfo.chassis == Chassis.BUILDING)
+    					{
+    						obj = SCVBuildOrder.EXPAND;
+    					}
+    				}
+    			}
+    			if(!myPlayer.myMotor.isActive())
+    			{
+        			direction = robotNavigation.bugTo(destination);
+        			if(direction != Direction.OMNI && direction != Direction.NONE)
+        			{
+            			myPlayer.myMotor.setDirection(direction);
+						myPlayer.myRC.yield();
+						while(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+						{
+							myPlayer.myRC.yield();
+						}
+						myPlayer.myMotor.moveForward();
+        			}
     			}
     			break;
     			
@@ -320,7 +375,6 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "EXPAND");
     			if(!myPlayer.myMotor.isActive())
     			{
-        			destination = enemyLocation;
         			direction = robotNavigation.bugTo(destination);
         			if(direction != Direction.OMNI && direction != Direction.NONE)
         			{
