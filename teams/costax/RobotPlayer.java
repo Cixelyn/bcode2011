@@ -175,13 +175,11 @@ public class RobotPlayer implements Runnable {
 	}
 	
 	
-	
-	
-	
-	
 	public void swapBehavior(Behavior b) {
 		myBehavior = b;
 	}
+	
+	
 	
 	
 	

@@ -99,11 +99,12 @@ public class Messenger {
 		
 		//fill in message
 		int currTime = Clock.getRoundNum();
-		MapLocation myLoc = myPlayer.myRC.getLocation();
+		
 		
 		
 		m.ints[idxHeader] = Encoder.encodeMsgHeader(type, currTime, myID);		
 		
+		MapLocation myLoc = myPlayer.myRC.getLocation();
 		m.locations[idxSender] = myLoc;		//sender location
 		m.locations[idxOrigin] = myLoc;		//origin location
 		
@@ -125,22 +126,21 @@ public class Messenger {
 	 * @param lSize number of locations
 	 * @return
 	 */
-	private Message buildMessage(int iSize, int lSize) {
+	private Message buildNewMessage(int iSize, int lSize) {
 		Message m = new Message();
 		m.ints = new int[minSize+iSize];
 		m.locations = new MapLocation[minSize+lSize];
-		
-		MapLocation myLoc = myPlayer.myRC.getLocation();
 		return m;
 	}
 	
 	
 	public void sendNotice(MsgType t) {
-		sendMsg(t,buildMessage(minSize,minSize));
+		sendMsg(t,buildNewMessage(0,0));
 	}
 	
+	
 	public void sendDoubleLoc(MsgType t, MapLocation loc1, MapLocation loc2) {
-		Message m = buildMessage(0,2);
+		Message m = buildNewMessage(0,2);
 		m.locations[firstData  ] = loc1;
 		m.locations[firstData+1] = loc2;
 		
@@ -159,14 +159,31 @@ public class Messenger {
 		Message[] rcv = myPlayer.myRC.getAllMessages();
 		
 		for(Message m: rcv) {
-			if(validate(m)) {
+			
+			
+			////////BEGIN MESSAGE VALIDATION SYSTEM
+				///////Begin inlined message validation checker
+					if(m.ints==null) break;
+					if(m.ints.length<minSize) break;
+			
+					
+				//////We should have a checksum -- make sure the checksum is right.
+					if(m.ints[idxHash]!=teamKey) break;
+					
+				//////We at least have a valid int header
+					MsgType t = Encoder.decodeMsgType(m.ints[idxHeader]);  //pull out the header
+					
+				//////Now make sure we have enough ints & enough maplocations
+					if(m.ints.length!=t.numInts) break;
+					if(m.locations==null) break;
+					if(m.locations.length!=t.numLocs) break;
+			////////MESSAGE HAS BEEN VALIDATED
+						
 				
-				MsgType t = Encoder.decodeMsgType(m.ints[idxHeader]);
-				
-				if(t.shouldCallback) {
-					myPlayer.myBehavior.newMessageCallback(t,m);
-				}
+			if(t.shouldCallback) {
+				myPlayer.myBehavior.newMessageCallback(t,m);
 			}
+
 	
 		}
 	}
@@ -175,20 +192,9 @@ public class Messenger {
 	
 	public void sendAll() throws Exception{
 		if(!messageQueue.isEmpty()) {
-			while (myPlayer.myBroadcaster.isActive())
-				myPlayer.myRC.yield();
 			myPlayer.myBroadcaster.broadcast(messageQueue.pop());
 		}
 	}
 	
-	
-	
-	/**
-	 * Very dirty validation system
-	 * @param m
-	 * @return
-	 */
-	public boolean validate(Message m) {
-		return true;
-	}
+
 }
