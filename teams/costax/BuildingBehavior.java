@@ -6,7 +6,7 @@ public class BuildingBehavior extends Behavior {
 
 	public BuildingBehavior(RobotPlayer player) {
 		super(player);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	

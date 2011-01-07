@@ -106,7 +106,7 @@ public class Messenger {
 		m.locations[idxOrigin] = myLoc;		//origin location
 		
 		
-		m.ints[idxHash] = teamKey; 			//FIXME: super simple hash
+		m.ints[idxHash] = teamKey; 			//super simple hash
 		
 		messageQueue.add(m);		
 		
