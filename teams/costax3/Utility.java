@@ -215,7 +215,9 @@ public class Utility {
 		{
 			player.sleep();
 		}
-		player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
+			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 	}
 	
 	/**
@@ -232,7 +234,9 @@ public class Utility {
 		{
 			player.sleep();
 		}
-		player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
+		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+		if ( rFront == null )
+			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
 	}
 	
 	/**
@@ -340,6 +344,68 @@ public class Utility {
 		return hometown;
 	}
 	
+	public static Direction[] spawnAdjacent(String spawn)
+	{
+		Direction[] waypointDirs = new Direction[4]; // 1st scv dir, 2nd scv dir, 1st scv next dir, 2nd scv next dir
+		if(spawn == "north")
+		{
+			waypointDirs[0] = Direction.EAST;
+			waypointDirs[1] = Direction.WEST;
+			waypointDirs[2] = Direction.SOUTH;
+			waypointDirs[3] = Direction.SOUTH;
+		}
+		if(spawn == "south")
+		{
+			waypointDirs[0] = Direction.EAST;
+			waypointDirs[1] = Direction.WEST;
+			waypointDirs[2] = Direction.NORTH;
+			waypointDirs[3] = Direction.NORTH;
+		}
+		if(spawn == "east")
+		{
+			waypointDirs[0] = Direction.NORTH;
+			waypointDirs[1] = Direction.SOUTH;
+			waypointDirs[2] = Direction.WEST;
+			waypointDirs[3] = Direction.WEST;
+		}
+		if(spawn == "west")
+		{
+			waypointDirs[0] = Direction.NORTH;
+			waypointDirs[1] = Direction.SOUTH;
+			waypointDirs[2] = Direction.EAST;
+			waypointDirs[3] = Direction.EAST;
+		}
+		if(spawn == "northwest")
+		{
+			waypointDirs[0] = Direction.EAST;
+			waypointDirs[1] = Direction.SOUTH;
+			waypointDirs[2] = Direction.SOUTH;
+			waypointDirs[3] = Direction.EAST;
+		}
+		if(spawn == "northeast")
+		{
+			waypointDirs[0] = Direction.WEST;
+			waypointDirs[1] = Direction.SOUTH;
+			waypointDirs[2] = Direction.SOUTH;
+			waypointDirs[3] = Direction.WEST;
+		}
+		if(spawn == "southwest")
+		{
+			waypointDirs[0] = Direction.EAST;
+			waypointDirs[1] = Direction.NORTH;
+			waypointDirs[2] = Direction.NORTH;
+			waypointDirs[3] = Direction.EAST;
+		}
+		if(spawn == "southeast")
+		{
+			waypointDirs[0] = Direction.WEST;
+			waypointDirs[1] = Direction.NORTH;
+			waypointDirs[2] = Direction.NORTH;
+			waypointDirs[3] = Direction.WEST;
+		}
+		return waypointDirs;
+	}
+	
 	// this method was before the abstraction of Messenger in r~100
 	
 	/*public static Message sendAttackMsg(RobotPlayer myPlayer, MapLocation hometown, MapLocation enemyLocation)
@@ -381,6 +447,17 @@ public class Utility {
     	else
     		return null;
 	}
+	
+	public static int dirSize(Direction dir)
+	{
+		if (dir == Direction.NORTH || dir == Direction.SOUTH)
+			return GameConstants.MAP_MAX_HEIGHT;
+		if (dir == Direction.EAST || dir == Direction.WEST)
+			return GameConstants.MAP_MAX_WIDTH;
+		else
+			return Constants.MAP_MAX_SIZE;
+	}
+	
 }
 
 

@@ -10,8 +10,12 @@ public class SCVBehavior extends Behavior {
 	MapLocation hometown = myPlayer.myRC.getLocation();
 	MapLocation enemyLocation; 
 	MapLocation destination;
+	MapLocation[] waypoints = new MapLocation[3];
 	
 	Direction direction;
+	Direction waypointDir1;
+	Direction waypointDir2;
+	Direction[] waypointDirs;
 	
 	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 	
@@ -22,6 +26,8 @@ public class SCVBehavior extends Behavior {
 	int dizziness = 0;
 	int tiredness = 0;
 	int minesCapped = 2;
+	int currWaypointIdx = 0;
+	int nextWaypointIdx;
 	
 	boolean mineFound;
 	
@@ -44,6 +50,7 @@ public class SCVBehavior extends Behavior {
 	
 
 	public void run() throws Exception {
+		myPlayer.myRC.setIndicatorString(0, "CURRENT WAYPOINT = " + Integer.toString(currWaypointIdx));
     	switch (obj)
     	{
     		case FIND_MINE:
@@ -71,6 +78,41 @@ public class SCVBehavior extends Behavior {
     			if(!mineFound && dizziness == 4)
     			{
     				dizziness = 0;
+    				
+    				// the below checks if either we've arrived at the destination
+    				// OR we're not going home and the proper off_map edge is found:
+    				// the result is we set destination to the next waypoint, defining waypoint if need be
+    				// of course, we only run this after spawn is known
+    				// -jven
+    				
+    				if ( spawn != null && (myPlayer.myRC.getLocation().distanceSquaredTo(destination) < Constants.HOME_PROXIMITY || currWaypointIdx != 0) )
+    				{
+    					if(currWaypointIdx == 0) // we do not reset hometown
+    					{
+    						if (waypoints[1] == null)
+    							waypoints[1] = waypoints[0].add(waypointDir1, Utility.dirSize(waypointDir1));
+    						nextWaypointIdx = (currWaypointIdx + 1) % (waypoints.length);
+        					currWaypointIdx = nextWaypointIdx;
+        					destination = waypoints[currWaypointIdx];
+    					}
+    					if(currWaypointIdx == 1 && myPlayer.myRC.senseTerrainTile( myPlayer.myRC.getLocation().add(waypointDir1, 3) ) == TerrainTile.OFF_MAP)
+    					{
+    						waypoints[1] = myPlayer.myRC.getLocation();
+    						if (waypoints[2] == null)
+    							waypoints[2] = waypoints[1].add(waypointDir2, Utility.dirSize(waypointDir2));
+    						nextWaypointIdx = (currWaypointIdx + 1) % (waypoints.length);
+        					currWaypointIdx = nextWaypointIdx;
+        					destination = waypoints[currWaypointIdx];
+    					}
+    					if(currWaypointIdx == 2 && myPlayer.myRC.senseTerrainTile( myPlayer.myRC.getLocation().add(waypointDir2, 3) ) == TerrainTile.OFF_MAP) // waypoints[0] should already be set to hometown
+    					{
+    						waypoints[2] = myPlayer.myRC.getLocation();
+    						nextWaypointIdx = (currWaypointIdx + 1) % (waypoints.length);
+        					currWaypointIdx = nextWaypointIdx;
+        					destination = waypoints[currWaypointIdx];
+    					}
+    				}
+    				
     				obj = SCVBuildOrder.EXPAND;
     			}
     			if(mineFound)
@@ -333,7 +375,14 @@ public class SCVBehavior extends Behavior {
 						{
 							spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 							enemyLocation = Utility.spawnOpposite(hometown, spawn);
-							destination = enemyLocation;
+							waypointDirs = Utility.spawnAdjacent(spawn);
+							waypointDir1 = waypointDirs[0]; // change for other scv
+							waypointDir2 = waypointDirs[2]; // change for other scv
+							waypoints[0] = hometown;
+							waypoints[1] = hometown.add(waypointDir1, Utility.dirSize(waypointDir1));
+							nextWaypointIdx = (currWaypointIdx + 1) % (waypoints.length);
+							currWaypointIdx = nextWaypointIdx;
+							destination = waypoints[currWaypointIdx];
 						}
 					}
     			}
@@ -386,7 +435,7 @@ public class SCVBehavior extends Behavior {
 						myPlayer.myMotor.moveForward();
         			}
 					tiredness++;
-					if (tiredness >= 4)
+					if (tiredness >= Constants.SCV_SEARCH_FREQ)
 					{
 						tiredness = 0;
 						obj = SCVBuildOrder.FIND_MINE;
