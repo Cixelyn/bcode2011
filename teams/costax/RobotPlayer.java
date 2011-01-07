@@ -205,6 +205,15 @@ public class RobotPlayer implements Runnable {
 	}
 	
 	
+	/**
+	 * Better have a good reason for running <code>minSleep</code> rather than normal {@link #sleep()}
+	 * since none of the standard message processing or sensor scans happen.
+	 */
+	public void minSleep() {
+		myRC.yield();		
+	}
+	
+	
 	
 	
 	/**
