@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class ExpoRefineryBehavior extends Behavior {
 
-	RefineryBuildOrder obj = RefineryBuildOrder.WAIT_FOR_SIGNAL;
+	RefineryBuildOrder obj = RefineryBuildOrder.WAIT_FOR_POWER;
 	
 	MapLocation hometown;
 	MapLocation enemyLocation;
@@ -22,30 +22,25 @@ public class ExpoRefineryBehavior extends Behavior {
 	boolean eeHanTiming = false;
 	
 	RobotInfo rInfo;
-	Robot babyRobot;
+	Robot babyMarine;
 	Robot rFront;
 	
 	ArrayList<?>[] componentList;
+	
+	int spawn;
 	
 	public ExpoRefineryBehavior(RobotPlayer player) {
 		super(player);
 	}
 
 	
-	public void newComponentCallback(ComponentController[] components) {
-		
-
-	}
-
-
-
-
 	public void run() throws Exception {
 
 		switch(obj)
     	{
-    		case WAIT_FOR_SIGNAL:
-    			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_SIGNAL");
+    		case WAIT_FOR_POWER:
+    			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_POWER");
+    			Utility.spin(myPlayer);
     			if(powered)
         			obj = RefineryBuildOrder.INITIALIZE;
     			return;
@@ -53,9 +48,7 @@ public class ExpoRefineryBehavior extends Behavior {
     		case INITIALIZE:
     			myPlayer.myRC.setIndicatorString(1, "INITIALIZE");
     			if(myPlayer.myBuilder == null)
-    			{
     				obj = RefineryBuildOrder.BROKEN;
-    			}
     			else
     			{
 	    			while(myPlayer.myRC.getTeamResources() < Constants.COMMTYPE.cost + Constants.RESERVE || myPlayer.myBuilder.isActive())
@@ -75,27 +68,26 @@ public class ExpoRefineryBehavior extends Behavior {
     	
     		case MAKE_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "MAKE_MARINE");
-    			if(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null)
-				{
+    			while(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null)
+    			{
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
-				}
-    			else if(marinesMade < Constants.MARINES && myPlayer.myRC.getTeamResources() >= Chassis.LIGHT.cost + Constants.RESERVE)
+					myPlayer.myRC.yield();
+    			}
+    			if(marinesMade < Constants.MARINES)
 				{
-					myPlayer.myBuilder.build(Chassis.LIGHT,myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()));
-					babyRobot = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-					myRobots.add(babyRobot.getID());
+					Utility.buildChassis(myPlayer, Chassis.LIGHT);
+					babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+					myRobots.add(babyMarine.getID());
 					obj = RefineryBuildOrder.EQUIP_MARINE;
 				}
-    			else if(marinesMade >= Constants.MARINES)
-    			{
+    			else
     				obj = RefineryBuildOrder.SLEEP;
-    			}
     			return;
     			
     		case EQUIP_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
     			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(rFront != null && rFront.getID() == babyRobot.getID())
+    			if(rFront != null && rFront.getID() == babyMarine.getID())
     			{
     				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
     				rGuns = 0;
@@ -124,7 +116,7 @@ public class ExpoRefineryBehavior extends Behavior {
     					marinesMade++;
     					obj = RefineryBuildOrder.MAKE_MARINE;
     					if (eeHanTiming)
-    						myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+    						myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     				}
     			}
     			else
@@ -135,11 +127,12 @@ public class ExpoRefineryBehavior extends Behavior {
     			
     		case SLEEP:
     			myPlayer.myRC.setIndicatorString(1, "SLEEP");
+    			Utility.spin(myPlayer);
     			sheep++;
     			if (sheep >= Constants.MAX_SHEEP && eeHanTiming)
     			{
     				sheep = 0;
-    				myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+    				myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     			}
     			return;
     			
@@ -154,6 +147,12 @@ public class ExpoRefineryBehavior extends Behavior {
 		return "ExpoRefineryBehavior";
 	}
 
+
+	public void newComponentCallback(ComponentController[] components) {
+		
+
+	}
+	
 	
 	public void newMessageCallback(MsgType t, Message msg) {
 		if(t == MsgType.MSG_POWER_UP)
@@ -162,6 +161,7 @@ public class ExpoRefineryBehavior extends Behavior {
 		}
 		if(t == MsgType.MSG_MOVE_OUT)
 		{
+			spawn = msg.ints[Messenger.firstData];
 			hometown = msg.locations[Messenger.firstData];
 			enemyLocation = msg.locations[Messenger.firstData+1];
 			eeHanTiming = true;

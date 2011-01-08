@@ -41,7 +41,7 @@ public class SCVBehavior extends Behavior {
 	
 	Message attackMsg;
 	
-	String spawn;
+	int spawn = -1; // 0 is west, increments clockwise; 8 means "i dont know"
 	
 	
 	public SCVBehavior(RobotPlayer player) {
@@ -51,7 +51,6 @@ public class SCVBehavior extends Behavior {
 	
 
 	public void run() throws Exception {
-		myPlayer.myRC.setIndicatorString(0, "CURRENT WAYPOINT = " + Integer.toString(currWaypointIdx));
     	switch (obj)
     	{
     		case FIND_MINE:
@@ -87,7 +86,7 @@ public class SCVBehavior extends Behavior {
     				// of course, we only run this after spawn is known
     				// -jven
     				
-    				if ( spawn != null && (myPlayer.myRC.getLocation().distanceSquaredTo(mainDestination) < Constants.HOME_PROXIMITY || currWaypointIdx != 0) )
+    				if ( spawn != -1 && (myPlayer.myRC.getLocation().distanceSquaredTo(mainDestination) < Constants.HOME_PROXIMITY || currWaypointIdx != 0) )
     				{
     					if(currWaypointIdx == 0) // we do not reset hometown
     					{
@@ -131,7 +130,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_ANTENNA");
     			for(ComponentController c:myPlayer.myRC.components())
     			{
-    				if (c.type()==ComponentType.ANTENNA)
+    				if (c.type() == Constants.COMMTYPE)
     				{
     					myPlayer.myBroadcaster = (BroadcastController)c;
     					myPlayer.myMessenger.enableSender();
@@ -182,13 +181,16 @@ public class SCVBehavior extends Behavior {
     			if(minesCapped>=4)
     			{
     				if (minesCapped == 4)
+    				{
     					obj = SCVBuildOrder.SCOUT_WEST;
+    					myPlayer.myMessenger.sendNotice(MsgType.MSG_SCOUTING);
+    				}
     				else
     				{
     					obj = SCVBuildOrder.FIND_MINE;
-    					myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+    					myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+    					myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     				}
-    				myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
     			}
     			else
     				obj = SCVBuildOrder.FIND_MINE;
@@ -316,7 +318,7 @@ public class SCVBehavior extends Behavior {
     			
     		case BROADCAST_SPAWN:
     			myPlayer.myRC.setIndicatorString(1,"BROADCAST_SPAWN");
-    			myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+    			myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     			if (eeHanTiming)
     				obj = SCVBuildOrder.EXPAND;
     			else

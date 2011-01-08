@@ -212,9 +212,7 @@ public class Utility {
 	public static void buildComponent(RobotPlayer player, ComponentType component) throws Exception
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
-		{
 			player.sleep();
-		}
 		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
 			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
@@ -223,7 +221,7 @@ public class Utility {
 	/**
 	 * Helper function to build a chassis by JVen
 	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
-	 * Current modified to use sleep() thought ~coryli
+	 * Current modified to use sleep() though ~coryli
 	 * @param player
 	 * @param chassis
 	 * @return
@@ -231,9 +229,7 @@ public class Utility {
 	public static void buildChassis(RobotPlayer player, Chassis chassis) throws Exception
 	{
 		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
-		{
 			player.sleep();
-		}
 		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 		if ( rFront == null )
 			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
@@ -286,122 +282,141 @@ public class Utility {
 	}
 	
 	/**
-	 * Uses black magic to determine spawn location based on whether off map squares are found in each direction
+	 * Uses black magic to determine spawn location based on whether off map squares are found in each direction (see SCV code for meaning of spawn int)
 	 * @param off map square to the west? 0 = no, 1 = yes
 	 * @param off map square to the north? 0 = no, 1 = yes
 	 * @param off map square to the east? 0 = no, 1 = yes
 	 * @param off map square to the south? 0 = no, 1 = yes
 	 * @return String stating spawn location... why String? idk
 	 */
-	public static String getSpawn(int westEdge, int northEdge, int eastEdge, int southEdge)
+	public static int getSpawn(int westEdge, int northEdge, int eastEdge, int southEdge)
 	{
 		switch ((westEdge+1)*(2*northEdge+1)*(4*eastEdge+1)*(6*southEdge+1))
 		{
 			case 2:
-				return "west";
+				return 0;
 			case 3:
-				return "north";
+				return 2;
 			case 5:
-				return "east";
+				return 4;
 			case 7:
-				return "south";
+				return 6;
 			case 6:
-				return "northwest";
+				return 1;
 			case 14:
-				return "southwest";
+				return 7;
 			case 15:
-				return "northeast";
+				return 3;
 			case 35:
-				return "southeast";
+				return 5;
 		}
-		return "idk"; // should be unreachable
+		return 8; // should be unreachable
 	}
 	
 	
 	/**
 	 * Outputs enemy direction based on strings returned from getSpawn
-	 * @param strings returned from getSpawn
+	 * @param string returned from getSpawn
 	 * @return direction where enemy is
 	 */
-	public static MapLocation spawnOpposite(MapLocation hometown, String spawn)
+	public static MapLocation spawnOpposite(MapLocation hometown, int spawn)
 	{
-		if(spawn == "north")
+		switch (spawn)
+		{
+			case 2:
 			return hometown.add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
-		if(spawn == "east")
+			case 4:
 			return hometown.add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
-		if(spawn == "south")
+			case 6:
 			return hometown.add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
-		if(spawn == "west")
+			case 0:
 			return hometown.add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
-		if(spawn == "northwest")
+			case 1:
 			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
-		if(spawn == "northeast")
+			case 3:
 			return hometown.add(Direction.SOUTH_WEST, Constants.MAP_MAX_SIZE);
-		if(spawn == "southwest")
+			case 7:
 			return hometown.add(Direction.NORTH_EAST, Constants.MAP_MAX_SIZE);
-		if(spawn == "southeast")
+			case 5:
 			return hometown.add(Direction.NORTH_WEST, Constants.MAP_MAX_SIZE);
-		return hometown;
+			case 8:
+			return hometown;
+		}
+		return null; // should be unreachable
 	}
 	
-	public static Direction[] spawnAdjacent(String spawn)
+	/**
+	 * Outputs array of waypoint directions for scvs based on spawn
+	 * @param string returned from getSpawn
+	 * @return waypoint directions for scvs
+	 */
+	public static Direction[] spawnAdjacent(int spawn)
 	{
 		Direction[] waypointDirs = new Direction[4]; // 1st scv dir, 2nd scv dir, 1st scv next dir, 2nd scv next dir
-		if(spawn == "north")
+		switch (spawn)
 		{
+			case 2:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.WEST;
 			waypointDirs[2] = Direction.SOUTH;
 			waypointDirs[3] = Direction.SOUTH;
-		}
-		if(spawn == "south")
-		{
+			break;
+			
+			case 6:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.WEST;
 			waypointDirs[2] = Direction.NORTH;
 			waypointDirs[3] = Direction.NORTH;
-		}
-		if(spawn == "east")
-		{
+			break;
+			
+			case 4:
 			waypointDirs[0] = Direction.NORTH;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.WEST;
 			waypointDirs[3] = Direction.WEST;
-		}
-		if(spawn == "west")
-		{
+			break;
+
+			case 0:
 			waypointDirs[0] = Direction.NORTH;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.EAST;
 			waypointDirs[3] = Direction.EAST;
-		}
-		if(spawn == "northwest")
-		{
+			break;
+
+			case 1:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.SOUTH;
 			waypointDirs[3] = Direction.EAST;
-		}
-		if(spawn == "northeast")
-		{
+			break;
+
+			case 3:
 			waypointDirs[0] = Direction.WEST;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.SOUTH;
 			waypointDirs[3] = Direction.WEST;
-		}
-		if(spawn == "southwest")
-		{
+			break;
+
+			case 7:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.NORTH;
 			waypointDirs[2] = Direction.NORTH;
 			waypointDirs[3] = Direction.EAST;
-		}
-		if(spawn == "southeast")
-		{
+			break;
+
+			case 5:
 			waypointDirs[0] = Direction.WEST;
 			waypointDirs[1] = Direction.NORTH;
 			waypointDirs[2] = Direction.NORTH;
 			waypointDirs[3] = Direction.WEST;
+			break;
+
+			case 8:
+			waypointDirs[0] = Direction.WEST;
+			waypointDirs[1] = Direction.NORTH;
+			waypointDirs[2] = Direction.SOUTH;
+			waypointDirs[3] = Direction.EAST;
+			break;
 		}
 		return waypointDirs;
 	}
@@ -418,6 +433,11 @@ public class Utility {
 		return attackMsg;
 	}*/
 	
+	/**
+	 * Looks for enemies and shoots at them
+	 * @param myPlayer, you know what that is
+	 * @return location of last enemy fired at, null if none
+	 */
 	public static MapLocation senseEnemies(RobotPlayer myPlayer) throws Exception
 	{
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
@@ -448,6 +468,11 @@ public class Utility {
     		return null;
 	}
 	
+	/**
+	 * Outputs appropriate map size given a direction
+	 * @param direction
+	 * @return map size
+	 */
 	public static int dirSize(Direction dir)
 	{
 		if (dir == Direction.NORTH || dir == Direction.SOUTH)
@@ -458,19 +483,55 @@ public class Utility {
 			return Constants.MAP_MAX_SIZE;
 	}
 	
+	/**
+	 * Given nav and destination, turns in the right direction and takes a step in that direction
+	 * @param myPlayer, nav, destination location
+	 * @return nothing!
+	 */
 	public static void navStep(RobotPlayer myPlayer, Navigation robotNavigation, MapLocation dest) throws Exception
 	{
-		Direction direction = robotNavigation.bugTo(dest);
-		if(direction != Direction.OMNI && direction != Direction.NONE)
+		if (dest != null)
 		{
-			while(myPlayer.myMotor.isActive())
-				myPlayer.myRC.yield();
-			myPlayer.myMotor.setDirection(direction);
-			while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
-				myPlayer.myRC.yield();
-			myPlayer.myMotor.moveForward();
+			Direction direction = robotNavigation.bugTo(dest);
+			if(direction != Direction.OMNI && direction != Direction.NONE)
+			{
+				while(myPlayer.myMotor.isActive())
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.setDirection(direction);
+				while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.moveForward();
+			}
+			else
+				System.out.println("OMNI or NONE direction encountered.");
 		}
+		else
+			System.out.println("Null destination encountered.");
 	}
+	
+	/**
+	 * WEEEEEEEEEEEEEEEEEEEEEEE
+	 * @param player
+	 * @return fun
+	 */
+	public static void spin(RobotPlayer myPlayer) throws Exception
+	{
+		if (!myPlayer.myMotor.isActive())
+			myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());  // WEEEEEEEEEEE!!!!
+	}
+	
+	/**
+	 * check if an scv/mule should build a non-refinery in the given direction (possible can use when making units)
+	 * square should be land, square should not contain robots, square should not contain mines
+	 * @param direction to check
+	 * @return well?
+	 */
+	public static boolean shouldBuild(RobotPlayer myPlayer, Direction dir) throws Exception
+	{
+		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
+		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
+	}
+	
 }
 
 
