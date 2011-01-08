@@ -1,5 +1,7 @@
 package costax3;
 
+import battlecode.common.*;
+
 
 /**
  * This class builds and decodes various different message types which are sent through the messaging subsystem
@@ -8,6 +10,31 @@ package costax3;
  */
 public class Encoder {
 	
+	
+////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////ROBOTDATA//////////////////////////////////////
+	
+	//MSG ROBOT Binary Format - 32bit INT:
+	//Team(1) + Notes(3) + Active(1) + HP(9) + Weight(5) + Chassis(3) + ID(10)
+	
+	/*
+	public static int ROBOT_ID_OFFSET
+	public static int ROBOT_CHASSIS_OFFSET
+	
+	public static int ROBOT_WEIGHT_OFFSET
+	public static int ROBOT_HP_OFFSET
+	public static int ROBOT_ACTIVE_OFFSET
+	public static int ROBOT_NOTES_OFFSET
+	
+	public 
+	*/
+	
+	
+	public static int encodeRobotInfo(RobotInfo r) {
+		return (int)r.hitpoints*10;
+	}
+	
+
 	
 	
 	
