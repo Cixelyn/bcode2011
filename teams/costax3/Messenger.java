@@ -1,11 +1,7 @@
 package costax3;
 
 import java.util.LinkedList;
-
-import battlecode.common.Clock;
-import battlecode.common.MapLocation;
-import battlecode.common.Message;
-import battlecode.common.Team;
+import battlecode.common.*;
 
 
 

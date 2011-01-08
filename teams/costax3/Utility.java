@@ -1,7 +1,8 @@
 package costax3;
-import java.util.ArrayList;
 
 import battlecode.common.*;
+import java.util.*;
+
 
 
 /**
@@ -530,6 +531,26 @@ public class Utility {
 	{
 		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
 		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
+	}
+	
+	public static void backtrack(RobotPlayer myPlayer, LinkedList<MapLocation> breadcrumbs) throws Exception
+	{
+		MapLocation dest;
+		if(!breadcrumbs.isEmpty())
+		{
+			dest = breadcrumbs.pollLast();
+			Direction direction = myPlayer.myRC.getLocation().directionTo(dest);
+			if(direction != Direction.OMNI && direction != Direction.NONE)
+			{
+				while(myPlayer.myMotor.isActive())
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.setDirection(direction);
+				while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.moveForward();
+			}
+			//Utility.navStep(myPlayer, robotNavigation, breadcrumbs.pop());
+		}
 	}
 	
 }
