@@ -1,6 +1,7 @@
 package costax3;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 public class SCVBehavior extends Behavior {
@@ -152,9 +153,11 @@ public class SCVBehavior extends Behavior {
 							myPlayer.myRC.yield();
         				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(tempDestination));
         				myPlayer.myRC.yield(); // must yield before building since turning occurs at end of turn!
-        				Utility.buildChassis(myPlayer, Chassis.BUILDING);
+        				if (Utility.buildChassis(myPlayer, Chassis.BUILDING))
+        					obj = SCVBuildOrder.ADDON_MINE;
+        				else
+        					obj = SCVBuildOrder.FIND_MINE;
         				minesCapped++;
-        				obj = SCVBuildOrder.ADDON_MINE;
         				tiredness = 0;
         			}
     			}
