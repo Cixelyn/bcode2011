@@ -17,7 +17,7 @@ public class JimmyBattleStrategy extends BattleStrategy{
 		RobotInfo rInfo;
 		Robot[] nearbyRobots = player.mySensor.senseNearbyGameObjects(Robot.class);
 		for (Robot robot : nearbyRobots) {
-			if (robot.getTeam().equals(player.myRC.getTeam())) {
+			if (!robot.getTeam().equals(player.myRC.getTeam())) {
 				try {
 					rInfo = player.mySensor.senseRobotInfo(robot);
 				} catch (GameActionException e) {
