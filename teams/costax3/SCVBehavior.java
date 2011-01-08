@@ -1,6 +1,7 @@
 package costax3;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 public class SCVBehavior extends Behavior {
@@ -12,6 +13,7 @@ public class SCVBehavior extends Behavior {
 	MapLocation mainDestination;
 	MapLocation tempDestination;
 	MapLocation[] waypoints = new MapLocation[3];
+	final LinkedList<MapLocation> breadcrumbs = new LinkedList<MapLocation>();
 	
 	Direction waypointDir1;
 	Direction waypointDir2;
@@ -151,9 +153,11 @@ public class SCVBehavior extends Behavior {
 							myPlayer.myRC.yield();
         				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(tempDestination));
         				myPlayer.myRC.yield(); // must yield before building since turning occurs at end of turn!
-        				Utility.buildChassis(myPlayer, Chassis.BUILDING);
+        				if (Utility.buildChassis(myPlayer, Chassis.BUILDING))
+        					obj = SCVBuildOrder.ADDON_MINE;
+        				else
+        					obj = SCVBuildOrder.FIND_MINE;
         				minesCapped++;
-        				obj = SCVBuildOrder.ADDON_MINE;
         				tiredness = 0;
         			}
     			}
@@ -208,6 +212,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -225,6 +230,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -242,6 +248,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -259,6 +266,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -267,9 +275,10 @@ public class SCVBehavior extends Behavior {
     		case RETURN_HOME:
     			myPlayer.myRC.setIndicatorString(1,"RETURN_HOME");
     			mainDestination = hometown;
-    			Utility.navStep(myPlayer, robotNavigation, mainDestination);
+    			Utility.backtrack(myPlayer, breadcrumbs);
 				if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) <= Constants.HOME_PROXIMITY)
 				{
+					breadcrumbs.clear();
 					if(westEdge == -1)
 					{
 						myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);

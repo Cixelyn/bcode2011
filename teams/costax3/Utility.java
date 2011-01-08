@@ -1,7 +1,8 @@
 package costax3;
-import java.util.ArrayList;
 
 import battlecode.common.*;
+import java.util.*;
+
 
 
 /**
@@ -207,15 +208,20 @@ public class Utility {
 	 * Currently modified to use sleep() though ~coryli
 	 * @param player
 	 * @param component
-	 * @return
+	 * @return true if built
 	 */
-	public static void buildComponent(RobotPlayer player, ComponentType component) throws Exception
+	public static boolean buildComponent(RobotPlayer player, ComponentType component) throws Exception
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
 		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
+		{
 			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	/**
@@ -224,15 +230,20 @@ public class Utility {
 	 * Current modified to use sleep() though ~coryli
 	 * @param player
 	 * @param chassis
-	 * @return
+	 * @return true if built
 	 */
-	public static void buildChassis(RobotPlayer player, Chassis chassis) throws Exception
+	public static boolean buildChassis(RobotPlayer player, Chassis chassis) throws Exception
 	{
 		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
 		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 		if ( rFront == null )
+		{
 			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	/**
@@ -530,6 +541,26 @@ public class Utility {
 	{
 		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
 		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
+	}
+	
+	public static void backtrack(RobotPlayer myPlayer, LinkedList<MapLocation> breadcrumbs) throws Exception
+	{
+		MapLocation dest;
+		if(!breadcrumbs.isEmpty())
+		{
+			dest = breadcrumbs.pollLast();
+			Direction direction = myPlayer.myRC.getLocation().directionTo(dest);
+			if(direction != Direction.OMNI && direction != Direction.NONE)
+			{
+				while(myPlayer.myMotor.isActive())
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.setDirection(direction);
+				while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.moveForward();
+			}
+			//Utility.navStep(myPlayer, robotNavigation, breadcrumbs.pop());
+		}
 	}
 	
 }
