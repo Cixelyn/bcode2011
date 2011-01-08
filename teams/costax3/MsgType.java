@@ -11,8 +11,6 @@ public enum MsgType {
 	
 	//ttl 	- how long is this message valid?  0 = always valid
 	//cback	- should this function trigger callback?
-	//ints - number of ints in message
-	//locs - number of locs in message
 	
 				//	ttl, cback, ints, locs
 	MSG_HELLO	(	1  , true , 0 , 0	),
