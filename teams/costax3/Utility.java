@@ -532,15 +532,27 @@ public class Utility {
 	}
 	
 	/**
-	 * check if an scv/mule should build a non-refinery in the given direction (possible can use when making units)
-	 * square should be land, square should not contain robots, square should not contain mines
-	 * @param direction to check
+	 * check if a builder should build in the given direction (except when building jimmy)
+	 * square should be land, square should not contain robots, square should not contain mines, square should not be where jimmy is
+	 * @param direction to check, location of jimmy
 	 * @return well?
 	 */
-	public static boolean shouldBuild(RobotPlayer myPlayer, Direction dir) throws Exception
+	public static boolean shouldBuild(RobotPlayer myPlayer, Direction dir, MapLocation jimmyHome) throws Exception
 	{
 		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
-		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
+		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null && (jimmyHome == null || loc != jimmyHome));
+	}
+	
+	/**
+	 * check if a builder should build jimmy in the given direction
+	 * square should be where jimmy is, square should be land, square should not contain robots, square should not contain mines
+	 * @param direction to check, location of jimmy
+	 * @return well?
+	 */
+	public static boolean shouldBuildJimmy(RobotPlayer myPlayer, Direction dir, MapLocation jimmyHome) throws Exception
+	{
+		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
+		return ((jimmyHome == null || loc == jimmyHome) && myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
 	}
 	
 	public static void backtrack(RobotPlayer myPlayer, LinkedList<MapLocation> breadcrumbs) throws Exception

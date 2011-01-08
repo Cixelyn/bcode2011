@@ -10,6 +10,7 @@ public class MainRefineryBehavior extends Behavior {
 	
 	MapLocation hometown;
 	MapLocation enemyLocation;
+	MapLocation jimmyHome;
 	
 	int rGuns;
 	int marinesMade = 0;
@@ -26,7 +27,7 @@ public class MainRefineryBehavior extends Behavior {
 	boolean eeHanTiming = false;
 	
 	RobotInfo rInfo;
-	GameObject oFront;
+	Robot rFront;
 	Robot babyMule;
 	Robot babyMarine;
 	Robot[] nearbyRobots;
@@ -90,7 +91,7 @@ public class MainRefineryBehavior extends Behavior {
     			
     		case MAKE_MULE:
     			myPlayer.myRC.setIndicatorString(1, "MAKE_MULE");
-    			while(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null)
+    			while(!Utility.shouldBuild(myPlayer, myPlayer.myRC.getDirection(), jimmyHome))
     			{
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
@@ -102,10 +103,10 @@ public class MainRefineryBehavior extends Behavior {
     			
     		case EQUIP_MULE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MULE");
-    			oFront = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(oFront != null && ((Robot)oFront).getID() == babyMule.getID())
+    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    			if(rFront != null && (rFront).getID() == babyMule.getID())
     			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo((Robot)oFront);
+    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
     				rBuilder = false;
     				rComm = false;
     				rSensor = false;
@@ -132,6 +133,27 @@ public class MainRefineryBehavior extends Behavior {
     			}
     			return;
     			
+    		case EQUIP_JIMMY:
+    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    			if(rFront != null && (rFront).getID() != babyMule.getID())
+    			{
+    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+    				rSensor = false;
+    				if(rInfo.components != null)
+    				{
+    					for (ComponentType c:rInfo.components)
+    					{
+    						if (c == ComponentType.RADAR)
+    							rSensor = true;
+    					}
+    				}
+    				if (!rComm)
+    					Utility.buildComponent(myPlayer, ComponentType.DISH);
+    				else
+    					obj = RefineryBuildOrder.WAIT_FOR_POWER;
+    			}
+    			return;
+    			
     		case WAIT_FOR_POWER:
     			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_POWER");
     			Utility.spin(myPlayer);
@@ -144,7 +166,7 @@ public class MainRefineryBehavior extends Behavior {
     			
     		case MAKE_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "MAKE_MARINE");
-    			while(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null)
+    			while(!Utility.shouldBuild(myPlayer, myPlayer.myRC.getDirection(), jimmyHome))
     			{
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
@@ -162,10 +184,10 @@ public class MainRefineryBehavior extends Behavior {
     			
     		case EQUIP_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
-    			oFront = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(oFront != null && ((Robot)oFront).getID() == babyMarine.getID())
+    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    			if(rFront != null && rFront.getID() == babyMarine.getID())
     			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo((Robot)oFront);
+    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
     				rGuns = 0;
     				rSensor = false;
     				rArmor = false;
@@ -196,9 +218,7 @@ public class MainRefineryBehavior extends Behavior {
     				}
     			}
     			else
-    			{
     				obj = RefineryBuildOrder.MAKE_MARINE;
-    			}
     			return;
     			
     		case SLEEP:
@@ -227,6 +247,8 @@ public class MainRefineryBehavior extends Behavior {
 	public void newMessageCallback(MsgType t, Message msg) {
 		if(t == MsgType.MSG_SCOUTING)
 			scouting = true;
+		if(t == MsgType.MSG_JIMMY_HOME)
+			jimmyHome = msg.locations[Messenger.firstData];
 		if(t == MsgType.MSG_POWER_UP)
 			powered = true;
 		if(t == MsgType.MSG_MOVE_OUT)
