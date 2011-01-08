@@ -51,6 +51,9 @@ public class MarineBehavior extends Behavior {
 		
 		switch (obj) {
 			case EQUIPPING:
+				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
+				if (!myPlayer.myMotor.isActive())
+    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());  // WEEEEEEEEEEE!!!!
 	            guns = 0;
 	            hasSensor = false;
 	            hasArmor = false;
@@ -74,14 +77,19 @@ public class MarineBehavior extends Behavior {
 				}
 				if (guns >= Constants.GUNS && hasSensor && hasArmor)
 					obj = MarineBuildOrder.WAITING;
-				break;
+				return;
+				
 			case WAITING:
+				myPlayer.myRC.setIndicatorString(1,"WAITING");
+				if (!myPlayer.myMotor.isActive())
+    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());  // WEEEEEEEEEEE!!!!
 				Utility.senseEnemies(myPlayer);
 	        	if (eeHanTiming)
 	        		obj = MarineBuildOrder.MOVE_OUT;
-	        	break;
+	        	return;
+	        	
 			case MOVE_OUT:
-	        	myPlayer.myRC.setIndicatorString(1,"EE HAN TIMING!");
+	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
 	        	newDestination = Utility.senseEnemies(myPlayer);
 	        	if (newDestination != null) // enemy found
 	        	{
@@ -108,10 +116,10 @@ public class MarineBehavior extends Behavior {
 	            }
 	        	if (staleness > Constants.OLDNEWS && (Constants.OLDNEWS - staleness) % Constants.MARINE_SEARCH_FREQ == 0)
 	        		obj = MarineBuildOrder.SEARCH_FOR_ENEMY;
-	        	break;
+	        	return;
 	        	
 			case SEARCH_FOR_ENEMY:
-				myPlayer.myRC.setIndicatorString(1, "FIND_MINE");
+				myPlayer.myRC.setIndicatorString(1, "SEARCH_FOR_ENEMY");
     			enemyFound = false;
     			newDestination = Utility.senseEnemies(myPlayer);
     			if (newDestination != null)
@@ -132,7 +140,7 @@ public class MarineBehavior extends Behavior {
     				dizziness = 0;
     				obj = MarineBuildOrder.MOVE_OUT;
     			}
-    			break;
+    			return;
 		}
 	}
 	

@@ -138,6 +138,15 @@ public class Messenger {
 		sendMsg(t,buildNewMessage(0,0));
 	}
 	
+	public void sendIntDoubleLoc(MsgType t, int int1, MapLocation loc1, MapLocation loc2)
+	{
+		Message m = buildNewMessage(1,2);
+		m.ints[firstData] = int1;
+		m.locations[firstData  ] = loc1;
+		m.locations[firstData+1] = loc2;
+		
+		sendMsg(t,m);	
+	}
 	
 	public void sendDoubleLoc(MsgType t, MapLocation loc1, MapLocation loc2) {
 		Message m = buildNewMessage(0,2);
@@ -157,9 +166,13 @@ public class Messenger {
 	public void receiveAll() {
 		
 		Message[] rcv = myPlayer.myRC.getAllMessages();
+		boolean isValid = true;
 		
 		for(Message m: rcv) {
 			
+			if (!isValid)
+				System.out.println("Message dropped!");
+			isValid = false;
 			
 			////////BEGIN MESSAGE VALIDATION SYSTEM
 				///////Begin inlined message validation checker
@@ -178,13 +191,14 @@ public class Messenger {
 					if(m.locations==null) break;
 					if(m.locations.length!=t.numLocs) break;
 			////////MESSAGE HAS BEEN VALIDATED
-						
+			
+			isValid = true;
 				
 			if(t.shouldCallback) {
 				myPlayer.myBehavior.newMessageCallback(t,m);
 			}
 
-	
+			
 		}
 	}
 	

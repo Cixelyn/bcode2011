@@ -8,24 +8,38 @@ public class BuildingBehavior extends Behavior {
 		super(player);
 	}
 
-	
-	public void newComponentCallback(ComponentController[] components) {
-	}
-
-
 
 
 	public void run() throws Exception {
 		if (Clock.getRoundNum() <= 2)
 			myPlayer.swapBehavior(new MainRefineryBehavior(myPlayer));
 		else
-			myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
+			myPlayer.myRC.setIndicatorString(1, "WHAT AM I???");
 	}
 
 	public String toString() {
-		return "DefaultBuildingBehavior";
+		return "BuildingBehavior";
 	}
 
+	public void newComponentCallback(ComponentController[] components) {
+		if (Clock.getRoundNum() > 2)
+		{
+			for(ComponentController c:components)
+			{
+				if (c.type() == ComponentType.RECYCLER)
+				{
+					myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
+					return;
+				}
+				if (c.type() == ComponentType.FACTORY)
+				{
+					myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
+					return;
+				}
+			}
+		}
+	}
+	
 	
 	public void newMessageCallback(MsgType t, Message msg) {
 		
