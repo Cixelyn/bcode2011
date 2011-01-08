@@ -15,7 +15,8 @@ public enum MsgType {
 				//	ttl, cback, ints, locs
 	MSG_HELLO	(	1  , true , 0 , 0	),
 	MSG_POWER_UP(   0  , true , 0 , 0   ),
-	MSG_MOVE_OUT(   0  , true , 0 , 2   );
+	MSG_MOVE_OUT(   0  , true , 0 , 2   ),
+	MSG_ENEMY_LO(   1  , true,  10, 10  );
 	
 	
 	
