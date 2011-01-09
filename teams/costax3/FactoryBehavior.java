@@ -9,6 +9,7 @@ public class FactoryBehavior extends Behavior {
 	MapLocation jimmyHome;
 	
 	boolean rComm;
+	boolean rDummy;
 	
 	Robot rFront;
 	Robot babyJimmy;
@@ -38,7 +39,7 @@ public class FactoryBehavior extends Behavior {
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.LIGHT);
+				Utility.buildChassis(myPlayer, Chassis.MEDIUM);
 				babyJimmy = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = FactoryBuildOrder.EQUIP_JIMMY;
     			return;
@@ -49,17 +50,22 @@ public class FactoryBehavior extends Behavior {
     			{
     				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
     				rComm = false;
+    				rDummy = false;
     				if(rInfo.components != null)
     				{
     					for (ComponentType c:rInfo.components)
     					{
     						if (c == ComponentType.DISH)
     							rComm = true;
+    						if (c == ComponentType.DUMMY)
+    							rDummy = true;
     					}
     				}
     				if (!rComm)
-    					Utility.buildComponent(myPlayer, ComponentType.DISH);
-    				else
+    					Utility.buildComponentOnFront(myPlayer, ComponentType.DISH);
+    				if (!rDummy)
+    					Utility.buildComponentOnFront(myPlayer, ComponentType.DUMMY);
+    				if (rComm && rDummy)
     					obj = FactoryBuildOrder.SLEEP;
     			}
     			return;

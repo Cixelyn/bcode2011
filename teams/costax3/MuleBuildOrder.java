@@ -2,7 +2,7 @@ package costax3;
 
 public enum MuleBuildOrder 
 {
-	INITIALIZE,
+	EQUIPPING,
 	BUILD_FACTORY,
 	ADDON_FACTORY,
 	VACATE_JIMMY_HOME,

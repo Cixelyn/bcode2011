@@ -208,9 +208,24 @@ public class Utility {
 	 * Currently modified to use sleep() though ~coryli
 	 * @param player
 	 * @param component
+	 * @return 
+	 */
+	public static void buildComponentOnSelf(RobotPlayer player, ComponentType component) throws Exception
+	{
+		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
+			player.sleep();
+		player.myBuilder.build(component, player.myRC.getLocation(), RobotLevel.ON_GROUND);
+	}
+	
+	/**
+	 * Helper function to build a component in the direction i'm facing by JVen
+	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * Currently modified to use sleep() though ~coryli
+	 * @param player
+	 * @param component
 	 * @return true if built
 	 */
-	public static boolean buildComponent(RobotPlayer player, ComponentType component) throws Exception
+	public static boolean buildComponentOnFront(RobotPlayer player, ComponentType component) throws Exception
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
@@ -555,6 +570,11 @@ public class Utility {
 		return ((jimmyHome == null || loc.equals(jimmyHome)) && myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
 	}
 	
+	/**
+	 * used by SCV when returning home after scouting in a direction
+	 * @param list of squares traversed while scouting
+	 * @return 
+	 */
 	public static void backtrack(RobotPlayer myPlayer, LinkedList<MapLocation> breadcrumbs) throws Exception
 	{
 		MapLocation dest;

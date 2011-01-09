@@ -20,6 +20,11 @@ public class MarineBattleStrategy extends BattleStrategy {
 		boolean foundEnemy=false;
 		Message[] messages = player.myRC.getAllMessages();
 		myScanner.detectRobots();
+		try {
+			Utility.senseEnemies(player);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		if (messages!=null) {
 			for (Message message: messages) { //see all incoming broadcasts
 				if (message.ints.length==Constants.ENEMIES_COUNT+2) { //we have an EnemyFound message (will probably change later with header?)
@@ -30,7 +35,12 @@ public class MarineBattleStrategy extends BattleStrategy {
 						 for (WeaponController weapon : player.myWeapons) {
 							 if (!weapon.isActive() && weapon.withinRange(message.locations[index])) {
 								 try {
-									weapon.attackSquare(message.locations[i], RobotLevel.ON_GROUND);
+									if (Encoder.decodeRobotChassis(messageCopy[Messenger.firstData+i]).equals(Chassis.FLYING)) {
+										weapon.attackSquare(message.locations[i], RobotLevel.IN_AIR);
+									}
+									else {
+										weapon.attackSquare(message.locations[i], RobotLevel.IN_AIR);
+									}
 								} catch (GameActionException e) {
 									e.printStackTrace();
 								}
@@ -46,12 +56,6 @@ public class MarineBattleStrategy extends BattleStrategy {
 				if (foundEnemy) {
 					break;
 				}
-			}
-		}
-		else {
-			try {
-				Utility.senseEnemies(player);
-			} catch (Exception e) {
 			}
 		}
 	}
