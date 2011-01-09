@@ -68,6 +68,7 @@ public class SCVBehavior extends Behavior
 				return;
 				
 	    	case FIND_MINE:
+	    		myPlayer.myRC.setIndicatorString(1, "FIND_MINE");
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)
@@ -134,6 +135,11 @@ public class SCVBehavior extends Behavior
     			return;
     			
     		case ADDON_MINE:
+    			myPlayer.myRC.setIndicatorString(1, "ADDON_MINE");
+    			while(myPlayer.myMotor.isActive())
+    				myPlayer.myRC.yield();
+    			myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(destination));
+    			myPlayer.myRC.yield();
     			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RECYCLER);
     			obj = SCVBuildOrder.FIND_MINE;
     			return;

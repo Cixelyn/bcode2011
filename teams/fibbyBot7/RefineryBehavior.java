@@ -11,9 +11,9 @@ public class RefineryBehavior extends Behavior
 	Robot babyMule;
 	Robot babyMarine;
 	
-	final Random random = new Random();
-	double p;
 	double lastRes;
+	Random random = new Random();
+	double p;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -38,9 +38,9 @@ public class RefineryBehavior extends Behavior
     			
     		case WAITING:
     			myPlayer.myRC.setIndicatorString(1, "WAITING");
-    			if(Clock.getRoundNum() >= Constants.MULE_TIME && Clock.getRoundNum() < Constants.EXPAND_TIME)
+    			if(Clock.getRoundNum() >= Constants.MULE_TIME && Clock.getRoundNum() < Constants.EXPAND_TIME && lastRes < myPlayer.myRC.getTeamResources() + Chassis.LIGHT.upkeep)
     				obj = RefineryBuildOrder.MAKE_MULE;
-    			if(Clock.getRoundNum() >= Constants.MARINE_TIME && Clock.getRoundNum() < Constants.LATE_GAME)
+    			if(Clock.getRoundNum() >= Constants.MARINE_TIME && Clock.getRoundNum() < Constants.MID_GAME && lastRes < myPlayer.myRC.getTeamResources() + Chassis.LIGHT.upkeep)
         			obj = RefineryBuildOrder.MAKE_MARINE;
     			if(Clock.getRoundNum() >= Constants.LATE_GAME && lastRes < myPlayer.myRC.getTeamResources() + Chassis.LIGHT.upkeep)
     			{
