@@ -9,7 +9,7 @@ public class SCVBehavior extends Behavior
 	
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
-	SCVBuildOrder obj = SCVBuildOrder.EXPAND;
+	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 	
 	MapLocation destination;
 	
@@ -34,71 +34,75 @@ public class SCVBehavior extends Behavior
 	{
     	switch (obj)
     	{
-    	case EXPAND:
-			Utility.bounceNav(myPlayer);
-			mineFound = false;
-			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
-			for (Mine m:nearbyMines)
-			{
-				if(!mineFound)
+	    	case EXPAND:
+				myPlayer.myRC.setIndicatorString(1, "EXPAND");
+				Utility.bounceNav(myPlayer);
+				mineFound = false;
+				nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
+				for (Mine m:nearbyMines)
+				{
+					if(!mineFound)
+	    			{
+	    				mInfo = myPlayer.mySensor.senseMineInfo(m);
+	    				if(myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
+	    				{
+	        				mineFound = true;
+	        				destination = mInfo.mine.getLocation();
+	    				}
+	    			}
+				}
+				if (mineFound)
+				{
+					tiredness = 0;
+					obj = SCVBuildOrder.CAP_MINE;
+				}
+				else
+				{
+					tiredness++;
+					if (tiredness > Constants.SCV_SEARCH_FREQ)
+					{
+						tiredness = 0;
+						obj = SCVBuildOrder.FIND_MINE;
+					}
+				}
+				return;
+				
+	    	case FIND_MINE:
+    			mineFound = false;
+    			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
+    			for (Mine m:nearbyMines)
     			{
-    				mInfo = myPlayer.mySensor.senseMineInfo(m);
-    				if(myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
-    				{
-        				mineFound = true;
-        				destination = mInfo.mine.getLocation();
-    				}
+    				if(!mineFound && m.getTeam()==Team.NEUTRAL)
+        			{
+        				mInfo = myPlayer.mySensor.senseMineInfo(m);
+        				if(myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(mInfo.mine.getID()))
+        				{
+            				mineFound = true;
+            				destination = mInfo.mine.getLocation();
+        				}
+        			}
     			}
-			}
-			if (mineFound)
-			{
-				tiredness = 0;
-				obj = SCVBuildOrder.CAP_MINE;
-			}
-			else
-			{
-				tiredness++;
-				if (tiredness > Constants.SCV_SEARCH_FREQ)
-					obj = SCVBuildOrder.FIND_MINE;
-			}
-			return;
-    			
-    	case FIND_MINE:
-			myPlayer.myRC.setIndicatorString(1, "FIND_MINE");
-			mineFound = false;
-			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
-			for (Mine m:nearbyMines)
-			{
-				if(!mineFound && m.getTeam()==Team.NEUTRAL)
+    			if(!mineFound && dizziness < 4)
     			{
-    				mInfo = myPlayer.mySensor.senseMineInfo(m);
-    				if(myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(mInfo.mine.getID()))
-    				{
-        				mineFound = true;
-        				destination = mInfo.mine.getLocation();
-    				}
+    				while (myPlayer.myMotor.isActive())
+    					myPlayer.myRC.yield();
+    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+    				dizziness++;
     			}
-			}
-			if(!mineFound && dizziness < 4)
-			{
-				while (myPlayer.myMotor.isActive())
-					myPlayer.myRC.yield();
-				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-				dizziness++;
-			}
-			if(!mineFound && dizziness >= 4)
-			{
-				dizziness = 0;
-				obj = SCVBuildOrder.EXPAND;
-			}
-			if(mineFound)
-			{
-				dizziness = 0;
-				obj = SCVBuildOrder.CAP_MINE;
-			}
-			return;
-			
+    			if(!mineFound && dizziness >= 4)
+    			{
+    				dizziness = 0;
+    				obj = SCVBuildOrder.EXPAND;
+    			}
+    			if(mineFound)
+    			{
+    				dizziness = 0;
+    				obj = SCVBuildOrder.CAP_MINE;
+    			}
+    			return;
+				
     		case CAP_MINE:
+    			myPlayer.myRC.setIndicatorString(1, "CAP_MINE");
     			if(!myPlayer.mySensor.withinRange(mInfo.mine.getLocation()) || myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
     			{
         			if (myPlayer.myRC.getLocation().distanceSquaredTo(destination) > myPlayer.myBuilder.type().range)
@@ -108,32 +112,30 @@ public class SCVBehavior extends Behavior
             			if(tiredness > Constants.MINE_AFFINITY)
             			{
             				badMines.add(mInfo.mine.getID());
-            				obj = SCVBuildOrder.EXPAND;
+            				obj = SCVBuildOrder.FIND_MINE;
             				tiredness = 0;
             			}
         			}
         			else
         			{
-        				while(myPlayer.myMotor.isActive())
-							myPlayer.myRC.yield();
         				if (Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getLocation().directionTo(destination), Chassis.BUILDING))
-        					obj = SCVBuildOrder.ADDON_MINE;
+        					obj = MuleBuildOrder.ADDON_MINE;
         				else
-        					obj = SCVBuildOrder.EXPAND;
+        					obj = MuleBuildOrder.EXPAND;
         				tiredness = 0;
         				return;
         			}
     			}
     			else
     			{
-    				obj = SCVBuildOrder.EXPAND;
+    				obj = SCVBuildOrder.FIND_MINE;
     				tiredness = 0;
     			}
     			return;
     			
     		case ADDON_MINE:
     			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RECYCLER);
-    			obj = SCVBuildOrder.EXPAND;
+    			obj = SCVBuildOrder.FIND_MINE;
     			return;
     	}
 	}

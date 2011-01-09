@@ -46,7 +46,7 @@ public class MuleBehavior extends Behavior
     					hasSensor = true;
     			}
     			if (hasConstructor && hasSensor)
-    				obj = MuleBuildOrder.EXPAND;
+    				obj = MuleBuildOrder.FIND_MINE;
     			return;
     			
     		case EXPAND:
@@ -75,12 +75,14 @@ public class MuleBehavior extends Behavior
     			{
     				tiredness++;
     				if (tiredness > Constants.SCV_SEARCH_FREQ)
+    				{
+    					tiredness = 0;
     					obj = MuleBuildOrder.FIND_MINE;
+    				}
     			}
     			return;
     			
     		case FIND_MINE:
-    			myPlayer.myRC.setIndicatorString(1, "FIND_MINE");
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)
@@ -141,14 +143,14 @@ public class MuleBehavior extends Behavior
     			}
     			else
     			{
-    				obj = MuleBuildOrder.EXPAND;
+    				obj = MuleBuildOrder.FIND_MINE;
     				tiredness = 0;
     			}
     			return;
     			
     		case ADDON_MINE:
     			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RECYCLER);
-    			obj = MuleBuildOrder.EXPAND;
+    			obj = MuleBuildOrder.FIND_MINE;
     			return;
     	}
 	}
