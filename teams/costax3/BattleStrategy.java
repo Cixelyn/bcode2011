@@ -1,13 +1,7 @@
 package costax3;
 
 
-
-import costax3.Navigation;
-import costax3.RobotPlayer;
-import costax3.Utility;
-import battlecode.common.BroadcastController;
-import battlecode.common.Clock;
-import battlecode.common.RobotController;
+import battlecode.common.*;
 
 public abstract class BattleStrategy {
 	protected final RobotPlayer player;

@@ -1,7 +1,6 @@
 package costax3;
 
 import battlecode.common.*;
-
 import java.util.ArrayList;
 
 public class MainRefineryBehavior extends Behavior {
@@ -187,7 +186,10 @@ public class MainRefineryBehavior extends Behavior {
 		if(t == MsgType.MSG_JIMMY_HOME)
 			jimmyHome = msg.locations[Messenger.firstData];
 		if(t == MsgType.MSG_POWER_UP)
+		{
 			powered = true;
+			myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+		}
 		if(t == MsgType.MSG_MOVE_OUT)
 		{
 			spawn = msg.ints[Messenger.firstData];

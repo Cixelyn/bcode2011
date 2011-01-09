@@ -116,7 +116,9 @@ public class ExpoRefineryBehavior extends Behavior {
 	
 	public void newMessageCallback(MsgType t, Message msg) {
 		if(t == MsgType.MSG_POWER_UP)
+		{
 			powered = true;
+		}
 		if(t == MsgType.MSG_MOVE_OUT)
 		{
 			spawn = msg.ints[Messenger.firstData];

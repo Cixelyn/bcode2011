@@ -141,7 +141,10 @@ public class MainRefineryBehavior extends Behavior {
 	
 	public void newMessageCallback(MsgType t, Message msg) {
 		if(t == MsgType.MSG_POWER_UP)
+		{
 			powered = true;
+			myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+		}
 		if(t == MsgType.MSG_MOVE_OUT)
 		{
 			spawn = msg.ints[Messenger.firstData];

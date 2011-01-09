@@ -4,9 +4,6 @@ import battlecode.common.*;
 
 import java.util.*;
 
-import costax2b.Constants;
-import costax2b.SCVBuildOrder;
-
 public class SCVBehavior extends Behavior {
 	
 	final Navigation robotNavigation = new Navigation(myPlayer);
