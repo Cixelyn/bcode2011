@@ -60,7 +60,7 @@ public class RefineryBehavior extends Behavior
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.LIGHT, Chassis.BUILDING.cost);
+				Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getDirection(), Chassis.LIGHT);
 				babyMule = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = RefineryBuildOrder.EQUIP_MULE;
 				lastRes = myPlayer.myRC.getTeamResources();
@@ -80,7 +80,7 @@ public class RefineryBehavior extends Behavior
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.LIGHT, Chassis.BUILDING.cost);
+				Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getDirection(), Chassis.LIGHT);
 				babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = RefineryBuildOrder.EQUIP_MARINE;
 				lastRes = myPlayer.myRC.getTeamResources();

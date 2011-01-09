@@ -119,9 +119,9 @@ public class SCVBehavior extends Behavior
         			else
         			{
         				if (Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getLocation().directionTo(destination), Chassis.BUILDING))
-        					obj = MuleBuildOrder.ADDON_MINE;
+        					obj = SCVBuildOrder.ADDON_MINE;
         				else
-        					obj = MuleBuildOrder.EXPAND;
+        					obj = SCVBuildOrder.EXPAND;
         				tiredness = 0;
         				return;
         			}
