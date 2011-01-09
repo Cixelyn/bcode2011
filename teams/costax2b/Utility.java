@@ -188,7 +188,7 @@ public class Utility {
 	public static boolean buildComponentOnFrontGround(RobotPlayer player, ComponentType component) throws Exception
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
-			player.sleep();
+			player.myRC.yield();
 		Robot rFront = (Robot) player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
 		{
@@ -210,7 +210,7 @@ public class Utility {
 	public static boolean buildComponentOnFrontAir(RobotPlayer player, ComponentType component) throws Exception
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
-			player.sleep();
+			player.myRC.yield();
 		Robot rFront = (Robot) player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.IN_AIR);
 		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
 		{

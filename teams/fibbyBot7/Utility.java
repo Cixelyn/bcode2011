@@ -13,6 +13,8 @@ import java.util.*;
 public class Utility
 {
 	
+	static final Random rand = new Random();
+	
 	public static final String[] componentStr = new String[] {
 		"Shd",
 		"Hrd",
@@ -476,26 +478,21 @@ public class Utility
 		WeaponController gun;
 		RobotInfo rInfo;
 		MapLocation destination = null;
-		boolean foundEnemy = false;
     	for(Robot r:nearbyRobots)
     	{
 			for (Object c:myPlayer.myWeapons)
 			{
 				gun = (WeaponController) c;
-				if(!gun.isActive() && r.getTeam()==myPlayer.myRC.getTeam().opponent())
+				if(r.getTeam()==myPlayer.myRC.getTeam().opponent())
 				{
-					foundEnemy = true;
 					rInfo = myPlayer.mySensor.senseRobotInfo(r);
 				 	destination = rInfo.location;
-					if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
+					if(!gun.isActive() && rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
 				}
 			}
     	}
-    	if (foundEnemy)
-    		return destination;
-    	else
-    		return null;
+    	return destination;
 	}
 	
 	/**
@@ -509,26 +506,21 @@ public class Utility
 		WeaponController gun;
 		RobotInfo rInfo;
 		MapLocation destination = null;
-		boolean foundEnemy = false;
     	for(Robot r:nearbyRobots)
     	{
 			for (Object c:myPlayer.myWeapons)
 			{
 				gun = (WeaponController) c;
-				if(!gun.isActive() && r.getTeam()==Team.NEUTRAL)
+				if(r.getTeam()==Team.NEUTRAL)
 				{
-					foundEnemy = true;
 					rInfo = myPlayer.mySensor.senseRobotInfo(r);
 				 	destination = rInfo.location;
-					if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
+					if(!gun.isActive() && rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
 				}
 			}
     	}
-    	if (foundEnemy)
-    		return destination;
-    	else
-    		return null;
+    	return destination;
 	}
 	
 	/**
@@ -852,7 +844,6 @@ public class Utility
 	 */
 	public static void bounceNav(RobotPlayer myPlayer) throws Exception
 	{
-		Random rand = new Random();
 		int random = rand.nextInt(10);
 		if (!myPlayer.myMotor.isActive())
 		{
@@ -860,7 +851,7 @@ public class Utility
 				myPlayer.myMotor.moveForward();
 			else
 			{
-				if (random == 0 || random == 1 || random == 2 || random == 3)
+				if (random == 0 || random == 1 || random == 2)
 				{
 					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
@@ -870,12 +861,37 @@ public class Utility
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+					else
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
+				}
+				else if (random == 3)
+				{
+					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
 					else
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 				}
 				else if (random == 4)
 				{
-					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()))
+					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
@@ -886,7 +902,7 @@ public class Utility
 					else
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 				}
-				else if (random == 5 || random == 6 || random == 7 || random == 8)
+				else if (random == 5 || random == 6 || random == 7)
 				{
 					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
@@ -896,12 +912,37 @@ public class Utility
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
 					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+					else
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
+				}
+				else if (random == 8)
+				{
+					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
 					else
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 				}
 				else if (random == 9)
 				{
-					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()))
+					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight()))
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
 					else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()))
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
