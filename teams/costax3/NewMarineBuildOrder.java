@@ -3,5 +3,6 @@ package costax3;
 public enum NewMarineBuildOrder {
 	
 	EQUIPPING,
-	FIND_ENEMY;
+	FIND_ENEMY,
+	CHASE_ENEMY;
 }
