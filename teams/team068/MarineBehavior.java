@@ -51,6 +51,8 @@ public class MarineBehavior extends Behavior {
 		
 		switch (obj) {
 			case EQUIPPING:
+				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
+				Utility.spin(myPlayer);
 	            guns = 0;
 	            hasSensor = false;
 	            hasArmor = false;
@@ -58,7 +60,7 @@ public class MarineBehavior extends Behavior {
 				{
 					if (c.type()==Constants.GUNTYPE)
 					{
-						guns = guns+1;
+						guns++;
 						if (!myPlayer.myWeapons.contains((WeaponController)c))
 							myPlayer.myWeapons.add((WeaponController)c);
 					}
@@ -74,21 +76,25 @@ public class MarineBehavior extends Behavior {
 				}
 				if (guns >= Constants.GUNS && hasSensor && hasArmor)
 					obj = MarineBuildOrder.WAITING;
-				break;
+				return;
+				
 			case WAITING:
+				myPlayer.myRC.setIndicatorString(1,"WAITING");
+				Utility.spin(myPlayer);
 				Utility.senseEnemies(myPlayer);
 	        	if (eeHanTiming)
 	        		obj = MarineBuildOrder.MOVE_OUT;
-	        	break;
+	        	return;
+	        	
 			case MOVE_OUT:
-	        	myPlayer.myRC.setIndicatorString(1,"EE HAN TIMING!");
+	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
 	        	newDestination = Utility.senseEnemies(myPlayer);
 	        	if (newDestination != null) // enemy found
 	        	{
 	        		staleness = 0;
 	        		currDestination = newDestination;
 	        	}
-	        	if (!myPlayer.myMotor.isActive())
+	        	if (currDestination != null && !myPlayer.myMotor.isActive())
 	            {
 	        		direction = robotNavigation.bugTo(currDestination);
 	        		staleness++;
@@ -108,10 +114,10 @@ public class MarineBehavior extends Behavior {
 	            }
 	        	if (staleness > Constants.OLDNEWS && (Constants.OLDNEWS - staleness) % Constants.MARINE_SEARCH_FREQ == 0)
 	        		obj = MarineBuildOrder.SEARCH_FOR_ENEMY;
-	        	break;
+	        	return;
 	        	
 			case SEARCH_FOR_ENEMY:
-				myPlayer.myRC.setIndicatorString(1, "FIND_MINE");
+				myPlayer.myRC.setIndicatorString(1, "SEARCH_FOR_ENEMY");
     			enemyFound = false;
     			newDestination = Utility.senseEnemies(myPlayer);
     			if (newDestination != null)
@@ -123,16 +129,18 @@ public class MarineBehavior extends Behavior {
     			}
     			if(!enemyFound && dizziness < 4)
     			{
-    				while (!myPlayer.myMotor.isActive())
+    				if(!myPlayer.myMotor.isActive())
+    				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-    				dizziness++;
+    					dizziness++;
+    				}
     			}
     			if(!enemyFound && dizziness == 4)
     			{
     				dizziness = 0;
     				obj = MarineBuildOrder.MOVE_OUT;
     			}
-    			break;
+    			return;
 		}
 	}
 	

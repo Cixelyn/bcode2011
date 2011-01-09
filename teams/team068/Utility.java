@@ -1,7 +1,9 @@
 package team068;
-import java.util.ArrayList;
 
 import battlecode.common.*;
+
+import java.util.*;
+
 
 
 /**
@@ -149,94 +151,96 @@ public class Utility {
 		return (output + ":" + Integer.toString(player.myMotor.roundsUntilIdle()));
 	}
 	
-	
-	
 	/**
-	 * Helper function to build a chassis
-	 * @param player
-	 * @param chassis
-	 * @param loc
-	 * @return
-	 * @throws GameActionException
-	 */
-	public static boolean buildChassisAt(RobotPlayer player,Chassis chassis,MapLocation loc) throws GameActionException {
-		
-		//Add in early exit cases first.
-		if(player.myRC.getTeamResources()<chassis.cost) { //Not enough money
-			return false;
-		} if (!player.myBuilder.withinRange(loc)) { //Not within range (TEMPORARY can be removed later)
-			return false;
-		}
-		
-		//If we passed this point we _should_ be able to build the chassis
-		player.myBuilder.build(chassis,loc);
-		return true;
-	}
-	
-	
-	
-	/**
-	 * Helper function to build a component
-	 * @param player
-	 * @param component
-	 * @param loc
-	 * @param level
-	 * @return
-	 * @throws GameActionException
-	 */
-	public static boolean buildComponentAt(RobotPlayer player,ComponentType component,MapLocation loc, RobotLevel level) throws GameActionException {
-		
-		//Add in early exit cases first.
-		if(player.myRC.getTeamResources()<component.cost) { //Not enough money
-			return false;
-		} if (!player.myBuilder.withinRange(loc)) { //Not within range  (TEMPORARY, can be removed later)
-			return false;
-		}
-		
-		//Note that this call will still fail if there is no robot there so be careful.
-		
-		
-		//If we passed this point we _should_ be able to build the component
-		player.myBuilder.build(component, loc, level);
-		return true;
-	}
-	
-	/**
-	 * Helper function to build a component by JVen
+	 * Helper function to build a component on self by JVen
 	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
 	 * Currently modified to use sleep() though ~coryli
 	 * @param player
 	 * @param component
-	 * @return
+	 * @return 
 	 */
-	public static void buildComponent(RobotPlayer player, ComponentType component) throws Exception
+	public static void buildComponentOnSelf(RobotPlayer player, ComponentType component) throws Exception
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
-		{
 			player.sleep();
+		player.myBuilder.build(component, player.myRC.getLocation(), player.myRC.getRobot().getRobotLevel());
+		if (component.componentClass == ComponentClass.COMM)
+		{
+			for(ComponentController c:player.myRC.components())
+			{
+				if (c.type().componentClass == ComponentClass.COMM)
+				{
+					player.myBroadcaster = (BroadcastController)c;
+					player.myMessenger.enableSender();
+				}
+			}
 		}
-		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+	}
+	
+	/**
+	 * Helper function to build a component in the direction i'm facing, on the ground by JVen
+	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * Currently modified to use sleep() though ~coryli
+	 * @param player
+	 * @param component
+	 * @return true if built
+	 */
+	public static boolean buildComponentOnFrontGround(RobotPlayer player, ComponentType component) throws Exception
+	{
+		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
+			player.sleep();
+		Robot rFront = (Robot) player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
+		{
 			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	/**
+	 * Helper function to build a component in the direction i'm facing, in the air by JVen
+	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * Currently modified to use sleep() though ~coryli
+	 * @param player
+	 * @param component
+	 * @return true if built
+	 */
+	public static boolean buildComponentOnFrontAir(RobotPlayer player, ComponentType component) throws Exception
+	{
+		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
+			player.sleep();
+		Robot rFront = (Robot) player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.IN_AIR);
+		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
+		{
+			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.IN_AIR);
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	/**
 	 * Helper function to build a chassis by JVen
 	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
-	 * Current modified to use sleep() thought ~coryli
+	 * Current modified to use sleep() though ~coryli
 	 * @param player
 	 * @param chassis
-	 * @return
+	 * @return true if built
 	 */
-	public static void buildChassis(RobotPlayer player, Chassis chassis) throws Exception
+	public static boolean buildChassis(RobotPlayer player, Chassis chassis) throws Exception
 	{
 		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
-		{
 			player.sleep();
-		}
-		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), chassis.level);
 		if ( rFront == null )
+		{
 			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	/**
@@ -286,122 +290,141 @@ public class Utility {
 	}
 	
 	/**
-	 * Uses black magic to determine spawn location based on whether off map squares are found in each direction
+	 * Uses black magic to determine spawn location based on whether off map squares are found in each direction (see SCV code for meaning of spawn int)
 	 * @param off map square to the west? 0 = no, 1 = yes
 	 * @param off map square to the north? 0 = no, 1 = yes
 	 * @param off map square to the east? 0 = no, 1 = yes
 	 * @param off map square to the south? 0 = no, 1 = yes
 	 * @return String stating spawn location... why String? idk
 	 */
-	public static String getSpawn(int westEdge, int northEdge, int eastEdge, int southEdge)
+	public static int getSpawn(int westEdge, int northEdge, int eastEdge, int southEdge)
 	{
 		switch ((westEdge+1)*(2*northEdge+1)*(4*eastEdge+1)*(6*southEdge+1))
 		{
 			case 2:
-				return "west";
+				return 0;
 			case 3:
-				return "north";
+				return 2;
 			case 5:
-				return "east";
+				return 4;
 			case 7:
-				return "south";
+				return 6;
 			case 6:
-				return "northwest";
+				return 1;
 			case 14:
-				return "southwest";
+				return 7;
 			case 15:
-				return "northeast";
+				return 3;
 			case 35:
-				return "southeast";
+				return 5;
 		}
-		return "idk"; // should be unreachable
+		return 8; // should be unreachable
 	}
 	
 	
 	/**
 	 * Outputs enemy direction based on strings returned from getSpawn
-	 * @param strings returned from getSpawn
+	 * @param string returned from getSpawn
 	 * @return direction where enemy is
 	 */
-	public static MapLocation spawnOpposite(MapLocation hometown, String spawn)
+	public static MapLocation spawnOpposite(MapLocation hometown, int spawn)
 	{
-		if(spawn == "north")
+		switch (spawn)
+		{
+			case 2:
 			return hometown.add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
-		if(spawn == "east")
+			case 4:
 			return hometown.add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
-		if(spawn == "south")
+			case 6:
 			return hometown.add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
-		if(spawn == "west")
+			case 0:
 			return hometown.add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
-		if(spawn == "northwest")
+			case 1:
 			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
-		if(spawn == "northeast")
+			case 3:
 			return hometown.add(Direction.SOUTH_WEST, Constants.MAP_MAX_SIZE);
-		if(spawn == "southwest")
+			case 7:
 			return hometown.add(Direction.NORTH_EAST, Constants.MAP_MAX_SIZE);
-		if(spawn == "southeast")
+			case 5:
 			return hometown.add(Direction.NORTH_WEST, Constants.MAP_MAX_SIZE);
-		return hometown;
+			case 8:
+			return hometown;
+		}
+		return null; // should be unreachable
 	}
 	
-	public static Direction[] spawnAdjacent(String spawn)
+	/**
+	 * Outputs array of waypoint directions for scvs based on spawn
+	 * @param string returned from getSpawn
+	 * @return waypoint directions for scvs
+	 */
+	public static Direction[] spawnAdjacent(int spawn)
 	{
 		Direction[] waypointDirs = new Direction[4]; // 1st scv dir, 2nd scv dir, 1st scv next dir, 2nd scv next dir
-		if(spawn == "north")
+		switch (spawn)
 		{
+			case 2:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.WEST;
 			waypointDirs[2] = Direction.SOUTH;
 			waypointDirs[3] = Direction.SOUTH;
-		}
-		if(spawn == "south")
-		{
+			break;
+			
+			case 6:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.WEST;
 			waypointDirs[2] = Direction.NORTH;
 			waypointDirs[3] = Direction.NORTH;
-		}
-		if(spawn == "east")
-		{
+			break;
+			
+			case 4:
 			waypointDirs[0] = Direction.NORTH;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.WEST;
 			waypointDirs[3] = Direction.WEST;
-		}
-		if(spawn == "west")
-		{
+			break;
+
+			case 0:
 			waypointDirs[0] = Direction.NORTH;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.EAST;
 			waypointDirs[3] = Direction.EAST;
-		}
-		if(spawn == "northwest")
-		{
+			break;
+
+			case 1:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.SOUTH;
 			waypointDirs[3] = Direction.EAST;
-		}
-		if(spawn == "northeast")
-		{
+			break;
+
+			case 3:
 			waypointDirs[0] = Direction.WEST;
 			waypointDirs[1] = Direction.SOUTH;
 			waypointDirs[2] = Direction.SOUTH;
 			waypointDirs[3] = Direction.WEST;
-		}
-		if(spawn == "southwest")
-		{
+			break;
+
+			case 7:
 			waypointDirs[0] = Direction.EAST;
 			waypointDirs[1] = Direction.NORTH;
 			waypointDirs[2] = Direction.NORTH;
 			waypointDirs[3] = Direction.EAST;
-		}
-		if(spawn == "southeast")
-		{
+			break;
+
+			case 5:
 			waypointDirs[0] = Direction.WEST;
 			waypointDirs[1] = Direction.NORTH;
 			waypointDirs[2] = Direction.NORTH;
 			waypointDirs[3] = Direction.WEST;
+			break;
+
+			case 8:
+			waypointDirs[0] = Direction.WEST;
+			waypointDirs[1] = Direction.NORTH;
+			waypointDirs[2] = Direction.SOUTH;
+			waypointDirs[3] = Direction.EAST;
+			break;
 		}
 		return waypointDirs;
 	}
@@ -418,6 +441,11 @@ public class Utility {
 		return attackMsg;
 	}*/
 	
+	/**
+	 * Looks for enemies and shoots at them
+	 * @param myPlayer, you know what that is
+	 * @return location of last enemy fired at, null if none
+	 */
 	public static MapLocation senseEnemies(RobotPlayer myPlayer) throws Exception
 	{
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
@@ -448,6 +476,11 @@ public class Utility {
     		return null;
 	}
 	
+	/**
+	 * Outputs appropriate map size given a direction
+	 * @param direction
+	 * @return map size
+	 */
 	public static int dirSize(Direction dir)
 	{
 		if (dir == Direction.NORTH || dir == Direction.SOUTH)
@@ -458,18 +491,291 @@ public class Utility {
 			return Constants.MAP_MAX_SIZE;
 	}
 	
+	/**
+	 * Given nav and destination, turns in the right direction and takes a step in that direction
+	 * @param myPlayer, nav, destination location
+	 * @return nothing!
+	 */
 	public static void navStep(RobotPlayer myPlayer, Navigation robotNavigation, MapLocation dest) throws Exception
 	{
-		Direction direction = robotNavigation.bugTo(dest);
-		if(direction != Direction.OMNI && direction != Direction.NONE)
+		if (dest != null)
 		{
-			while(myPlayer.myMotor.isActive())
-				myPlayer.myRC.yield();
-			myPlayer.myMotor.setDirection(direction);
-			while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
-				myPlayer.myRC.yield();
-			myPlayer.myMotor.moveForward();
+			Direction direction = robotNavigation.bugTo(dest);
+			if(direction != Direction.OMNI && direction != Direction.NONE)
+			{
+				while(myPlayer.myMotor.isActive())
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.setDirection(direction);
+				while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.moveForward();
+			}
+			/*else
+				System.out.println("OMNI or NONE direction encountered.");*/
 		}
+		/*else
+			System.out.println("Null destination encountered.");*/
+	}
+	
+	/**
+	 * WEEEEEEEEEEEEEEEEEEEEEEE
+	 * @param player
+	 * @return fun
+	 */
+	public static void spin(RobotPlayer myPlayer) throws Exception
+	{
+		if (!myPlayer.myMotor.isActive())
+			myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());  // WEEEEEEEEEEE!!!!
+	}
+	
+	/**
+	 * check if a builder should build in the given direction (except when building jimmy)
+	 * square should be land, square should not contain robots, square should not contain mines, square should not be where jimmy is
+	 * @param direction to check, location of jimmy
+	 * @return well?
+	 */
+	public static boolean shouldBuild(RobotPlayer myPlayer, Direction dir, MapLocation jimmyHome) throws Exception
+	{
+		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
+		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null && (jimmyHome == null || !loc.equals(jimmyHome)));
+	}
+	
+	/**
+	 * check if a builder should build jimmy in the given direction
+	 * square should be where jimmy is, square should be land, square should not contain robots, square should not contain mines
+	 * @param direction to check, location of jimmy
+	 * @return well?
+	 */
+	public static boolean shouldBuildJimmy(RobotPlayer myPlayer, Direction dir, MapLocation jimmyHome) throws Exception
+	{
+		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
+		return ((jimmyHome == null || loc.equals(jimmyHome)) && myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
+	}
+	
+	/**
+	 * used by SCV when returning home after scouting in a direction
+	 * @param list of squares traversed while scouting
+	 * @return 
+	 */
+	public static void backtrack(RobotPlayer myPlayer, LinkedList<MapLocation> breadcrumbs) throws Exception
+	{
+		MapLocation dest;
+		if(!breadcrumbs.isEmpty())
+		{
+			dest = breadcrumbs.pollLast();
+			Direction direction = myPlayer.myRC.getLocation().directionTo(dest);
+			if(direction != Direction.OMNI && direction != Direction.NONE)
+			{
+				while(myPlayer.myMotor.isActive())
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.setDirection(direction);
+				while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+					myPlayer.myRC.yield();
+				myPlayer.myMotor.moveForward();
+			}
+			//Utility.navStep(myPlayer, robotNavigation, breadcrumbs.pop());
+		}
+	}
+	
+	/**
+	 * Equip the robot in front of you with one component
+	 * @param the robot and the component to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithOneComponent(RobotPlayer myPlayer, Robot r, ComponentType c1) throws Exception
+	{
+		boolean r1 = false;
+		while (!r1)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+			if(rFront != null && (rFront).getID() == r.getID())
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+					}
+				}
+				if (!r1)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c1);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c1);
+				}
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	/**
+	 * Equip the robot in front of you with one component when robot is unknown
+	 * @param the component to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithOneComponent(RobotPlayer myPlayer, ComponentType c1) throws Exception
+	{
+		boolean r1 = false;
+		while (!r1)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND); // assumed to be on ground
+			if(rFront != null)
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+					}
+				}
+				if (!r1)
+					Utility.buildComponentOnFrontGround(myPlayer, c1);
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	
+	/**
+	 * Equip the robot in front of you with two components
+	 * @param the robot and the two components to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithTwoComponents(RobotPlayer myPlayer, Robot r, ComponentType c1, ComponentType c2) throws Exception
+	{
+		boolean r1 = false;
+		boolean r2 = false;
+		while (!r1 || !r2)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+			if(rFront != null && (rFront).getID() == r.getID())
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+						if (c == c2)
+							r2 = true;
+					}
+				}
+				if (!r1)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c1);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c1);
+				}
+				if (!r2)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c2);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c2);
+				}
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	/**
+	 * Equip the robot in front of you with three components
+	 * @param the robot and the three components to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithThreeComponents(RobotPlayer myPlayer, Robot r, ComponentType c1, ComponentType c2, ComponentType c3) throws Exception
+	{
+		boolean r1 = false;
+		boolean r2 = false;
+		boolean r3 = false;
+		while (!r1 || !r2 || !r3)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+			if(rFront != null && (rFront).getID() == r.getID())
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+						if (c == c2)
+							r2 = true;
+						if (c == c3)
+							r3 = true;
+					}
+				}
+				if (!r1)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c1);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c1);
+				}
+				if (!r2)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c2);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c2);
+				}
+				if (!r3)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c3);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c3);
+				}
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	/**
+	 * Equip the robot in front of you with n of same component
+	 * @param the robot, the component to equip on him, how many
+	 * @return 
+	 */
+	public static void equipFrontWithSameComponents(RobotPlayer myPlayer, Robot r, ComponentType c1, int k) throws Exception
+	{
+		int r1 = 0;
+		Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+		if(rFront != null && (rFront).getID() == r.getID())
+		{
+			RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+			if(rInfo.components != null)
+			{
+				for (ComponentType c:rInfo.components)
+				{
+					if (c == c1)
+						r1++;
+				}
+			}
+			while (r1 < k)
+			{
+				if ( (r.getRobotLevel() == RobotLevel.ON_GROUND && Utility.buildComponentOnFrontGround(myPlayer, c1)) || (r.getRobotLevel() == RobotLevel.IN_AIR && Utility.buildComponentOnFrontAir(myPlayer, c1)))
+					r1++;
+			}
+		}
+		else
+			return;
+		return;
 	}
 }
 

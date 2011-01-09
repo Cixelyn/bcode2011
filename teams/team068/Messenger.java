@@ -1,7 +1,6 @@
 package team068;
 
 import java.util.LinkedList;
-
 import battlecode.common.*;
 
 
@@ -27,6 +26,7 @@ public class Messenger {
 
 	//send component needs to be enabled
 	private boolean canSend;
+	public boolean shouldReceive = false;
 	
 	//static limits
 	private static final int ROUND_MOD = 4;
@@ -54,6 +54,7 @@ public class Messenger {
 		myPlayer = player;							//Assign the player
 		canSend = false;							//Default robot doesn't have antennae
 		messageQueue = new LinkedList<Message>();	//Build Queue
+		shouldReceive = true;
 		
 				
 		//Initialize our entire 'has heard' table
@@ -79,6 +80,16 @@ public class Messenger {
 	 */
 	public void enableSender() {
 		canSend = true;		
+	}	
+	
+
+	/**
+	 * Should the robot receive messages?
+	 * Useful holding messages until robots are active.
+	 * @param state whether you should 
+	 */
+	public void toggleReceive(boolean state) {
+		shouldReceive = state;		
 	}
 	
 	
@@ -135,6 +146,23 @@ public class Messenger {
 		sendMsg(t,buildNewMessage(0,0));
 	}
 	
+	public void sendLoc(MsgType t, MapLocation loc)
+	{
+		Message m = buildNewMessage(0,1);
+		m.locations[firstData  ] = loc;
+		
+		sendMsg(t,m);	
+	}
+	
+	public void sendIntDoubleLoc(MsgType t, int int1, MapLocation loc1, MapLocation loc2)
+	{
+		Message m = buildNewMessage(1,2);
+		m.ints[firstData] = int1;
+		m.locations[firstData  ] = loc1;
+		m.locations[firstData+1] = loc2;
+		
+		sendMsg(t,m);	
+	}
 	
 	public void sendDoubleLoc(MsgType t, MapLocation loc1, MapLocation loc2) {
 		Message m = buildNewMessage(0,2);
@@ -154,9 +182,13 @@ public class Messenger {
 	public void receiveAll() {
 		
 		Message[] rcv = myPlayer.myRC.getAllMessages();
+		boolean isValid = true;
 		
 		for(Message m: rcv) {
 			
+			if (!isValid)
+				System.out.println("Message dropped!");
+			isValid = false;
 			
 			////////BEGIN MESSAGE VALIDATION SYSTEM
 				///////Begin inlined message validation checker
@@ -175,13 +207,14 @@ public class Messenger {
 					if(m.locations==null) break;
 					if(m.locations.length!=t.numLocs) break;
 			////////MESSAGE HAS BEEN VALIDATED
-						
+			
+			isValid = true;
 				
 			if(t.shouldCallback) {
 				myPlayer.myBehavior.newMessageCallback(t,m);
 			}
 
-	
+			
 		}
 	}
 	

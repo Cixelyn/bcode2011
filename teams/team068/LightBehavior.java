@@ -12,7 +12,7 @@ public class LightBehavior extends Behavior {
 		if (Clock.getRoundNum() <= 2)
 			myPlayer.swapBehavior(new SCVBehavior(myPlayer));
 		else
-			myPlayer.swapBehavior(new MarineBehavior(myPlayer));
+			myPlayer.myRC.setIndicatorString(1, "WHO AM I???");
 	}
 	
 	
@@ -24,6 +24,18 @@ public class LightBehavior extends Behavior {
 
 	@Override
 	public void newComponentCallback(ComponentController[] components) {
+		if (Clock.getRoundNum() > 2)
+		{
+			for(ComponentController c:components)
+			{
+				if (c.type() == Constants.GUNTYPE)
+				{
+					myPlayer.swapBehavior(new MarineBehavior(myPlayer));
+					myPlayer.myMessenger.toggleReceive(true);
+					return;
+				}
+			}
+		}
 	}
 
 

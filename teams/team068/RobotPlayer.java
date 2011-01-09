@@ -46,6 +46,8 @@ public class RobotPlayer implements Runnable {
 	
 	//Misc Stats
 	private final int myBirthday;
+	private int executeStartTime;
+	private int executeStartByte;
 	
 	
 	//Higher level strategy
@@ -98,7 +100,11 @@ public class RobotPlayer implements Runnable {
 			b = new LightBehavior(this);
 			break;
 		case MEDIUM:
+			break;
 		case HEAVY:
+			break;
+		case FLYING:
+			break;
 		default:
 			System.out.println("Error");
 		}
@@ -115,10 +121,18 @@ public class RobotPlayer implements Runnable {
 	private void preRun() {
 		
 		///////////////////////////////////////////////////////////////
+		//Begin Debug Routines		
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		
+		
+		
+		///////////////////////////////////////////////////////////////
 		//Receive all messages
-		try {
-			myMessenger.receiveAll();
-		} catch(Exception e) {e.printStackTrace();}
+		if(myMessenger.shouldReceive) {
+			try {
+				myMessenger.receiveAll();
+			} catch(Exception e) {e.printStackTrace();}
+		}
 
 		
 		
@@ -182,6 +196,12 @@ public class RobotPlayer implements Runnable {
 		} catch(Exception e) {e.printStackTrace();}
 		
 		
+		
+		
+		//////////////////////////////////////////////////////////////
+		//Run our debug routines.
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		
 		/////////////////////////////////////////////////////////////
 		//Then yield
 		myRC.yield();
@@ -205,12 +225,15 @@ public class RobotPlayer implements Runnable {
 	}
 	
 	
+	
 	/**
 	 * Better have a good reason for running <code>minSleep</code> rather than normal {@link #sleep()}
 	 * since none of the standard message processing or sensor scans happen.
 	 */
 	public void minSleep() {
-		myRC.yield();		
+		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		myRC.yield();
+		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 	}
 	
 	
@@ -273,6 +296,25 @@ public class RobotPlayer implements Runnable {
 		return Clock.getRoundNum() - myBirthday;
 	}
 	
+	
+	
+	
+	public void startClock() {
+		executeStartTime = Clock.getRoundNum();
+		executeStartByte = Clock.getBytecodeNum();
+		
+		
+		
+	}
+	
+	public void stopClock() {
+		if(Constants.DEBUG_BYTECODE_OVERFLOW){
+			if(executeStartTime!=Clock.getRoundNum()) {
+				int byteCount = (6000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 6000 + Clock.getBytecodeNum();
+				System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
+			}
+		}		
+	}
 	
 	
 	

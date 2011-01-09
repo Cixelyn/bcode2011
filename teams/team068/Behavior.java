@@ -1,6 +1,7 @@
 package team068;
 
 import battlecode.common.*;
+import java.util.*;
 
 public abstract class Behavior {
 	
@@ -21,7 +22,6 @@ public abstract class Behavior {
 		newComponentCallback(myPlayer.myRC.components());
 		
 	}
-	
 	
 	/**
 	 * Main Run Method

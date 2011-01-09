@@ -12,6 +12,7 @@ public class SCVBehavior extends Behavior {
 	MapLocation mainDestination;
 	MapLocation tempDestination;
 	MapLocation[] waypoints = new MapLocation[3];
+	final LinkedList<MapLocation> breadcrumbs = new LinkedList<MapLocation>();
 	
 	Direction waypointDir1;
 	Direction waypointDir2;
@@ -41,7 +42,7 @@ public class SCVBehavior extends Behavior {
 	
 	Message attackMsg;
 	
-	String spawn;
+	int spawn = -1; // 0 is west, increments clockwise; 8 means "i dont know"
 	
 	
 	public SCVBehavior(RobotPlayer player) {
@@ -51,7 +52,6 @@ public class SCVBehavior extends Behavior {
 	
 
 	public void run() throws Exception {
-		myPlayer.myRC.setIndicatorString(0, "CURRENT WAYPOINT = " + Integer.toString(currWaypointIdx));
     	switch (obj)
     	{
     		case FIND_MINE:
@@ -87,7 +87,7 @@ public class SCVBehavior extends Behavior {
     				// of course, we only run this after spawn is known
     				// -jven
     				
-    				if ( spawn != null && (myPlayer.myRC.getLocation().distanceSquaredTo(mainDestination) < Constants.HOME_PROXIMITY || currWaypointIdx != 0) )
+    				if ( spawn != -1 && (myPlayer.myRC.getLocation().distanceSquaredTo(mainDestination) < Constants.HOME_PROXIMITY || currWaypointIdx != 0) )
     				{
     					if(currWaypointIdx == 0) // we do not reset hometown
     					{
@@ -131,7 +131,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_ANTENNA");
     			for(ComponentController c:myPlayer.myRC.components())
     			{
-    				if (c.type()==ComponentType.ANTENNA)
+    				if (c.type() == Constants.COMMTYPE)
     				{
     					myPlayer.myBroadcaster = (BroadcastController)c;
     					myPlayer.myMessenger.enableSender();
@@ -152,9 +152,11 @@ public class SCVBehavior extends Behavior {
 							myPlayer.myRC.yield();
         				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(tempDestination));
         				myPlayer.myRC.yield(); // must yield before building since turning occurs at end of turn!
-        				Utility.buildChassis(myPlayer, Chassis.BUILDING);
+        				if (Utility.buildChassis(myPlayer, Chassis.BUILDING))
+        					obj = SCVBuildOrder.ADDON_MINE;
+        				else
+        					obj = SCVBuildOrder.FIND_MINE;
         				minesCapped++;
-        				obj = SCVBuildOrder.ADDON_MINE;
         				tiredness = 0;
         			}
     			}
@@ -178,17 +180,20 @@ public class SCVBehavior extends Behavior {
     			
     		case ADDON_MINE:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_MINE");
-    			Utility.buildComponent(myPlayer, ComponentType.RECYCLER);
+    			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RECYCLER);
     			if(minesCapped>=4)
     			{
     				if (minesCapped == 4)
+    				{
     					obj = SCVBuildOrder.SCOUT_WEST;
+    					myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+    				}
     				else
     				{
     					obj = SCVBuildOrder.FIND_MINE;
-    					myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+    					myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+    					myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     				}
-    				myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
     			}
     			else
     				obj = SCVBuildOrder.FIND_MINE;
@@ -196,6 +201,12 @@ public class SCVBehavior extends Behavior {
     			
     		case SCOUT_WEST:
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_WEST");
+    			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
+    			{
+    				tiredness++;
+    				obj = SCVBuildOrder.RETURN_HOME;
+    				return;
+    			}	
     			westEdge = 0;
     			while(myPlayer.myMotor.isActive())
     				myPlayer.myRC.yield();
@@ -206,6 +217,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -213,6 +225,12 @@ public class SCVBehavior extends Behavior {
     			
     		case SCOUT_NORTH:
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_NORTH");
+    			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
+    			{
+    				tiredness++;
+    				obj = SCVBuildOrder.RETURN_HOME;
+    				return;
+    			}	
     			northEdge = 0;
     			while(myPlayer.myMotor.isActive())
     				myPlayer.myRC.yield();
@@ -223,6 +241,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -230,6 +249,12 @@ public class SCVBehavior extends Behavior {
     			
     		case SCOUT_EAST:
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_EAST");
+    			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
+    			{
+    				tiredness++;
+    				obj = SCVBuildOrder.RETURN_HOME;
+    				return;
+    			}	
     			eastEdge = 0;
     			while(myPlayer.myMotor.isActive())
     				myPlayer.myRC.yield();
@@ -240,6 +265,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -247,6 +273,12 @@ public class SCVBehavior extends Behavior {
     			
     		case SCOUT_SOUTH:
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_SOUTH");
+    			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
+    			{
+    				tiredness++;
+    				obj = SCVBuildOrder.RETURN_HOME;
+    				return;
+    			}	
     			southEdge = 0;
     			while(myPlayer.myMotor.isActive())
     				myPlayer.myRC.yield();
@@ -257,6 +289,7 @@ public class SCVBehavior extends Behavior {
 					obj = SCVBuildOrder.RETURN_HOME;
 				}
     			mainDestination = myPlayer.myRC.getLocation().add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
+    			breadcrumbs.add(myPlayer.myRC.getLocation());
     			Utility.navStep(myPlayer, robotNavigation, mainDestination);
 				if (Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE)
 					obj = SCVBuildOrder.RETURN_HOME;
@@ -264,10 +297,12 @@ public class SCVBehavior extends Behavior {
     			
     		case RETURN_HOME:
     			myPlayer.myRC.setIndicatorString(1,"RETURN_HOME");
+    			tiredness = 0;
     			mainDestination = hometown;
-    			Utility.navStep(myPlayer, robotNavigation, mainDestination);
+    			Utility.backtrack(myPlayer, breadcrumbs);
 				if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) <= Constants.HOME_PROXIMITY)
 				{
+					breadcrumbs.clear();
 					if(westEdge == -1)
 					{
 						myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
@@ -316,7 +351,7 @@ public class SCVBehavior extends Behavior {
     			
     		case BROADCAST_SPAWN:
     			myPlayer.myRC.setIndicatorString(1,"BROADCAST_SPAWN");
-    			myPlayer.myMessenger.sendDoubleLoc(MsgType.MSG_MOVE_OUT, hometown, enemyLocation);
+    			myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     			if (eeHanTiming)
     				obj = SCVBuildOrder.EXPAND;
     			else
