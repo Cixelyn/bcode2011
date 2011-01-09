@@ -18,7 +18,7 @@ public class MuleBehavior extends Behavior {
 	Direction waypointDir2;
 	Direction[] waypointDirs;
 	
-	MuleBuildOrder obj = MuleBuildOrder.INITIALIZE;
+	MuleBuildOrder obj = MuleBuildOrder.EQUIPPING;
 	
 	int westEdge = -1;
 	int northEdge = -1;
@@ -53,8 +53,8 @@ public class MuleBehavior extends Behavior {
 	public void run() throws Exception {
     	switch (obj)
     	{
-    		case INITIALIZE:
-    			myPlayer.myRC.setIndicatorString(1, "INITIALIZE");
+    		case EQUIPPING:
+    			myPlayer.myRC.setIndicatorString(1, "EQUIPPING");
     			for(ComponentController c:myPlayer.myRC.components())
     			{
     				if (c.type() == ComponentType.CONSTRUCTOR)
@@ -97,13 +97,15 @@ public class MuleBehavior extends Behavior {
     			}
     			myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(factoryLoc));
     			myPlayer.myRC.yield();
-    			Utility.buildChassis(myPlayer, Chassis.BUILDING);
-    			obj = MuleBuildOrder.ADDON_FACTORY;
+    			if(Utility.buildChassis(myPlayer, Chassis.BUILDING))
+    				obj = MuleBuildOrder.ADDON_FACTORY;
+    			else
+    				factoryLoc = null;
     			return;
     			
     		case ADDON_FACTORY:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_FACTORY");
-    			Utility.buildComponent(myPlayer, ComponentType.FACTORY);
+    			Utility.buildComponentOnFront(myPlayer, ComponentType.FACTORY);
     			myPlayer.myMessenger.sendLoc(MsgType.MSG_JIMMY_HOME, jimmyHome);
     			obj = MuleBuildOrder.VACATE_JIMMY_HOME;
     			return;
@@ -232,7 +234,7 @@ public class MuleBehavior extends Behavior {
     			
     		case ADDON_MINE:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_MINE");
-    			Utility.buildComponent(myPlayer, ComponentType.RECYCLER);
+    			Utility.buildComponentOnFront(myPlayer, ComponentType.RECYCLER);
     			obj = MuleBuildOrder.FIND_MINE;
     			myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, jimmyHome, enemyLocation);
     			myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);

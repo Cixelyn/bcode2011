@@ -26,6 +26,7 @@ public class Messenger {
 
 	//send component needs to be enabled
 	private boolean canSend;
+	public boolean shouldReceive = false;
 	
 	//static limits
 	private static final int ROUND_MOD = 4;
@@ -53,6 +54,7 @@ public class Messenger {
 		myPlayer = player;							//Assign the player
 		canSend = false;							//Default robot doesn't have antennae
 		messageQueue = new LinkedList<Message>();	//Build Queue
+		shouldReceive = true;
 		
 				
 		//Initialize our entire 'has heard' table
@@ -78,6 +80,16 @@ public class Messenger {
 	 */
 	public void enableSender() {
 		canSend = true;		
+	}	
+	
+
+	/**
+	 * Should the robot receive messages?
+	 * Useful holding messages until robots are active.
+	 * @param state whether you should 
+	 */
+	public void toggleReceive(boolean state) {
+		shouldReceive = state;		
 	}
 	
 	
@@ -132,6 +144,14 @@ public class Messenger {
 	
 	public void sendNotice(MsgType t) {
 		sendMsg(t,buildNewMessage(0,0));
+	}
+	
+	public void sendLoc(MsgType t, MapLocation loc)
+	{
+		Message m = buildNewMessage(0,1);
+		m.locations[firstData  ] = loc;
+		
+		sendMsg(t,m);	
 	}
 	
 	public void sendIntDoubleLoc(MsgType t, int int1, MapLocation loc1, MapLocation loc2)

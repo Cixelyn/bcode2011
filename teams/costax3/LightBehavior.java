@@ -31,16 +31,19 @@ public class LightBehavior extends Behavior {
 				if (c.type() == ComponentType.CONSTRUCTOR)
 				{
 					myPlayer.swapBehavior(new MuleBehavior(myPlayer));
+					myPlayer.myMessenger.toggleReceive(true);
 					return;
 				}
 				if (c.type() == Constants.GUNTYPE)
 				{
 					myPlayer.swapBehavior(new MarineBehavior(myPlayer));
+					myPlayer.myMessenger.toggleReceive(true);
 					return;
 				}
 				if (c.type() == ComponentType.RADAR || c.type() == ComponentType.DISH)
 				{
 					myPlayer.swapBehavior(new JimmyBehavior(myPlayer));
+					myPlayer.myMessenger.toggleReceive(true);
 					return;
 				}
 			}
