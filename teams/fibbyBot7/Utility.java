@@ -487,8 +487,39 @@ public class Utility
 					foundEnemy = true;
 					rInfo = myPlayer.mySensor.senseRobotInfo(r);
 				 	destination = rInfo.location;
-				 	/*if (!myPlayer.myMotor.isActive())
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(rInfo.location));*/
+					if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
+						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+				}
+			}
+    	}
+    	if (foundEnemy)
+    		return destination;
+    	else
+    		return null;
+	}
+	
+	/**
+	 * Looks for enemies and shoots at them
+	 * @param myPlayer, you know what that is
+	 * @return location of last enemy fired at, null if none
+	 */
+	public static MapLocation senseDebris(RobotPlayer myPlayer) throws Exception
+	{
+		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+		WeaponController gun;
+		RobotInfo rInfo;
+		MapLocation destination = null;
+		boolean foundEnemy = false;
+    	for(Robot r:nearbyRobots)
+    	{
+			for (Object c:myPlayer.myWeapons)
+			{
+				gun = (WeaponController) c;
+				if(!gun.isActive() && r.getTeam()==Team.NEUTRAL)
+				{
+					foundEnemy = true;
+					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+				 	destination = rInfo.location;
 					if(rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
 				}

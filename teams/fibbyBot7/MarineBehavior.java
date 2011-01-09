@@ -54,7 +54,7 @@ public class MarineBehavior extends Behavior
 	        	
 			case MOVE_OUT:
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
-	        	if(Utility.senseEnemies(myPlayer) == null)
+	        	if(Utility.senseEnemies(myPlayer) == null && Utility.senseDebris(myPlayer) == null)
 	        		Utility.bounceNav(myPlayer);
 		}
 	}
