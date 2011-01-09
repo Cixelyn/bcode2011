@@ -63,7 +63,7 @@ public class Encoder {
 	 * Encode RobotInfo 
 	 * 
 	 * @param notes any notes you want to put. <ol>
-	 * Range: <code> -4 to 3 </code>, where the higher number means greater targeting priority <br>
+	 * Range: <code> -3 to 3 </code>, where the higher number means greater targeting priority <br>
 	 * Exceeding the notes range will cause bad things to happen.  Don't do it
 	 * 
 	 * 
@@ -73,14 +73,14 @@ public class Encoder {
 	 * Activation State, HP, and Chassis Type are pulled from here.
 	 * @return encoded 32 bit int
 	 */
-	public static int encodeRobotInfo(int notes, int rid, Team team, RobotInfo rinfo) { //FIXME: Figure out how to do weight later.
-		return (((team)==Team.A ? 0:1) << ROBOT_TEAM_OFFSET) 			//Team
+	public static int encodeRobotInfo(int notes, Robot r, RobotInfo rinfo) { //FIXME: Figure out how to do weight later.
+		return (((r.getTeam())==Team.A ? 0:1) << ROBOT_TEAM_OFFSET)		//Team
 			| ((3-notes) << ROBOT_NOTES_OFFSET)							//Notes
 			| ((rinfo.on?0:1) << ROBOT_ACTIVE_OFFSET)					//Activated		(0 for a robot that's on)
 			| ((int)(rinfo.hitpoints*10.0) << ROBOT_HP_OFFSET) 			//HP			(Multiplied by 10)
 			| (0 << ROBOT_WEIGHT_OFFSET)								//Weight			
 			| (rinfo.chassis.ordinal() << ROBOT_CHASSIS_OFFSET)			//Chassis
-			| (rid << ROBOT_ID_OFFSET);									//ID
+			| (r.getID() << ROBOT_ID_OFFSET);							//ID
 	}
 	
 	
@@ -107,7 +107,7 @@ public class Encoder {
 	
 	//Notes
 	public static int decodeRobotNotes(int data) {
-		return 7-((data & ROBOT_NOTES_MASK) >> ROBOT_NOTES_OFFSET);
+		return 3-((data & ROBOT_NOTES_MASK) >> ROBOT_NOTES_OFFSET);
 	}
 	
 	
@@ -150,35 +150,6 @@ public class Encoder {
 	
 
 	//TODO: Remove constants that add 0 for a small performance boost
-	
-	
-	
-	public static void main(String[] args) {
-		
-		
-		int id = 101;
-		double hitpoints = 422.3425;
-		double maxhp = 50;
-		boolean on = true;
-		Chassis ctype = Chassis.BUILDING;
-		Team myteam = Team.B;
-		int notes = 0;
-		
-		
-		
-		
-		RobotInfo rinfo = new RobotInfo(null, null, hitpoints, maxhp, null, on, null, ctype);
-		int result = encodeRobotInfo(notes,id,myteam,rinfo);
-		
-		System.out.println("Hello World");
-		
-		System.out.println(decodeRobotHP(result));	
-		System.out.println(decodeRobotChassis(result).toString());
-		System.out.println(decodeRobotID(result));
-		System.out.println(decodeRobotActivity(result));
-		System.out.println(decodeRobotNotes(result));
-		
-	}
 	
 	
 	
