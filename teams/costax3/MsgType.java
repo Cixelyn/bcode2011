@@ -19,7 +19,7 @@ public enum MsgType {
 	MSG_SCOUTING(   0  , true , 0 , 0   ),
 	MSG_JIMMY_HOME( 0  , true , 0 , 1   ),
 	MSG_POWER_UP(   0  , true , 0 , 0   ),
-	MSG_MOVE_OUT(   0  , true , 1 , 2   );
+	MSG_MOVE_OUT(   0  , true , 1 , 2   ),
 	MSG_ENEMY_LO(   0  , true , 10, 10  );
 	
 	

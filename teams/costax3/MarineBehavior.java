@@ -52,8 +52,7 @@ public class MarineBehavior extends Behavior {
 		switch (obj) {
 			case EQUIPPING:
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
-				if (!myPlayer.myMotor.isActive())
-    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());  // WEEEEEEEEEEE!!!!
+				Utility.spin(myPlayer);
 	            guns = 0;
 	            hasSensor = false;
 	            hasArmor = false;
@@ -81,8 +80,7 @@ public class MarineBehavior extends Behavior {
 				
 			case WAITING:
 				myPlayer.myRC.setIndicatorString(1,"WAITING");
-				if (!myPlayer.myMotor.isActive())
-    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());  // WEEEEEEEEEEE!!!!
+				Utility.spin(myPlayer);
 				Utility.senseEnemies(myPlayer);
 	        	if (eeHanTiming)
 	        		obj = MarineBuildOrder.MOVE_OUT;
@@ -96,7 +94,7 @@ public class MarineBehavior extends Behavior {
 	        		staleness = 0;
 	        		currDestination = newDestination;
 	        	}
-	        	if (!myPlayer.myMotor.isActive())
+	        	if (currDestination != null && !myPlayer.myMotor.isActive())
 	            {
 	        		direction = robotNavigation.bugTo(currDestination);
 	        		staleness++;

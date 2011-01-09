@@ -105,16 +105,18 @@ public class MuleBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "ADDON_FACTORY");
     			Utility.buildComponent(myPlayer, ComponentType.FACTORY);
     			myPlayer.myMessenger.sendLoc(MsgType.MSG_JIMMY_HOME, jimmyHome);
-    			obj = MuleBuildOrder.WAITING;
+    			obj = MuleBuildOrder.VACATE_JIMMY_HOME;
     			return;
     			
     		case VACATE_JIMMY_HOME:
+    			myPlayer.myRC.setIndicatorString(1, "VACATE_JIMMY_HOME");
     			while(!Utility.shouldBuild(myPlayer, myPlayer.myRC.getDirection(), jimmyHome))
     			{
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
     			myPlayer.myMotor.moveForward();
+    			myPlayer.myMessenger.sendLoc(MsgType.MSG_JIMMY_HOME, jimmyHome);
     			obj = MuleBuildOrder.WAITING;
     			return;
     			

@@ -115,7 +115,7 @@ public class RobotPlayer implements Runnable {
 	private void preRun() {
 		
 		///////////////////////////////////////////////////////////////
-		//Receive all messages
+		//Receive all messages    TODO: MAKE SURE I KNOW WHO I AM!
 		try {
 			myMessenger.receiveAll();
 		} catch(Exception e) {e.printStackTrace();}

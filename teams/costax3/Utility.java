@@ -513,11 +513,11 @@ public class Utility {
 					myPlayer.myRC.yield();
 				myPlayer.myMotor.moveForward();
 			}
-			else
-				System.out.println("OMNI or NONE direction encountered.");
+			/*else
+				System.out.println("OMNI or NONE direction encountered.");*/
 		}
-		else
-			System.out.println("Null destination encountered.");
+		/*else
+			System.out.println("Null destination encountered.");*/
 	}
 	
 	/**
@@ -540,7 +540,7 @@ public class Utility {
 	public static boolean shouldBuild(RobotPlayer myPlayer, Direction dir, MapLocation jimmyHome) throws Exception
 	{
 		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
-		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null && (jimmyHome == null || loc != jimmyHome));
+		return (myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null && (jimmyHome == null || !loc.equals(jimmyHome)));
 	}
 	
 	/**
@@ -552,7 +552,7 @@ public class Utility {
 	public static boolean shouldBuildJimmy(RobotPlayer myPlayer, Direction dir, MapLocation jimmyHome) throws Exception
 	{
 		MapLocation loc = myPlayer.myRC.getLocation().add(dir);
-		return ((jimmyHome == null || loc == jimmyHome) && myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
+		return ((jimmyHome == null || loc.equals(jimmyHome)) && myPlayer.myRC.senseTerrainTile(loc) == TerrainTile.LAND) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) && (myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.MINE) == null);
 	}
 	
 	public static void backtrack(RobotPlayer myPlayer, LinkedList<MapLocation> breadcrumbs) throws Exception

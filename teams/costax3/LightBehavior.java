@@ -38,6 +38,11 @@ public class LightBehavior extends Behavior {
 					myPlayer.swapBehavior(new MarineBehavior(myPlayer));
 					return;
 				}
+				if (c.type() == ComponentType.RADAR || c.type() == ComponentType.DISH)
+				{
+					myPlayer.swapBehavior(new JimmyBehavior(myPlayer));
+					return;
+				}
 			}
 		}
 	}
