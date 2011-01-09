@@ -1,7 +1,6 @@
 package costax3;
 
 import battlecode.common.*;
-
 import java.util.*;
 
 public class MuleBehavior extends Behavior {
@@ -9,7 +8,7 @@ public class MuleBehavior extends Behavior {
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
 	MapLocation factoryLoc;
-	MapLocation hometown = myPlayer.myRC.getLocation();
+	MapLocation jimmyHome = myPlayer.myRC.getLocation();
 	MapLocation enemyLocation; 
 	MapLocation mainDestination;
 	MapLocation tempDestination;
@@ -78,21 +77,21 @@ public class MuleBehavior extends Behavior {
     			{
     				myPlayer.myMotor.setDirection(Direction.NORTH);
     				myPlayer.myRC.yield();
-    				if(Utility.shouldBuild(myPlayer, Direction.NORTH_WEST))
+    				if(Utility.shouldBuild(myPlayer, Direction.NORTH_WEST, jimmyHome))
     					factoryLoc = myPlayer.myRC.getLocation().add(Direction.NORTH_WEST);
-    				else if (Utility.shouldBuild(myPlayer, Direction.NORTH_EAST))
+    				else if (Utility.shouldBuild(myPlayer, Direction.NORTH_EAST, jimmyHome))
     					factoryLoc = myPlayer.myRC.getLocation().add(Direction.NORTH_EAST);
-    				else if (Utility.shouldBuild(myPlayer, Direction.NORTH))
+    				else if (Utility.shouldBuild(myPlayer, Direction.NORTH, jimmyHome))
     					factoryLoc = myPlayer.myRC.getLocation().add(Direction.NORTH);
     				else
     				{
     					myPlayer.myMotor.setDirection(Direction.SOUTH);
         				myPlayer.myRC.yield();
-        				if (Utility.shouldBuild(myPlayer, Direction.SOUTH_WEST))
+        				if (Utility.shouldBuild(myPlayer, Direction.SOUTH_WEST, jimmyHome))
         					factoryLoc = myPlayer.myRC.getLocation().add(Direction.SOUTH_WEST);
-        				else if (Utility.shouldBuild(myPlayer, Direction.SOUTH_EAST))
+        				else if (Utility.shouldBuild(myPlayer, Direction.SOUTH_EAST, jimmyHome))
         					factoryLoc = myPlayer.myRC.getLocation().add(Direction.SOUTH_EAST);
-        				else if (Utility.shouldBuild(myPlayer, Direction.SOUTH))
+        				else if (Utility.shouldBuild(myPlayer, Direction.SOUTH, jimmyHome))
         					factoryLoc = myPlayer.myRC.getLocation().add(Direction.SOUTH);
     				}
     			}
@@ -105,7 +104,17 @@ public class MuleBehavior extends Behavior {
     		case ADDON_FACTORY:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_FACTORY");
     			Utility.buildComponent(myPlayer, ComponentType.FACTORY);
-    			myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+    			myPlayer.myMessenger.sendLoc(MsgType.MSG_JIMMY_HOME, jimmyHome);
+    			obj = MuleBuildOrder.WAITING;
+    			return;
+    			
+    		case VACATE_JIMMY_HOME:
+    			while(!Utility.shouldBuild(myPlayer, myPlayer.myRC.getDirection(), jimmyHome))
+    			{
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+					myPlayer.myRC.yield();
+    			}
+    			myPlayer.myMotor.moveForward();
     			obj = MuleBuildOrder.WAITING;
     			return;
     			
@@ -223,7 +232,7 @@ public class MuleBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "ADDON_MINE");
     			Utility.buildComponent(myPlayer, ComponentType.RECYCLER);
     			obj = MuleBuildOrder.FIND_MINE;
-    			myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
+    			myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, jimmyHome, enemyLocation);
     			myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
     			return;
     			
@@ -263,8 +272,8 @@ public class MuleBehavior extends Behavior {
 			waypointDirs = Utility.spawnAdjacent(spawn);
 			waypointDir1 = waypointDirs[1]; // change for other scv
 			waypointDir2 = waypointDirs[3]; // change for other scv
-			waypoints[0] = hometown;
-			waypoints[1] = hometown.add(waypointDir1, Utility.dirSize(waypointDir1));
+			waypoints[0] = jimmyHome;
+			waypoints[1] = jimmyHome.add(waypointDir1, Utility.dirSize(waypointDir1));
 			nextWaypointIdx = (currWaypointIdx + 1) % (waypoints.length);
 			currWaypointIdx = nextWaypointIdx;
 			mainDestination = waypoints[currWaypointIdx];

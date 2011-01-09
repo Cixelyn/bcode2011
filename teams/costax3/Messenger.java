@@ -134,6 +134,14 @@ public class Messenger {
 		sendMsg(t,buildNewMessage(0,0));
 	}
 	
+	public void sendLoc(MsgType t, MapLocation loc)
+	{
+		Message m = buildNewMessage(0,1);
+		m.locations[firstData  ] = loc;
+		
+		sendMsg(t,m);	
+	}
+	
 	public void sendIntDoubleLoc(MsgType t, int int1, MapLocation loc1, MapLocation loc2)
 	{
 		Message m = buildNewMessage(1,2);

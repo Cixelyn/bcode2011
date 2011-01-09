@@ -10,6 +10,7 @@ public class ExpoRefineryBehavior extends Behavior {
 	
 	MapLocation hometown;
 	MapLocation enemyLocation;
+	MapLocation jimmyHome;
 	
 	int rGuns;
 	int marinesMade = 0;
@@ -68,7 +69,7 @@ public class ExpoRefineryBehavior extends Behavior {
     	
     		case MAKE_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "MAKE_MARINE");
-    			while(!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null)
+    			while(!Utility.shouldBuild(myPlayer, myPlayer.myRC.getDirection(), jimmyHome))
     			{
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
@@ -120,9 +121,7 @@ public class ExpoRefineryBehavior extends Behavior {
     				}
     			}
     			else
-    			{
     				obj = RefineryBuildOrder.MAKE_MARINE;
-    			}
     			return;
     			
     		case SLEEP:
@@ -155,10 +154,10 @@ public class ExpoRefineryBehavior extends Behavior {
 	
 	
 	public void newMessageCallback(MsgType t, Message msg) {
+		if(t == MsgType.MSG_JIMMY_HOME)
+			jimmyHome = msg.locations[Messenger.firstData];
 		if(t == MsgType.MSG_POWER_UP)
-		{
 			powered = true;
-		}
 		if(t == MsgType.MSG_MOVE_OUT)
 		{
 			spawn = msg.ints[Messenger.firstData];
