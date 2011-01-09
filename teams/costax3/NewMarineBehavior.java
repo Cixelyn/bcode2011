@@ -23,6 +23,7 @@ public class NewMarineBehavior extends Behavior {
 	int staleness = 0;
 	int guns;
 	int dizziness = 0;
+	int lookAround = 0;
 	double damageDealt=0;
 	
 	//double lastHP = myPlayer.myRC.get;
@@ -62,8 +63,7 @@ public class NewMarineBehavior extends Behavior {
 		
 		
 		switch (obj) {
-			case EQUIPPING:
-				// if I have all the equipment, it's time to go go go.
+			case EQUIPPING:// if I have all the equipment, it's time to go go go.
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				Utility.spin(myPlayer);
 	            guns = 0;
@@ -91,9 +91,9 @@ public class NewMarineBehavior extends Behavior {
 					obj = NewMarineBuildOrder.FIND_ENEMY;
 				return;
 				
-			case FIND_ENEMY:
+			case FIND_ENEMY: //keep moving till we find an enemy
 				
-				//bounce movement
+				//bounce movement (replace with fibsters probability movement)
 				if (!myPlayer.myMotor.isActive()) {
 					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 						myPlayer.myMotor.moveForward();
@@ -103,7 +103,7 @@ public class NewMarineBehavior extends Behavior {
 					}
 				}
 				priorityAttack();
-				if (!killAllRobots) { //some robot is still alive!
+				if (seeEnemyRobot && !killAllRobots) { //some robot is still alive!
 					if (damageDealt>minHealth) { //we killed the first priority, but not the second
 						chasingEnemyLoc=secondMinRobot.location;
 					}
@@ -112,7 +112,10 @@ public class NewMarineBehavior extends Behavior {
 					}
 					obj=NewMarineBuildOrder.CHASE_ENEMY;
 				}
-			case CHASE_ENEMY:
+				if (seeEnemyRobot && killAllRobots) {
+					obj=NewMarineBuildOrder.BATTLE_SITUATION;
+				}
+			case CHASE_ENEMY: //we've found an enemy and haven't killed it, lets go after it
 				if (shouldMove) {
 					if (!myPlayer.myMotor.isActive()) {
 						if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
@@ -146,6 +149,35 @@ public class NewMarineBehavior extends Behavior {
 					}
 					obj=NewMarineBuildOrder.CHASE_ENEMY;
 				}
+			case BATTLE_SITUATION: //we've seen enemies in this area, let's look around cause there will probably be more.
+				if (lookAround==0) { //let's look to the left
+					if (!myPlayer.myMotor.isActive()) {
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+						lookAround=lookAround+1;
+					}
+				}
+				else if (lookAround==1) { //let's look to the left
+					if (!myPlayer.myMotor.isActive()) {
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+						lookAround=lookAround+1;
+					}
+				}
+				priorityAttack();
+				if (seeEnemyRobot && !killAllRobots) { //some robot is still alive!
+					if (damageDealt>minHealth) { //we killed the first priority, but not the second
+						chasingEnemyLoc=secondMinRobot.location;
+					}
+					else { //we didn't even kill the first target
+						chasingEnemyLoc=minRobot.location;
+					}
+					obj=NewMarineBuildOrder.CHASE_ENEMY;
+				}
+				else if (lookAround==2 && !seeEnemyRobot) {
+					obj=NewMarineBuildOrder.FIND_ENEMY;
+					lookAround=0;
+				}
+				
+				
 		}
 	}
 	
