@@ -30,7 +30,7 @@ public class NewMarineBehavior extends Behavior {
     boolean hasArmor;
 	boolean eeHanTiming = false;
     boolean moveOut = false;
-    boolean enemyFound;
+    boolean enemyFound;	
     
     Robot[] nearbyRobots;
     RobotInfo rInfo;
@@ -51,6 +51,7 @@ public class NewMarineBehavior extends Behavior {
 		
 		switch (obj) {
 			case EQUIPPING:
+				// if I have all the equipment, it's time to go go go.
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				Utility.spin(myPlayer);
 	            guns = 0;
@@ -90,7 +91,6 @@ public class NewMarineBehavior extends Behavior {
 					}
 				}
 				Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
-				
 				//find enemies by lowest hit point priority, but don't overkill
 				//specifically made for a 2 gun robot (finds the two highest priority targets, if the first one is killable
 				//by one shot, have our other weapon shoot the other target.
@@ -116,7 +116,10 @@ public class NewMarineBehavior extends Behavior {
 					}
 				}
 				
-				//attempt to not overkill targets by seeing how much damage we have done
+				// attempt to not overkill targets by seeing how much damage we have done, if
+				// we have killed all robots, then we just go on bouncing around, otherwise,
+				// we chase after it.
+				boolean killAllRobots=false;
 				double damageDealt=0;
 				if (minRobot!=null) {
 					for (WeaponController weapon :myPlayer.myWeapons) {
@@ -127,13 +130,22 @@ public class NewMarineBehavior extends Behavior {
 						}	
 							else {
 								if (secondMinRobot!=null) {
-									damageDealt=damageDealt+weapon.type().attackPower;
+									if (secondMinHealth<weapon.type().attackPower) {
+										killAllRobots=true;
+									}
 									weapon.attackSquare(secondMinRobot.location, secondMinRobot.robot.getRobotLevel());
 								}
 							}
 						}
 					}
 				}
+				if (!killAllRobots) {
+					obj=NewMarineBuildOrder.CHASE_ENEMY;
+				}
+			case CHASE_ENEMY:
+				
+				
+				
 		}
 	}
 	

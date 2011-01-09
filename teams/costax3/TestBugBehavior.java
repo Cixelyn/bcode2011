@@ -1,11 +1,11 @@
 package costax3;
 
-import battlecode.common.ComponentController;
-import battlecode.common.Message;
 import battlecode.common.*;
 
 public class TestBugBehavior extends Behavior {
-
+	
+	final Navigation robotNavigation = new Navigation(myPlayer);
+	
 	public TestBugBehavior(RobotPlayer player) {
 		super(player);
 	}
@@ -23,12 +23,14 @@ public class TestBugBehavior extends Behavior {
 	@Override
 	public void run() throws Exception {
 		while (true) {
-			Direction direction = myPlayer.myNavigation.bugTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4));
-			myPlayer.myMotor.setDirection(direction);
-			myPlayer.myRC.yield();
-			myPlayer.myMotor.moveForward();
-			myPlayer.myRC.yield();
-			myPlayer.myRC.yield();
+			myPlayer.myRC.setIndicatorString(0, "test bug!");
+			if (!myPlayer.myMotor.isActive()) {
+				MapLocation mapLocation=myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4);
+				Direction direction =robotNavigation.bugTo(mapLocation);
+				myPlayer.myMotor.setDirection(direction);
+				myPlayer.myRC.yield();
+				myPlayer.myMotor.moveForward();
+			}
 			myPlayer.myRC.yield();
 		}
 	}

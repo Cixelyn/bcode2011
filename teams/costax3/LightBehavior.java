@@ -30,7 +30,7 @@ public class LightBehavior extends Behavior {
 			{
 				if (c.type() == ComponentType.CONSTRUCTOR)
 				{
-					myPlayer.swapBehavior(new MuleBehavior(myPlayer));
+					myPlayer.swapBehavior(new TestBugBehavior(myPlayer));
 					myPlayer.myMessenger.toggleReceive(true);
 					return;
 				}
