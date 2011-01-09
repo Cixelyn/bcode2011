@@ -111,10 +111,17 @@ public class NewMarineBehavior extends Behavior {
 						chasingEnemyLoc=minRobot.location;
 					}
 					obj=NewMarineBuildOrder.CHASE_ENEMY;
+					return;
 				}
-				if (seeEnemyRobot && killAllRobots) {
+				else if (seeEnemyRobot && killAllRobots) {
 					obj=NewMarineBuildOrder.BATTLE_SITUATION;
+					return;
 				}
+	        	else if (Utility.senseDebris(myPlayer) != null)
+	        		return;
+	        	else
+	        		Utility.bounceNav(myPlayer);
+	        	return;
 			case CHASE_ENEMY: //we've found an enemy and haven't killed it, lets go after it
 				if (shouldMove) {
 					if (!myPlayer.myMotor.isActive()) {
@@ -149,6 +156,7 @@ public class NewMarineBehavior extends Behavior {
 					}
 					obj=NewMarineBuildOrder.CHASE_ENEMY;
 				}
+				return;
 			case BATTLE_SITUATION: //we've seen enemies in this area, let's look around cause there will probably be more.
 				if (lookAround==0) { //let's look to the left
 					if (!myPlayer.myMotor.isActive()) {
@@ -176,7 +184,7 @@ public class NewMarineBehavior extends Behavior {
 					obj=NewMarineBuildOrder.FIND_ENEMY;
 					lookAround=0;
 				}
-				
+				return;
 				
 		}
 	}
