@@ -29,6 +29,7 @@ public class MainRefineryBehavior extends Behavior {
 	
 	RobotInfo rInfo;
 	Robot rFront;
+	Robot babySCV;
 	Robot babyMule;
 	Robot babyMarine;
 	Robot[] nearbyRobots;
@@ -68,13 +69,14 @@ public class MainRefineryBehavior extends Behavior {
     					isLeader = true;
     				if (rInfo.chassis == Chassis.LIGHT && myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location)<=2 && !myPlayer.myMotor.isActive() && !myPlayer.myBuilder.isActive())
 					{
+    					babySCV = rInfo.robot;
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(rInfo.location));
 						myPlayer.myRC.yield();
 					}
     			}
     			if (isLeader)
     			{
-    				Utility.buildComponentOnFront(myPlayer, Constants.COMMTYPE);
+    				Utility.equipFrontWithOneComponent(myPlayer, babySCV, Constants.COMMTYPE);
     				obj = RefineryBuildOrder.WAIT_FOR_SCOUTING;
     			}
     			else
@@ -102,58 +104,18 @@ public class MainRefineryBehavior extends Behavior {
     			
     		case EQUIP_MULE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MULE");
-    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(rFront != null && (rFront).getID() == babyMule.getID())
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
-    				rBuilder = false;
-    				rComm = false;
-    				rSensor = false;
-    				if(rInfo.components != null)
-    				{
-    					for (ComponentType c:rInfo.components)
-    					{
-    						if (c == ComponentType.CONSTRUCTOR)
-    							rBuilder = true;
-    						if (c == Constants.COMMTYPE)
-    							rComm = true;
-    						if (c == Constants.SENSORTYPE)
-    							rSensor = true;
-    					}
-    				}
-    				if (!rBuilder)
-    					Utility.buildComponentOnFront(myPlayer, ComponentType.CONSTRUCTOR);
-    				else if (!rComm)
-    					Utility.buildComponentOnFront(myPlayer, Constants.COMMTYPE);
-    				else if (!rSensor)
-    					Utility.buildComponentOnFront(myPlayer, Constants.SENSORTYPE);
-    				else
-    					obj = RefineryBuildOrder.EQUIP_JIMMY;
-    			}
+    			Utility.equipFrontWithThreeComponents(myPlayer, babyMule, ComponentType.CONSTRUCTOR, Constants.COMMTYPE, Constants.SENSORTYPE);
+    			obj = RefineryBuildOrder.EQUIP_JIMMY;
     			return;
     			
     		case EQUIP_JIMMY:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_JIMMY");
     			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(rFront != null && (rFront).getID() != babyMule.getID())
+    			if (rFront != null && rFront.getID() != babyMule.getID())
     			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
-    				rSensor = false;
-    				if(rInfo.components != null)
-    				{
-    					for (ComponentType c:rInfo.components)
-    					{
-    						if (c == ComponentType.RADAR)
-    							rSensor = true;
-    					}
-    				}
-    				if (!rSensor)
-    					Utility.buildComponentOnFront(myPlayer, ComponentType.RADAR);
-    				if (rSensor)
-    				{
-    					myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
-    					obj = RefineryBuildOrder.MAKE_MARINE;
-    				}
+	    			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RADAR);
+	    			myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+					obj = RefineryBuildOrder.MAKE_MARINE;
     			}
     			return;
     			
@@ -187,41 +149,12 @@ public class MainRefineryBehavior extends Behavior {
     			
     		case EQUIP_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
-    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(rFront != null && rFront.getID() == babyMarine.getID())
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
-    				rGuns = 0;
-    				rSensor = false;
-    				rArmor = false;
-    				if(rInfo.components != null)
-    				{
-    					for (ComponentType c:rInfo.components)
-    					{
-    						if (c == Constants.GUNTYPE)
-    							rGuns++;
-    						if (c == Constants.SENSORTYPE)
-    							rSensor = true;
-    						if (c == Constants.ARMORTYPE)
-    							rArmor = true;
-    					}
-    				}
-    				if (rGuns < Constants.GUNS)
-    					Utility.buildComponentOnFront(myPlayer, Constants.GUNTYPE);
-    				else if (!rSensor)
-    					Utility.buildComponentOnFront(myPlayer, Constants.SENSORTYPE);
-    				else if (!rArmor)
-    					Utility.buildComponentOnFront(myPlayer, Constants.ARMORTYPE);
-    				else
-    				{
-    					marinesMade++;
-    					obj = RefineryBuildOrder.MAKE_MARINE;
-    					if (eeHanTiming)
-    						myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
-    				}
-    			}
-    			else
-    				obj = RefineryBuildOrder.MAKE_MARINE;
+    			Utility.equipFrontWithSameComponents(myPlayer, babyMarine, Constants.GUNTYPE, Constants.GUNS);
+    			Utility.equipFrontWithTwoComponents(myPlayer, babyMarine, Constants.ARMORTYPE, Constants.SENSORTYPE);
+    			marinesMade++;
+				obj = RefineryBuildOrder.MAKE_MARINE;
+				if (eeHanTiming)
+					myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     			return;
     			
     		case SLEEP:

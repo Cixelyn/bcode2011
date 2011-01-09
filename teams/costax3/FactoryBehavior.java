@@ -45,29 +45,8 @@ public class FactoryBehavior extends Behavior {
     			return;
     			
     		case EQUIP_JIMMY:
-    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(rFront != null && (rFront).getID() == babyJimmy.getID())
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
-    				rComm = false;
-    				rDummy = false;
-    				if(rInfo.components != null)
-    				{
-    					for (ComponentType c:rInfo.components)
-    					{
-    						if (c == ComponentType.DISH)
-    							rComm = true;
-    						if (c == ComponentType.DUMMY)
-    							rDummy = true;
-    					}
-    				}
-    				if (!rComm)
-    					Utility.buildComponentOnFront(myPlayer, ComponentType.DISH);
-    				if (!rDummy)
-    					Utility.buildComponentOnFront(myPlayer, ComponentType.DUMMY);
-    				if (rComm && rDummy)
-    					obj = FactoryBuildOrder.SLEEP;
-    			}
+    			Utility.equipFrontWithTwoComponents(myPlayer, babyJimmy, ComponentType.DISH, ComponentType.DUMMY);
+    			obj = FactoryBuildOrder.SLEEP;
     			return;
     			
     		case SLEEP:

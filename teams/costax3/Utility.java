@@ -1,6 +1,7 @@
 package costax3;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 
@@ -150,60 +151,8 @@ public class Utility {
 		return (output + ":" + Integer.toString(player.myMotor.roundsUntilIdle()));
 	}
 	
-	
-	
 	/**
-	 * Helper function to build a chassis
-	 * @param player
-	 * @param chassis
-	 * @param loc
-	 * @return
-	 * @throws GameActionException
-	 */
-	public static boolean buildChassisAt(RobotPlayer player,Chassis chassis,MapLocation loc) throws GameActionException {
-		
-		//Add in early exit cases first.
-		if(player.myRC.getTeamResources()<chassis.cost) { //Not enough money
-			return false;
-		} if (!player.myBuilder.withinRange(loc)) { //Not within range (TEMPORARY can be removed later)
-			return false;
-		}
-		
-		//If we passed this point we _should_ be able to build the chassis
-		player.myBuilder.build(chassis,loc);
-		return true;
-	}
-	
-	
-	
-	/**
-	 * Helper function to build a component
-	 * @param player
-	 * @param component
-	 * @param loc
-	 * @param level
-	 * @return
-	 * @throws GameActionException
-	 */
-	public static boolean buildComponentAt(RobotPlayer player,ComponentType component,MapLocation loc, RobotLevel level) throws GameActionException {
-		
-		//Add in early exit cases first.
-		if(player.myRC.getTeamResources()<component.cost) { //Not enough money
-			return false;
-		} if (!player.myBuilder.withinRange(loc)) { //Not within range  (TEMPORARY, can be removed later)
-			return false;
-		}
-		
-		//Note that this call will still fail if there is no robot there so be careful.
-		
-		
-		//If we passed this point we _should_ be able to build the component
-		player.myBuilder.build(component, loc, level);
-		return true;
-	}
-	
-	/**
-	 * Helper function to build a component by JVen
+	 * Helper function to build a component on self by JVen
 	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
 	 * Currently modified to use sleep() though ~coryli
 	 * @param player
@@ -214,25 +163,58 @@ public class Utility {
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
-		player.myBuilder.build(component, player.myRC.getLocation(), RobotLevel.ON_GROUND);
+		player.myBuilder.build(component, player.myRC.getLocation(), player.myRC.getRobot().getRobotLevel());
+		if (component.componentClass == ComponentClass.COMM)
+		{
+			for(ComponentController c:player.myRC.components())
+			{
+				if (c.type().componentClass == ComponentClass.COMM)
+				{
+					player.myBroadcaster = (BroadcastController)c;
+					player.myMessenger.enableSender();
+				}
+			}
+		}
 	}
 	
 	/**
-	 * Helper function to build a component in the direction i'm facing by JVen
+	 * Helper function to build a component in the direction i'm facing, on the ground by JVen
 	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
 	 * Currently modified to use sleep() though ~coryli
 	 * @param player
 	 * @param component
 	 * @return true if built
 	 */
-	public static boolean buildComponentOnFront(RobotPlayer player, ComponentType component) throws Exception
+	public static boolean buildComponentOnFrontGround(RobotPlayer player, ComponentType component) throws Exception
 	{
 		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
-		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+		Robot rFront = (Robot) player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
 		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
 		{
 			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	/**
+	 * Helper function to build a component in the direction i'm facing, in the air by JVen
+	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * Currently modified to use sleep() though ~coryli
+	 * @param player
+	 * @param component
+	 * @return true if built
+	 */
+	public static boolean buildComponentOnFrontAir(RobotPlayer player, ComponentType component) throws Exception
+	{
+		while (player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive())
+			player.sleep();
+		Robot rFront = (Robot) player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.IN_AIR);
+		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
+		{
+			player.myBuilder.build(component, player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.IN_AIR);
 			return true;
 		}
 		else
@@ -251,7 +233,7 @@ public class Utility {
 	{
 		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
-		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), RobotLevel.ON_GROUND);
+		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), chassis.level);
 		if ( rFront == null )
 		{
 			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
@@ -595,6 +577,206 @@ public class Utility {
 		}
 	}
 	
+	/**
+	 * Equip the robot in front of you with one component
+	 * @param the robot and the component to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithOneComponent(RobotPlayer myPlayer, Robot r, ComponentType c1) throws Exception
+	{
+		boolean r1 = false;
+		while (!r1)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+			if(rFront != null && (rFront).getID() == r.getID())
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+					}
+				}
+				if (!r1)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c1);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c1);
+				}
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	/**
+	 * Equip the robot in front of you with one component when robot is unknown
+	 * @param the component to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithOneComponent(RobotPlayer myPlayer, ComponentType c1) throws Exception
+	{
+		boolean r1 = false;
+		while (!r1)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND); // assumed to be on ground
+			if(rFront != null)
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+					}
+				}
+				if (!r1)
+					Utility.buildComponentOnFrontGround(myPlayer, c1);
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	
+	/**
+	 * Equip the robot in front of you with two components
+	 * @param the robot and the two components to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithTwoComponents(RobotPlayer myPlayer, Robot r, ComponentType c1, ComponentType c2) throws Exception
+	{
+		boolean r1 = false;
+		boolean r2 = false;
+		while (!r1 || !r2)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+			if(rFront != null && (rFront).getID() == r.getID())
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+						if (c == c2)
+							r2 = true;
+					}
+				}
+				if (!r1)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c1);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c1);
+				}
+				if (!r2)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c2);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c2);
+				}
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	/**
+	 * Equip the robot in front of you with three components
+	 * @param the robot and the three components to equip on him
+	 * @return 
+	 */
+	public static void equipFrontWithThreeComponents(RobotPlayer myPlayer, Robot r, ComponentType c1, ComponentType c2, ComponentType c3) throws Exception
+	{
+		boolean r1 = false;
+		boolean r2 = false;
+		boolean r3 = false;
+		while (!r1 || !r2 || !r3)
+		{
+			Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+			if(rFront != null && (rFront).getID() == r.getID())
+			{
+				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+				if(rInfo.components != null)
+				{
+					for (ComponentType c:rInfo.components)
+					{
+						if (c == c1)
+							r1 = true;
+						if (c == c2)
+							r2 = true;
+						if (c == c3)
+							r3 = true;
+					}
+				}
+				if (!r1)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c1);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c1);
+				}
+				if (!r2)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c2);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c2);
+				}
+				if (!r3)
+				{
+					if (r.getRobotLevel() == RobotLevel.ON_GROUND)
+						Utility.buildComponentOnFrontGround(myPlayer, c3);
+					else
+						Utility.buildComponentOnFrontAir(myPlayer, c3);
+				}
+			}
+			else
+				return;
+		}
+		return;
+	}
+	
+	/**
+	 * Equip the robot in front of you with n of same component
+	 * @param the robot, the component to equip on him, how many
+	 * @return 
+	 */
+	public static void equipFrontWithSameComponents(RobotPlayer myPlayer, Robot r, ComponentType c1, int k) throws Exception
+	{
+		int r1 = 0;
+		Robot rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), r.getRobotLevel());
+		if(rFront != null && (rFront).getID() == r.getID())
+		{
+			RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+			if(rInfo.components != null)
+			{
+				for (ComponentType c:rInfo.components)
+				{
+					if (c == c1)
+						r1++;
+				}
+			}
+			while (r1 < k)
+			{
+				if ( (r.getRobotLevel() == RobotLevel.ON_GROUND && Utility.buildComponentOnFrontGround(myPlayer, c1)) || (r.getRobotLevel() == RobotLevel.IN_AIR && Utility.buildComponentOnFrontAir(myPlayer, c1)))
+					r1++;
+			}
+		}
+		else
+			return;
+		return;
+	}
 }
 
 

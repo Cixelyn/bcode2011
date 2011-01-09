@@ -53,14 +53,6 @@ public class ExpoRefineryBehavior extends Behavior {
     			else
     			{
 	    			Utility.buildComponentOnSelf(myPlayer, Constants.COMMTYPE);
-	    			for(ComponentController c:myPlayer.myRC.components())
-					{
-						if (c.type()==Constants.COMMTYPE)
-						{
-							myPlayer.myBroadcaster = (BroadcastController)c;
-							myPlayer.myMessenger.enableSender();
-						}
-					}
 	    			obj = RefineryBuildOrder.MAKE_MARINE;
     			}
     			return;
@@ -85,41 +77,11 @@ public class ExpoRefineryBehavior extends Behavior {
     			
     		case EQUIP_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
-    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if(rFront != null && rFront.getID() == babyMarine.getID())
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
-    				rGuns = 0;
-    				rSensor = false;
-    				rArmor = false;
-    				if(rInfo.components != null)
-    				{
-    					for (ComponentType c:rInfo.components)
-    					{
-    						if (c == Constants.GUNTYPE)
-    							rGuns++;
-    						if (c == Constants.SENSORTYPE)
-    							rSensor = true;
-    						if (c == Constants.ARMORTYPE)
-    							rArmor = true;
-    					}
-    				}
-    				if (rGuns < Constants.GUNS)
-    					Utility.buildComponentOnFront(myPlayer, Constants.GUNTYPE);
-    				else if (!rSensor)
-    					Utility.buildComponentOnFront(myPlayer, Constants.SENSORTYPE);
-    				else if (!rArmor)
-    					Utility.buildComponentOnFront(myPlayer, Constants.ARMORTYPE);
-    				else
-    				{
-    					marinesMade++;
-    					obj = RefineryBuildOrder.MAKE_MARINE;
-    					if (eeHanTiming)
-    						myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
-    				}
-    			}
-    			else
-    				obj = RefineryBuildOrder.MAKE_MARINE;
+    			Utility.equipFrontWithSameComponents(myPlayer, babyMarine, Constants.GUNTYPE, Constants.GUNS);
+    			Utility.equipFrontWithTwoComponents(myPlayer, babyMarine, Constants.ARMORTYPE, Constants.SENSORTYPE);
+    			obj = RefineryBuildOrder.MAKE_MARINE;
+				if (eeHanTiming)
+					myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     			return;
     			
     		case SLEEP:

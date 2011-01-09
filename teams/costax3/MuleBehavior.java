@@ -105,7 +105,7 @@ public class MuleBehavior extends Behavior {
     			
     		case ADDON_FACTORY:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_FACTORY");
-    			Utility.buildComponentOnFront(myPlayer, ComponentType.FACTORY);
+    			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.FACTORY);
     			myPlayer.myMessenger.sendLoc(MsgType.MSG_JIMMY_HOME, jimmyHome);
     			obj = MuleBuildOrder.VACATE_JIMMY_HOME;
     			return;
@@ -234,7 +234,7 @@ public class MuleBehavior extends Behavior {
     			
     		case ADDON_MINE:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_MINE");
-    			Utility.buildComponentOnFront(myPlayer, ComponentType.RECYCLER);
+    			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RECYCLER);
     			obj = MuleBuildOrder.FIND_MINE;
     			myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, jimmyHome, enemyLocation);
     			myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);

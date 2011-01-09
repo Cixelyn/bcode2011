@@ -60,7 +60,7 @@ public class MarineBehavior extends Behavior {
 				{
 					if (c.type()==Constants.GUNTYPE)
 					{
-						guns = guns+1;
+						guns++;
 						if (!myPlayer.myWeapons.contains((WeaponController)c))
 							myPlayer.myWeapons.add((WeaponController)c);
 					}
