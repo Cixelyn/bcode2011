@@ -2,46 +2,30 @@ package team068;
 
 import battlecode.common.*;
 
-import java.util.ArrayList;
-
-public class MarineBehavior extends Behavior {
+public class JimmyBehavior extends Behavior {
 	
-	WeaponController gun;
+	JimmyBuildOrder obj = JimmyBuildOrder.EQUIPPING;
 	
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
 	MapLocation hometown;
 	MapLocation enemyLocation;
 	MapLocation currDestination;
-	MapLocation newDestination;
 	MapLocation mainDestination;
-	
-	MarineBuildOrder obj = MarineBuildOrder.EQUIPPING;
+	MapLocation newDestination;
 	
 	Direction direction;
 	
-	int staleness = 0;
-	int guns;
-	int dizziness = 0;
+	int dizziness;
+	int staleness;
 	
-	//double lastHP = myPlayer.myRC.get;
-	
+	boolean eeHanTiming;
+	boolean enemyFound;
+	boolean hasComm;
 	boolean hasSensor;
-    boolean hasArmor;
-	boolean eeHanTiming = false;
-    boolean moveOut = false;
-    boolean enemyFound;
-    
-    Robot[] nearbyRobots;
-    RobotInfo rInfo;
-    
-    ArrayList<?>[] componentList;
-    
-    Message[] msgs;
-    
-    String spawn;
+	boolean hasDummy;
 	
-	public MarineBehavior(RobotPlayer player) {
+	public JimmyBehavior(RobotPlayer player) {
 		super(player);
 	}
 
@@ -53,29 +37,25 @@ public class MarineBehavior extends Behavior {
 			case EQUIPPING:
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				Utility.spin(myPlayer);
-	            guns = 0;
+	            hasComm = false;
 	            hasSensor = false;
-	            hasArmor = false;
+	            hasDummy = false;
 				for(ComponentController c:myPlayer.myRC.components())
 				{
-					if (c.type()==Constants.GUNTYPE)
+					if (c.type()==ComponentType.DISH)
 					{
-						guns++;
-						if (!myPlayer.myWeapons.contains((WeaponController)c))
-							myPlayer.myWeapons.add((WeaponController)c);
+						hasComm = true;
+						myPlayer.myMessenger.enableSender();
 					}
-					if (c.type()==Constants.SENSORTYPE)
-					{
+					if (c.type()==ComponentType.RADAR)
 						hasSensor = true;
-						myPlayer.mySensor = (SensorController)c;
-					}
-					if (c.type()==Constants.ARMORTYPE)
-					{
-						hasArmor = true;
-					}
+					if (c.type()==ComponentType.DUMMY)
+						hasDummy = true;
 				}
-				if (guns >= Constants.GUNS && hasSensor && hasArmor)
-					obj = MarineBuildOrder.WAITING;
+				if (hasComm && hasSensor && hasDummy)
+				{
+					obj = JimmyBuildOrder.WAITING;
+				}
 				return;
 				
 			case WAITING:
@@ -83,7 +63,7 @@ public class MarineBehavior extends Behavior {
 				Utility.spin(myPlayer);
 				Utility.senseEnemies(myPlayer);
 	        	if (eeHanTiming)
-	        		obj = MarineBuildOrder.MOVE_OUT;
+	        		obj = JimmyBuildOrder.MOVE_OUT;
 	        	return;
 	        	
 			case MOVE_OUT:
@@ -112,42 +92,14 @@ public class MarineBehavior extends Behavior {
 	        			}
 	        		}
 	            }
-	        	if (staleness > Constants.OLDNEWS && (Constants.OLDNEWS - staleness) % Constants.MARINE_SEARCH_FREQ == 0)
-	        		obj = MarineBuildOrder.SEARCH_FOR_ENEMY;
 	        	return;
-	        	
-			case SEARCH_FOR_ENEMY:
-				myPlayer.myRC.setIndicatorString(1, "SEARCH_FOR_ENEMY");
-    			enemyFound = false;
-    			newDestination = Utility.senseEnemies(myPlayer);
-    			if (newDestination != null)
-    				enemyFound = true;
-    			else
-    			{
-    				dizziness = 0;
-    				obj = MarineBuildOrder.MOVE_OUT;
-    			}
-    			if(!enemyFound && dizziness < 4)
-    			{
-    				if(!myPlayer.myMotor.isActive())
-    				{
-    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-    					dizziness++;
-    				}
-    			}
-    			if(!enemyFound && dizziness == 4)
-    			{
-    				dizziness = 0;
-    				obj = MarineBuildOrder.MOVE_OUT;
-    			}
-    			return;
 		}
 	}
 	
 	
 	
 	public String toString() {
-		return "MarineBehavior";
+		return "JimmyBehavior";
 	}
 
 
@@ -169,6 +121,5 @@ public class MarineBehavior extends Behavior {
 			mainDestination = enemyLocation;
 			eeHanTiming = true;
 		}
-		
 	}
 }
