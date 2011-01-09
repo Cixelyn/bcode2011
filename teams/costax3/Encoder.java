@@ -178,10 +178,44 @@ public class Encoder {
 
 	
 	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////MEMODATA///////////////////////////////////////////
 	
 	
+	/*	Memo Binary Format:
+	 *  
+	 *       DATA(18)       TIMESTAMP(14)
+	 *	------------------ --------------
+	 *	000000000000000000 00000000000000
+	 *
+	 */
+	
+	public static int MEMO_TIMESTAMP_OFFSET = 0; 
+	public static int MEMO_TIMESTAMP_MASK = 0x3FFF;
+	public static int MEMO_TIMESTAMP_LENGTH = 14;
+	
+	public static int MEMO_DATA_OFFSET = MEMO_TIMESTAMP_OFFSET + MEMO_TIMESTAMP_LENGTH;
+	public static int MEMO_DATA_MASK = 0x7FFC000;
+	public static int MEMO_DATA_LENGTH = 18;
 	
 	
+	/**
+	 * The encoded <code>memodata</code> int must be a 18-bit number
+	 * @param t
+	 * @param memodata
+	 */
+	public static int encodeMemo(int memodata) {
+		return (memodata << MEMO_DATA_OFFSET)
+			| (Clock.getRoundNum() << MEMO_TIMESTAMP_OFFSET);
+	}
+	
+	public static int decodeMemoTimeStamp(int data) {
+		return (data & MEMO_TIMESTAMP_MASK) >> MEMO_TIMESTAMP_OFFSET;
+	}
+	
+	public static int decodeMemoData(int data) {
+		return (data & MEMO_DATA_MASK) >> MEMO_DATA_OFFSET;
+	}
 	
 	
 	
