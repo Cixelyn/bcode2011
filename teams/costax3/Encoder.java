@@ -79,8 +79,8 @@ public class Encoder {
 			| ((rinfo.on?0:1) << ROBOT_ACTIVE_OFFSET)					//Activated		(0 for a robot that's on)
 			| ((int)(rinfo.hitpoints*10.0) << ROBOT_HP_OFFSET) 			//HP			(Multiplied by 10)
 			| (0 << ROBOT_WEIGHT_OFFSET)								//Weight			
-			| (rinfo.chassis.ordinal())									//Chassis
-			| (rid);													//ID
+			| (rinfo.chassis.ordinal() << ROBOT_CHASSIS_OFFSET)			//Chassis
+			| (rid << ROBOT_ID_OFFSET);									//ID
 	}
 	
 	
@@ -103,6 +103,11 @@ public class Encoder {
 	public static boolean decodeRobotActivity(int data) {
 		if (((data & ROBOT_ACTIVE_MASK) >> ROBOT_ACTIVE_OFFSET)==0) return true;	//Remember that we inverted activity
 		return false;
+	}
+	
+	//Notes
+	public static int decodeRobotNotes(int data) {
+		return 7-((data & ROBOT_NOTES_MASK) >> ROBOT_NOTES_OFFSET);
 	}
 	
 	
@@ -152,15 +157,18 @@ public class Encoder {
 		
 		
 		int id = 101;
-		double hitpoints = 48;
+		double hitpoints = 422.3425;
 		double maxhp = 50;
 		boolean on = true;
 		Chassis ctype = Chassis.BUILDING;
+		Team myteam = Team.B;
+		int notes = 0;
+		
 		
 		
 		
 		RobotInfo rinfo = new RobotInfo(null, null, hitpoints, maxhp, null, on, null, ctype);
-		int result = encodeRobotInfo(0,id,Team.A,rinfo);
+		int result = encodeRobotInfo(notes,id,myteam,rinfo);
 		
 		System.out.println("Hello World");
 		
@@ -168,7 +176,7 @@ public class Encoder {
 		System.out.println(decodeRobotChassis(result).toString());
 		System.out.println(decodeRobotID(result));
 		System.out.println(decodeRobotActivity(result));
-		
+		System.out.println(decodeRobotNotes(result));
 		
 	}
 	
