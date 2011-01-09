@@ -43,18 +43,16 @@ public class ExpoRefineryBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_POWER");
     			Utility.spin(myPlayer);
     			if(powered)
-        			obj = RefineryBuildOrder.INITIALIZE;
+        			obj = RefineryBuildOrder.EQUIPPING;
     			return;
     			
-    		case INITIALIZE:
-    			myPlayer.myRC.setIndicatorString(1, "INITIALIZE");
+    		case EQUIPPING:
+    			myPlayer.myRC.setIndicatorString(1, "EQUIPPING");
     			if(myPlayer.myBuilder == null)
     				obj = RefineryBuildOrder.BROKEN;
     			else
     			{
-	    			while(myPlayer.myRC.getTeamResources() < Constants.COMMTYPE.cost + Constants.RESERVE || myPlayer.myBuilder.isActive())
-	    				myPlayer.myRC.yield();
-	    			myPlayer.myBuilder.build(Constants.COMMTYPE,myPlayer.myRC.getLocation(),RobotLevel.ON_GROUND);
+	    			Utility.buildComponentOnSelf(myPlayer, Constants.COMMTYPE);
 	    			for(ComponentController c:myPlayer.myRC.components())
 					{
 						if (c.type()==Constants.COMMTYPE)
@@ -107,11 +105,11 @@ public class ExpoRefineryBehavior extends Behavior {
     					}
     				}
     				if (rGuns < Constants.GUNS)
-    					Utility.buildComponent(myPlayer, Constants.GUNTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.GUNTYPE);
     				else if (!rSensor)
-    					Utility.buildComponent(myPlayer, Constants.SENSORTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.SENSORTYPE);
     				else if (!rArmor)
-    					Utility.buildComponent(myPlayer, Constants.ARMORTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.ARMORTYPE);
     				else
     				{
     					marinesMade++;
@@ -163,6 +161,7 @@ public class ExpoRefineryBehavior extends Behavior {
 			spawn = msg.ints[Messenger.firstData];
 			hometown = msg.locations[Messenger.firstData];
 			enemyLocation = msg.locations[Messenger.firstData+1];
+			powered = true;
 			eeHanTiming = true;
 		}
 	}

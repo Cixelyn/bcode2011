@@ -26,7 +26,7 @@ public class Messenger {
 
 	//send component needs to be enabled
 	private boolean canSend;
-	public boolean shouldReceive;
+	public boolean shouldReceive = false;
 	
 	//static limits
 	private static final int ROUND_MOD = 4;
@@ -80,7 +80,7 @@ public class Messenger {
 	 */
 	public void enableSender() {
 		canSend = true;		
-	}
+	}	
 	
 
 	/**

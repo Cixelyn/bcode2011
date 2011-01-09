@@ -181,7 +181,7 @@ public class SCVBehavior extends Behavior {
     			
     		case ADDON_MINE:
     			myPlayer.myRC.setIndicatorString(1, "ADDON_MINE");
-    			Utility.buildComponent(myPlayer, ComponentType.RECYCLER);
+    			Utility.buildComponentOnFront(myPlayer, ComponentType.RECYCLER);
     			if(minesCapped>=4)
     			{
     				if (minesCapped == 4)

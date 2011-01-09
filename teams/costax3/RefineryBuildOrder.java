@@ -2,7 +2,7 @@ package costax3;
 
 public enum RefineryBuildOrder 
 {
-	INITIALIZE,
+	EQUIPPING,
 	GIVE_ANTENNA,
 	WAIT_FOR_SCOUTING,
 	MAKE_MULE,

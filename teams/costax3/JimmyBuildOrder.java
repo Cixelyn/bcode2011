@@ -1,6 +1,7 @@
 package costax3;
 
 public enum JimmyBuildOrder {
-	THIS_IS_JIMMY,
-	WAITING
+	EQUIPPING,
+	WAITING,
+	MOVE_OUT
 }

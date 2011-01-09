@@ -29,11 +29,13 @@ public class BuildingBehavior extends Behavior {
 				if (c.type() == ComponentType.RECYCLER)
 				{
 					myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
+					myPlayer.myMessenger.toggleReceive(true);
 					return;
 				}
 				if (c.type() == ComponentType.FACTORY)
 				{
 					myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
+					myPlayer.myMessenger.toggleReceive(true);
 					return;
 				}
 			}

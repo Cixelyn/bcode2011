@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class MainRefineryBehavior extends Behavior {
 	
-	RefineryBuildOrder obj = RefineryBuildOrder.INITIALIZE;
+	RefineryBuildOrder obj = RefineryBuildOrder.EQUIPPING;
 	
 	MapLocation hometown;
 	MapLocation enemyLocation;
@@ -21,6 +21,7 @@ public class MainRefineryBehavior extends Behavior {
 	boolean rComm;
 	boolean rSensor;
 	boolean rArmor;
+	boolean rDummy;
 	boolean isLeader = false;
 	boolean scouting = false;
 	boolean powered = false;
@@ -43,11 +44,9 @@ public class MainRefineryBehavior extends Behavior {
 
 		switch(obj)
     	{
-    		case INITIALIZE:
-    			myPlayer.myRC.setIndicatorString(1, "INITIALIZE");
-    			while(myPlayer.myRC.getTeamResources() < Constants.COMMTYPE.cost + Constants.RESERVE || myPlayer.myBuilder.isActive())
-    				myPlayer.myRC.yield();
-    			myPlayer.myBuilder.build(Constants.COMMTYPE,myPlayer.myRC.getLocation(),RobotLevel.ON_GROUND);
+    		case EQUIPPING:
+    			myPlayer.myRC.setIndicatorString(1, "EQUIPPING");
+    			Utility.buildComponentOnSelf(myPlayer, Constants.COMMTYPE);
     			for(ComponentController c:myPlayer.myRC.components())
 				{
 					if (c.type()==Constants.COMMTYPE)
@@ -75,7 +74,7 @@ public class MainRefineryBehavior extends Behavior {
     			}
     			if (isLeader)
     			{
-    				Utility.buildComponent(myPlayer, Constants.COMMTYPE);
+    				Utility.buildComponentOnFront(myPlayer, Constants.COMMTYPE);
     				obj = RefineryBuildOrder.WAIT_FOR_SCOUTING;
     			}
     			else
@@ -123,17 +122,18 @@ public class MainRefineryBehavior extends Behavior {
     					}
     				}
     				if (!rBuilder)
-    					Utility.buildComponent(myPlayer, ComponentType.CONSTRUCTOR);
+    					Utility.buildComponentOnFront(myPlayer, ComponentType.CONSTRUCTOR);
     				else if (!rComm)
-    					Utility.buildComponent(myPlayer, Constants.COMMTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.COMMTYPE);
     				else if (!rSensor)
-    					Utility.buildComponent(myPlayer, Constants.SENSORTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.SENSORTYPE);
     				else
-    					obj = RefineryBuildOrder.WAIT_FOR_POWER;
+    					obj = RefineryBuildOrder.EQUIP_JIMMY;
     			}
     			return;
     			
     		case EQUIP_JIMMY:
+    			myPlayer.myRC.setIndicatorString(1, "EQUIP_JIMMY");
     			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
     			if(rFront != null && (rFront).getID() != babyMule.getID())
     			{
@@ -147,10 +147,13 @@ public class MainRefineryBehavior extends Behavior {
     							rSensor = true;
     					}
     				}
-    				if (!rComm)
-    					Utility.buildComponent(myPlayer, ComponentType.DISH);
-    				else
-    					obj = RefineryBuildOrder.WAIT_FOR_POWER;
+    				if (!rSensor)
+    					Utility.buildComponentOnFront(myPlayer, ComponentType.RADAR);
+    				if (rSensor)
+    				{
+    					myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+    					obj = RefineryBuildOrder.MAKE_MARINE;
+    				}
     			}
     			return;
     			
@@ -204,11 +207,11 @@ public class MainRefineryBehavior extends Behavior {
     					}
     				}
     				if (rGuns < Constants.GUNS)
-    					Utility.buildComponent(myPlayer, Constants.GUNTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.GUNTYPE);
     				else if (!rSensor)
-    					Utility.buildComponent(myPlayer, Constants.SENSORTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.SENSORTYPE);
     				else if (!rArmor)
-    					Utility.buildComponent(myPlayer, Constants.ARMORTYPE);
+    					Utility.buildComponentOnFront(myPlayer, Constants.ARMORTYPE);
     				else
     				{
     					marinesMade++;
@@ -256,6 +259,7 @@ public class MainRefineryBehavior extends Behavior {
 			spawn = msg.ints[Messenger.firstData];
 			hometown = msg.locations[Messenger.firstData];
 			enemyLocation = msg.locations[Messenger.firstData+1];
+			powered = true;
 			eeHanTiming = true;
 		}
 	}
