@@ -111,6 +111,9 @@ public class Encoder {
 	}
 	
 	
+	//TODO: Not sure if encoding teams works.  Check that if something breaks.
+	
+	
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////MSGDATA////////////////////////////////////////////
 	
@@ -126,23 +129,45 @@ public class Encoder {
 	public static int MSG_TYPE_MASK = 0xFC000000;
 
 	
-
-	//Encoding Function -- Lower means older and more important
+	/////////////////Encoding Function -- Lower means older and more important
+	
+	/**
+	 * Encodes a message header into a 32-bit int for transmission
+	 * @param type Type of message you wish to send
+	 * @param time Timestamp
+	 * @param id Your own ID
+	 * @return
+	 */
 	public static int encodeMsgHeader(MsgType type, int time, int id) {
 		return (type.ordinal()<<MSG_TYPE_OFFSET)
 			| (time<<MSG_TIMESTAMP_OFFSET)
 			| (id<<MSG_ID_OFFSET);		
 	}
 	
-	//Decoding Functions
+	//////////////////Decoding Functions
+	/**
+	 * Decodes a message type from the packed header format
+	 * @param data packed header
+	 * @return message type
+	 */
 	public static MsgType decodeMsgType(int data) {
 		return MsgType.values()[(data & MSG_TYPE_MASK) >> MSG_TYPE_OFFSET];
 	}
 	
+	/**
+	 * Decodes timestamp from the packed header format
+	 * @param data packed header
+	 * @return message timestamp
+	 */
 	public static int decodeMsgTimeStamp(int data) {
 		return (data &  MSG_TIMESTAMP_MASK) >> MSG_TIMESTAMP_OFFSET;
 	}
 	
+	/**
+	 * Decodes sender ID from the packed header format
+	 * @param data packed header
+	 * @return message sender id
+	 */
 	public static int decodeMsgID(int data) {
 		return (data & MSG_ID_MASK) >> MSG_ID_OFFSET;
 	}
@@ -150,6 +175,7 @@ public class Encoder {
 	
 
 	//TODO: Remove constants that add 0 for a small performance boost
+
 	
 	
 	

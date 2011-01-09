@@ -26,4 +26,20 @@ public class Constants
 	public static final int MARINE_SEARCH_FREQ = 3; // how often marines should stop and spin to find enemy.. make really high to disable
 	public static final int MINE_AFFINITY = 10; // how long to chase after empty gas before giving up
 	public static final int ENEMIES_COUNT = 4;
+	
+	
+	
+	
+	
+	
+	
+	//Debug Flags
+	public static final boolean DEBUG_BYTECODE_OVERFLOW = true;
+	
+	
+	
+	
+	
+	
+	
 }
