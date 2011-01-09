@@ -1,7 +1,6 @@
 package costax2b;
 
 import battlecode.common.*;
-
 import java.util.ArrayList;
 
 public class MainRefineryBehavior extends Behavior {

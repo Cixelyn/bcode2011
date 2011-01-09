@@ -39,7 +39,7 @@ public class FactoryBehavior extends Behavior {
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.MEDIUM);
+				Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getDirection(), Chassis.MEDIUM);
 				babyJimmy = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = FactoryBuildOrder.EQUIP_JIMMY;
     			return;

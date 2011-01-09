@@ -92,11 +92,7 @@ public class MuleBehavior extends Behavior
         			}
         			else
         			{
-        				while(myPlayer.myMotor.isActive())
-							myPlayer.myRC.yield();
-        				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(destination));
-        				myPlayer.myRC.yield(); // must yield before building since turning occurs at end of turn!
-        				if (Utility.buildChassis(myPlayer, Chassis.BUILDING))
+        				if (Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getLocation().directionTo(destination), Chassis.BUILDING))
         					obj = MuleBuildOrder.ADDON_MINE;
         				else
         					obj = MuleBuildOrder.EXPAND;

@@ -16,7 +16,7 @@ public class Constants
 	public static final ComponentType SENSORTYPE = ComponentType.SIGHT; // sensor on marines
 	public static final ComponentType COMMTYPE = ComponentType.ANTENNA; // broadcaster on SCVs
 	public static final ComponentType ARMORTYPE = ComponentType.SHIELD; // armor on marines
-	public static final int MARINES = 2; // maximum number of marines per refinery
+	public static final int MARINES = 99999; // maximum number of marines per refinery
 	public static final int OLDNEWS = 15; // number of rounds until marine stops chasing enemy out of range
 	public static final int RESERVE = 5; // desired min flux
 	public static final int SCOUTING_DISTANCE = 7; // distance SCV should go from home
@@ -29,8 +29,8 @@ public class Constants
 	
 	public static final int MULE_TIME = 210;
 	public static final int EXPAND_TIME = 400;
-	public static final int MARINE_TIME = 1000;
-	public static final int SLEEP_TIME = 1200;
+	public static final int MARINE_TIME = 800;
+	public static final int SLEEP_TIME = 1100;
 	
 	
 	

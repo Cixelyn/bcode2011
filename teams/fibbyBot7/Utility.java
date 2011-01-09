@@ -231,38 +231,15 @@ public class Utility
 	 * @param chassis
 	 * @return true if built
 	 */
-	public static boolean buildChassis(RobotPlayer player, Chassis chassis) throws Exception
+	public static boolean buildChassisInDir(RobotPlayer player, Direction dir, Chassis chassis) throws Exception
 	{
 		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
-		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), chassis.level);
-		if ( rFront == null )
+		/*GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(dir), chassis.level);
+		if ( rFront == null )*/
+		if ( player.myMotor.canMove(dir) )
 		{
-			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
-			return true;
-		}
-		else
-			return false;
-	}
-	
-	/**
-	 * Helper function to build a chassis by JVen
-	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
-	 * Current modified to use sleep() though ~coryli
-	 * higher priority value adds to "buffer cost"
-	 * @param player
-	 * @param chassis
-	 * @param priority
-	 * @return true if built
-	 */
-	public static boolean buildChassis(RobotPlayer player, Chassis chassis, int priority) throws Exception
-	{
-		while (player.myRC.getTeamResources() < chassis.cost + priority + Constants.RESERVE || player.myBuilder.isActive())
-			player.sleep();
-		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), chassis.level);
-		if ( rFront == null )
-		{
-			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
+			player.myBuilder.build(chassis, player.myRC.getLocation().add(dir));
 			return true;
 		}
 		else
@@ -955,6 +932,23 @@ public class Utility
 				}
 			}
 		}
+	}
+	
+	public static double buildingProbability(double currRes, double prevRes, Chassis chassis)
+	{
+		if ( (chassis == Chassis.BUILDING && Clock.getRoundNum() % 10 == 0) || (chassis == Chassis.LIGHT && Clock.getRoundNum() > Constants.MULE_TIME && Clock.getRoundNum() % 5 == 0))
+		{
+			if (currRes > chassis.cost + Constants.RESERVE && currRes - prevRes > chassis.upkeep)
+				return 1.0;
+		}
+		return 0.0;
+	}
+	
+	public static double marineMuleRatio()
+	{
+		if (Clock.getRoundNum() < 800)
+			return 0.0;
+		return 0.8;
 	}
 }
 

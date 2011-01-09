@@ -1,5 +1,7 @@
 package fibbyBot7;
 
+import java.util.Random;
+
 import battlecode.common.*;
 
 public class RefineryBehavior extends Behavior
@@ -9,6 +11,12 @@ public class RefineryBehavior extends Behavior
 	
 	Robot babyMule;
 	Robot babyMarine;
+	
+	double lastRes = 0;
+	double p;
+	
+	final Random random = new Random();
+	double r;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -28,14 +36,18 @@ public class RefineryBehavior extends Behavior
 					if (c.type()==ComponentType.RECYCLER)
 						obj = RefineryBuildOrder.WAITING;
 				}
+    			lastRes = myPlayer.myRC.getTeamResources();
     			return;
     			
     		case WAITING:
     			myPlayer.myRC.setIndicatorString(1, "WAITING");
-    			if(Clock.getRoundNum() >= Constants.MULE_TIME && Clock.getRoundNum() < Constants.EXPAND_TIME)
-    				obj = RefineryBuildOrder.MAKE_MULE;
-    			if(Clock.getRoundNum() >= Constants.MARINE_TIME && Clock.getRoundNum() < Constants.SLEEP_TIME)
-        			obj = RefineryBuildOrder.MAKE_MARINE;
+				p = Utility.buildingProbability(myPlayer.myRC.getTeamResources(), lastRes, Chassis.LIGHT);
+				r = random.nextDouble();
+				if (r < Utility.marineMuleRatio()*p)
+					obj = RefineryBuildOrder.MAKE_MARINE;
+				else if (r < p)
+					obj = RefineryBuildOrder.MAKE_MULE;
+    			lastRes = myPlayer.myRC.getTeamResources();
     			return;
     			
     		case MAKE_MULE:
@@ -45,15 +57,17 @@ public class RefineryBehavior extends Behavior
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.LIGHT, Chassis.BUILDING.cost);
+				Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getDirection(), Chassis.LIGHT);
 				babyMule = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = RefineryBuildOrder.EQUIP_MULE;
+				lastRes = myPlayer.myRC.getTeamResources();
     			return;
     			
     		case EQUIP_MULE:
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MULE");
     			Utility.equipFrontWithTwoComponents(myPlayer, babyMule, ComponentType.CONSTRUCTOR, Constants.SENSORTYPE);
     			obj = RefineryBuildOrder.WAITING;
+    			lastRes = myPlayer.myRC.getTeamResources();
     			return;
     			
     		case MAKE_MARINE:
@@ -63,7 +77,7 @@ public class RefineryBehavior extends Behavior
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.LIGHT, Chassis.BUILDING.cost);
+				Utility.buildChassisInDir(myPlayer, myPlayer.myRC.getDirection(), Chassis.LIGHT);
 				babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = RefineryBuildOrder.EQUIP_MARINE;
     			return;
@@ -73,6 +87,7 @@ public class RefineryBehavior extends Behavior
     			Utility.equipFrontWithSameComponents(myPlayer, babyMarine, Constants.GUNTYPE, Constants.GUNS);
     			Utility.equipFrontWithTwoComponents(myPlayer, babyMarine, Constants.ARMORTYPE, Constants.SENSORTYPE);
     			obj = RefineryBuildOrder.WAITING;
+    			lastRes = myPlayer.myRC.getTeamResources();
     			return;
     	}
 		
