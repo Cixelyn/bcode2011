@@ -116,9 +116,11 @@ public class RobotPlayer implements Runnable {
 		
 		///////////////////////////////////////////////////////////////
 		//Receive all messages
-		try {
-			myMessenger.receiveAll();
-		} catch(Exception e) {e.printStackTrace();}
+		if(myMessenger.shouldReceive) {
+			try {
+				myMessenger.receiveAll();
+			} catch(Exception e) {e.printStackTrace();}
+		}
 
 		
 		
@@ -203,6 +205,7 @@ public class RobotPlayer implements Runnable {
 		myRC.yield();
 		preRun();
 	}
+	
 	
 	
 	/**
