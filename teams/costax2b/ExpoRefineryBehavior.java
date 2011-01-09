@@ -1,4 +1,4 @@
-package costax3;
+package costax2b;
 
 import battlecode.common.*;
 
@@ -66,7 +66,6 @@ public class ExpoRefineryBehavior extends Behavior {
     			}
     			if(marinesMade < Constants.MARINES)
 				{
-    				marinesMade++;
 					Utility.buildChassis(myPlayer, Chassis.LIGHT);
 					babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 					myRobots.add(babyMarine.getID());
@@ -80,6 +79,7 @@ public class ExpoRefineryBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
     			Utility.equipFrontWithSameComponents(myPlayer, babyMarine, Constants.GUNTYPE, Constants.GUNS);
     			Utility.equipFrontWithTwoComponents(myPlayer, babyMarine, Constants.ARMORTYPE, Constants.SENSORTYPE);
+    			marinesMade++;
     			obj = RefineryBuildOrder.MAKE_MARINE;
 				if (eeHanTiming)
 					myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
@@ -115,8 +115,6 @@ public class ExpoRefineryBehavior extends Behavior {
 	
 	
 	public void newMessageCallback(MsgType t, Message msg) {
-		if(t == MsgType.MSG_JIMMY_HOME)
-			jimmyHome = msg.locations[Messenger.firstData];
 		if(t == MsgType.MSG_POWER_UP)
 			powered = true;
 		if(t == MsgType.MSG_MOVE_OUT)

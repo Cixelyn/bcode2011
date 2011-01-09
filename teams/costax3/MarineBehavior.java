@@ -129,9 +129,11 @@ public class MarineBehavior extends Behavior {
     			}
     			if(!enemyFound && dizziness < 4)
     			{
-    				while (!myPlayer.myMotor.isActive())
+    				if(!myPlayer.myMotor.isActive())
+    				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-    				dizziness++;
+    					dizziness++;
+    				}
     			}
     			if(!enemyFound && dizziness == 4)
     			{

@@ -1,8 +1,11 @@
-package costax3;
+package costax2b;
 
 import battlecode.common.*;
 
 import java.util.*;
+
+import costax3.Constants;
+import costax3.SCVBuildOrder;
 
 public class SCVBehavior extends Behavior {
 	
@@ -187,7 +190,7 @@ public class SCVBehavior extends Behavior {
     				if (minesCapped == 4)
     				{
     					obj = SCVBuildOrder.SCOUT_WEST;
-    					myPlayer.myMessenger.sendNotice(MsgType.MSG_SCOUTING);
+    					myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
     				}
     				else
     				{

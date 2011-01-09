@@ -138,6 +138,7 @@ public class MainRefineryBehavior extends Behavior {
     			}
     			if(marinesMade < Constants.MARINES - 1) // tweak to make main refineries build diff number of marines than expos
 				{
+    				marinesMade++;
 					Utility.buildChassis(myPlayer, Chassis.LIGHT);
 					babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 					myRobots.add(babyMarine.getID());

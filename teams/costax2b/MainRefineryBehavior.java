@@ -1,62 +1,93 @@
-package costax3;
+package costax2b;
 
 import battlecode.common.*;
 
 import java.util.ArrayList;
 
-public class ExpoRefineryBehavior extends Behavior {
-
-	RefineryBuildOrder obj = RefineryBuildOrder.WAIT_FOR_POWER;
+public class MainRefineryBehavior extends Behavior {
+	
+	RefineryBuildOrder obj = RefineryBuildOrder.EQUIPPING;
 	
 	MapLocation hometown;
-	MapLocation enemyLocation;
 	MapLocation jimmyHome;
+	MapLocation enemyLocation;
 	
 	int rGuns;
 	int marinesMade = 0;
 	int sheep = 0; // counts while sleeping!
-	ArrayList<Integer> myRobots = new ArrayList<Integer>(1024); //high initial capacity
+	ArrayList<Integer> myRobots = new ArrayList<Integer>();
 	
+	boolean rBuilder;
+	boolean rComm;
 	boolean rSensor;
 	boolean rArmor;
+	boolean rDummy;
+	boolean isLeader = false;
 	boolean powered = false;
 	boolean eeHanTiming = false;
 	
 	RobotInfo rInfo;
-	Robot babyMarine;
 	Robot rFront;
+	Robot babySCV;
+	Robot babyMule;
+	Robot babyMarine;
+	Robot[] nearbyRobots;
 	
-	ArrayList<?>[] componentList;
+	int spawn = -1;
 	
-	int spawn;
-	
-	public ExpoRefineryBehavior(RobotPlayer player) {
+	public MainRefineryBehavior(RobotPlayer player) {
 		super(player);
 	}
 
-	
+
 	public void run() throws Exception {
 
 		switch(obj)
     	{
+    		case EQUIPPING:
+    			myPlayer.myRC.setIndicatorString(1, "EQUIPPING");
+    			Utility.buildComponentOnSelf(myPlayer, Constants.COMMTYPE);
+    			for(ComponentController c:myPlayer.myRC.components())
+				{
+					if (c.type()==Constants.COMMTYPE)
+					{
+						myPlayer.myBroadcaster = (BroadcastController)c;
+						myPlayer.myMessenger.enableSender();
+					}
+				}
+    			obj = RefineryBuildOrder.GIVE_ANTENNA;
+    			return;
+    			
+    		case GIVE_ANTENNA:
+    			myPlayer.myRC.setIndicatorString(1, "GIVE_ANTENNA");
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for (Robot r:nearbyRobots)
+    			{
+    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    				if (rInfo.chassis == Chassis.BUILDING && myPlayer.myRC.getRobot().getID() < rInfo.robot.getID())
+    					isLeader = true;
+    				if (rInfo.chassis == Chassis.LIGHT && myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location)<=2 && !myPlayer.myMotor.isActive() && !myPlayer.myBuilder.isActive())
+					{
+    					babySCV = rInfo.robot;
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(rInfo.location));
+						myPlayer.myRC.yield();
+					}
+    			}
+    			if (isLeader)
+    				Utility.equipFrontWithOneComponent(myPlayer, babySCV, Constants.COMMTYPE);
+    			obj = RefineryBuildOrder.WAIT_FOR_POWER;
+    			return;
+    			
     		case WAIT_FOR_POWER:
     			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_POWER");
     			Utility.spin(myPlayer);
     			if(powered)
-        			obj = RefineryBuildOrder.EQUIPPING;
-    			return;
-    			
-    		case EQUIPPING:
-    			myPlayer.myRC.setIndicatorString(1, "EQUIPPING");
-    			if(myPlayer.myBuilder == null)
-    				obj = RefineryBuildOrder.BROKEN;
-    			else
     			{
-	    			Utility.buildComponentOnSelf(myPlayer, Constants.COMMTYPE);
-	    			obj = RefineryBuildOrder.MAKE_MARINE;
+    				myPlayer.myMessenger.sendNotice(MsgType.MSG_POWER_UP);
+        			obj = RefineryBuildOrder.MAKE_MARINE;
     			}
     			return;
-    	
+    			
     		case MAKE_MARINE:
     			myPlayer.myRC.setIndicatorString(1, "MAKE_MARINE");
     			while(!Utility.shouldBuild(myPlayer, myPlayer.myRC.getDirection(), jimmyHome))
@@ -64,9 +95,8 @@ public class ExpoRefineryBehavior extends Behavior {
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-    			if(marinesMade < Constants.MARINES)
+    			if(marinesMade < Constants.MARINES) // tweak to make main refineries build diff number of marines than expos
 				{
-    				marinesMade++;
 					Utility.buildChassis(myPlayer, Chassis.LIGHT);
 					babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 					myRobots.add(babyMarine.getID());
@@ -80,7 +110,8 @@ public class ExpoRefineryBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
     			Utility.equipFrontWithSameComponents(myPlayer, babyMarine, Constants.GUNTYPE, Constants.GUNS);
     			Utility.equipFrontWithTwoComponents(myPlayer, babyMarine, Constants.ARMORTYPE, Constants.SENSORTYPE);
-    			obj = RefineryBuildOrder.MAKE_MARINE;
+    			marinesMade++;
+				obj = RefineryBuildOrder.MAKE_MARINE;
 				if (eeHanTiming)
 					myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     			return;
@@ -95,28 +126,20 @@ public class ExpoRefineryBehavior extends Behavior {
     				myPlayer.myMessenger.sendIntDoubleLoc(MsgType.MSG_MOVE_OUT, spawn, hometown, enemyLocation);
     			}
     			return;
-    			
-    		case BROKEN:
-    			myPlayer.myRC.setIndicatorString(1, "BROKEN");
-    			return;
     	}
 		
 	}
 
 	public String toString() {
-		return "ExpoRefineryBehavior";
-	}
-
-
-	public void newComponentCallback(ComponentController[] components) {
-		
-
+		return "MainRefineryBehavior";
 	}
 	
+	public void newComponentCallback(ComponentController[] components) {
+			
+	
+		}
 	
 	public void newMessageCallback(MsgType t, Message msg) {
-		if(t == MsgType.MSG_JIMMY_HOME)
-			jimmyHome = msg.locations[Messenger.firstData];
 		if(t == MsgType.MSG_POWER_UP)
 			powered = true;
 		if(t == MsgType.MSG_MOVE_OUT)
