@@ -41,21 +41,16 @@ public class MuleBehavior extends Behavior
     			for(ComponentController c:myPlayer.myRC.components())
     			{
     				if (c.type() == ComponentType.CONSTRUCTOR)
-    				{
-    					myPlayer.myBuilder = (BuilderController)c;
     					hasConstructor = true;
-    				}
     				if (c.type() == Constants.SENSORTYPE)
-    				{
-    					myPlayer.mySensor = (SensorController)c;
     					hasSensor = true;
-    				}
     			}
     			if (hasConstructor && hasSensor)
-    				obj = MuleBuildOrder.EXPAND;
+    				obj = MuleBuildOrder.FIND_MINE;
     			return;
     			
     		case EXPAND:
+    			myPlayer.myRC.setIndicatorString(1, "EXPAND");
     			Utility.bounceNav(myPlayer);
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
@@ -73,6 +68,49 @@ public class MuleBehavior extends Behavior
     			}
     			if (mineFound)
     				obj = MuleBuildOrder.CAP_MINE;
+    			else
+    			{
+    				tiredness++;
+    				if (tiredness > Constants.SCV_SEARCH_FREQ)
+    				{
+    					tiredness = 0;
+    					obj = MuleBuildOrder.FIND_MINE;
+    				}
+    			}
+    			return;
+    			
+    		case FIND_MINE:
+    			mineFound = false;
+    			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
+    			for (Mine m:nearbyMines)
+    			{
+    				if(!mineFound && m.getTeam()==Team.NEUTRAL)
+        			{
+        				mInfo = myPlayer.mySensor.senseMineInfo(m);
+        				if(myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(mInfo.mine.getID()))
+        				{
+            				mineFound = true;
+            				destination = mInfo.mine.getLocation();
+        				}
+        			}
+    			}
+    			if(!mineFound && dizziness < 4)
+    			{
+    				while (myPlayer.myMotor.isActive())
+    					myPlayer.myRC.yield();
+    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+    				dizziness++;
+    			}
+    			if(!mineFound && dizziness >= 4)
+    			{
+    				dizziness = 0;
+    				obj = MuleBuildOrder.EXPAND;
+    			}
+    			if(mineFound)
+    			{
+    				dizziness = 0;
+    				obj = MuleBuildOrder.CAP_MINE;
+    			}
     			return;
     			
     		case CAP_MINE:
@@ -99,21 +137,21 @@ public class MuleBehavior extends Behavior
         				if (Utility.buildChassis(myPlayer, Chassis.BUILDING))
         					obj = MuleBuildOrder.ADDON_MINE;
         				else
-        					obj = MuleBuildOrder.EXPAND;
+        					obj = MuleBuildOrder.FIND_MINE;
         				tiredness = 0;
         				return;
         			}
     			}
     			else
     			{
-    				obj = MuleBuildOrder.EXPAND;
+    				obj = MuleBuildOrder.FIND_MINE;
     				tiredness = 0;
     			}
     			return;
     			
     		case ADDON_MINE:
     			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RECYCLER);
-    			obj = MuleBuildOrder.EXPAND;
+    			obj = MuleBuildOrder.FIND_MINE;
     			return;
     	}
 	}

@@ -56,7 +56,7 @@ public class MarineBehavior extends Behavior
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
 	        	if(Utility.senseEnemies(myPlayer) != null)
 	        		return;
-	        	else if (Utility.senseDebris(myPlayer) != null)
+	        	else if (Clock.getRoundNum() > Constants.LATE_GAME && Utility.senseDebris(myPlayer) != null)
 	        		return;
 	        	else
 	        		Utility.bounceNav(myPlayer);
