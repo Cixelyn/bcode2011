@@ -1,9 +1,14 @@
 package costax3;
+import java.util.Arrays;
+
+
 import battlecode.common.*;
 
 public class MarineBattleStrategy extends BattleStrategy {
 	
 	private Scanner myScanner;
+	private int index;
+	
 
 	public MarineBattleStrategy(RobotPlayer player) {
 		super(player);
@@ -16,24 +21,23 @@ public class MarineBattleStrategy extends BattleStrategy {
 		Message[] messages = player.myRC.getAllMessages();
 		myScanner.detectRobots();
 		if (messages!=null) {
-			for (Message message: messages) {
-				if (message.ints.length==10) {
-					for (int i=0;i<10;i++) {
-						for (int j=0;j<10;j++) {
-							 if (message.ints[j]==i) {
-								 for (WeaponController weapon : player.myWeapons) {
-									 if (!weapon.isActive() && weapon.withinRange(message.locations[i])) {
-										 try {
-											weapon.attackSquare(message.locations[i], RobotLevel.ON_GROUND);
-										} catch (GameActionException e) {
-											e.printStackTrace();
-										}
-									 }
-								 }
-								 foundEnemy=true;
-								 break;
+			for (Message message: messages) { //see all incoming broadcasts
+				if (message.ints.length==Constants.ENEMIES_COUNT+2) { //we have an EnemyFound message (will probably change later with header?)
+					int[] messageCopy=message.ints.clone();
+					Arrays.sort(messageCopy,2,message.ints.length); //sort our priorities :the lowest number has the highest priority
+					for (int i=0;i<Constants.ENEMIES_COUNT;i++) {
+						index= findPriorityIndex(messageCopy[Messenger.firstData+i], message.ints);
+						 for (WeaponController weapon : player.myWeapons) {
+							 if (!weapon.isActive() && weapon.withinRange(message.locations[index])) {
+								 try {
+									weapon.attackSquare(message.locations[i], RobotLevel.ON_GROUND);
+								} catch (GameActionException e) {
+									e.printStackTrace();
+								}
+							 foundEnemy=true;
+							 break;
 							 }
-						}
+						 }
 						if (foundEnemy) {
 							break;
 						}
@@ -50,5 +54,17 @@ public class MarineBattleStrategy extends BattleStrategy {
 			} catch (Exception e) {
 			}
 		}
+	}
+	
+	/*
+	 * Finds the index of our next priority target.
+	 */
+	private int findPriorityIndex(int priority, int[] ints) {
+		for (int j=0;j<Constants.ENEMIES_COUNT;j++) {
+			if (ints[j]==priority) {
+				return j;
+			}
+		}
+		return 0;
 	}
 }
