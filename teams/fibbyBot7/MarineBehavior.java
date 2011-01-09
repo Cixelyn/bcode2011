@@ -2,8 +2,6 @@ package fibbyBot7;
 
 import battlecode.common.*;
 
-import java.util.ArrayList;
-
 public class MarineBehavior extends Behavior
 {
 	

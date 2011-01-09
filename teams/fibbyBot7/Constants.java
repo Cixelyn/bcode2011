@@ -28,8 +28,9 @@ public class Constants
 	public static final int ENEMIES_COUNT = 4;
 	
 	public static final int MULE_TIME = 210;
-	public static final int EXPAND_TIME = 700;
-	public static final int MARINE_TIME = 2000;
+	public static final int EXPAND_TIME = 400;
+	public static final int MARINE_TIME = 1000;
+	public static final int SLEEP_TIME = 1200;
 	
 	
 	

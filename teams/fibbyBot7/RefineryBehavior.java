@@ -34,7 +34,7 @@ public class RefineryBehavior extends Behavior
     			myPlayer.myRC.setIndicatorString(1, "WAITING");
     			if(Clock.getRoundNum() >= Constants.MULE_TIME && Clock.getRoundNum() < Constants.EXPAND_TIME)
     				obj = RefineryBuildOrder.MAKE_MULE;
-    			if(Clock.getRoundNum() >= Constants.MARINE_TIME)
+    			if(Clock.getRoundNum() >= Constants.MARINE_TIME && Clock.getRoundNum() < Constants.SLEEP_TIME)
         			obj = RefineryBuildOrder.MAKE_MARINE;
     			return;
     			
@@ -45,7 +45,7 @@ public class RefineryBehavior extends Behavior
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.LIGHT);
+				Utility.buildChassis(myPlayer, Chassis.LIGHT, Chassis.BUILDING.cost);
 				babyMule = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = RefineryBuildOrder.EQUIP_MULE;
     			return;
@@ -63,7 +63,7 @@ public class RefineryBehavior extends Behavior
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 					myPlayer.myRC.yield();
     			}
-				Utility.buildChassis(myPlayer, Chassis.LIGHT);
+				Utility.buildChassis(myPlayer, Chassis.LIGHT, Chassis.BUILDING.cost);
 				babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				obj = RefineryBuildOrder.EQUIP_MARINE;
     			return;

@@ -16,6 +16,8 @@ public class MuleBehavior extends Behavior
 	int tiredness;
 	ArrayList<Integer> badMines = new ArrayList<Integer>(100);
 	
+	boolean hasConstructor;
+	boolean hasSensor;
 	boolean mineFound;
 	boolean justTurned;
 	
@@ -34,41 +36,27 @@ public class MuleBehavior extends Behavior
     	{
     		case EQUIPPING:
     			myPlayer.myRC.setIndicatorString(1, "EQUIPPING");
+    			hasConstructor = false;
+    			hasSensor = false;
     			for(ComponentController c:myPlayer.myRC.components())
     			{
     				if (c.type() == ComponentType.CONSTRUCTOR)
     				{
     					myPlayer.myBuilder = (BuilderController)c;
-    					obj = MuleBuildOrder.FIND_MINE;
+    					hasConstructor = true;
+    				}
+    				if (c.type() == Constants.SENSORTYPE)
+    				{
+    					myPlayer.mySensor = (SensorController)c;
+    					hasSensor = true;
     				}
     			}
+    			if (hasConstructor && hasSensor)
+    				obj = MuleBuildOrder.EXPAND;
     			return;
     			
     		case EXPAND:
-    			if (!myPlayer.myMotor.isActive())
-    			{
-    				if(myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
-    				{
-    					justTurned = false;
-    					myPlayer.myMotor.moveForward();
-    				}
-    				else if (!justTurned)
-    				{
-    					justTurned = true;
-    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-    				}
-    				else
-    				{
-    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
-    				}
-    			}
-    			tiredness++;
-    			if (tiredness > 4)
-    				obj = MuleBuildOrder.FIND_MINE;
-    			return;
-    			
-    		case FIND_MINE:
-    			myPlayer.myRC.setIndicatorString(1, "FIND_MINE");
+    			Utility.bounceNav(myPlayer);
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)
@@ -83,23 +71,8 @@ public class MuleBehavior extends Behavior
         				}
         			}
     			}
-    			if(!mineFound && dizziness < 4)
-    			{
-    				dizziness++;
-    				while (myPlayer.myMotor.isActive())
-    					myPlayer.myRC.yield();
-    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-    			}
-    			if(!mineFound && dizziness >= 4)
-    			{
-    				dizziness = 0;
-    				obj = MuleBuildOrder.EXPAND;
-    			}
-    			if(mineFound)
-    			{
-    				dizziness = 0;
+    			if (mineFound)
     				obj = MuleBuildOrder.CAP_MINE;
-    			}
     			return;
     			
     		case CAP_MINE:
@@ -113,7 +86,7 @@ public class MuleBehavior extends Behavior
             			if(tiredness > Constants.MINE_AFFINITY)
             			{
             				badMines.add(mInfo.mine.getID());
-            				obj = MuleBuildOrder.FIND_MINE;
+            				obj = MuleBuildOrder.EXPAND;
             				tiredness = 0;
             			}
         			}
@@ -126,21 +99,21 @@ public class MuleBehavior extends Behavior
         				if (Utility.buildChassis(myPlayer, Chassis.BUILDING))
         					obj = MuleBuildOrder.ADDON_MINE;
         				else
-        					obj = MuleBuildOrder.FIND_MINE;
+        					obj = MuleBuildOrder.EXPAND;
         				tiredness = 0;
         				return;
         			}
     			}
     			else
     			{
-    				obj = MuleBuildOrder.FIND_MINE;
+    				obj = MuleBuildOrder.EXPAND;
     				tiredness = 0;
     			}
     			return;
     			
     		case ADDON_MINE:
     			Utility.equipFrontWithOneComponent(myPlayer, ComponentType.RECYCLER);
-    			obj = MuleBuildOrder.FIND_MINE;
+    			obj = MuleBuildOrder.EXPAND;
     			return;
     	}
 	}
