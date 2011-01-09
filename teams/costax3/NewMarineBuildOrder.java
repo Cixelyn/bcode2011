@@ -1,0 +1,7 @@
+package costax3;
+
+public enum NewMarineBuildOrder {
+	
+	EQUIPPING,
+	FIND_ENEMY;
+}
