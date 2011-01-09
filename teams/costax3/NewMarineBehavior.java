@@ -113,7 +113,6 @@ public class NewMarineBehavior extends Behavior {
 					obj=NewMarineBuildOrder.CHASE_ENEMY;
 				}
 			case CHASE_ENEMY:
-				Direction direction = robotNavigation.bugTo(chasingEnemyLoc);
 				if (shouldMove) {
 					if (!myPlayer.myMotor.isActive()) {
 						if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
@@ -184,7 +183,7 @@ public class NewMarineBehavior extends Behavior {
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
 		//find enemies by lowest hit point priority, but don't overkill
 		//specifically made for a 2 gun robot (finds the two highest priority targets, if the first one is killable
-		//by one shot, have our other weapon shoot the other target.
+		//by one shot, have our second weapon shoot the other target.
 		
 		minHealth=100; //some large amount of health not possible to attain in the game
 		secondMinHealth=100; //some large amount of health not possible to attain in the game
@@ -218,7 +217,7 @@ public class NewMarineBehavior extends Behavior {
 		// we chase after it.
 		killAllRobots=false;
 		damageDealt=0;
-		if (minRobot!=null) {
+		if (seeEnemyRobot) {
 			for (WeaponController weapon :myPlayer.myWeapons) {
 				if(!weapon.isActive()) {
 					if (damageDealt<minHealth) { //our top priority is still alive, better try and kill it
