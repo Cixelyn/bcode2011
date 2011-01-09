@@ -1,7 +1,6 @@
 package fibbyBot7;
 
 import battlecode.common.*;
-import java.util.*;
 
 public class MarineBehavior extends Behavior
 {
@@ -57,7 +56,7 @@ public class MarineBehavior extends Behavior
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
 	        	if(Utility.senseEnemies(myPlayer) != null)
 	        		return;
-	        	else if (Utility.senseDebris(myPlayer) != null)
+	        	else if (Clock.getRoundNum() > Constants.LATE_GAME && Utility.senseDebris(myPlayer) != null)
 	        		return;
 	        	else
 	        		Utility.bounceNav(myPlayer);

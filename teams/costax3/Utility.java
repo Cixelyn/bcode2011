@@ -1,7 +1,6 @@
 package costax3;
 
 import battlecode.common.*;
-
 import java.util.*;
 
 

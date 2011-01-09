@@ -936,9 +936,30 @@ public class Utility
 	
 	public static double buildingProbability(double currRes, double prevRes, Chassis chassis)
 	{
-		if ( (chassis == Chassis.BUILDING && Clock.getRoundNum() % 10 == 0) || (chassis == Chassis.LIGHT && Clock.getRoundNum() > Constants.MULE_TIME && Clock.getRoundNum() % 5 == 0))
+		if ( Clock.getRoundNum() < Constants.MULE_TIME )
+			return 0.0;
+		else if ( Clock.getRoundNum() < Constants.EXPAND_TIME )
 		{
-			if (currRes > chassis.cost + Constants.RESERVE && currRes - prevRes > chassis.upkeep)
+			if (chassis == Chassis.BUILDING && currRes > 81)
+				return 1.0;
+			if (chassis == Chassis.LIGHT && currRes > 83)
+				return 1.0;
+		}
+		else if ( Clock.getRoundNum() < Constants.MARINE_TIME )
+		{
+			if (chassis == Chassis.BUILDING && currRes > 81)
+				return 1.0;
+		}
+		else if ( Clock.getRoundNum() < Constants.LATE_GAME )
+		{
+			if (chassis == Chassis.LIGHT && currRes > 81)
+				return 1.0;
+		}
+		else if ( (chassis == Chassis.BUILDING && Clock.getRoundNum() % (2*Constants.BUILDING_CYCLE) == 0) || (chassis == Chassis.LIGHT && Clock.getRoundNum() % (2*Constants.BUILDING_CYCLE) == Constants.BUILDING_CYCLE))
+		{
+			if (chassis == Chassis.BUILDING && currRes > 80 && currRes - prevRes > chassis.upkeep + 0.05)
+				return 1.0;
+			if (chassis == Chassis.LIGHT && currRes > 81 && currRes - prevRes > chassis.upkeep + 0.05 )
 				return 1.0;
 		}
 		return 0.0;
@@ -946,9 +967,11 @@ public class Utility
 	
 	public static double marineMuleRatio()
 	{
-		if (Clock.getRoundNum() < 800)
+		if (Clock.getRoundNum() < Constants.MARINE_TIME)
 			return 0.0;
-		return 0.8;
+		else if (Clock.getRoundNum() < Constants.LATE_GAME)
+			return 1.0;
+		return 0.6;
 	}
 }
 
