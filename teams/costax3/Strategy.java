@@ -1,5 +1,4 @@
 package costax3;
-import battlecode.common.*;
 
 /**
  * A strategy is a collection of behaviors that are instantiated upon robot default.
