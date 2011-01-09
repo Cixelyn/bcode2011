@@ -117,17 +117,20 @@ public class NewMarineBehavior extends Behavior {
 				}
 				
 				//attempt to not overkill targets by seeing how much damage we have done
-				
 				double damageDealt=0;
-				for (WeaponController weapon :myPlayer.myWeapons) {
-					if(!weapon.isActive()) {
-						if (damageDealt<minHealth) { //our top priority is still alive, better try and kill it
-							damageDealt=damageDealt+weapon.type().attackPower;
-							weapon.attackSquare(minRobot.location, minRobot.robot.getRobotLevel());
-					}
-						else {
-							damageDealt=damageDealt+weapon.type().attackPower;
-							weapon.attackSquare(secondMinRobot.location, secondMinRobot.robot.getRobotLevel());
+				if (minRobot!=null) {
+					for (WeaponController weapon :myPlayer.myWeapons) {
+						if(!weapon.isActive()) {
+							if (damageDealt<minHealth) { //our top priority is still alive, better try and kill it
+								damageDealt=damageDealt+weapon.type().attackPower;
+								weapon.attackSquare(minRobot.location, minRobot.robot.getRobotLevel());
+						}	
+							else {
+								if (secondMinRobot!=null) {
+									damageDealt=damageDealt+weapon.type().attackPower;
+									weapon.attackSquare(secondMinRobot.location, secondMinRobot.robot.getRobotLevel());
+								}
+							}
 						}
 					}
 				}
@@ -137,7 +140,7 @@ public class NewMarineBehavior extends Behavior {
 	
 	
 	public String toString() {
-		return "MarineBehavior";
+		return "NewMarineBehavior";
 	}
 
 
