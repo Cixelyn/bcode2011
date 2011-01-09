@@ -4,6 +4,9 @@ import battlecode.common.*;
 
 import java.util.*;
 
+import costax2b.Constants;
+import costax2b.SCVBuildOrder;
+
 public class SCVBehavior extends Behavior {
 	
 	final Navigation robotNavigation = new Navigation(myPlayer);
@@ -204,6 +207,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_WEST");
     			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
     			{
+    				tiredness++;
     				obj = SCVBuildOrder.RETURN_HOME;
     				return;
     			}	
@@ -227,6 +231,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_NORTH");
     			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
     			{
+    				tiredness++;
     				obj = SCVBuildOrder.RETURN_HOME;
     				return;
     			}	
@@ -250,6 +255,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_EAST");
     			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
     			{
+    				tiredness++;
     				obj = SCVBuildOrder.RETURN_HOME;
     				return;
     			}	
@@ -273,6 +279,7 @@ public class SCVBehavior extends Behavior {
     			myPlayer.myRC.setIndicatorString(1, "SCOUT_SOUTH");
     			if (tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE)
     			{
+    				tiredness++;
     				obj = SCVBuildOrder.RETURN_HOME;
     				return;
     			}	
