@@ -235,11 +235,33 @@ public class Utility
 	{
 		while (player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive())
 			player.sleep();
-		/*GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(dir), chassis.level);
-		if ( rFront == null )*/
-		if ( player.myMotor.canMove(dir) )
+		if(player.myMotor.canMove(dir))
 		{
 			player.myBuilder.build(chassis, player.myRC.getLocation().add(dir));
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	/**
+	 * Helper function to build a chassis by JVen
+	 * DOES NOT FOLLOW THE PARADIGM OF NOT YIELDING INSIDE BEHAVIOR
+	 * Current modified to use sleep() though ~coryli
+	 * higher priority value adds to "buffer cost"
+	 * @param player
+	 * @param chassis
+	 * @param priority
+	 * @return true if built
+	 */
+	public static boolean buildChassis(RobotPlayer player, Chassis chassis, int priority) throws Exception
+	{
+		while (player.myRC.getTeamResources() < chassis.cost + priority + Constants.RESERVE || player.myBuilder.isActive())
+			player.sleep();
+		GameObject rFront = player.mySensor.senseObjectAtLocation(player.myRC.getLocation().add(player.myRC.getDirection()), chassis.level);
+		if ( rFront == null )
+		{
+			player.myBuilder.build(chassis, player.myRC.getLocation().add(player.myRC.getDirection()));
 			return true;
 		}
 		else
@@ -932,46 +954,6 @@ public class Utility
 				}
 			}
 		}
-	}
-	
-	public static double buildingProbability(double currRes, double prevRes, Chassis chassis)
-	{
-		if ( Clock.getRoundNum() < Constants.MULE_TIME )
-			return 0.0;
-		else if ( Clock.getRoundNum() < Constants.EXPAND_TIME )
-		{
-			if (chassis == Chassis.BUILDING && currRes > 81)
-				return 1.0;
-			if (chassis == Chassis.LIGHT && currRes > 83)
-				return 1.0;
-		}
-		else if ( Clock.getRoundNum() < Constants.MARINE_TIME )
-		{
-			if (chassis == Chassis.BUILDING && currRes > 81)
-				return 1.0;
-		}
-		else if ( Clock.getRoundNum() < Constants.LATE_GAME )
-		{
-			if (chassis == Chassis.LIGHT && currRes > 81)
-				return 1.0;
-		}
-		else if ( (chassis == Chassis.BUILDING && Clock.getRoundNum() % (2*Constants.BUILDING_CYCLE) == 0) || (chassis == Chassis.LIGHT && Clock.getRoundNum() % (2*Constants.BUILDING_CYCLE) == Constants.BUILDING_CYCLE))
-		{
-			if (chassis == Chassis.BUILDING && currRes > 80 && currRes - prevRes > chassis.upkeep + 0.05)
-				return 1.0;
-			if (chassis == Chassis.LIGHT && currRes > 81 && currRes - prevRes > chassis.upkeep + 0.05 )
-				return 1.0;
-		}
-		return 0.0;
-	}
-	
-	public static double marineMuleRatio()
-	{
-		if (Clock.getRoundNum() < Constants.MARINE_TIME)
-			return 0.0;
-		else if (Clock.getRoundNum() < Constants.LATE_GAME)
-			return 1.0;
-		return 0.6;
 	}
 }
 
