@@ -1,4 +1,4 @@
-package costax3;
+package fibbyBot7;
 
 import battlecode.common.*;
 

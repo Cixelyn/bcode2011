@@ -948,7 +948,7 @@ public class Utility
 	{
 		if (Clock.getRoundNum() < 800)
 			return 0.0;
-		return 0.8;
+		return 0.5;
 	}
 }
 
