@@ -8,7 +8,7 @@ public class SCVBehavior extends Behavior
 {
 	
 	final Navigation robotNavigation = new Navigation(myPlayer);
-	
+	static final Random rand = new Random();
 	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 	
 	MapLocation destination;
@@ -36,7 +36,7 @@ public class SCVBehavior extends Behavior
     	{
 	    	case EXPAND:
 				myPlayer.myRC.setIndicatorString(1, "EXPAND");
-				Utility.bounceNav(myPlayer);
+				robotNavigation.bounceNavNoLoops(myPlayer);
 				mineFound = false;
 				nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
 				for (Mine m:nearbyMines)
@@ -167,6 +167,5 @@ public class SCVBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		
 	}
 }

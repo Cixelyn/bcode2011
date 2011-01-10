@@ -100,10 +100,13 @@ public class RobotPlayer implements Runnable {
 			b = new LightBehavior(this);
 			break;
 		case MEDIUM:
+			b = new MediumBehavior(this);
 			break;
 		case HEAVY:
+			b = new HeavyBehavior(this);
 			break;
 		case FLYING:
+			b = new FlyingBehavior(this);
 			break;
 		default:
 			System.out.println("Error");
@@ -122,7 +125,7 @@ public class RobotPlayer implements Runnable {
 		
 		///////////////////////////////////////////////////////////////
 		//Begin Debug Routines		
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 		
 		
 		
@@ -200,7 +203,7 @@ public class RobotPlayer implements Runnable {
 		
 		//////////////////////////////////////////////////////////////
 		//Run our debug routines.
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		
 		/////////////////////////////////////////////////////////////
 		//Then yield
@@ -311,7 +314,7 @@ public class RobotPlayer implements Runnable {
 		if(Constants.DEBUG_BYTECODE_OVERFLOW){
 			if(executeStartTime!=Clock.getRoundNum()) {
 				int byteCount = (6000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 6000 + Clock.getBytecodeNum();
-				System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
+				//System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
 			}
 		}		
 	}

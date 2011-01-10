@@ -2,34 +2,34 @@ package team068;
 
 import battlecode.common.*;
 
-public class BuildingBehavior extends Behavior {
+public class BuildingBehavior extends Behavior
+{
 
-	public BuildingBehavior(RobotPlayer player) {
+	public BuildingBehavior(RobotPlayer player)
+	{
 		super(player);
 	}
 
+
+
+	public void run() throws Exception
+	{
+		myPlayer.swapBehavior(new RefineryBehavior(myPlayer));
+	}
+
+	public String toString()
+	{
+		return "BuildingBehavior";
+	}
+
+	public void newComponentCallback(ComponentController[] components)
+	{
+
+	}
 	
-	public void newComponentCallback(ComponentController[] components) {
-	}
-
-
-
-
-	public void run() throws Exception {
-		if (Clock.getRoundNum() <= 2)
-			myPlayer.swapBehavior(new MainRefineryBehavior(myPlayer));
-		else
-			myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
-	}
-
-	public String toString() {
-		return "DefaultBuildingBehavior";
-	}
-
 	
-	public void newMessageCallback(MsgType t, Message msg) {
-		
+	public void newMessageCallback(MsgType t, Message msg)
+	{
 		
 	}
-
 }

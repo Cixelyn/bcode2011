@@ -1,6 +1,7 @@
 package team068;
 
-public enum MarineBuildOrder {
+public enum JimmyBuildOrder {
 	EQUIPPING,
+	WAITING,
 	MOVE_OUT
 }

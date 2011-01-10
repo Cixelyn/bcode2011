@@ -1,7 +1,8 @@
 package team068;
 
-public enum SCVBuildOrder 
+public enum MuleBuildOrder 
 {
+	EQUIPPING,
 	EXPAND,
 	FIND_MINE,
 	CAP_MINE,

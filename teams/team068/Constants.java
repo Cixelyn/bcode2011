@@ -22,12 +22,17 @@ public class Constants
 	public static final int SCOUTING_DISTANCE = 7; // distance SCV should go from home
 	public static final int HOME_PROXIMITY = 25; // distance from start SCV considers home
 	public static final int MAX_SHEEP = 50; // how many sheep to count before transmitting while sleeping
-	public static final int SCV_SEARCH_FREQ = 4; // how often SCVs should stop and spin to find mines and off_maps... no higher than ~5?
-	public static final int MARINE_SEARCH_FREQ = 3; // how often marines should stop and spin to find enemy.. make really high to disable
+	public static final int SCV_SEARCH_FREQ = 6; // how often SCVs should stop and spin to find mines and off_maps... no higher than ~5?
+	public static final int MARINE_SEARCH_FREQ = 5; // how often marines should stop and spin to find enemy.. make really high to disable
 	public static final int MINE_AFFINITY = 10; // how long to chase after empty gas before giving up
 	public static final int ENEMIES_COUNT = 4;
 	
-	
+	public static final int MULE_TIME = 200;
+	public static final int EXPAND_TIME = 350;
+	public static final int MARINE_TIME = 900;
+	public static final int MID_GAME = 1000;
+	public static final int LATE_GAME = 1500;
+	public static final double MARINE_MULE_RATIO = 0.6;
 	
 	
 	

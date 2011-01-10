@@ -1,4 +1,6 @@
 package fibbyBot7;
+import java.util.Random;
+
 import battlecode.common.*;
 
 public class Navigation {
@@ -6,6 +8,8 @@ public class Navigation {
 	private final RobotController myRC;
 	private final MovementController motor;
 	MapLocation[][] memory;
+	public static int[][] seenLocations;
+	static final Random rand = new Random();
 	
 
 
@@ -14,6 +18,7 @@ public class Navigation {
 		myRC = player.myRC;
 		motor=player.myMotor;
 		memory = new MapLocation[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
+		seenLocations=new int[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////BUGNAV/////////////////////////////////////////////////////////
@@ -184,4 +189,234 @@ public class Navigation {
 			}		
 		}
 	}
+	public void bounceNavNoLoops(RobotPlayer myPlayer) throws Exception
+	{
+		int random = rand.nextInt(10);
+		if (!myPlayer.myMotor.isActive())
+		{
+			if(myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+				seenLocations[myPlayer.myRC.getLocation().x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().y%GameConstants.MAP_MAX_HEIGHT]=1; //remember where i've been
+			}
+			else
+			{	
+				//all directions around me
+				Direction direction1=myPlayer.myRC.getDirection().rotateRight().rotateRight();
+				Direction direction2=myPlayer.myRC.getDirection().rotateLeft().rotateLeft();
+				Direction direction3=myPlayer.myRC.getDirection().rotateRight();
+				Direction direction4=myPlayer.myRC.getDirection().rotateLeft();
+				Direction direction5=myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight();
+				Direction direction6=myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft();
+				Direction direction7=myPlayer.myRC.getDirection().opposite();
+				if (random == 0 || random == 1 || random == 2)
+				{
+					
+					if (myPlayer.myMotor.canMove(direction1) && seenLocations[myPlayer.myRC.getLocation().add(direction1).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction1).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction2) && seenLocations[myPlayer.myRC.getLocation().add(direction2).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction2).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction3) && seenLocations[myPlayer.myRC.getLocation().add(direction3).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction3).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction4) && seenLocations[myPlayer.myRC.getLocation().add(direction4).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction4).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction5) && seenLocations[myPlayer.myRC.getLocation().add(direction5).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction5).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction6) && seenLocations[myPlayer.myRC.getLocation().add(direction6).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction6).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction7) && seenLocations[myPlayer.myRC.getLocation().add(direction7).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction7).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction7);
+					
+					//have seen everything, have to go to something i've already seen
+					
+					else if (myPlayer.myMotor.canMove(direction1))
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction2))
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction3))
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction4))
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction5))
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction6))
+						myPlayer.myMotor.setDirection(direction6);
+					else
+						myPlayer.myMotor.setDirection(direction7);
+					
+					
+				}
+				else if (random == 3)
+				{
+					if (myPlayer.myMotor.canMove(direction3) && seenLocations[myPlayer.myRC.getLocation().add(direction3).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction3).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction4) && seenLocations[myPlayer.myRC.getLocation().add(direction4).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction4).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction1) && seenLocations[myPlayer.myRC.getLocation().add(direction1).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction1).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction2) && seenLocations[myPlayer.myRC.getLocation().add(direction2).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction2).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction5) && seenLocations[myPlayer.myRC.getLocation().add(direction5).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction5).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction6) && seenLocations[myPlayer.myRC.getLocation().add(direction6).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction6).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction7) && seenLocations[myPlayer.myRC.getLocation().add(direction7).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction7).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction7);
+					
+					//have seen everything, have to go to something i've already seen
+					
+					else if (myPlayer.myMotor.canMove(direction3))
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction4))
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction1))
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction2))
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction5))
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction6))
+						myPlayer.myMotor.setDirection(direction6);
+					else
+						myPlayer.myMotor.setDirection(direction7);
+				}
+				else if (random == 4)
+				{
+					if (myPlayer.myMotor.canMove(direction5) && seenLocations[myPlayer.myRC.getLocation().add(direction5).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction5).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction6) && seenLocations[myPlayer.myRC.getLocation().add(direction6).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction6).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction3) && seenLocations[myPlayer.myRC.getLocation().add(direction3).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction3).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction4) && seenLocations[myPlayer.myRC.getLocation().add(direction4).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction4).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction1) && seenLocations[myPlayer.myRC.getLocation().add(direction1).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction1).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction2) && seenLocations[myPlayer.myRC.getLocation().add(direction2).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction2).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction7) && seenLocations[myPlayer.myRC.getLocation().add(direction7).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction7).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction7);
+					
+					//have seen everything, have to go to something i've already seen
+					
+					else if (myPlayer.myMotor.canMove(direction5))
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction6))
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction3))
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction4))
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction1))
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction2))
+						myPlayer.myMotor.setDirection(direction2);
+					else
+						myPlayer.myMotor.setDirection(direction7);
+				}
+				else if (random == 5 || random == 6 || random == 7)
+				{
+					if (myPlayer.myMotor.canMove(direction2) && seenLocations[myPlayer.myRC.getLocation().add(direction2).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction2).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction1) && seenLocations[myPlayer.myRC.getLocation().add(direction1).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction1).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction4) && seenLocations[myPlayer.myRC.getLocation().add(direction4).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction4).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction3) && seenLocations[myPlayer.myRC.getLocation().add(direction3).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction3).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction6) && seenLocations[myPlayer.myRC.getLocation().add(direction6).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction6).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction5) && seenLocations[myPlayer.myRC.getLocation().add(direction5).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction5).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction7) && seenLocations[myPlayer.myRC.getLocation().add(direction7).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction7).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction7);
+					
+					//have seen everything, have to go to something i've already seen
+					
+					else if (myPlayer.myMotor.canMove(direction2))
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction1))
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction4))
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction3))
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction6))
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction5))
+						myPlayer.myMotor.setDirection(direction5);
+					else
+						myPlayer.myMotor.setDirection(direction7);
+				}
+				else if (random == 8)
+				{
+					if (myPlayer.myMotor.canMove(direction4) && seenLocations[myPlayer.myRC.getLocation().add(direction4).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction4).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction3) && seenLocations[myPlayer.myRC.getLocation().add(direction3).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction3).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction2) && seenLocations[myPlayer.myRC.getLocation().add(direction2).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction2).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction1) && seenLocations[myPlayer.myRC.getLocation().add(direction1).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction1).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction6) && seenLocations[myPlayer.myRC.getLocation().add(direction6).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction6).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction5) && seenLocations[myPlayer.myRC.getLocation().add(direction5).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction5).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction7) && seenLocations[myPlayer.myRC.getLocation().add(direction7).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction7).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction7);
+					
+					//have seen everything, have to go to something i've already seen
+					
+					else if (myPlayer.myMotor.canMove(direction4))
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction3))
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction2))
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction1))
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction6)) 
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction5))
+						myPlayer.myMotor.setDirection(direction5);
+					else
+						myPlayer.myMotor.setDirection(direction7);
+				}
+				else if (random == 9)
+				{
+					if (myPlayer.myMotor.canMove(direction6) && seenLocations[myPlayer.myRC.getLocation().add(direction6).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction6).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction5) && seenLocations[myPlayer.myRC.getLocation().add(direction5).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction5).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction4) && seenLocations[myPlayer.myRC.getLocation().add(direction4).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction4).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction3) && seenLocations[myPlayer.myRC.getLocation().add(direction3).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction3).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction2) && seenLocations[myPlayer.myRC.getLocation().add(direction2).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction2).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction1) && seenLocations[myPlayer.myRC.getLocation().add(direction1).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction1).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction1);
+					else if (myPlayer.myMotor.canMove(direction7) && seenLocations[myPlayer.myRC.getLocation().add(direction7).x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().add(direction7).y%GameConstants.MAP_MAX_HEIGHT]==0)
+						myPlayer.myMotor.setDirection(direction7);
+					
+					//have seen everything, have to go to something i've already seen
+					
+					else if (myPlayer.myMotor.canMove(direction6))
+						myPlayer.myMotor.setDirection(direction6);
+					else if (myPlayer.myMotor.canMove(direction5))
+						myPlayer.myMotor.setDirection(direction5);
+					else if (myPlayer.myMotor.canMove(direction4))
+						myPlayer.myMotor.setDirection(direction4);
+					else if (myPlayer.myMotor.canMove(direction3))
+						myPlayer.myMotor.setDirection(direction3);
+					else if (myPlayer.myMotor.canMove(direction2))
+						myPlayer.myMotor.setDirection(direction2);
+					else if (myPlayer.myMotor.canMove(direction1))
+						myPlayer.myMotor.setDirection(direction1);
+					else
+						myPlayer.myMotor.setDirection(direction7);
+				}
+			}
+		}
+	}
+	
 }

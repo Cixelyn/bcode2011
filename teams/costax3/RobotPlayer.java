@@ -1,6 +1,11 @@
 package costax3;
 
 import java.util.ArrayList;
+import java.util.Random;
+
+import costax3.behaviors.Behavior;
+import costax3.strategy.*;
+
 import battlecode.common.*;
 
 /**
@@ -20,7 +25,8 @@ import battlecode.common.*;
  * Let this song be our goodbye
  * Ohhhhhhh
  * Your love will always be my guide
- * back to the mineral line…. <3 </pre>
+ * back to the mineral line…. <3 
+ * </pre>
  * 
  * 
  * @see <a href="http://www.youtube.com/watch?v=8zwP9ErgIWs">SCV Love Song</a>
@@ -30,18 +36,18 @@ public class RobotPlayer implements Runnable {
 	
 	
 	//Controllers
-	final RobotController myRC;
+	public final RobotController myRC;
 	
-	SensorController mySensor;
-	BuilderController myBuilder;
-	MovementController myMotor;
-	BroadcastController myBroadcaster;
-	final ArrayList<WeaponController> myWeapons;
+	public SensorController mySensor;
+	public BuilderController myBuilder;
+	public MovementController myMotor;
+	public BroadcastController myBroadcaster;
+	public final ArrayList<WeaponController> myWeapons;
 	
 	//Helper Subsystems
-	final Messenger myMessenger;
-	final Navigation myNavigation;
-	final Scanner myScanner;
+	public final Messenger myMessenger;
+	public final Navigation myNavigation;
+	public final Scanner myScanner;
 	
 	
 	//Misc Stats
@@ -50,8 +56,14 @@ public class RobotPlayer implements Runnable {
 	private int executeStartByte;
 	
 	
+	//Useful Toolkits
+	public final Random myDice;
+	
+	
+	
 	//Higher level strategy
-	Behavior myBehavior;
+	public Behavior myBehavior;
+	public final Strategy myStrategy;
 	
 	
 	/**
@@ -63,57 +75,46 @@ public class RobotPlayer implements Runnable {
     	//this absolutely must be set first
     	myRC = rc;
     	
+    	//variables and utilities that other pieces depend on
+    	myBirthday = Clock.getRoundNum();
+    	myDice = new Random(myRC.getRobot().getID()*myBirthday);
+    	
     	//initialize base controllers
     	myBuilder = null;
     	myMotor = null;
     	mySensor = null;
     	myBroadcaster = null;
-    	
     	myWeapons = new ArrayList<WeaponController>();
-    	
     	myMessenger = new Messenger(this);
     	myNavigation = new Navigation(this);
     	myScanner = new Scanner(this);
     	
     	
-    	myBirthday = Clock.getRoundNum();
     	
-        
+    	
+    	
+    	//////////////////////////////////////////////////////////////////////////////////////////////////////
+    	//
+    	//		IF YOU WANT TO CHANGE THE SET OF ROBOT DEFAULT BEHAVIORS
+    	//		THEN LOOK AT THE FOLLOWING LINES
+    	//
+    	//		BASICALLY MAKE A NEW STRATEGY THAT DEFINES WHAT ALL THE DEFAULT STRATEGIES SHOULD BE
+    	//		DON'T BREAK PLZ OK.
+    	//
+    	/////////////////////////////////////////////////////////////////////////////////////////////////////
+    	//Setup the initial strategy based on team memory
+    	if(myRC.getTeamMemory()[0]==0) {
+    		myStrategy = new DefaultStrategy();
+    	} else {
+    		myStrategy = null;
+    	}
+    	
+    	//Now based on the strategy, get what our behavior should be
+    	myBehavior = myStrategy.selectBehavior(this, Clock.getBytecodeNum());
+    	////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     }
 
-    
-    /**
-	 * This code sets the default behavior based on the initial detected {@link battlecode.common.Chassis}
-	 * @see Behavior
-	 */
-	private Behavior setDefaultBehavior() {
-		//This is the base entry point for the robot
-		//	We need to determine what initial behavior it begins running.
-		//	Currently decided based on chassis.
-		
-		Behavior b = null;
-		switch(myRC.getChassis()) {
-		case BUILDING:
-			b = new BuildingBehavior(this);
-			break;
-		case LIGHT:
-			b = new LightBehavior(this);
-			break;
-		case MEDIUM:
-			b = new MediumBehavior(this);
-			break;
-		case HEAVY:
-			b = new HeavyBehavior(this);
-			break;
-		case FLYING:
-			b = new FlyingBehavior(this);
-			break;
-		default:
-			System.out.println("Error");
-		}
-		
-		return b;
-	}
 
 
 	/**
@@ -163,11 +164,6 @@ public class RobotPlayer implements Runnable {
 	 * The main run function 
 	 */
 	public void run() {
-		
-		//Run initialization code
-		myBehavior = setDefaultBehavior();
-		
-		
 		
 		//Our Main loop for running code
 		while(true) {
@@ -226,6 +222,7 @@ public class RobotPlayer implements Runnable {
 		myRC.yield();
 		preRun();
 	}
+	
 	
 	
 	

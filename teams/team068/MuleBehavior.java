@@ -1,4 +1,4 @@
-package fibbyBot7;
+package team068;
 
 import battlecode.common.*;
 import java.util.*;
@@ -51,7 +51,7 @@ public class MuleBehavior extends Behavior
     			
     		case EXPAND:
     			myPlayer.myRC.setIndicatorString(1, "EXPAND");
-    			robotNavigation.bounceNavNoLoops(myPlayer);
+    			Utility.bounceNav(myPlayer);
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)
