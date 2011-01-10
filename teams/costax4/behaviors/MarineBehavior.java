@@ -122,7 +122,7 @@ public class MarineBehavior extends Behavior
 				}
 				else if (!seeEnemyRobot) { 
 					staleness=staleness+1;
-					if (staleness>Constants.OLDNEWS) {
+					if (staleness>Constants.OLDNEWS); {
 						obj=MarineBuildOrder.FIND_ENEMY;
 					}
 				}
