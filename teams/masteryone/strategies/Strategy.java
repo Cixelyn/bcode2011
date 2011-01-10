@@ -11,4 +11,5 @@ import masteryone.behaviors.Behavior;
  */
 public abstract class Strategy {
 	public abstract Behavior selectBehavior(RobotPlayer player, int currTime);
+	public abstract String toString();
 }
