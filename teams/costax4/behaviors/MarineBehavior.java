@@ -29,14 +29,14 @@ public class MarineBehavior extends Behavior
 	MapLocation chasingEnemyLoc;
 	
 	int travelTime;
-	double damageDealt=0;
-	double minHealth=100; //some large amount of health not possible to attain in the game
-	double secondMinHealth=100; //some large amount of health not possible to attain in the game
-	RobotInfo rInfo;
-	RobotInfo minRobot;
-	RobotInfo secondMinRobot;
+	static double damageDealt=0;
+	static double minHealth=100; //some large amount of health not possible to attain in the game
+	static double secondMinHealth=100; //some large amount of health not possible to attain in the game
+	static RobotInfo rInfo;
+	static RobotInfo minRobot;
+	static RobotInfo secondMinRobot;
 	
-	private boolean seeEnemyRobot;
+	private static boolean seeEnemyRobot;
 	
 	public MarineBehavior(RobotPlayer player)
 	{
@@ -79,7 +79,7 @@ public class MarineBehavior extends Behavior
 				robotNavigation.bounceNavNoLoops(myPlayer);
 				priorityAttack();
 				if (seeEnemyRobot && !killAllRobots) { //some robot is still alive!
-					if (damageDealt>minHealth) { //we killed the first priority, but not the second
+					if (damageDealt>minHealth && secondMinRobot!=null) { //we killed the first priority, but not the second
 						chasingEnemyLoc=secondMinRobot.location;
 					}
 					else { //we didn't even kill the first target
@@ -110,8 +110,10 @@ public class MarineBehavior extends Behavior
 				}
 				else {
 					Direction enemyDirection = robotNavigation.bugTo(chasingEnemyLoc);
-					myPlayer.myMotor.setDirection(enemyDirection);
-					shouldMove=true;
+					if (!myPlayer.myMotor.isActive()) {
+						myPlayer.myMotor.setDirection(enemyDirection);
+						shouldMove=true;
+					}
 					
 				}
 				priorityAttack();
@@ -125,7 +127,7 @@ public class MarineBehavior extends Behavior
 					}
 				}
 				else {
-					if (damageDealt>minHealth) { //we killed the first priority, but not the second
+					if (damageDealt>minHealth && secondMinRobot!=null) { //we killed the first priority, but not the second
 						chasingEnemyLoc=secondMinRobot.location;
 					}
 					else { //we didn't even kill the first target
@@ -175,8 +177,8 @@ public class MarineBehavior extends Behavior
 		minHealth=1000.0; //some large amount of health not possible to attain in the game
 		secondMinHealth=1000.0; //some large amount of health not possible to attain in the game
 		seeEnemyRobot=false;
-		RobotInfo minRobot = null;
-		RobotInfo secondMinRobot = null;
+		minRobot = null;
+		secondMinRobot = null;
 		for (Robot robot : nearbyRobots) {
 			if (!robot.getTeam().equals(myPlayer.myRC.getTeam())) {
 				seeEnemyRobot=true;
@@ -209,7 +211,6 @@ public class MarineBehavior extends Behavior
 					if (damageDealt<minHealth) { //our top priority is still alive, better try and kill it
 						damageDealt=damageDealt+weapon.type().attackPower;
 						try {
-							System.out.println(minRobot);
 							weapon.attackSquare(minRobot.location, minRobot.robot.getRobotLevel());
 						} catch (GameActionException e) {
 							e.printStackTrace();
@@ -218,11 +219,11 @@ public class MarineBehavior extends Behavior
 					else {
 						if (secondMinRobot!=null) {
 							damageDealt=damageDealt+weapon.type().attackPower;
-							if (secondMinHealth<weapon.type().attackPower) {
-								killAllRobots=true;
-							}
 							try {
 								weapon.attackSquare(secondMinRobot.location, secondMinRobot.robot.getRobotLevel());
+								if (secondMinHealth<weapon.type().attackPower) {
+									killAllRobots=true;
+								}
 							} catch (GameActionException e) {
 								e.printStackTrace();
 							}
