@@ -180,7 +180,7 @@ public class MarineBehavior extends Behavior
 		minRobot = null;
 		secondMinRobot = null;
 		for (Robot robot : nearbyRobots) {
-			if (!robot.getTeam().equals(myPlayer.myRC.getTeam())) {
+			if (!robot.getTeam().equals(myPlayer.myRC.getTeam().opponent())) {
 				seeEnemyRobot=true;
 				try {
 					RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(robot);
