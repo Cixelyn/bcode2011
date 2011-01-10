@@ -51,7 +51,7 @@ public class MuleBehavior extends Behavior
     			
     		case EXPAND:
     			myPlayer.myRC.setIndicatorString(1, "EXPAND");
-    			Utility.bounceNav(myPlayer);
+    			robotNavigation.bounceNavNoLoops(myPlayer);
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)

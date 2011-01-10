@@ -189,7 +189,7 @@ public class Navigation {
 			}		
 		}
 	}
-	public static void bounceNavNoLoops(RobotPlayer myPlayer) throws Exception
+	public void bounceNavNoLoops(RobotPlayer myPlayer) throws Exception
 	{
 		int random = rand.nextInt(10);
 		if (!myPlayer.myMotor.isActive())
