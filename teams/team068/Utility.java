@@ -1,4 +1,4 @@
-package fibbyBot8;
+package team068;
 
 import battlecode.common.*;
 
@@ -464,7 +464,7 @@ public class Utility
 	}*/
 	
 	/**
-	 * Looks for enemies and shoots at them, need to fix to add for chasing later.
+	 * Looks for enemies and shoots at them
 	 * @param myPlayer, you know what that is
 	 * @return location of last enemy fired at, null if none
 	 */
@@ -538,7 +538,7 @@ public class Utility
 			return secondMinRobot.location;
 		}
 		return null;
-		
+
 	}
 	
 	/**
