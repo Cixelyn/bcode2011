@@ -313,6 +313,35 @@ public class Utility
 		return 8; // should be unreachable
 	}
 	
+	/**
+	 * return string based on spawn location
+	 * @param spawn integer given by SCV denoting spawn
+	 * @return String stating spawn location... why String? idk
+	 */
+	public static String spawnString(int spawn)
+	{
+		switch (spawn)
+		{
+			case 0:
+				return "west";
+			case 1:
+				return "northwest";
+			case 2:
+				return "north";
+			case 3:
+				return "northeast";
+			case 4:
+				return "east";
+			case 5:
+				return "southeast";
+			case 6:
+				return "south";
+			case 7:
+				return "southwest";
+		}
+		return "unknown"; // should be unreachable
+	}
+	
 	
 	/**
 	 * Outputs enemy direction based on strings returned from getSpawn
@@ -523,11 +552,11 @@ public class Utility
 					myPlayer.myRC.yield();
 				myPlayer.myMotor.moveForward();
 			}
-			/*else
-				System.out.println("OMNI or NONE direction encountered.");*/
+			else
+				System.out.println("OMNI or NONE direction encountered.");
 		}
-		/*else
-			System.out.println("Null destination encountered.");*/
+		else
+			System.out.println("Null destination encountered.");
 	}
 	
 	/**

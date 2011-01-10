@@ -1,6 +1,7 @@
 package fibbyBot8;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 public class SCVBehavior extends Behavior
@@ -12,7 +13,7 @@ public class SCVBehavior extends Behavior
 	
 	MapLocation destination;
 	
-	int minesCapped;
+	int minesCapped = 0;
 	int dizziness;
 	int tiredness;
 	ArrayList<Integer> badMines = new ArrayList<Integer>(100);
@@ -25,14 +26,14 @@ public class SCVBehavior extends Behavior
 	
 	int rebroadcastCounter = 0;
 	int spawn = -1;
-	MapLocation hometown = myPlayer.myRC.getLocation();
+	MapLocation hometown;
 	MapLocation enemyLocation;
 	
 	boolean eeHanTiming = false;
-	int westEdge;
-	int northEdge;
-	int eastEdge;
-	int southEdge;
+	int westEdge = -1;
+	int northEdge = -1;
+	int eastEdge = -1;
+	int southEdge = -1;
 	
 	final LinkedList<MapLocation> breadcrumbs = new LinkedList<MapLocation>();
 	
@@ -60,7 +61,10 @@ public class SCVBehavior extends Behavior
     	{
 	    	case EXPAND:
 				myPlayer.myRC.setIndicatorString(1, "EXPAND");
-				Utility.bounceNav(myPlayer);
+				if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME)
+        			Utility.navStep(myPlayer, robotNavigation, enemyLocation);
+        		else
+        			Utility.bounceNav(myPlayer);
 				mineFound = false;
 				nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
 				for (Mine m:nearbyMines)
@@ -122,10 +126,23 @@ public class SCVBehavior extends Behavior
     			if(mineFound)
     			{
     				dizziness = 0;
-    				obj = SCVBuildOrder.CAP_MINE;
+    				if (minesCapped == 0)
+    					obj = SCVBuildOrder.WAIT_FOR_ANTENNA;
+    				else
+    					obj = SCVBuildOrder.CAP_MINE;
     			}
     			return;
 				
+	    	case WAIT_FOR_ANTENNA:
+    			myPlayer.myRC.setIndicatorString(1, "WAIT_FOR_ANTENNA");
+    			hometown = myPlayer.myRC.getLocation();
+    			for(ComponentController c:myPlayer.myRC.components())
+    			{
+    				if (c.type() == Constants.COMMTYPE)
+    					obj = SCVBuildOrder.CAP_MINE;
+    			}
+    			return;
+    			
     		case CAP_MINE:
     			myPlayer.myRC.setIndicatorString(1, "CAP_MINE");
     			if(!myPlayer.mySensor.withinRange(mInfo.mine.getLocation()) || myPlayer.mySensor.senseObjectAtLocation(mInfo.mine.getLocation(), RobotLevel.ON_GROUND) == null)
@@ -136,6 +153,7 @@ public class SCVBehavior extends Behavior
         				tiredness++;
             			if(tiredness > Constants.MINE_AFFINITY)
             			{
+            				minesCapped++;
             				badMines.add(mInfo.mine.getID());
             				obj = SCVBuildOrder.FIND_MINE;
             				tiredness = 0;
@@ -275,8 +293,20 @@ public class SCVBehavior extends Behavior
     		case RETURN_HOME:
     			myPlayer.myRC.setIndicatorString(1,"RETURN_HOME");
     			tiredness = 0;
-    			destination = hometown;
-    			Utility.backtrack(myPlayer, breadcrumbs);
+    			if(!breadcrumbs.isEmpty())
+    			{
+    				destination = breadcrumbs.pollLast();
+    				Direction direction = myPlayer.myRC.getLocation().directionTo(destination);
+    				if(direction != Direction.OMNI && direction != Direction.NONE)
+    				{
+    					while(myPlayer.myMotor.isActive())
+    						myPlayer.myRC.yield();
+    					myPlayer.myMotor.setDirection(direction);
+    					while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+    						myPlayer.myRC.yield();
+    					myPlayer.myMotor.moveForward();
+    				}
+    			}
 				if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) <= Constants.HOME_PROXIMITY)
 				{
 					breadcrumbs.clear();
@@ -352,10 +382,8 @@ public class SCVBehavior extends Behavior
 	{
 		if (t == MsgType.MSG_MOVE_OUT)
 		{
+			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn));
 			eeHanTiming = true;
-			spawn = msg.ints[Messenger.firstData];
-			hometown = msg.locations[Messenger.firstData];
-			enemyLocation = msg.locations[Messenger.firstData+1];
 		}
 	}
 }

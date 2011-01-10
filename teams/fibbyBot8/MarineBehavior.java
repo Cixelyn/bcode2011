@@ -65,24 +65,22 @@ public class MarineBehavior extends Behavior
 						hasArmor = true;
 				}
 				if (guns >= Constants.GUNS && hasSensor && hasArmor)
-					obj = MarineBuildOrder.DEFENSE;
+					obj = MarineBuildOrder.MOVE_OUT;
 				return;
 	        	
-			case DEFENSE:
+			case MOVE_OUT:
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
 	        	if(Utility.senseEnemies(myPlayer) != null)
 	        		return;
-	        	else if (Clock.getRoundNum() > Constants.LATE_GAME && Utility.senseDebris(myPlayer) != null)
+	        	else if (Clock.getRoundNum() > Constants.LATE_GAME + 9999 && Utility.senseDebris(myPlayer) != null) // remove 9999 to kill rocks
 	        		return;
 	        	else
 	        	{
-	        		if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME && Clock.getRoundNum() < Constants.LATE_GAME)
+	        		if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME)
 	        			Utility.navStep(myPlayer, robotNavigation, enemyLocation);
 	        		else
 	        			Utility.bounceNav(myPlayer);
 	        	}
-	        	if(eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME)
-	        		obj = MarineBuildOrder.MOVE_OUT;
 	        	return;
 		}
 	}
@@ -107,6 +105,7 @@ public class MarineBehavior extends Behavior
 	{
 		if (t == MsgType.MSG_MOVE_OUT)
 		{
+			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn));
 			eeHanTiming = true;
 			spawn = msg.ints[Messenger.firstData];
 			hometown = msg.locations[Messenger.firstData];

@@ -4,6 +4,7 @@ public enum SCVBuildOrder
 {
 	EXPAND,
 	FIND_MINE,
+	WAIT_FOR_ANTENNA,
 	CAP_MINE,
 	ADDON_MINE,
 	SCOUT_WEST,

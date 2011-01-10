@@ -66,13 +66,16 @@ public class MuleBehavior extends Behavior
     				if (c.type() == Constants.COMMTYPE)
     					hasComm = true;
     			}
-    			if (hasConstructor && hasSensor)
+    			if (hasConstructor && hasSensor && hasComm)
     				obj = MuleBuildOrder.FIND_MINE;
     			return;
     			
     		case EXPAND:
     			myPlayer.myRC.setIndicatorString(1, "EXPAND");
-    			Utility.bounceNav(myPlayer);
+    			if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME)
+        			Utility.navStep(myPlayer, robotNavigation, enemyLocation);
+        		else
+        			Utility.bounceNav(myPlayer);
     			mineFound = false;
     			nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
     			for (Mine m:nearbyMines)
@@ -199,6 +202,13 @@ public class MuleBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		
+		if (t == MsgType.MSG_MOVE_OUT)
+		{
+			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn));
+			eeHanTiming = true;
+			spawn = msg.ints[Messenger.firstData];
+			hometown = msg.locations[Messenger.firstData];
+			enemyLocation = msg.locations[Messenger.firstData+1];
+		}
 	}
 }
