@@ -553,10 +553,14 @@ public class Utility
 				myPlayer.myMotor.moveForward();
 			}
 			else
-				System.out.println("OMNI or NONE direction encountered.");
+			{
+				//System.out.println("OMNI or NONE direction encountered.");
+			}
 		}
 		else
-			System.out.println("Null destination encountered.");
+		{
+			//System.out.println("Null destination encountered.");
+		}
 	}
 	
 	/**
