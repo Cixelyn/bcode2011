@@ -37,6 +37,8 @@ public class SCVBehavior extends Behavior
 	
 	final LinkedList<MapLocation> breadcrumbs = new LinkedList<MapLocation>();
 	
+	int travelTime;
+	
 	public SCVBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -61,8 +63,11 @@ public class SCVBehavior extends Behavior
     	{
 	    	case EXPAND:
 				myPlayer.myRC.setIndicatorString(1, "EXPAND");
-				if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME)
+				if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME && travelTime < Constants.TRAVEL_TIME)
+        		{
+        			travelTime++;
         			Utility.navStep(myPlayer, robotNavigation, enemyLocation);
+        		}
         		else
         			Utility.bounceNav(myPlayer);
 				mineFound = false;
@@ -382,7 +387,7 @@ public class SCVBehavior extends Behavior
 	{
 		if (t == MsgType.MSG_MOVE_OUT)
 		{
-			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn));
+			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn) + ".");
 			eeHanTiming = true;
 		}
 	}

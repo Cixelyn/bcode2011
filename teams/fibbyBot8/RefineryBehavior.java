@@ -160,7 +160,7 @@ public class RefineryBehavior extends Behavior
 	{
 		if (t == MsgType.MSG_MOVE_OUT)
 		{
-			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn));
+			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn) + ".");
 			eeHanTiming = true;
 			spawn = msg.ints[Messenger.firstData];
 			hometown = msg.locations[Messenger.firstData];

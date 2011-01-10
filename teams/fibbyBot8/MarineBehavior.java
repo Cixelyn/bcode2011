@@ -22,6 +22,8 @@ public class MarineBehavior extends Behavior
 	MapLocation hometown;
 	MapLocation enemyLocation;
 	
+	int travelTime;
+	
 	public MarineBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -76,8 +78,11 @@ public class MarineBehavior extends Behavior
 	        		return;
 	        	else
 	        	{
-	        		if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME)
+	        		if (eeHanTiming && Clock.getRoundNum() > Constants.MID_GAME && travelTime < Constants.TRAVEL_TIME)
+	        		{
+	        			travelTime++;
 	        			Utility.navStep(myPlayer, robotNavigation, enemyLocation);
+	        		}
 	        		else
 	        			Utility.bounceNav(myPlayer);
 	        	}
@@ -105,7 +110,7 @@ public class MarineBehavior extends Behavior
 	{
 		if (t == MsgType.MSG_MOVE_OUT)
 		{
-			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn));
+			myPlayer.myRC.setIndicatorString(2, "We spawned " + Utility.spawnString(spawn) + ".");
 			eeHanTiming = true;
 			spawn = msg.ints[Messenger.firstData];
 			hometown = msg.locations[Messenger.firstData];
