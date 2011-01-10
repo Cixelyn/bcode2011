@@ -1,9 +1,7 @@
 package masteryone.behaviors;
 
-import battlecode.common.ComponentController;
-import battlecode.common.Message;
-import masteryone.MsgType;
-import masteryone.RobotPlayer;
+import battlecode.common.*;
+import masteryone.*;
 
 public class DefaultBehavior extends Behavior {
 
@@ -13,7 +11,14 @@ public class DefaultBehavior extends Behavior {
 
 
 	public void newComponentCallback(ComponentController[] components) {
-		
+		for ( ComponentController c : components )
+		{
+			if ( c.type() == ComponentType.CONSTRUCTOR )
+			{
+				if ( Clock.getRoundNum() <= 2 )
+					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
+			}
+		}
 	}
 
 
@@ -24,6 +29,7 @@ public class DefaultBehavior extends Behavior {
 
 	
 	public void run() throws Exception {
+		Utility.setIndicator(myPlayer, 1, "WHO AM I???");
 		myPlayer.sleep();
 	}
 
