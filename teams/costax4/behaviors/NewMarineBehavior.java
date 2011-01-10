@@ -95,15 +95,7 @@ public class NewMarineBehavior extends Behavior {
 				
 			case FIND_ENEMY: //keep moving*///////////////////////////////////989  till we find an enemy
 				
-				//bounce movement (replace with fibsters probability movement)
-				if (!myPlayer.myMotor.isActive()) {
-					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
-						myPlayer.myMotor.moveForward();
-					}
-					else {
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
-					}
-				}
+				robotNavigation.bounceNavNoLoops(myPlayer);
 				priorityAttack();
 				if (seeEnemyRobot && !killAllRobots) { //some robot is still alive!
 					if (damageDealt>minHealth) { //we killed the first priority, but not the second
