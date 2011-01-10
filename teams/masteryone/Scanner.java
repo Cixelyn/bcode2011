@@ -1,4 +1,4 @@
-package costax4;
+package masteryone;
 
 import java.util.LinkedList;
 
@@ -79,34 +79,6 @@ public class Scanner {
 		detectionType = type;		
 	}
 	
-	
-	
-	private static final int RESOURCE_AVERAGE_WINDOW = 8;
-	private final double[] resourceDeltas = new double[RESOURCE_AVERAGE_WINDOW];
-	private int currResourceDeltaPos = 0;
-	private double lastResourceCount = 1;
-	         
-	/**
-	 * Computes the average resource collection rate
-	 * @return
-	 */
-	public double averageResourceRate() {
-		
-		double currResources = myPlayer.myRC.getTeamResources();
-		currResourceDeltaPos = (currResourceDeltaPos + 1)%RESOURCE_AVERAGE_WINDOW;
-		resourceDeltas[currResourceDeltaPos] = currResources - lastResourceCount;
-		
-		
-		//Compute Sum
-		double total=0;
-		for(int i=0;i<RESOURCE_AVERAGE_WINDOW;i++){
-			total += resourceDeltas[i];						
-		}
-		lastResourceCount = currResources;
-		
-		
-		return total/RESOURCE_AVERAGE_WINDOW;
-	}
 	
 	
 	

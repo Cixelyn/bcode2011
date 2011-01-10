@@ -1,7 +1,7 @@
-package costax4;
+package masteryone.strategies;
 
-
-import costax4.behaviors.*;
+import masteryone.RobotPlayer;
+import masteryone.behaviors.Behavior;
 
 /**
  * A strategy is a collection of behaviors that are instantiated upon robot default.

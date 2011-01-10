@@ -1,4 +1,4 @@
-package costax4;
+package masteryone;
 
 
 /**
@@ -15,13 +15,7 @@ public enum MsgType {
 	//locs - number of locs in message
 	
 				//	ttl, cback, ints, locs
-	MSG_HELLO	(	1  , true , 0 , 0	),
-	MSG_SCOUTING(   0  , true , 0 , 0   ),
-	MSG_JIMMY_HOME( 0  , true , 0 , 1   ),
-	MSG_POWER_UP(   0  , true , 0 , 0   ),
-	MSG_MOVE_OUT(   0  , true , 1 , 2   ),
-	MSG_ENEMY_LO(   0  , true , 10, 10  ),
-	MSG_MEMOS	(   0  , false, 1 , 1   );
+	MSG_HELLO	(	1  , true , 0 , 0	);
 	
 	
 	public int ttl;

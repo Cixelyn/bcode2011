@@ -1,10 +1,11 @@
-package costax4;
+package masteryone;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import costax4.behaviors.Behavior;
-import costax4.strategy.*;
+import masteryone.strategies.*;
+import masteryone.behaviors.*;
+
 
 import battlecode.common.*;
 
@@ -46,7 +47,6 @@ public class RobotPlayer implements Runnable {
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
-	public final Navigation myNavigation;
 	public final Scanner myScanner;
 	
 	
@@ -86,7 +86,6 @@ public class RobotPlayer implements Runnable {
     	myBroadcaster = null;
     	myWeapons = new ArrayList<WeaponController>();
     	myMessenger = new Messenger(this);
-    	myNavigation = new Navigation(this);
     	myScanner = new Scanner(this);
     	
     	
@@ -126,7 +125,7 @@ public class RobotPlayer implements Runnable {
 		
 		///////////////////////////////////////////////////////////////
 		//Begin Debug Routines		
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 		
 		
 		
@@ -311,7 +310,7 @@ public class RobotPlayer implements Runnable {
 		if(Constants.DEBUG_BYTECODE_OVERFLOW){
 			if(executeStartTime!=Clock.getRoundNum()) {
 				int byteCount = (6000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 6000 + Clock.getBytecodeNum();
-				//System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
+				System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
 			}
 		}		
 	}

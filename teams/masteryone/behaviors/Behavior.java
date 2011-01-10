@@ -1,9 +1,8 @@
-package costax4.behaviors;
+package masteryone.behaviors;
 
 import battlecode.common.*;
-import java.util.*;
 
-import costax4.*;
+import masteryone.*;
 
 public abstract class Behavior {
 	

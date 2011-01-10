@@ -1,4 +1,4 @@
-package costax4;
+package masteryone;
 
 import java.util.LinkedList;
 import battlecode.common.*;
@@ -47,15 +47,7 @@ public class Messenger {
 	private boolean[][] hasHeard = new boolean[ROUND_MOD][];
 	
 	
-	
-	//Variables for the memo subsystem
-	//TODO: Add fast hash comparison to see if i've heard a memo before. if bytecodes become issues.
-	public static final int NUMBER_MEMOS = 4;
-	public int[] memoCode = new int[NUMBER_MEMOS];
-	public int[] memoInts = new int[NUMBER_MEMOS];
-	public MapLocation[] memoLocs = new MapLocation[NUMBER_MEMOS];
-	public int[] memoTime = new int[NUMBER_MEMOS];
-	
+
 	
 	public Messenger(RobotPlayer player) {
 		
@@ -181,47 +173,6 @@ public class Messenger {
 	}
 	
 	
-	
-	
-	/////Memo Send and Receive Code
-	public void sendMemos() {
-		Message m = buildNewMessage(NUMBER_MEMOS,NUMBER_MEMOS);
-		
-		for(int i=0; i<NUMBER_MEMOS; i++) {
-			m.ints[firstData+i] = memoCode[i];		//We use the pre-encoded version
-			m.locations[firstData+i] = memoLocs[i];
-		}
-		
-		sendMsg(MsgType.MSG_MEMOS,m);
-			
-	}
-	
-	public void setMemo(int idx, int data, MapLocation loc) {
-		memoInts[idx] = data;
-		memoLocs[idx] = loc;
-		memoTime[idx] = Clock.getRoundNum();
-	}
-	
-	
-	public void updateMemos(Message m) {
-		
-		for(int i=0; i<NUMBER_MEMOS; i++) {
-
-			int data = m.ints[i];
-			int timestamp = Encoder.decodeMemoTimeStamp(data);
-
-			if(memoTime[i]<timestamp) { //then update
-				memoTime[i] = timestamp;
-				memoLocs[i] = m.locations[i];
-				memoInts[i] = Encoder.decodeMemoData(data);
-				memoCode[i] = data;
-			}			
-		}
-	}
-	
-	
-	
-	
 
 	
 	
@@ -261,10 +212,6 @@ public class Messenger {
 				
 			if(t.shouldCallback) {	//Generic Callback Messages
 				myPlayer.myBehavior.newMessageCallback(t,m);
-			} else{					//Special Messages
-				if(t==MsgType.MSG_MEMOS) {
-					updateMemos(m);
-				}	
 			}
 		}
 	}
