@@ -15,13 +15,10 @@ public class DefaultStrategy extends Strategy {
 			b = new LightBehavior(player);
 			break;
 		case MEDIUM:
-			b = new MediumBehavior(player);
 			break;
 		case HEAVY:
-			b = new HeavyBehavior(player);
 			break;
 		case FLYING:
-			b = new FlyingBehavior(player);
 			break;
 		default:
 			System.out.println("Error");

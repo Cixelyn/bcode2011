@@ -2,6 +2,7 @@ package costax4.behaviors;
 
 public enum SCVBuildOrder 
 {
+	EXPAND,
 	FIND_MINE,
 	WAIT_FOR_ANTENNA,
 	CAP_MINE,
@@ -11,6 +12,5 @@ public enum SCVBuildOrder
 	SCOUT_EAST,
 	SCOUT_SOUTH,
 	RETURN_HOME,
-	BROADCAST_SPAWN,
-	EXPAND
+	BROADCAST_SPAWN
 }
