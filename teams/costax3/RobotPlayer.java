@@ -3,6 +3,7 @@ package costax3;
 import java.util.ArrayList;
 import java.util.Random;
 
+import costax3.behaviors.Behavior;
 import costax3.strategy.*;
 
 import battlecode.common.*;
@@ -37,16 +38,16 @@ public class RobotPlayer implements Runnable {
 	//Controllers
 	public final RobotController myRC;
 	
-	SensorController mySensor;
-	BuilderController myBuilder;
-	MovementController myMotor;
-	BroadcastController myBroadcaster;
-	final ArrayList<WeaponController> myWeapons;
+	public SensorController mySensor;
+	public BuilderController myBuilder;
+	public MovementController myMotor;
+	public BroadcastController myBroadcaster;
+	public final ArrayList<WeaponController> myWeapons;
 	
 	//Helper Subsystems
-	final Messenger myMessenger;
-	final Navigation myNavigation;
-	final Scanner myScanner;
+	public final Messenger myMessenger;
+	public final Navigation myNavigation;
+	public final Scanner myScanner;
 	
 	
 	//Misc Stats
@@ -61,7 +62,7 @@ public class RobotPlayer implements Runnable {
 	
 	
 	//Higher level strategy
-	Behavior myBehavior;
+	public Behavior myBehavior;
 	public final Strategy myStrategy;
 	
 	

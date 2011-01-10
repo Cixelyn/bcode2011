@@ -1,7 +1,10 @@
-package costax3;
+package costax3.behaviors;
 
 import battlecode.common.*;
 import java.util.*;
+
+import costax3.MsgType;
+import costax3.RobotPlayer;
 
 public abstract class Behavior {
 	

@@ -1,31 +1,54 @@
-package costax3;
+package costax3.behaviors;
 
 import battlecode.common.*;
 
-public class JimmyBehavior extends Behavior {
+import java.util.ArrayList;
+
+import costax3.Constants;
+import costax3.Messenger;
+import costax3.MsgType;
+import costax3.Navigation;
+import costax3.RobotPlayer;
+import costax3.Utility;
+
+public class MarineBehavior extends Behavior {
 	
-	JimmyBuildOrder obj = JimmyBuildOrder.EQUIPPING;
+	WeaponController gun;
 	
 	final Navigation robotNavigation = new Navigation(myPlayer);
 	
 	MapLocation hometown;
 	MapLocation enemyLocation;
 	MapLocation currDestination;
-	MapLocation mainDestination;
 	MapLocation newDestination;
+	MapLocation mainDestination;
+	
+	MarineBuildOrder obj = MarineBuildOrder.EQUIPPING;
 	
 	Direction direction;
 	
-	int dizziness;
-	int staleness;
+	int staleness = 0;
+	int guns;
+	int dizziness = 0;
 	
-	boolean eeHanTiming;
-	boolean enemyFound;
-	boolean hasComm;
+	//double lastHP = myPlayer.myRC.get;
+	
 	boolean hasSensor;
-	boolean hasDummy;
+    boolean hasArmor;
+	boolean eeHanTiming = false;
+    boolean moveOut = false;
+    boolean enemyFound;
+    
+    Robot[] nearbyRobots;
+    RobotInfo rInfo;
+    
+    ArrayList<?>[] componentList;
+    
+    Message[] msgs;
+    
+    String spawn;
 	
-	public JimmyBehavior(RobotPlayer player) {
+	public MarineBehavior(RobotPlayer player) {
 		super(player);
 	}
 
@@ -37,25 +60,29 @@ public class JimmyBehavior extends Behavior {
 			case EQUIPPING:
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				Utility.spin(myPlayer);
-	            hasComm = false;
+	            guns = 0;
 	            hasSensor = false;
-	            hasDummy = false;
+	            hasArmor = false;
 				for(ComponentController c:myPlayer.myRC.components())
 				{
-					if (c.type()==ComponentType.DISH)
+					if (c.type()==Constants.GUNTYPE)
 					{
-						hasComm = true;
-						myPlayer.myMessenger.enableSender();
+						guns++;
+						if (!myPlayer.myWeapons.contains((WeaponController)c))
+							myPlayer.myWeapons.add((WeaponController)c);
 					}
-					if (c.type()==ComponentType.RADAR)
+					if (c.type()==Constants.SENSORTYPE)
+					{
 						hasSensor = true;
-					if (c.type()==ComponentType.DUMMY)
-						hasDummy = true;
+						myPlayer.mySensor = (SensorController)c;
+					}
+					if (c.type()==Constants.ARMORTYPE)
+					{
+						hasArmor = true;
+					}
 				}
-				if (hasComm && hasSensor && hasDummy)
-				{
-					obj = JimmyBuildOrder.WAITING;
-				}
+				if (guns >= Constants.GUNS && hasSensor && hasArmor)
+					obj = MarineBuildOrder.WAITING;
 				return;
 				
 			case WAITING:
@@ -63,7 +90,7 @@ public class JimmyBehavior extends Behavior {
 				Utility.spin(myPlayer);
 				Utility.senseEnemies(myPlayer);
 	        	if (eeHanTiming)
-	        		obj = JimmyBuildOrder.MOVE_OUT;
+	        		obj = MarineBuildOrder.MOVE_OUT;
 	        	return;
 	        	
 			case MOVE_OUT:
@@ -92,14 +119,42 @@ public class JimmyBehavior extends Behavior {
 	        			}
 	        		}
 	            }
+	        	if (staleness > Constants.OLDNEWS && (Constants.OLDNEWS - staleness) % Constants.MARINE_SEARCH_FREQ == 0)
+	        		obj = MarineBuildOrder.SEARCH_FOR_ENEMY;
 	        	return;
+	        	
+			case SEARCH_FOR_ENEMY:
+				myPlayer.myRC.setIndicatorString(1, "SEARCH_FOR_ENEMY");
+    			enemyFound = false;
+    			newDestination = Utility.senseEnemies(myPlayer);
+    			if (newDestination != null)
+    				enemyFound = true;
+    			else
+    			{
+    				dizziness = 0;
+    				obj = MarineBuildOrder.MOVE_OUT;
+    			}
+    			if(!enemyFound && dizziness < 4)
+    			{
+    				if(!myPlayer.myMotor.isActive())
+    				{
+    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+    					dizziness++;
+    				}
+    			}
+    			if(!enemyFound && dizziness == 4)
+    			{
+    				dizziness = 0;
+    				obj = MarineBuildOrder.MOVE_OUT;
+    			}
+    			return;
 		}
 	}
 	
 	
 	
 	public String toString() {
-		return "JimmyBehavior";
+		return "MarineBehavior";
 	}
 
 
@@ -121,5 +176,6 @@ public class JimmyBehavior extends Behavior {
 			mainDestination = enemyLocation;
 			eeHanTiming = true;
 		}
+		
 	}
 }

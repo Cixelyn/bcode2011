@@ -1,4 +1,8 @@
-package costax3;
+package costax3.behaviors;
+import costax3.Constants;
+import costax3.RobotPlayer;
+import costax3.Scanner;
+import costax3.Utility;
 import battlecode.common.*;
 
 public class SentryBattleStrategy extends BattleStrategy {

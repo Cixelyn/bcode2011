@@ -1,5 +1,12 @@
-package costax3;
+package costax3.behaviors;
 import java.util.Arrays;
+
+import costax3.Constants;
+import costax3.Encoder;
+import costax3.Messenger;
+import costax3.RobotPlayer;
+import costax3.Scanner;
+import costax3.Utility;
 
 
 import battlecode.common.*;

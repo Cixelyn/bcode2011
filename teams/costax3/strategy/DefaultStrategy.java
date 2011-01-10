@@ -1,5 +1,11 @@
 package costax3.strategy;
 import costax3.*;
+import costax3.behaviors.Behavior;
+import costax3.behaviors.BuildingBehavior;
+import costax3.behaviors.FlyingBehavior;
+import costax3.behaviors.HeavyBehavior;
+import costax3.behaviors.LightBehavior;
+import costax3.behaviors.MediumBehavior;
 
 public class DefaultStrategy extends Strategy {
 

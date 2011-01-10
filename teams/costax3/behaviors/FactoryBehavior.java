@@ -1,5 +1,9 @@
-package costax3;
+package costax3.behaviors;
 
+import costax3.Messenger;
+import costax3.MsgType;
+import costax3.RobotPlayer;
+import costax3.Utility;
 import battlecode.common.*;
 
 public class FactoryBehavior extends Behavior {

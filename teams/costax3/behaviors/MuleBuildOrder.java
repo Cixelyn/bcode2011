@@ -1,4 +1,4 @@
-package costax3;
+package costax3.behaviors;
 
 public enum MuleBuildOrder 
 {
