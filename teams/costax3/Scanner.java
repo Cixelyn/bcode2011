@@ -22,7 +22,7 @@ public class Scanner {
 	
 	
 	
-	Scanner(RobotPlayer player) {
+	public Scanner(RobotPlayer player) {
 		myPlayer = player;
 		canScan = false;
 		

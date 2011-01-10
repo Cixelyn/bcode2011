@@ -1,5 +1,9 @@
-package costax3;
+package costax3.behaviors;
 
+import costax3.Constants;
+import costax3.Encoder;
+import costax3.RobotPlayer;
+import costax3.Scanner;
 import battlecode.common.*;
 
 public class JimmyBattleStrategy extends BattleStrategy{

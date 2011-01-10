@@ -1,5 +1,8 @@
-package costax3;
+package costax3.behaviors;
 
+import costax3.MsgType;
+import costax3.Navigation;
+import costax3.RobotPlayer;
 import battlecode.common.*;
 
 public class TestBugBehavior extends Behavior {

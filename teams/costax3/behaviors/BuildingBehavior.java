@@ -1,5 +1,7 @@
-package costax3;
+package costax3.behaviors;
 
+import costax3.MsgType;
+import costax3.RobotPlayer;
 import battlecode.common.*;
 
 public class BuildingBehavior extends Behavior {

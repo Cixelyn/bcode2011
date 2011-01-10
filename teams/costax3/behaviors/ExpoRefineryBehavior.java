@@ -1,8 +1,14 @@
-package costax3;
+package costax3.behaviors;
 
 import battlecode.common.*;
 
 import java.util.ArrayList;
+
+import costax3.Constants;
+import costax3.Messenger;
+import costax3.MsgType;
+import costax3.RobotPlayer;
+import costax3.Utility;
 
 public class ExpoRefineryBehavior extends Behavior {
 

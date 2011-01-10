@@ -1,6 +1,11 @@
-package costax3;
+package costax3.behaviors;
 
 import java.util.Random;
+
+import costax3.Constants;
+import costax3.MsgType;
+import costax3.RobotPlayer;
+import costax3.Utility;
 
 import battlecode.common.*;
 
