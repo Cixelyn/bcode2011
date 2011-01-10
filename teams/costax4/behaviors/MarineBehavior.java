@@ -72,7 +72,7 @@ public class MarineBehavior extends Behavior
 						hasArmor = true;
 				}
 				if (guns >= Constants.GUNS && hasSensor && hasArmor)
-					obj = MarineBuildOrder.MOVE_OUT;
+					obj = MarineBuildOrder.FIND_ENEMY;
 				return;
 			case FIND_ENEMY: //keep moving*///////////////////////////////////989  till we find an enemy
 				
@@ -172,29 +172,28 @@ public class MarineBehavior extends Behavior
 		//specifically made for a 2 gun robot (finds the two highest priority targets, if the first one is killable
 		//by one shot, have our second weapon shoot the other target.
 		
-		minHealth=100; //some large amount of health not possible to attain in the game
-		secondMinHealth=100; //some large amount of health not possible to attain in the game
+		minHealth=1000.0; //some large amount of health not possible to attain in the game
+		secondMinHealth=1000.0; //some large amount of health not possible to attain in the game
 		seeEnemyRobot=false;
-		RobotInfo rInfo =null;
 		RobotInfo minRobot = null;
 		RobotInfo secondMinRobot = null;
 		for (Robot robot : nearbyRobots) {
-			if (robot.getTeam()!=myPlayer.myRC.getTeam()) {
+			if (!robot.getTeam().equals(myPlayer.myRC.getTeam())) {
 				seeEnemyRobot=true;
 				try {
-					rInfo = myPlayer.mySensor.senseRobotInfo(robot);
+					RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(robot);
+					if (rInfo.hitpoints<minHealth) {
+						secondMinHealth=minHealth;
+						minHealth=rInfo.hitpoints;
+						secondMinRobot=minRobot;
+						minRobot=rInfo;
+					}
+					else if (rInfo.hitpoints<secondMinHealth) {
+						secondMinHealth=rInfo.hitpoints;
+						secondMinRobot=rInfo;
+					}
 				} catch (GameActionException e) {
 					e.printStackTrace();
-				}
-				if (rInfo.hitpoints<minHealth) {
-					secondMinHealth=minHealth;
-					minHealth=rInfo.hitpoints;
-					secondMinRobot=minRobot;
-					minRobot=rInfo;
-				}
-				else if (rInfo.hitpoints<secondMinHealth) {
-					secondMinHealth=rInfo.hitpoints;
-					secondMinRobot=rInfo;
 				}
 			}
 		}
@@ -210,6 +209,7 @@ public class MarineBehavior extends Behavior
 					if (damageDealt<minHealth) { //our top priority is still alive, better try and kill it
 						damageDealt=damageDealt+weapon.type().attackPower;
 						try {
+							System.out.println(minRobot);
 							weapon.attackSquare(minRobot.location, minRobot.robot.getRobotLevel());
 						} catch (GameActionException e) {
 							e.printStackTrace();
