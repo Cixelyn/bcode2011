@@ -72,7 +72,7 @@ public class MarineBehavior extends Behavior
 						hasArmor = true;
 				}
 				if (guns >= Constants.GUNS && hasSensor && hasArmor)
-					obj = MarineBuildOrder.MOVE_OUT;
+					obj = MarineBuildOrder.FIND_ENEMY;
 				return;
 			case FIND_ENEMY: //keep moving*///////////////////////////////////989  till we find an enemy
 				
