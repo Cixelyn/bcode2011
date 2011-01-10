@@ -40,12 +40,6 @@ public class LightBehavior extends Behavior {
 					myPlayer.myMessenger.toggleReceive(true);
 					return;
 				}
-				if (c.type() == ComponentType.RADAR || c.type() == ComponentType.DISH)
-				{
-					myPlayer.swapBehavior(new JimmyBehavior(myPlayer));
-					myPlayer.myMessenger.toggleReceive(true);
-					return;
-				}
 			}
 		}
 	}

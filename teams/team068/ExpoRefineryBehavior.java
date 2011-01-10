@@ -4,7 +4,7 @@ import battlecode.common.*;
 
 import java.util.*;
 
-public class RefineryBehavior extends Behavior
+public class ExpoRefineryBehavior extends Behavior
 {
 	
 	RefineryBuildOrder obj = RefineryBuildOrder.EQUIPPING;
@@ -14,8 +14,6 @@ public class RefineryBehavior extends Behavior
 	Robot babySCV;
 	Robot babyMule;
 	Robot babyMarine;
-	
-	boolean isLeader;
 	
 	double lastRes;
 	Random random = new Random();
@@ -27,7 +25,7 @@ public class RefineryBehavior extends Behavior
 	MapLocation hometown;
 	MapLocation enemyLocation;
 	
-	public RefineryBehavior(RobotPlayer player)
+	public ExpoRefineryBehavior(RobotPlayer player)
 	{
 		super(player);
 	}
@@ -55,30 +53,10 @@ public class RefineryBehavior extends Behavior
 					if (c.type()==ComponentType.RECYCLER)
 					{
 						Utility.buildComponentOnSelf(myPlayer, Constants.COMMTYPE);
-						obj = RefineryBuildOrder.GIVE_ANTENNA;
+						obj = RefineryBuildOrder.WAITING;
 					}
 				}
     			lastRes = myPlayer.myRC.getTeamResources();
-    			return;
-    			
-    		case GIVE_ANTENNA:
-    			myPlayer.myRC.setIndicatorString(1, "GIVE_ANTENNA");
-    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
-    			for (Robot r:nearbyRobots)
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if (rInfo.chassis == Chassis.BUILDING && myPlayer.myRC.getRobot().getID() < rInfo.robot.getID())
-    					isLeader = true;
-    				if (rInfo.chassis == Chassis.LIGHT && myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location)<=2 && !myPlayer.myMotor.isActive() && !myPlayer.myBuilder.isActive())
-					{
-    					babySCV = rInfo.robot;
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(rInfo.location));
-						myPlayer.myRC.yield();
-					}
-    			}
-    			if (isLeader)
-    				Utility.equipFrontWithOneComponent(myPlayer, babySCV, Constants.COMMTYPE);
-    			obj = RefineryBuildOrder.WAITING;
     			return;
     			
     		case WAITING:
@@ -148,7 +126,7 @@ public class RefineryBehavior extends Behavior
 
 	public String toString()
 	{
-		return "RefineryBehavior";
+		return "ExpoRefineryBehavior";
 	}
 	
 	public void newComponentCallback(ComponentController[] components)

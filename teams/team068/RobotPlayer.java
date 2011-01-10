@@ -100,16 +100,13 @@ public class RobotPlayer implements Runnable {
 			b = new LightBehavior(this);
 			break;
 		case MEDIUM:
-			b = new MediumBehavior(this);
 			break;
 		case HEAVY:
-			b = new HeavyBehavior(this);
 			break;
 		case FLYING:
-			b = new FlyingBehavior(this);
 			break;
 		default:
-			System.out.println("Error");
+			//System.out.println("Error");
 		}
 		
 		return b;
@@ -284,7 +281,7 @@ public class RobotPlayer implements Runnable {
 			case MISC:
 				break;
 			default:
-				System.out.println("NotController");
+				//System.out.println("NotController");
 				
 			}
 		}		

@@ -14,7 +14,10 @@ public class BuildingBehavior extends Behavior
 
 	public void run() throws Exception
 	{
-		myPlayer.swapBehavior(new RefineryBehavior(myPlayer));
+		if (Clock.getRoundNum() <= 2)
+			myPlayer.swapBehavior(new MainRefineryBehavior(myPlayer));
+		else
+			myPlayer.myRC.setIndicatorString(1, "WHAT AM I???");
 	}
 
 	public String toString()
@@ -24,7 +27,17 @@ public class BuildingBehavior extends Behavior
 
 	public void newComponentCallback(ComponentController[] components)
 	{
-
+		if (Clock.getRoundNum() > 2)
+		{
+			for(ComponentController c:components)
+			{
+				if (c.type() == ComponentType.RECYCLER)
+				{
+					myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
+					return;
+				}
+			}
+		}
 	}
 	
 	
