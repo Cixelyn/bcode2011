@@ -1,6 +1,7 @@
 package team068;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 
@@ -470,24 +471,74 @@ public class Utility
 	public static MapLocation senseEnemies(RobotPlayer myPlayer) throws Exception
 	{
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
-		WeaponController gun;
-		RobotInfo rInfo;
-		MapLocation destination = null;
-    	for(Robot r:nearbyRobots)
-    	{
-			for (Object c:myPlayer.myWeapons)
-			{
-				gun = (WeaponController) c;
-				if(r.getTeam()==myPlayer.myRC.getTeam().opponent())
-				{
-					rInfo = myPlayer.mySensor.senseRobotInfo(r);
-				 	destination = rInfo.location;
-					if(!gun.isActive() && rInfo.hitpoints>0 && gun.withinRange(rInfo.location))
-						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+		//find enemies by lowest hit point priority, but don't overkill
+		//specifically made for a 2 gun robot (finds the two highest priority targets, if the first one is killable
+		//by one shot, have our second weapon shoot the other target.
+		
+		double minHealth=1000.0; //some large amount of health not possible to attain in the game
+		double secondMinHealth=1000.0; //some large amount of health not possible to attain in the game
+		boolean seeEnemyRobot=false;
+		RobotInfo minRobot = null;
+		RobotInfo secondMinRobot = null;
+		for (Robot robot : nearbyRobots) {
+			if (robot.getTeam().equals(myPlayer.myRC.getTeam().opponent())) {
+				seeEnemyRobot=true;
+				try {
+					RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(robot);
+					if (rInfo.hitpoints<minHealth) {
+						secondMinHealth=minHealth;
+						minHealth=rInfo.hitpoints;
+						secondMinRobot=minRobot;
+						minRobot=rInfo;
+					}
+					else if (rInfo.hitpoints<secondMinHealth) {
+						secondMinHealth=rInfo.hitpoints;
+						secondMinRobot=rInfo;
+					}
+				} catch (GameActionException e) {
+					e.printStackTrace();
 				}
 			}
-    	}
-    	return destination;
+		}
+		
+		// attempt to not overkill targets by seeing how much damage we have done, if
+		// we have killed all robots, then we just go on bouncing around, otherwise,
+		// we chase after it.
+		double damageDealt=0;
+		if (seeEnemyRobot) {
+			for (WeaponController weapon :myPlayer.myWeapons) {
+				if(!weapon.isActive()) {
+					if (damageDealt<minHealth) { //our top priority is still alive, better try and kill it
+						damageDealt=damageDealt+weapon.type().attackPower;
+						try {
+							weapon.attackSquare(minRobot.location, minRobot.robot.getRobotLevel());
+						} catch (GameActionException e) {
+							e.printStackTrace();
+						}
+				}	
+					else {
+						if (secondMinRobot!=null) {
+							damageDealt=damageDealt+weapon.type().attackPower;
+							try {
+								weapon.attackSquare(secondMinRobot.location, secondMinRobot.robot.getRobotLevel());
+								if (secondMinHealth<weapon.type().attackPower) {
+								}
+							} catch (GameActionException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
+		if (minRobot!=null) {
+			return minRobot.location;
+		}
+		if (secondMinRobot!=null) {
+			return secondMinRobot.location;
+		}
+		return null;
+
 	}
 	
 	/**
