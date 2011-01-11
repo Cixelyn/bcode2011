@@ -31,6 +31,9 @@ public class DefaultBehavior extends Behavior
 				{
 					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
 				}
+				else {
+					myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
+				}
 			}
 			if ( c.type() == ComponentType.RECYCLER )
 			{
