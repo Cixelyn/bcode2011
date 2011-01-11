@@ -10,11 +10,11 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	//TODO remember past mines, perhaps fix if we run into someone as we are running away
 	
-	FlyingDroneActions obj = FlyingDroneActions.EQUIPPING;
+	static FlyingDroneActions obj = FlyingDroneActions.EQUIPPING;
 	
-	boolean hasSight = false;
-	boolean hasConstructor = false;
-	boolean foundID = false;
+	static boolean hasSight = false;
+	static boolean hasConstructor = false;
+	static boolean foundID = false;
 	boolean builtRefineryChassis = false;
 	boolean setRunAwayDirection=false;
 	boolean foundVoids=false;
@@ -22,7 +22,7 @@ public class FlyingDroneBehavior extends Behavior {
 	Mine currentMine;
 	double prevRoundHP;
 	boolean seenOtherSide;
-	boolean knowEverything;
+	static boolean knowEverything;
 	
 	Direction initialDirection;
 	Direction currentDirection;
@@ -35,10 +35,6 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	@Override
 	public void run() throws Exception {
-		
-		if (hasSight && hasConstructor) { //finally we are good to go!
-			obj=FlyingDroneActions.FLYING_DRONE_ID;
-		}
 		if (myPlayer.myRC.getHitpoints()<prevRoundHP) {
 			prevRoundHP=myPlayer.myRC.getHitpoints();
 			runAwayTime=0;
@@ -47,19 +43,27 @@ public class FlyingDroneBehavior extends Behavior {
     	switch (obj) {
     	
     		case EQUIPPING: {
+    			myPlayer.myRC.setIndicatorString(0, "equipping");
+    			if (hasSight && hasConstructor) { //finally we are good to go!
+    				obj=FlyingDroneActions.FLYING_DRONE_ID;
+    			}
     			myPlayer.sleep();
     			return;
     		}
     		case FLYING_DRONE_ID: {
+    			myPlayer.myRC.setIndicatorString(0, "waiting for id");
     			if (foundID) {
     				setDirectionID(ID);
+    				obj=FlyingDroneActions.EXPAND;
     			}
+    			myPlayer.sleep();
     			return;
     		}
     		case EXPAND: {
+    			myPlayer.myRC.setIndicatorString(0, "expanding");                                                                                  
     			if (!myPlayer.myMotor.isActive()) {
         			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
-        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)!=null) {
+        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
         					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
         					currentMine=mine;
         					obj=FlyingDroneActions.FOUND_MINE;
@@ -67,6 +71,7 @@ public class FlyingDroneBehavior extends Behavior {
         				}
         			}
         			if (ID==0) {
+        				System.out.println("going to drone0nav!");
         				Drone0Nav();
         			}
         			if (ID==1) {
@@ -79,22 +84,29 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		}
     		case FOUND_MINE: {
+    			myPlayer.myRC.setIndicatorString(0, "found mine"); 
 				if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) { //someone is on our mine, gonna just look for other ones
 					obj=FlyingDroneActions.EXPAND;
 					return;
 				}
     			if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()))) { //i'm right by the mine, build recycler!
-    				if (myPlayer.myRC.getTeamResources()>(ComponentType.RECYCLER.cost+Chassis.BUILDING.cost)) {
+    				if (myPlayer.myRC.getTeamResources()>(1.5*(ComponentType.RECYCLER.cost+Chassis.BUILDING.cost))) {
     					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
     					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.MINE);
+    					currentMine=null;
     					obj=FlyingDroneActions.EXPAND;
     				}
     			}
     			else {
     				if (!myPlayer.myMotor.isActive())  { //move closer to the mine
-        				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
-        					myPlayer.myMotor.moveForward();
-        				}
+    					if (myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()))) {
+            				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+            					myPlayer.myMotor.moveForward();
+            				}
+    					}
+    					else {
+    						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()));
+    					}
     				}
     			}
     			return;
@@ -177,9 +189,9 @@ public class FlyingDroneBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(MsgType type, Message msg) {
-		if (type.equals(MsgType.MSG_SEND_ID) && ID==-1) {
+		if (type.equals(MsgType.MSG_SEND_NUM) && ID==-1) {
 			foundID=true;
-			ID=msg.ints[0];
+			ID=msg.ints[2];
 		}
 	}
 
@@ -210,11 +222,15 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	public void Drone0Nav() throws GameActionException {
 		if (knowEverything) {
-			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 				myPlayer.myMotor.moveForward();
 			}
 		}
-		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)){
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
 			Drone0KnowEverything();
 		}
 		else {
@@ -227,8 +243,9 @@ public class FlyingDroneBehavior extends Behavior {
 	public void Drone0KnowEverything() throws GameActionException {
 		while (!knowEverything) {
 			if (!myPlayer.myMotor.isActive()) {
+				myPlayer.myRC.setIndicatorString(0, "trying to lean everything");
 				myPlayer.myMotor.setDirection(Direction.NORTH);
-				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)){
+				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
 					currentDirection=Direction.SOUTH_WEST;
 				}
 				else {
@@ -244,11 +261,15 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	public void Drone1Nav() throws GameActionException {
 		if (knowEverything) {
-			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 				myPlayer.myMotor.moveForward();
 			}
 		}
-		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)){
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
 			Drone1KnowEverything();
 		}
 		else {
@@ -262,7 +283,7 @@ public class FlyingDroneBehavior extends Behavior {
 		while (!knowEverything) {
 			if (!myPlayer.myMotor.isActive()) {
 				myPlayer.myMotor.setDirection(Direction.SOUTH);
-				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)){
+				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
 					currentDirection=Direction.NORTH_WEST;
 				}
 				else {
@@ -277,11 +298,15 @@ public class FlyingDroneBehavior extends Behavior {
 	}
 	public void Drone2Nav() throws GameActionException {
 		if (knowEverything) {
-			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 				myPlayer.myMotor.moveForward();
 			}
 		}
-		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)){
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
 			Drone2KnowEverything();
 		}
 		else {
@@ -295,7 +320,7 @@ public class FlyingDroneBehavior extends Behavior {
 		while (!knowEverything) {
 			if (!myPlayer.myMotor.isActive()) {
 				myPlayer.myMotor.setDirection(Direction.SOUTH);
-				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)){
+				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
 					currentDirection=Direction.NORTH_EAST;
 				}
 				else {
