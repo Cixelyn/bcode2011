@@ -3,6 +3,7 @@ package masteryone.behaviors;
 import battlecode.common.*;
 import masteryone.MsgType;
 import masteryone.RobotPlayer;
+import masteryone.Utility;
 
 public class FlyingDroneBehavior extends Behavior {
 	
@@ -11,8 +12,11 @@ public class FlyingDroneBehavior extends Behavior {
 	boolean hasSight = false;
 	boolean hasConstructor = false;
 	boolean foundID = false;
+	boolean builtRefineryChassis = false;
+	boolean setRunAwayDirection=false;
 	int ID;
 	Mine currentMine;
+	double prevRoundHP;
 	
 	Direction initialDirection;
 
@@ -26,7 +30,10 @@ public class FlyingDroneBehavior extends Behavior {
 		if (hasSight && hasConstructor) { //finally we are good to go!
 			obj=FlyingDroneActions.FLYING_DRONE_ID;
 		}
-		
+		if (myPlayer.myRC.getHitpoints()<prevRoundHP) {
+			prevRoundHP=myPlayer.myRC.getHitpoints();
+			obj=FlyingDroneActions.RUN_AWAY;
+		}
     	switch (obj) {
     	
     		case EQUIPPING: {
@@ -49,15 +56,22 @@ public class FlyingDroneBehavior extends Behavior {
         					return;
         				}
         			}
-        			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),myPlayer.mySensor.type().range)).equals(TerrainTile.OFF_MAP)) {
+        			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)){
+        				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+        				return;
+        			}
+        			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+        				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+        			}
+        			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),1)).equals(TerrainTile.OFF_MAP)){
         				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
         			}
     				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
     					myPlayer.myMotor.moveForward();
     				}
     			}
+    			return;
     		}
-    		return;
     		case FOUND_MINE: {
 				if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) {
 					obj=FlyingDroneActions.EXPAND;
@@ -65,9 +79,58 @@ public class FlyingDroneBehavior extends Behavior {
 				}
     			if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()))) {
     				if (myPlayer.myRC.getTeamResources()>(ComponentType.RECYCLER.cost+Chassis.BUILDING.cost)) {
-    					
+    					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.MINE);
     				}
     			}
+    			else {
+    				if (!myPlayer.myMotor.isActive())  {
+        				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+        					myPlayer.myMotor.moveForward();
+        				}
+    				}
+    			}
+    			return;
+    		}
+    		case RUN_AWAY: {
+    			int totalX=0;
+    			int totalY=0;
+    			int totalEnemyRobots=0;
+    			boolean enemyInFront=false;
+    			for (Robot robot : myPlayer.myScanner.detectedRobots) {
+    				if (robot.getTeam().equals(myPlayer.myRC.getTeam().opponent())) {
+    					RobotInfo rInfo= myPlayer.mySensor.senseRobotInfo(robot);
+    					totalX=totalX+rInfo.location.x;
+    					totalY=totalY+rInfo.location.y;
+    					totalEnemyRobots=totalEnemyRobots+1;
+    					enemyInFront=true;
+    				}
+    			}
+    			if (enemyInFront) {
+    				MapLocation vector=new MapLocation(totalX/totalEnemyRobots,totalY/totalEnemyRobots);
+    				Direction runAway=myPlayer.myRC.getLocation().directionTo(vector);
+    				if (myPlayer.myMotor.canMove(runAway)) {
+    					if (!setRunAwayDirection) {
+        					if (!myPlayer.myMotor.isActive()) {
+            					myPlayer.myMotor.setDirection(runAway);
+            					setRunAwayDirection=true;
+            					return;
+        					}
+    					}
+    					else {
+        					if (!myPlayer.myMotor.isActive()) {
+                				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+                					myPlayer.myMotor.moveForward();
+                					return;
+                				}
+        					}
+    					}
+    				}
+    			}
+    			else {
+    				
+    			}
+    			
     		}
     	}
 		
