@@ -38,8 +38,19 @@ public class FlyingDroneBehavior extends Behavior {
     			}
     		}
     		case EXPAND: {
-    			if (!myPlayer.myMotor.isActive()) {
+    			for (Mine mine : myPlayer.myScanner.detectedMines) {
+    				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)!=null) {
+    					
+    				}
     			}
+    			if (!myPlayer.myMotor.isActive()) {
+    				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+    					myPlayer.myMotor.moveForward();
+    				}
+    			}
+    		}
+    		case FOUND_MINE: {
+    			
     		}
     	}
 		
@@ -71,10 +82,10 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	public void setDirectionID(int ID) throws GameActionException {
 		if (ID==0) {
-			myPlayer.myMotor.setDirection(Direction.WEST);
+			myPlayer.myMotor.setDirection(Direction.SOUTH_WEST);
 		}
 		if (ID==1) {
-			myPlayer.myMotor.setDirection(Direction.EAST);
+			myPlayer.myMotor.setDirection(Direction.SOUTH_EAST);
 		}
 		if (ID==2) {
 			myPlayer.myMotor.setDirection(Direction.NORTH);
