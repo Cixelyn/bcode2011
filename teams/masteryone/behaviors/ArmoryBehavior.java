@@ -43,19 +43,19 @@ public class ArmoryBehavior extends Behavior
     		case BUILD_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "BUILD_FLYERS");
-    			for ( int i = 0 ; i <= 2 ; i++ )
-    			{
+    			//for ( int i = 0 ; i <= 2 ; i++ )
+    			//{
     				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
-	    			while ( rFront != null || myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.CONSTRUCTOR.cost + ComponentType.SIGHT.cost )
+	    			while ( rFront != null || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() < myPlayer.myLastRes + Chassis.FLYING.upkeep + Chassis.BUILDING.upkeep )
 	    			{
 	    				myPlayer.sleep();
 	    				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
 	    			}
 	    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.FLYING);
 	    			myPlayer.sleep();
-    			}
+    			//}
     			
-    			obj = ArmoryBuildOrder.WAITING;
+    			//obj = ArmoryBuildOrder.WAITING;
     			return;
     			
     		case WAITING:

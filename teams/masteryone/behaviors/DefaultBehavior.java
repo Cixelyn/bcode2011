@@ -30,7 +30,7 @@ public class DefaultBehavior extends Behavior
 				if ( Clock.getRoundNum() <= 2 )
 					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
 				else
-					myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
+					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
 			}
 			if ( c.type() == ComponentType.RECYCLER )
 			{

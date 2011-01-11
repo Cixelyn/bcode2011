@@ -54,6 +54,7 @@ public class RobotPlayer implements Runnable {
 	private final int myBirthday;
 	private int executeStartTime;
 	private int executeStartByte;
+	public double myLastRes;
 	
 	
 	//Useful Toolkits
@@ -78,6 +79,7 @@ public class RobotPlayer implements Runnable {
     	//variables and utilities that other pieces depend on
     	myBirthday = Clock.getRoundNum();
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
+    	myLastRes = 9999;
     	
     	//initialize base controllers
     	myBuilder = null;
@@ -203,6 +205,10 @@ public class RobotPlayer implements Runnable {
 		//////////////////////////////////////////////////////////////
 		//Run our debug routines.
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		
+		//////////////////////////////////////////////////////////////
+		// Remember the number of resources at the end of the round
+		myLastRes = myRC.getTeamResources();
 		
 		//////////////////////////////////////////////////////////////
 		

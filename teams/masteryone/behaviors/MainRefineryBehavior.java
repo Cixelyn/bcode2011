@@ -80,7 +80,7 @@ public class MainRefineryBehavior extends Behavior
     		case EQUIP_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, Integer.toString(currNum));
+    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currNum) + ".");
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
     				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )

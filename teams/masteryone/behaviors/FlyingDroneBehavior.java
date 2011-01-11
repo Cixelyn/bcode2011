@@ -71,7 +71,7 @@ public class FlyingDroneBehavior extends Behavior {
         				}
         			}
         			if (ID==0) {
-        				System.out.println("going to drone0nav!");
+        				//Utility.println("going to drone0nav!"); // commented out and changed to Utility.println by JVen
         				Drone0Nav();
         			}
         			if (ID==1) {
@@ -90,9 +90,9 @@ public class FlyingDroneBehavior extends Behavior {
 					return;
 				}
     			if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()))) { //i'm right by the mine, build recycler!
-    				if (myPlayer.myRC.getTeamResources()>(1.5*(ComponentType.RECYCLER.cost+Chassis.BUILDING.cost))) {
+    				if (myPlayer.myRC.getTeamResources()>((ComponentType.RECYCLER.cost+Chassis.BUILDING.cost))) {
     					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
-    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.MINE);
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
     					currentMine=null;
     					obj=FlyingDroneActions.EXPAND;
     				}
@@ -208,6 +208,9 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	
 	public void setDirectionID(int ID) throws GameActionException {
+		// below loop added by JVen
+		while ( myPlayer.myMotor.isActive() )
+			myPlayer.sleep();
 		if (ID==0) {
 			myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
 		}
