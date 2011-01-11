@@ -53,8 +53,10 @@ public class FlyingDroneBehavior extends Behavior {
     		case FLYING_DRONE_ID: {
     			myPlayer.myRC.setIndicatorString(0, "waiting for id");
     			if (foundID) {
-    				setDirectionID(ID);
-    				obj=FlyingDroneActions.EXPAND;
+    				if (myPlayer.myMotor.isActive()) {
+    					setDirectionID(ID);
+    					obj=FlyingDroneActions.EXPAND;
+    				}
     			}
     			myPlayer.sleep();
     			return;
@@ -70,16 +72,7 @@ public class FlyingDroneBehavior extends Behavior {
         					return;
         				}
         			}
-        			if (ID==0) {
-        				//Utility.println("going to drone0nav!"); // commented out and changed to Utility.println by JVen
-        				Drone0Nav();
-        			}
-        			if (ID==1) {
-        				Drone1Nav();
-        			}
-        			if (ID==2) {
-        				Drone2Nav();
-        			}
+        			droneGeneralNav(ID);
     			}
     			return;
     		}
@@ -92,7 +85,7 @@ public class FlyingDroneBehavior extends Behavior {
     			if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()))) { //i'm right by the mine, build recycler!
     				if (myPlayer.myRC.getTeamResources()>((ComponentType.RECYCLER.cost+Chassis.BUILDING.cost))) {
     					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
-    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.MINE);
     					currentMine=null;
     					obj=FlyingDroneActions.EXPAND;
     				}
@@ -191,7 +184,7 @@ public class FlyingDroneBehavior extends Behavior {
 	public void newMessageCallback(MsgType type, Message msg) {
 		if (type.equals(MsgType.MSG_SEND_NUM) && ID==-1) {
 			foundID=true;
-			ID=msg.ints[2];
+			ID=msg.ints[2]%8;
 		}
 	}
 
@@ -206,11 +199,12 @@ public class FlyingDroneBehavior extends Behavior {
 	//////////NAVIGATION/////////
 	/////////////////////////////
 	
+	public void droneGeneralNav(int ID) {
+		
+	}
+	
 	
 	public void setDirectionID(int ID) throws GameActionException {
-		// below loop added by JVen
-		while ( myPlayer.myMotor.isActive() )
-			myPlayer.sleep();
 		if (ID==0) {
 			myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
 		}
@@ -220,9 +214,47 @@ public class FlyingDroneBehavior extends Behavior {
 		if (ID==2) {
 			myPlayer.myMotor.setDirection(Direction.SOUTH_EAST);
 		}
+		if (ID==3) {
+			myPlayer.myMotor.setDirection(Direction.EAST);
+		}
+		if (ID==4) {
+			myPlayer.myMotor.setDirection(Direction.WEST);
+		}
+		if (ID==5) {
+			myPlayer.myMotor.setDirection(Direction.NORTH);
+		}		
+		if (ID==6) {
+			myPlayer.myMotor.setDirection(Direction.SOUTH);
+		}
+		if (ID==7) {
+			myPlayer.myMotor.setDirection(Direction.NORTH_EAST);
+		}
 		initialDirection=myPlayer.myRC.getDirection();
 	}
 	
+	public void droneNav() throws GameActionException {
+		if (knowEverything) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+			droneKnowEverything();
+		}
+		else {
+			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+	}
+	
+	public void droneKnowEverything() {
+		
+	}
 	public void Drone0Nav() throws GameActionException {
 		if (knowEverything) {
 			myPlayer.myRC.setIndicatorString(0, "know everything");
@@ -336,6 +368,7 @@ public class FlyingDroneBehavior extends Behavior {
 		}
 		
 	}
+	
 	
 	public Direction getMostVoidsDirection() {
 		int leftCount=0;
