@@ -4,8 +4,11 @@ import battlecode.common.*;
 import masteryone.MsgType;
 import masteryone.RobotPlayer;
 import masteryone.Utility;
+import masteryone.Constants;
 
 public class FlyingDroneBehavior extends Behavior {
+	
+	//TODO remember past mines, perhaps fix if we run into someone as we are running away
 	
 	FlyingDroneActions obj = FlyingDroneActions.EQUIPPING;
 	
@@ -14,7 +17,8 @@ public class FlyingDroneBehavior extends Behavior {
 	boolean foundID = false;
 	boolean builtRefineryChassis = false;
 	boolean setRunAwayDirection=false;
-	int ID;
+	boolean foundVoids=false;
+	int ID=-1;
 	Mine currentMine;
 	double prevRoundHP;
 	boolean seenOtherSide;
@@ -22,6 +26,8 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	Direction initialDirection;
 	Direction currentDirection;
+
+	int runAwayTime;
 
 	public FlyingDroneBehavior(RobotPlayer player) {
 		super(player);
@@ -35,6 +41,7 @@ public class FlyingDroneBehavior extends Behavior {
 		}
 		if (myPlayer.myRC.getHitpoints()<prevRoundHP) {
 			prevRoundHP=myPlayer.myRC.getHitpoints();
+			runAwayTime=0;
 			obj=FlyingDroneActions.RUN_AWAY;
 		}
     	switch (obj) {
@@ -97,6 +104,12 @@ public class FlyingDroneBehavior extends Behavior {
     			int totalY=0;
     			int totalEnemyRobots=0;
     			boolean enemyInFront=false;
+    			if (runAwayTime>Constants.RUN_AWAY_TIME) {
+    				setRunAwayDirection=false;
+    				foundVoids=false;
+    				obj=FlyingDroneActions.EXPAND;
+    				return;
+    			}
     			for (Robot robot : myPlayer.myScanner.detectedRobots) {
     				if (robot.getTeam().equals(myPlayer.myRC.getTeam().opponent())) {
     					RobotInfo rInfo= myPlayer.mySensor.senseRobotInfo(robot);
@@ -108,12 +121,13 @@ public class FlyingDroneBehavior extends Behavior {
     			}
     			if (enemyInFront) {
     				MapLocation vector=new MapLocation(totalX/totalEnemyRobots,totalY/totalEnemyRobots);
-    				Direction runAway=myPlayer.myRC.getLocation().directionTo(vector);
+    				Direction runAway=myPlayer.myRC.getLocation().directionTo(vector).opposite();
     				if (myPlayer.myMotor.canMove(runAway)) {
     					if (!setRunAwayDirection) {
         					if (!myPlayer.myMotor.isActive()) {
             					myPlayer.myMotor.setDirection(runAway);
             					setRunAwayDirection=true;
+            					runAwayTime=runAwayTime+1;
             					return;
         					}
     					}
@@ -121,6 +135,7 @@ public class FlyingDroneBehavior extends Behavior {
         					if (!myPlayer.myMotor.isActive()) {
                 				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
                 					myPlayer.myMotor.moveForward();
+                					runAwayTime=runAwayTime+1;
                 					return;
                 				}
         					}
@@ -128,7 +143,21 @@ public class FlyingDroneBehavior extends Behavior {
     				}
     			}
     			else {
-    				
+    				Direction direction=getMostVoidsDirection();
+    				if (!foundVoids) {
+    					if (!myPlayer.myMotor.isActive()) {
+    						Direction voidDirection=getMostVoidsDirection();
+            				myPlayer.myMotor.setDirection(voidDirection);
+            				foundVoids=true;
+    					}
+    					
+    				}
+					if (!myPlayer.myMotor.isActive()) {
+        				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+        					myPlayer.myMotor.moveForward();
+        					return;
+        				}
+					}
     			}
     			return;
     		}
@@ -149,7 +178,7 @@ public class FlyingDroneBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(MsgType type, Message msg) {
-		if (type.equals(MsgType.MSG_DRONE_ID)) {
+		if (type.equals(MsgType.MSG_DRONE_ID) && ID==-1) {
 			foundID=true;
 			ID=msg.ints[0];
 		}
@@ -165,6 +194,8 @@ public class FlyingDroneBehavior extends Behavior {
 	/////////////////////////////
 	//////////NAVIGATION/////////
 	/////////////////////////////
+	
+	
 	public void setDirectionID(int ID) throws GameActionException {
 		if (ID==0) {
 			myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
@@ -277,6 +308,92 @@ public class FlyingDroneBehavior extends Behavior {
 			}
 		}
 		
+	}
+	
+	public Direction getMostVoidsDirection() {
+		int leftCount=0;
+		int frontCount=0;
+		int rightCount=0;
+		if (myPlayer.myRC.getDirection().isDiagonal()) {
+			
+			//get number of voids to the left of me
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),1)).equals(TerrainTile.VOID)) {
+				leftCount=leftCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),2)).equals(TerrainTile.VOID)) {
+				leftCount=leftCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),3)).equals(TerrainTile.VOID)) {
+				leftCount=leftCount+1;
+			}
+			
+			//get number of voids in front of me
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),1)).equals(TerrainTile.VOID)) {
+				frontCount=frontCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.VOID)) {
+				frontCount=frontCount+1;
+			}
+			//get number of voids to the right of me
+			
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),1)).equals(TerrainTile.VOID)) {
+				rightCount=rightCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),2)).equals(TerrainTile.VOID)) {
+				rightCount=rightCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),3)).equals(TerrainTile.VOID)) {
+				rightCount=rightCount+1;
+			}
+			int maximum= Math.max(Math.max(leftCount, frontCount), rightCount);
+			if (maximum==leftCount) {
+				return myPlayer.myRC.getDirection().rotateLeft();
+			}
+			if (maximum==frontCount) {
+				return myPlayer.myRC.getDirection();
+			}
+			else {
+				return myPlayer.myRC.getDirection().rotateRight();
+			}
+		}
+		else {
+			//get number of voids to the left of me
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),1)).equals(TerrainTile.VOID)) {
+				leftCount=leftCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),2)).equals(TerrainTile.VOID)) {
+				leftCount=leftCount+1;
+			}
+			
+			//get number of voids in front of me
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),1)).equals(TerrainTile.VOID)) {
+				frontCount=frontCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.VOID)) {
+				frontCount=frontCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.VOID)) {
+				frontCount=frontCount+1;
+			}
+			//get number of voids to the right of me
+			
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),1)).equals(TerrainTile.VOID)) {
+				rightCount=rightCount+1;
+			}
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),2)).equals(TerrainTile.VOID)) {
+				rightCount=rightCount+1;
+			}
+			int maximum= Math.max(Math.max(leftCount, frontCount), rightCount);
+			if (maximum==leftCount) {
+				return myPlayer.myRC.getDirection().rotateLeft();
+			}
+			if (maximum==frontCount) {
+				return myPlayer.myRC.getDirection();
+			}
+			else {
+				return myPlayer.myRC.getDirection().rotateRight();
+			}
+		}
 	}
 
 }
