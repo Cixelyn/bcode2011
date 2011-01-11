@@ -1,6 +1,6 @@
 package masteryone;
 
-import java.util.LinkedList;
+import java.util.*;
 
 import battlecode.common.*;
 
@@ -13,11 +13,11 @@ public class Scanner {
 	
 	public GameObject[] nearbyGameObjects;
 	
-	public final LinkedList<Robot> detectedRobots;
-	public final LinkedList<Mine> detectedMines;
+	public final ArrayList<Robot> detectedRobots;
+	public final ArrayList<Mine> detectedMines;
 	
-	public final LinkedList<RobotInfo> scannedRobotInfos;
-	public final LinkedList<MineInfo> scannedMineInfos;
+	public final ArrayList<RobotInfo> scannedRobotInfos;
+	public final ArrayList<MineInfo> scannedMineInfos;
 	
 	
 	
@@ -26,11 +26,11 @@ public class Scanner {
 		myPlayer = player;
 		canScan = false;
 		
-		detectedRobots = new LinkedList<Robot>();
-		detectedMines = new LinkedList<Mine>();
+		detectedRobots = new ArrayList<Robot>(144);
+		detectedMines = new ArrayList<Mine>(144);
 		
-		scannedRobotInfos = new LinkedList<RobotInfo>();
-		scannedMineInfos = new LinkedList<MineInfo>();
+		scannedRobotInfos = new ArrayList<RobotInfo>(144);
+		scannedMineInfos = new ArrayList<MineInfo>(144);
 		
 		//default detection type, can be changed by the others
 		detectionType = GameObject.class;

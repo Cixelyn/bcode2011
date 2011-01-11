@@ -74,6 +74,7 @@ public class ExpoRefineryBehavior extends Behavior
     					else if ( !rHasSight )
     					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR);
+    						myPlayer.sleep();
     						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currNum);
     						currNum++;
     					}
