@@ -27,7 +27,7 @@ import battlecode.common.*;
  * Ohhhhhhh
  * Your love will always be my guide
  * back to the mineral line…. <3 
- * </pre>
+ * </pre>hHA
  * 
  * 
  * @see <a href="http://www.youtube.com/watch?v=8zwP9ErgIWs">SCV Love Song</a>
@@ -103,7 +103,7 @@ public class RobotPlayer implements Runnable {
     	/////////////////////////////////////////////////////////////////////////////////////////////////////
     	//Setup the initial strategy based on team memory
     	if(myRC.getTeamMemory()[0]==0) {
-    		myStrategy = new DefaultStrategy();
+    		myStrategy = new NavtestStrategy();
     	} else {
     		myStrategy = null;
     	}
