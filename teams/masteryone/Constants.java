@@ -14,6 +14,7 @@ public class Constants
 	//Debug Flags
 	public static final boolean DEBUG = true;
 	public static final boolean DEBUG_BYTECODE_OVERFLOW = true;
+	public static final int RUN_AWAY_TIME=5;
 	
 	
 	
