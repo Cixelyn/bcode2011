@@ -12,6 +12,7 @@ public class SCVBehavior extends Behavior
 	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 	
 	MapLocation hometown = myPlayer.myRC.getLocation();
+	MapLocation unitDock;
 	MapLocation loc;
 	Direction dir;
 	Mine currMine;
@@ -119,6 +120,7 @@ public class SCVBehavior extends Behavior
 			case BUILD_ARMORY:
 				
 				Utility.setIndicator(myPlayer, 1, "BUILD_ARMORY");
+				unitDock = myPlayer.myRC.getLocation();
 				dizziness = 0;
 				for ( Direction d : Direction.values() )
 				{
@@ -128,6 +130,8 @@ public class SCVBehavior extends Behavior
 							myPlayer.sleep();
 						Utility.buildChassis(myPlayer, d, Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
+						myPlayer.sleep();
+						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
 						obj = SCVBuildOrder.VACATE_HOME;
 						return;
 					}
@@ -190,7 +194,14 @@ public class SCVBehavior extends Behavior
 						}
 					}
 				 return;
-				 
+    			
+			case WAITING:
+				
+				Utility.setIndicator(myPlayer, 1, "WAITING");
+				if ( Clock.getRoundNum() > 500 )
+					obj = SCVBuildOrder.BUILD_FACTORY;
+				return;
+				
 			case BUILD_FACTORY:
 				
 				Utility.setIndicator(myPlayer, 1, "BUILD_FACTORY");
@@ -198,14 +209,14 @@ public class SCVBehavior extends Behavior
 					myPlayer.sleep();
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.FACTORY, RobotLevel.ON_GROUND);
-    			obj = SCVBuildOrder.WAITING;
+    			obj = SCVBuildOrder.SLEEP;
     			return;
-    			
-			case WAITING:
 				
-				Utility.setIndicator(myPlayer, 1, "WAITING");
+			case SLEEP:
+				
+				Utility.setIndicator(myPlayer, 1, "SLEEP");
 				return;
-				
+    			
 			case WEIRD_SPAWN:
 				
 				Utility.setIndicator(myPlayer, 1, "WEIRD_SPAWN");

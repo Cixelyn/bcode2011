@@ -10,8 +10,8 @@ import masteryone.behaviors.*;
 import battlecode.common.*;
 
 /**
- * COSTAX: BOT OF DEATH.
- * @author COry, juSTin, mAX
+ * MASTeRY: BOT OF DEATH.
+ * @author MAx, juSTin, coRY
  * @author Team 068, "In the Rear, With the Gear"
  * @version 1.0
  * @since Battlecode 2011
@@ -176,6 +176,7 @@ public class RobotPlayer implements Runnable {
 			
 			//Run Postflight operations
 			postRun();
+			myRC.yield();
 		}	
 	}
 
@@ -189,9 +190,11 @@ public class RobotPlayer implements Runnable {
 		
 		/////////////////////////////////////////////////////////////
 		//Send all messages
-		try {
-			myMessenger.sendAll();
-		} catch(Exception e) {e.printStackTrace();}
+		if(myMessenger.canSend) {
+			try {
+				myMessenger.sendAll();
+			} catch(Exception e) {e.printStackTrace();}
+		}
 		
 		
 		
@@ -200,9 +203,7 @@ public class RobotPlayer implements Runnable {
 		//Run our debug routines.
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		
-		/////////////////////////////////////////////////////////////
-		//Then yield
-		myRC.yield();
+		//////////////////////////////////////////////////////////////
 		
 	}
 	
@@ -280,7 +281,7 @@ public class RobotPlayer implements Runnable {
 			case MISC:
 				break;
 			default:
-				System.out.println("NotController");
+				Utility.println("NotController");
 				
 			}
 		}		
@@ -307,12 +308,10 @@ public class RobotPlayer implements Runnable {
 	}
 	
 	public void stopClock() {
-		if(Constants.DEBUG_BYTECODE_OVERFLOW){
-			if(executeStartTime!=Clock.getRoundNum()) {
-				int byteCount = (6000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 6000 + Clock.getBytecodeNum();
-				System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
+		if(executeStartTime!=Clock.getRoundNum()) {
+			int byteCount = (3000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 3000 + Clock.getBytecodeNum();
+			Utility.println("Warning: Unit over Bytecode Limit: "+ byteCount);
 			}
-		}		
 	}
 	
 	
