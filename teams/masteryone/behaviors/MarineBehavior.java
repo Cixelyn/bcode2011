@@ -12,8 +12,9 @@ public class MarineBehavior extends Behavior
 	
 	int guns;
 	
-	boolean hasSensor;
-	boolean hasArmor;
+	boolean hasBlaster;
+	boolean hasRadar;
+	boolean hasShield;
 	
 	public MarineBehavior(RobotPlayer player)
 	{
@@ -28,26 +29,19 @@ public class MarineBehavior extends Behavior
 		{
 			case EQUIPPING:
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
-	            guns = 0;
-	            hasSensor = false;
-	            hasArmor = false;
+	            hasBlaster = false;
+	            hasRadar = false;
+	            hasShield = false;
 				for(ComponentController c:myPlayer.myRC.components())
 				{
 					if ( c.type() == ComponentType.BLASTER )
-					{
-						guns++;
-						if (!myPlayer.myWeapons.contains((WeaponController)c))
-							myPlayer.myWeapons.add((WeaponController)c);
-					}
-					if ( c.type() == ComponentType.SIGHT )
-					{
-						hasSensor = true;
-						myPlayer.mySensor = (SensorController)c;
-					}
-					if (c.type() == ComponentType.SHIELD )
-						hasArmor = true;
+						hasBlaster = true;
+					if ( c.type() == ComponentType.RADAR )
+						hasRadar = true;
+					if ( c.type() == ComponentType.SHIELD )
+						hasShield = true;
 				}
-				if (guns >= 2 && hasSensor && hasArmor)
+				if ( hasBlaster && hasRadar && hasShield )
 					obj = MarineBuildOrder.MOVE_OUT;
 				return;
 	        	

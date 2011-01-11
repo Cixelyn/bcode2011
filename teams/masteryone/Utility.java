@@ -231,23 +231,6 @@ public class Utility {
 	}
 	
 	/**
-	 * Yields until there is enough money to build a component, then builds the component on self
-	 * @author JVen
-	 * @param player The robot player
-	 * @param component The component type to build
-	 * @return boolean True if component is built, false otherwise
-	 */
-	
-	public static boolean buildComponentOnSelfd(RobotPlayer player, ComponentType component) throws Exception
-	{
-		MapLocation loc = player.myRC.getLocation();
-		while ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
-			player.sleep();
-		player.myBuilder.build(component, loc, player.myRC.getRobot().getRobotLevel());
-		return true;
-	}
-	
-	/**
 	 * Looks for enemies and shoots at one if one is found
 	 * @author JVen
 	 * @param myPlayer The robot player
@@ -269,9 +252,11 @@ public class Utility {
 				gun = (WeaponController) c;
 				if ( r.getTeam() == myPlayer.myRC.getTeam().opponent() )
 				{
-				 	destination = rInfo.location;
 					if(!gun.isActive() && rInfo.hitpoints > 0 && gun.withinRange(rInfo.location))
+					{
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+					 	destination = rInfo.location;
+					}
 				}
 			}
     	}
