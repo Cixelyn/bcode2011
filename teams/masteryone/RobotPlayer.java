@@ -10,8 +10,8 @@ import masteryone.behaviors.*;
 import battlecode.common.*;
 
 /**
- * COSTAX: BOT OF DEATH.
- * @author COry, juSTin, mAX
+ * MASTeRY: BOT OF DEATH.
+ * @author MAx, juSTin, coRY
  * @author Team 068, "In the Rear, With the Gear"
  * @version 1.0
  * @since Battlecode 2011
@@ -204,6 +204,8 @@ public class RobotPlayer implements Runnable {
 		//Run our debug routines.
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		
+		//////////////////////////////////////////////////////////////
+		
 	}
 	
 	
@@ -280,7 +282,7 @@ public class RobotPlayer implements Runnable {
 			case MISC:
 				break;
 			default:
-				System.out.println("NotController");
+				Utility.println("NotController");
 				
 			}
 		}		

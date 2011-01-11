@@ -10,5 +10,6 @@ public enum SCVBuildOrder
 	VACATE_FACTORY,
 	BUILD_FACTORY,
 	WAITING,
+	SLEEP,
 	WEIRD_SPAWN	
 }

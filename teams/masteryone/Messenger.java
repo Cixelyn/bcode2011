@@ -26,7 +26,7 @@ public class Messenger {
 
 	//send component needs to be enabled
 	private boolean canSend;
-	public boolean shouldReceive = false;
+	public boolean shouldReceive;
 	
 	//static limits
 	private static final int ROUND_MOD = 4;
@@ -195,7 +195,7 @@ public class Messenger {
 		for(Message m: rcv) {
 			
 			if (!isValid)
-				System.out.println("Message dropped!");
+				Utility.println("Message dropped!");
 			isValid = false;
 			
 			////////BEGIN MESSAGE VALIDATION SYSTEM
@@ -223,6 +223,7 @@ public class Messenger {
 			}
 		}
 	}
+	
 	
 	
 	public void sendAll() throws Exception{

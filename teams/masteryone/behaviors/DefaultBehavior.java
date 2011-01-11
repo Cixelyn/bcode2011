@@ -28,12 +28,9 @@ public class DefaultBehavior extends Behavior
 			if ( c.type() == ComponentType.CONSTRUCTOR )
 			{
 				if ( Clock.getRoundNum() <= 2 )
-				{
 					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
-				}
-				else {
-					myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
-				}
+				else
+					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
 			}
 			if ( c.type() == ComponentType.RECYCLER )
 			{
@@ -42,6 +39,10 @@ public class DefaultBehavior extends Behavior
 				else
 					myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
 			}
+			if ( c.type() == ComponentType.ARMORY )
+				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
+			if ( c.type() == ComponentType.FACTORY )
+				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
 		}
 	}
 
