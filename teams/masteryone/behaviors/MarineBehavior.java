@@ -77,4 +77,5 @@ public class MarineBehavior extends Behavior
 	{
 		
 	}
+	public void onWakeupCallback() {}
 }

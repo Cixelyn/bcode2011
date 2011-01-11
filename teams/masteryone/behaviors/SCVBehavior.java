@@ -253,4 +253,6 @@ public class SCVBehavior extends Behavior
 	{
 		
 	}
+	
+	public void onWakeupCallback() {}
 }

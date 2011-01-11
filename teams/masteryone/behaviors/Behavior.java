@@ -54,6 +54,12 @@ public abstract class Behavior {
 	public abstract void newMessageCallback(MsgType type, Message msg);
 
 
+	/**
+	 * This callback is triggered whenever a unit is reactivated.
+	 * Useful for lategame strategies, etc.
+	 */
+	public abstract void onWakeupCallback();
+	
 	
 	
 	

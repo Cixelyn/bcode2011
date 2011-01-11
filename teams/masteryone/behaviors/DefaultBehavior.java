@@ -53,4 +53,6 @@ public class DefaultBehavior extends Behavior
 	{
 		
 	}
+	public void onWakeupCallback() {}
+	
 }
