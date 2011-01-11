@@ -6,10 +6,12 @@ import java.util.*;
 
 public class SCVBehavior extends Behavior
 {
+	
 	final OldNavigation nav = new OldNavigation(myPlayer);
 	
 	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
 	
+	MapLocation hometown = myPlayer.myRC.getLocation();
 	MapLocation loc;
 	Direction dir;
 	Mine currMine;
@@ -40,9 +42,9 @@ public class SCVBehavior extends Behavior
 				mineFound = false;
 				for ( Mine m : myPlayer.myScanner.detectedMines )
     			{
-    				if( !mineFound && m.getTeam() == Team.NEUTRAL )
+    				if ( !mineFound && m.getTeam() == Team.NEUTRAL )
         			{
-        				if( myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(m.getID()) )
+        				if ( myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(m.getID()) )
         				{
             				mineFound = true;
             				currMine = m;
@@ -65,31 +67,29 @@ public class SCVBehavior extends Behavior
     			if( mineFound )
     			{
     				dizziness = 0;
-    				obj = SCVBuildOrder.CAP_MINE;
+    				obj = SCVBuildOrder.BUILD_REFINERY;
     			}
     			return;
     			
-			case CAP_MINE:
+			case BUILD_REFINERY:
     			
-				Utility.setIndicator(myPlayer, 1, "CAP_MINE");
-    			if( !myPlayer.mySensor.withinRange(loc) || myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null)
+				Utility.setIndicator(myPlayer, 1, "BUILD_REFINERY");
+    			if ( !myPlayer.mySensor.withinRange(loc) || myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null || tiredness > Constants.MINE_AFFINITY )
     			{
         			if (myPlayer.myRC.getLocation().distanceSquaredTo(loc) > myPlayer.myBuilder.type().range)
         			{
         				Utility.navStep(myPlayer, nav, loc);
         				tiredness++;
-            			if(tiredness > Constants.MINE_AFFINITY)
-            			{
-            				minesCapped++;
-            				badMines.add(currMine.getID());
-            				obj = SCVBuildOrder.FIND_MINE;
-            				tiredness = 0;
-            			}
         			}
         			else
         			{
-        				if ( Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(loc), Chassis.BUILDING) )
-        					obj = SCVBuildOrder.ADDON_MINE;
+        				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
+							myPlayer.sleep();
+        				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(loc), Chassis.BUILDING);
+        				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(loc), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+        				minesCapped++;
+        				if (minesCapped == 2)
+        					obj = SCVBuildOrder.BUILD_ARMORY;
         				else
         					obj = SCVBuildOrder.FIND_MINE;
         				tiredness = 0;
@@ -98,31 +98,107 @@ public class SCVBehavior extends Behavior
     			}
     			else
     			{
+    				minesCapped++; // in order to ignore bad initial mines
+    				badMines.add(currMine.getID());
     				obj = SCVBuildOrder.FIND_MINE;
     				tiredness = 0;
     			}
-    			return;
-				
-			case ADDON_MINE:
-				
-    			Utility.setIndicator(myPlayer, 1, "ADDON_MINE");
-    			if( Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(loc), ComponentType.RECYCLER, RobotLevel.ON_GROUND) )
-    			{
-    				minesCapped++;
-    				if (minesCapped == 2)
-    				{
-    					obj = SCVBuildOrder.BUILD_ARMORY;
-    					return;
-    				}
-    			}
-    			obj = SCVBuildOrder.FIND_MINE;
     			return;
     		
 			case BUILD_ARMORY:
 				
 				Utility.setIndicator(myPlayer, 1, "BUILD_ARMORY");
+				dizziness = 0;
+				for ( Direction d : Direction.values() )
+				{
+					if ( myPlayer.myMotor.canMove(d) )
+					{
+						while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.ARMORY.cost )
+							myPlayer.sleep();
+						Utility.buildChassis(myPlayer, d, Chassis.BUILDING);
+						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
+						obj = SCVBuildOrder.VACATE_HOME;
+						return;
+					}
+					dizziness++;
+					if ( dizziness >= 8 )
+					{
+						obj = SCVBuildOrder.WEIRD_SPAWN;
+						return;
+					}
+				}
 				return;
+				
+			case VACATE_HOME:
+				
+				Utility.setIndicator(myPlayer, 1, "VACATE_HOME");
+				dizziness = 0;
+				for ( Direction d : Direction.values() )
+				{
+					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					{
+						while ( myPlayer.myMotor.isActive() )
+							myPlayer.sleep();
+						myPlayer.myMotor.setDirection(d);
+						myPlayer.sleep();
+						myPlayer.myMotor.moveForward();
+						obj = SCVBuildOrder.VACATE_FACTORY;
+						return;
+					}
+					dizziness++;
+					if ( dizziness >= 8 )
+					{
+						obj = SCVBuildOrder.WEIRD_SPAWN;
+						return;
+					}
+				}
+				return;
+				
+			case VACATE_FACTORY:
+				 
+				Utility.setIndicator(myPlayer, 1, "VACATE_FACTORY");
+				dizziness = 0;
+				 for ( Direction d : Direction.values() )
+					{
+						if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myRC.getLocation().add(d) != hometown && myPlayer.myMotor.canMove(d) )
+						{
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.setDirection(d.opposite());
+							myPlayer.sleep();
+							myPlayer.myMotor.moveBackward();
+							obj = SCVBuildOrder.BUILD_FACTORY;
+							return;
+						}
+						dizziness++;
+						if ( dizziness >= 8 )
+						{
+							obj = SCVBuildOrder.WEIRD_SPAWN;
+							return;
+						}
+					}
+				 return;
+				 
+			case BUILD_FACTORY:
+				
+				Utility.setIndicator(myPlayer, 1, "BUILD_FACTORY");
+				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.FACTORY.cost )
+					myPlayer.sleep();
+    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.FACTORY, RobotLevel.ON_GROUND);
+    			obj = SCVBuildOrder.WAITING;
+    			return;
     			
+			case WAITING:
+				
+				Utility.setIndicator(myPlayer, 1, "WAITING");
+				return;
+				
+			case WEIRD_SPAWN:
+				
+				Utility.setIndicator(myPlayer, 1, "WEIRD_SPAWN");
+				return;
+				
 		}
     	
 	}
