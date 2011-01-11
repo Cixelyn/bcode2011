@@ -1,7 +1,7 @@
 package masteryone.strategies;
 
-import battlecode.common.Chassis;
-import masteryone.RobotPlayer;
+import battlecode.common.*;
+import masteryone.*;
 import masteryone.behaviors.*;
 
 public class NavtestStrategy extends Strategy {
