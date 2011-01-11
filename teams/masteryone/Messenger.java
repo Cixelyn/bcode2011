@@ -25,7 +25,7 @@ public class Messenger {
 	final RobotPlayer myPlayer;
 
 	//send component needs to be enabled
-	public boolean canSend;
+	private boolean canSend;
 	public boolean shouldReceive;
 	
 	//static limits

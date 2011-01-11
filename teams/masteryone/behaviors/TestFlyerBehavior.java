@@ -8,8 +8,6 @@ public class TestFlyerBehavior extends Behavior
 
 	int num = -1;
 	
-	boolean hasSight = false;
-	
 	public TestFlyerBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -38,11 +36,7 @@ public class TestFlyerBehavior extends Behavior
 	
 	public void newComponentCallback(ComponentController[] components)
 	{
-		for ( ComponentController c : components )
-		{
-			if ( c.type() == ComponentType.SIGHT )
-				hasSight = true;
-		}
+		
 	}
 
 

@@ -81,7 +81,6 @@ public class MainRefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
     			Utility.setIndicator(myPlayer, 2, Integer.toString(currNum));
-    			Utility.println(Integer.toString(myPlayer.myScanner.scannedRobotInfos.size()));
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
     				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
