@@ -176,6 +176,10 @@ public class RobotPlayer implements Runnable {
 			
 			//Run Postflight operations
 			postRun();
+			
+			
+			//Yield.
+			myRC.yield();
 		}	
 	}
 
@@ -199,10 +203,6 @@ public class RobotPlayer implements Runnable {
 		//////////////////////////////////////////////////////////////
 		//Run our debug routines.
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
-		
-		/////////////////////////////////////////////////////////////
-		//Then yield
-		myRC.yield();
 		
 	}
 	
@@ -307,12 +307,10 @@ public class RobotPlayer implements Runnable {
 	}
 	
 	public void stopClock() {
-		if(Constants.DEBUG_BYTECODE_OVERFLOW){
-			if(executeStartTime!=Clock.getRoundNum()) {
-				int byteCount = (6000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 6000 + Clock.getBytecodeNum();
+		if(executeStartTime!=Clock.getRoundNum()) {
+				int byteCount = (3000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 3000 + Clock.getBytecodeNum();
 				System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
-			}
-		}		
+		}	
 	}
 	
 	

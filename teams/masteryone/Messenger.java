@@ -225,11 +225,8 @@ public class Messenger {
 	}
 	
 	
-	
 	public void sendAll() throws Exception{
-		while(!messageQueue.isEmpty()) {
-			while(myPlayer.myBroadcaster.isActive())
-				myPlayer.myRC.yield();
+		if(!messageQueue.isEmpty() && !myPlayer.myBroadcaster.isActive()) {
 			myPlayer.myBroadcaster.broadcast(messageQueue.pop());
 		}
 	}
