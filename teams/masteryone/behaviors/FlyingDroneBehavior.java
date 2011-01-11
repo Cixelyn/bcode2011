@@ -49,6 +49,9 @@ public class FlyingDroneBehavior extends Behavior {
         					return;
         				}
         			}
+        			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),myPlayer.mySensor.type().range)).equals(TerrainTile.OFF_MAP)) {
+        				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+        			}
     				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
     					myPlayer.myMotor.moveForward();
     				}
