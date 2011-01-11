@@ -69,17 +69,12 @@ public class Utility {
 	 * @return boolean True if chassis is built, false otherwise
 	 */
 	
-	public static boolean buildChassis(RobotPlayer player, Direction dir, Chassis chassis) throws Exception
+	public static void buildChassis(RobotPlayer player, Direction dir, Chassis chassis) throws Exception
 	{
+		MapLocation loc = player.myRC.getLocation().add(dir);
 		while ( player.myRC.getTeamResources() < chassis.cost || player.myBuilder.isActive() )
 			player.sleep();
-		if ( player.myMotor.canMove(dir) )
-		{
-			player.myBuilder.build(chassis, player.myRC.getLocation().add(dir));
-			return true;
-		}
-		else
-			return false;
+		player.myBuilder.build(chassis, loc);
 	}
 
 	/**
@@ -92,10 +87,9 @@ public class Utility {
 	 * @return boolean True if component is built, false otherwise
 	 */
 	
-	public static boolean buildComponent(RobotPlayer player, Direction dir, ComponentType component, RobotLevel level) throws Exception
+	public static void buildComponent(RobotPlayer player, Direction dir, ComponentType component, RobotLevel level) throws Exception
 	{
 		MapLocation loc = player.myRC.getLocation().add(dir);
-		Robot rFront = null;
 		while ( player.myRC.getDirection() != dir )
 		{
 			player.sleep();
@@ -104,14 +98,7 @@ public class Utility {
 		}
 		while ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
 			player.sleep();
-		rFront = (Robot) player.mySensor.senseObjectAtLocation(loc, level);
-		if( rFront != null && rFront.getTeam() == player.myRC.getTeam() )
-		{
-			player.myBuilder.build(component, loc, level);
-			return true;
-		}
-		else
-			return false;
+		player.myBuilder.build(component, loc, level);
 	}
 	
 	/**
