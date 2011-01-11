@@ -15,7 +15,8 @@ public enum MsgType {
 	//locs - number of locs in message
 	
 				//	ttl, cback, ints, locs
-	MSG_HELLO	(	1  , true , 0 , 0	);
+	MSG_HELLO	(	1  , true , 0 , 0	),
+	MSG_DRONE_ID(   1  , true , 1 , 0   );
 	
 	
 	public int ttl;
