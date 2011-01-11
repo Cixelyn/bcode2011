@@ -9,9 +9,11 @@ public class ExpoRefineryBehavior extends Behavior
 	RefineryBuildOrder obj = RefineryBuildOrder.EQUIPPING;
 	
 	MapLocation unitDock;
+
+	Robot rFront;
 	
 	int isLeader = -1;
-	int currNum = 0;
+	int currFlyer = 0;
 	
 	boolean rHasConstructor;
 	boolean rHasSight;
@@ -31,7 +33,7 @@ public class ExpoRefineryBehavior extends Behavior
     		case EQUIPPING:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIPPING");
-    			Utility.buildComponentOnSelf(myPlayer, ComponentType.ANTENNA);
+    			Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
     			obj = RefineryBuildOrder.WAIT_FOR_DOCK;
     			return;
     			
@@ -48,14 +50,21 @@ public class ExpoRefineryBehavior extends Behavior
     					obj = RefineryBuildOrder.EQUIP_FLYERS;
     				}
     				else
-    					obj = RefineryBuildOrder.SLEEP;
+    					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
     			}
+    			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
+	    			obj = RefineryBuildOrder.BUILD_MARINE;
     			return;
     			
     		case EQUIP_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, Integer.toString(currNum));
+    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
+    			if ( currFlyer > Constants.MAX_FLYERS )
+    			{
+    				obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    				return;
+    			}
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
     				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
@@ -75,17 +84,38 @@ public class ExpoRefineryBehavior extends Behavior
     					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR);
     						myPlayer.sleep();
-    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currNum);
-    						currNum++;
+    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currFlyer);
+    						currFlyer++;
     					}
     					return;
     				}
     			}
     			return;
+
+    		case WAIT_FOR_HANBANG:
     			
-    		case SLEEP:
+    			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_HANBANG");
+    			Utility.setIndicator(myPlayer, 2, "");
+    			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
+    				obj = RefineryBuildOrder.BUILD_MARINE;
+    			return;
     			
-    			Utility.setIndicator(myPlayer, 1, "SLEEP");
+    		case BUILD_MARINE:
+    			
+    			Utility.setIndicator(myPlayer, 1, "BUILD_MARINE");
+    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    			while ( rFront != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() < myPlayer.myLastRes + Chassis.LIGHT.upkeep + Chassis.BUILDING.upkeep )
+    			{
+    				if ( !myPlayer.myMotor.isActive() )
+    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+    				myPlayer.sleep();
+    				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    			}
+    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.LIGHT);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.ON_GROUND);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
     			return;
     			
     	}
@@ -114,7 +144,7 @@ public class ExpoRefineryBehavior extends Behavior
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
 		if ( t == MsgType.MSG_SEND_NUM )
-			currNum++;
+			currFlyer++;
 	}
 
 }

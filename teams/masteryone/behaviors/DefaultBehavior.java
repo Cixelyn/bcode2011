@@ -32,6 +32,8 @@ public class DefaultBehavior extends Behavior
 				else
 					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
 			}
+			if ( c.type() == ComponentType.BLASTER )
+				myPlayer.swapBehavior(new MarineBehavior(myPlayer));
 			if ( c.type() == ComponentType.RECYCLER )
 			{
 				if ( Clock.getRoundNum() <= 2 )
