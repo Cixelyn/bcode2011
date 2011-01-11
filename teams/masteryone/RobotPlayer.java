@@ -316,8 +316,9 @@ public class RobotPlayer implements Runnable {
 	
 	public void stopClock() {
 		if(executeStartTime!=Clock.getRoundNum()) {
-				int byteCount = (3000-executeStartByte) + (Clock.getRoundNum()-executeStartTime-1) * 3000 + Clock.getBytecodeNum();
-				System.out.println("Warning: Unit over Bytecode Limit: "+ byteCount);
+				int currRound = Clock.getRoundNum();
+				int byteCount = (3000-executeStartByte) + (currRound-executeStartTime-1) * 3000 + Clock.getBytecodeNum();
+				System.out.println("Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
 		}	
 	}
 	
