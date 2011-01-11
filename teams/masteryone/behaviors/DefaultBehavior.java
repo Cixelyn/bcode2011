@@ -53,6 +53,6 @@ public class DefaultBehavior extends Behavior
 	{
 		
 	}
-	public void onWakeupCallback() {}
+	public void onWakeupCallback(int lastActiveRound) {}
 	
 }

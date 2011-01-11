@@ -55,6 +55,7 @@ public class RobotPlayer implements Runnable {
 	private int executeStartTime;
 	private int executeStartByte;
 	public double myLastRes;
+	int lastActiveRound = 0;
 	
 	
 	//Useful Toolkits
@@ -81,6 +82,7 @@ public class RobotPlayer implements Runnable {
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
     	
+    	
     	//initialize base controllers
     	myBuilder = null;
     	myMotor = null;
@@ -90,6 +92,7 @@ public class RobotPlayer implements Runnable {
     	myMessenger = new Messenger(this);
     	myScanner = new Scanner(this);
     	
+  
     	
     	
     	
@@ -133,8 +136,10 @@ public class RobotPlayer implements Runnable {
 		///////////////////////////////////////////////////////////////
 		//Check if we've just woken up
 		if(myRC.wasTurnedOff()){
-			myBehavior.onWakeupCallback();
+			myBehavior.onWakeupCallback(lastActiveRound);
 		}
+		lastActiveRound = Clock.getRoundNum();
+		
 		
 		
 		///////////////////////////////////////////////////////////////

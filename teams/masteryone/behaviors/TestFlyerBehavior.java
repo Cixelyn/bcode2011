@@ -212,5 +212,5 @@ public class TestFlyerBehavior extends Behavior
 				num = msg.ints[Messenger.firstData];
 		}
 	}
-	public void onWakeupCallback() {}
+	public void onWakeupCallback(int lastActiveRound) {}
 }

@@ -423,6 +423,6 @@ public class FlyingDroneBehavior extends Behavior {
 		}
 	}
 	
-	public void onWakeupCallback() {}
+	public void onWakeupCallback(int lastActiveRound) {}
 
 }

@@ -170,6 +170,6 @@ public class MainRefineryBehavior extends Behavior
 		if ( t == MsgType.MSG_SEND_NUM )
 			currFlyer++;
 	}
-	public void onWakeupCallback() {}
+	public void onWakeupCallback(int lastActiveRound) {}
 
 }

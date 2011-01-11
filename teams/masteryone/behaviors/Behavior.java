@@ -57,8 +57,9 @@ public abstract class Behavior {
 	/**
 	 * This callback is triggered whenever a unit is reactivated.
 	 * Useful for lategame strategies, etc.
+	 * @param lastActiveRound the last round the robot was reported awake
 	 */
-	public abstract void onWakeupCallback();
+	public abstract void onWakeupCallback(int lastActiveRound);
 	
 	
 	

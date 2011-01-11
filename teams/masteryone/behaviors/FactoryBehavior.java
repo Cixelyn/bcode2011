@@ -32,6 +32,6 @@ public class FactoryBehavior extends Behavior
 		
 	}
 	
-	public void onWakeupCallback() {}
+	public void onWakeupCallback(int lastActiveRound) {}
 
 }
