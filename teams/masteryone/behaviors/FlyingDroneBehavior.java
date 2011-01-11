@@ -12,6 +12,7 @@ public class FlyingDroneBehavior extends Behavior {
 	boolean hasConstructor = false;
 	boolean foundID = false;
 	int ID;
+	Mine currentMine;
 	
 	Direction initialDirection;
 
@@ -31,26 +32,39 @@ public class FlyingDroneBehavior extends Behavior {
     		case EQUIPPING: {
     			myPlayer.sleep();
     		}
-    		
+    		return;
     		case FLYING_DRONE_ID: {
     			if (foundID) {
     				setDirectionID(ID);
     			}
     		}
+    		return;
     		case EXPAND: {
-    			for (Mine mine : myPlayer.myScanner.detectedMines) {
-    				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)!=null) {
-    					
-    				}
-    			}
     			if (!myPlayer.myMotor.isActive()) {
+        			for (Mine mine : myPlayer.myScanner.detectedMines) {
+        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)!=null) {
+        					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
+        					currentMine=mine;
+        					obj=FlyingDroneActions.FOUND_MINE;
+        					return;
+        				}
+        			}
     				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
     					myPlayer.myMotor.moveForward();
     				}
     			}
     		}
+    		return;
     		case FOUND_MINE: {
-    			
+				if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) {
+					obj=FlyingDroneActions.EXPAND;
+					return;
+				}
+    			if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()))) {
+    				if (myPlayer.myRC.getTeamResources()>(ComponentType.RECYCLER.cost+Chassis.BUILDING.cost)) {
+    					
+    				}
+    			}
     		}
     	}
 		
