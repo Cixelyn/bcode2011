@@ -146,6 +146,14 @@ public class Messenger {
 		sendMsg(t,buildNewMessage(0,0));
 	}
 	
+	public void sendInt(MsgType t, int int1)
+	{
+		Message m = buildNewMessage(1,0);
+		m.ints[firstData] = int1;
+		
+		sendMsg(t,m);
+	}
+	
 	public void sendLoc(MsgType t, MapLocation loc)
 	{
 		Message m = buildNewMessage(0,1);

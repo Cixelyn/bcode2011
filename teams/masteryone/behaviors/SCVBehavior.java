@@ -21,6 +21,7 @@ public class SCVBehavior extends Behavior
 	int minesCapped = 0;
 	ArrayList<Integer> badMines = new ArrayList<Integer>(GameConstants.MINES_MAX);
 	
+	boolean hasAntenna = false;
 	boolean mineFound;
 	
 	public SCVBehavior(RobotPlayer player)
@@ -52,24 +53,34 @@ public class SCVBehavior extends Behavior
         				}
         			}
     			}
-    			if( !mineFound && dizziness < 4 )
+    			if ( !mineFound && dizziness < 4 )
     			{
     				dizziness++;
     				while (myPlayer.myMotor.isActive())
     					myPlayer.sleep();
     				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
     			}
-    			if( !mineFound && dizziness >= 4 )
+    			if ( !mineFound && dizziness >= 4 )
     			{
     				dizziness = 0;
     				obj = SCVBuildOrder.WEIRD_SPAWN;
     			}
-    			if( mineFound )
+    			if ( mineFound )
     			{
     				dizziness = 0;
-    				obj = SCVBuildOrder.BUILD_REFINERY;
+    				if ( minesCapped == 0 )
+    					obj = SCVBuildOrder.WAIT_FOR_ANTENNA;
+    				else
+    					obj = SCVBuildOrder.BUILD_REFINERY;
     			}
     			return;
+    			
+			case WAIT_FOR_ANTENNA:
+				
+				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_ANTENNA");
+				if ( hasAntenna )
+					obj = SCVBuildOrder.BUILD_REFINERY;
+				return;
     			
 			case BUILD_REFINERY:
     			
@@ -167,7 +178,8 @@ public class SCVBehavior extends Behavior
 							myPlayer.myMotor.setDirection(d.opposite());
 							myPlayer.sleep();
 							myPlayer.myMotor.moveBackward();
-							obj = SCVBuildOrder.BUILD_FACTORY;
+							obj = SCVBuildOrder.WAITING;
+							// obj = SCVBuildOrder.BUILD_FACTORY; // switch to me if you want immediate factory!
 							return;
 						}
 						dizziness++;
@@ -214,7 +226,11 @@ public class SCVBehavior extends Behavior
 	@Override
 	public void newComponentCallback(ComponentController[] components)
 	{
-		
+		for ( ComponentController c : components )
+		{
+			if ( c.type() == ComponentType.ANTENNA )
+				hasAntenna = true;
+		}
 	}
 
 

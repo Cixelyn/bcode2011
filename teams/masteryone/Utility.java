@@ -4,21 +4,22 @@ import battlecode.common.*;
 
 
 
-
-
 /**
  * The utility class does a few useful conversions and calculations
  * @author Cory
  *
  */
+
 public class Utility {
 	
-	public static void println(String s) {
+	public static void println(String s)
+	{
 		if ( Constants.DEBUG )
 			System.out.println(s);
 	}
 	
-	public static void setIndicator(RobotPlayer player, int index, String s) {
+	public static void setIndicator(RobotPlayer player, int index, String s)
+	{
 		if ( Constants.DEBUG )
 			player.myRC.setIndicatorString(index, s);
 	}
@@ -33,6 +34,7 @@ public class Utility {
 	 * @param nav An instance of bugNav
 	 * @param dest The destination to step towards
 	 */
+	
 	public static void navStep(RobotPlayer myPlayer, OldNavigation nav, MapLocation dest) throws Exception
 	{
 		if (dest != null)
@@ -66,6 +68,7 @@ public class Utility {
 	 * @param chassis The chassis type to build
 	 * @return boolean True if chassis is built, false otherwise
 	 */
+	
 	public static boolean buildChassis(RobotPlayer player, Direction dir, Chassis chassis) throws Exception
 	{
 		while ( player.myRC.getTeamResources() < chassis.cost || player.myBuilder.isActive() )
@@ -85,8 +88,10 @@ public class Utility {
 	 * @param player The robot player
 	 * @param dir The direction in which to build
 	 * @param component The component type to build
+	 * @param level The robot level of the robot on which to build
 	 * @return boolean True if component is built, false otherwise
 	 */
+	
 	public static boolean buildComponent(RobotPlayer player, Direction dir, ComponentType component, RobotLevel level) throws Exception
 	{
 		MapLocation loc = player.myRC.getLocation().add(dir);
@@ -107,6 +112,23 @@ public class Utility {
 		}
 		else
 			return false;
+	}
+	
+	/**
+	 * Yields until there is enough money to build a component, then builds the component on self
+	 * @author JVen
+	 * @param player The robot player
+	 * @param component The component type to build
+	 * @return boolean True if component is built, false otherwise
+	 */
+	
+	public static boolean buildComponentOnSelf(RobotPlayer player, ComponentType component) throws Exception
+	{
+		MapLocation loc = player.myRC.getLocation();
+		while ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
+			player.sleep();
+		player.myBuilder.build(component, loc, player.myRC.getRobot().getRobotLevel());
+		return true;
 	}
 	
 	//Max's Go here

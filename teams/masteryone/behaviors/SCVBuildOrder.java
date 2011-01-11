@@ -3,6 +3,7 @@ package masteryone.behaviors;
 public enum SCVBuildOrder 
 {
 	FIND_MINE,
+	WAIT_FOR_ANTENNA,
 	BUILD_REFINERY,
 	BUILD_ARMORY,
 	VACATE_HOME,

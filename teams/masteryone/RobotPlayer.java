@@ -103,7 +103,7 @@ public class RobotPlayer implements Runnable {
     	/////////////////////////////////////////////////////////////////////////////////////////////////////
     	//Setup the initial strategy based on team memory
     	if(myRC.getTeamMemory()[0]==0) {
-    		myStrategy = new NavtestStrategy();
+    		myStrategy = new DefaultStrategy();
     	} else {
     		myStrategy = null;
     	}
