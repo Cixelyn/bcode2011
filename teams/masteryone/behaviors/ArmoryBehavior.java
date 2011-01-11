@@ -86,4 +86,7 @@ public class ArmoryBehavior extends Behavior
 			unitDock = msg.locations[Messenger.firstData];
 	}
 
+
+	public void onWakeupCallback() {}
+
 }

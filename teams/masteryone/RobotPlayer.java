@@ -130,6 +130,12 @@ public class RobotPlayer implements Runnable {
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 		
 		
+		///////////////////////////////////////////////////////////////
+		//Check if we've just woken up
+		if(myRC.wasTurnedOff()){
+			myBehavior.onWakeupCallback();
+		}
+		
 		
 		///////////////////////////////////////////////////////////////
 		//Receive all messages

@@ -422,5 +422,7 @@ public class FlyingDroneBehavior extends Behavior {
 			}
 		}
 	}
+	
+	public void onWakeupCallback() {}
 
 }

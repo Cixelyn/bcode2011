@@ -31,5 +31,7 @@ public class FactoryBehavior extends Behavior
 	{
 		
 	}
+	
+	public void onWakeupCallback() {}
 
 }

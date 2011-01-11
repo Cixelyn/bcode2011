@@ -179,6 +179,7 @@ public class NavtestBehavior extends Behavior {
 	}
 	
 	
+	public void onWakeupCallback() {}
 	
 	
 	
