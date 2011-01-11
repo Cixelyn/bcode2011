@@ -143,7 +143,6 @@ public class FlyingDroneBehavior extends Behavior {
     				}
     			}
     			else {
-    				Direction direction=getMostVoidsDirection();
     				if (!foundVoids) {
     					if (!myPlayer.myMotor.isActive()) {
     						Direction voidDirection=getMostVoidsDirection();
