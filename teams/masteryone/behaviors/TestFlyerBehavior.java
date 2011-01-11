@@ -36,7 +36,7 @@ public class TestFlyerBehavior extends Behavior
 	
 	public void newComponentCallback(ComponentController[] components)
 	{
-		
+
 	}
 
 
