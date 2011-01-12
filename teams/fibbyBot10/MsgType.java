@@ -18,7 +18,9 @@ public enum MsgType {
 	MSG_HELLO	(	1  , true , 0 , 0	),
 	MSG_SEND_ID (   0  , true , 1 , 0   ),
 	MSG_SEND_DOCK(  0  , true , 0 , 1   ),
-	MSG_SEND_NUM(   0  , true , 1 , 0   );
+	MSG_SEND_NUM(   0  , true , 1 , 0   ),
+	MSG_STOP_TANKS( 0  , true , 0 , 0   ),
+	MSG_START_TANKS(0  , true , 0 , 0   );
 	
 	
 	public int ttl;

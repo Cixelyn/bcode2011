@@ -6,7 +6,7 @@ import battlecode.common.*;
 public class FactoryBehavior extends Behavior
 {
 
-	FactoryBuildOrder obj = FactoryBuildOrder.SLEEP;
+	FactoryBuildOrder obj = FactoryBuildOrder.WAIT_FOR_DOCK;
 	
 	MapLocation unitDock;
 	
@@ -22,15 +22,12 @@ public class FactoryBehavior extends Behavior
 
 	public void run() throws Exception
 	{
+		
+		Utility.setIndicator(myPlayer, 0, myPlayer.myRC.getDirection().toString());
+		
 		switch ( obj )
 		{
 			
-			case SLEEP:
-				
-				Utility.setIndicator(myPlayer, 1, "SLEEP");
-				myPlayer.myRC.turnOff();
-				return;
-				
 			case WAIT_FOR_DOCK:
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
@@ -41,11 +38,17 @@ public class FactoryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.FACTORY.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-    					myPlayer.sleep();
-        				obj = FactoryBuildOrder.BUILD_TANKS;
+        				obj = FactoryBuildOrder.SLEEP;
     				}
     			}
     			return;
+    			
+			case SLEEP:
+				
+				Utility.setIndicator(myPlayer, 1, "SLEEP");
+				Utility.setIndicator(myPlayer, 2, "");
+				myPlayer.myRC.turnOff();
+				return;
 				
 			case BUILD_TANKS:
 				
@@ -59,10 +62,15 @@ public class FactoryBehavior extends Behavior
     			}
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.MEDIUM);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
-    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.REGEN, RobotLevel.ON_GROUND);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.MEDIC, RobotLevel.ON_GROUND);
     			tanksBuilt++;
     			return;
 			
+			case PAUSE_TANKS:
+				
+				Utility.setIndicator(myPlayer, 1, "PAUSE_TANKS");
+    			Utility.setIndicator(myPlayer, 2, "Pausing tank " + Integer.toString(tanksBuilt) + ".");
+    			return;
 		}
 	}
 
@@ -80,11 +88,15 @@ public class FactoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
+		if ( t == MsgType.MSG_STOP_TANKS )
+			obj = FactoryBuildOrder.PAUSE_TANKS;
+		if ( t == MsgType.MSG_START_TANKS )
+			obj = FactoryBuildOrder.BUILD_TANKS;
 	}
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		obj = FactoryBuildOrder.WAIT_FOR_DOCK;
+		obj = FactoryBuildOrder.BUILD_TANKS;
 	}
 	
 	public void onDamageCallback(double damageTaken)

@@ -36,7 +36,6 @@ public class ArmoryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.ARMORY.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-    					myPlayer.sleep();
         				obj = ArmoryBuildOrder.BUILD_FLYERS;
     				}
     			}
@@ -85,6 +84,8 @@ public class ArmoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
+		if ( t == MsgType.MSG_STOP_TANKS )
+			obj = ArmoryBuildOrder.SLEEP;
 	}
 	
 	public void onWakeupCallback(int lastActiveRound) {}

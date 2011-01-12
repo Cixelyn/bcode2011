@@ -231,14 +231,14 @@ public class Utility {
 	}
 	
 	/**
-	 * Looks for enemies and shoots at one if one is found
+	 * Looks for healed allies and heals one if one is found
 	 * @author JVen
 	 * @param myPlayer The robot player
 	 * @param nearbyRobots A list of RobotInfos of nearby robots
-	 * @return The location of a sensed enemy, or null if none are found
+	 * @return The location of a harmed enemy, or null if none are found
 	 */
 	
-	public static MapLocation senseEnemies(RobotPlayer myPlayer, ArrayList<RobotInfo> nearbyRobots) throws Exception
+	public static MapLocation healAllies(RobotPlayer myPlayer, ArrayList<RobotInfo> nearbyRobots) throws Exception
 	{
 		WeaponController gun;
 		Robot r;
@@ -250,12 +250,45 @@ public class Utility {
 			for ( Object c : myPlayer.myWeapons )
 			{
 				gun = (WeaponController) c;
-				if ( r.getTeam() == myPlayer.myRC.getTeam().opponent() )
+				if ( gun.type() == ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam() )
 				{
+					destination = rInfo.location;
+					if(!gun.isActive() && rInfo.hitpoints < rInfo.maxHp && gun.withinRange(rInfo.location))
+					{
+						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+					}
+				}
+			}
+    	}
+    	return destination;
+	}
+	
+	/**
+	 * Looks for enemies and shoots at one if one is found
+	 * @author JVen
+	 * @param myPlayer The robot player
+	 * @param nearbyRobots A list of RobotInfos of nearby robots
+	 * @return The location of a sensed enemy, or null if none are found
+	 */
+	
+	public static MapLocation attackEnemies(RobotPlayer myPlayer, ArrayList<RobotInfo> nearbyRobots) throws Exception
+	{
+		WeaponController gun;
+		Robot r;
+		MapLocation destination = null;
+		
+    	for ( RobotInfo rInfo : nearbyRobots )
+    	{
+    		r = rInfo.robot;
+			for ( Object c : myPlayer.myWeapons )
+			{
+				gun = (WeaponController) c;
+				if ( gun.type() != ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam().opponent() )
+				{
+					destination = rInfo.location;
 					if(!gun.isActive() && rInfo.hitpoints > 0 && gun.withinRange(rInfo.location))
 					{
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-					 	destination = rInfo.location;
 					}
 				}
 			}
@@ -271,7 +304,7 @@ public class Utility {
 	 * @return The location of a sensed debris, or null if none are found
 	 */
 	
-	public static MapLocation senseDebris(RobotPlayer myPlayer, ArrayList<RobotInfo> nearbyRobots) throws Exception
+	public static MapLocation attackDebris(RobotPlayer myPlayer, ArrayList<RobotInfo> nearbyRobots) throws Exception
 	{
 		WeaponController gun;
 		Robot r;
@@ -285,9 +318,11 @@ public class Utility {
 				gun = (WeaponController) c;
 				if ( r.getTeam() == Team.NEUTRAL )
 				{
-				 	destination = rInfo.location;
 					if(!gun.isActive() && rInfo.hitpoints > 0 && gun.withinRange(rInfo.location))
+					{
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
+				 		destination = rInfo.location;
+					}
 				}
 			}
     	}

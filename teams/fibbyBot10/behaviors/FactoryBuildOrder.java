@@ -4,5 +4,6 @@ public enum FactoryBuildOrder
 {
 	SLEEP,
 	WAIT_FOR_DOCK,
-	BUILD_TANKS
+	BUILD_TANKS,
+	PAUSE_TANKS
 }
