@@ -12,11 +12,11 @@ public class Scanner {
 	
 	public GameObject[] nearbyGameObjects;
 	
-	public final ArrayList<Robot> detectedRobots;
-	public final ArrayList<Mine> detectedMines;
+	public final ArrayDeque<Robot> detectedRobots;
+	public final ArrayDeque<Mine> detectedMines;
 	
-	public final ArrayList<RobotInfo> scannedRobotInfos;
-	public final ArrayList<MineInfo> scannedMineInfos;
+	public final ArrayDeque<RobotInfo> scannedRobotInfos;
+	public final ArrayDeque<MineInfo> scannedMineInfos;
 	
 	
 	
@@ -25,11 +25,11 @@ public class Scanner {
 		myPlayer = player;
 		canScan = false;
 		
-		detectedRobots = new ArrayList<Robot>(144);
-		detectedMines = new ArrayList<Mine>(144);
+		detectedRobots = new ArrayDeque<Robot>(144);
+		detectedMines = new ArrayDeque<Mine>(144);
 		
-		scannedRobotInfos = new ArrayList<RobotInfo>(144);
-		scannedMineInfos = new ArrayList<MineInfo>(144);
+		scannedRobotInfos = new ArrayDeque<RobotInfo>(144);
+		scannedMineInfos = new ArrayDeque<MineInfo>(144);
 		
 		//default detection type, can be changed by the others
 		detectionType = GameObject.class;

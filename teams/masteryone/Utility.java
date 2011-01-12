@@ -238,7 +238,7 @@ public class Utility {
 	 * @return The location of a sensed enemy, or null if none are found
 	 */
 	
-	public static MapLocation senseEnemies(RobotPlayer myPlayer, ArrayList<RobotInfo> nearbyRobots) throws Exception
+	public static MapLocation senseEnemies(RobotPlayer myPlayer, ArrayDeque<RobotInfo> nearbyRobots) throws Exception
 	{
 		WeaponController gun;
 		Robot r;
@@ -271,7 +271,7 @@ public class Utility {
 	 * @return The location of a sensed debris, or null if none are found
 	 */
 	
-	public static MapLocation senseDebris(RobotPlayer myPlayer, ArrayList<RobotInfo> nearbyRobots) throws Exception
+	public static MapLocation senseDebris(RobotPlayer myPlayer, ArrayDeque<RobotInfo> nearbyRobots) throws Exception
 	{
 		WeaponController gun;
 		Robot r;

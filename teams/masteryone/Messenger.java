@@ -1,6 +1,6 @@
 package masteryone;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import battlecode.common.*;
 
 
@@ -42,7 +42,7 @@ public class Messenger {
 	public static final int firstData = 2;
 	public static final int minSize = firstData;
 	
-	final LinkedList<Message> messageQueue;
+	ArrayDeque<Message> messageQueue;
 	
 	private boolean[][] hasHeard = new boolean[ROUND_MOD][];
 	
@@ -53,7 +53,7 @@ public class Messenger {
 		
 		myPlayer = player;							//Assign the player
 		canSend = false;							//Default robot doesn't have antennae
-		messageQueue = new LinkedList<Message>();	//Build Queue
+		messageQueue = new ArrayDeque<Message>();	//Build Queue
 		shouldReceive = true;
 		
 				
