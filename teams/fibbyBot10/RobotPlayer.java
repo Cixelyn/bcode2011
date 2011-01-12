@@ -134,7 +134,7 @@ public class RobotPlayer implements Runnable {
 		
 		///////////////////////////////////////////////////////////////
 		//Check if we've just woken up
-		if(myRC.wasTurnedOff()){
+		if(myRC.wasTurnedOff() && lastActiveRound != 0){
 			myBehavior.onWakeupCallback(lastActiveRound);
 		}
 		lastActiveRound = Clock.getRoundNum();

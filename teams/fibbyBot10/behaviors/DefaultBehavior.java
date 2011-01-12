@@ -32,19 +32,29 @@ public class DefaultBehavior extends Behavior
 				else
 					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.BLASTER )
-				myPlayer.swapBehavior(new WraithBehavior(myPlayer));
+			if ( c.type() == ComponentType.RAILGUN )
+			{
+				myPlayer.swapBehavior(new TankBehavior(myPlayer));
+				myPlayer.myScanner.setDetectionMode(Robot.class);
+			}
 			if ( c.type() == ComponentType.RECYCLER )
 			{
 				if ( Clock.getRoundNum() <= 2 )
 					myPlayer.swapBehavior(new MainRefineryBehavior(myPlayer));
 				else
 					myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
+				myPlayer.myScanner.setDetectionMode(Robot.class);
 			}
 			if ( c.type() == ComponentType.ARMORY )
+			{
 				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
+				myPlayer.myScanner.setDetectionMode(Robot.class);
+			}
 			if ( c.type() == ComponentType.FACTORY )
+			{
 				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
+				myPlayer.myScanner.setDetectionMode(Robot.class);
+			}
 		}
 	}
 
@@ -54,5 +64,6 @@ public class DefaultBehavior extends Behavior
 		
 	}
 	public void onWakeupCallback(int lastActiveRound) {}
+	public void onDamageCallback(double damageTaken) {}
 	
 }

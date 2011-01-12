@@ -1,8 +1,8 @@
 package fibbyBot10.behaviors;
 
-public enum ArmoryBuildOrder 
+public enum FactoryBuildOrder 
 {
+	SLEEP,
 	WAIT_FOR_DOCK,
-	BUILD_FLYERS,
-	SLEEP
+	BUILD_TANKS
 }

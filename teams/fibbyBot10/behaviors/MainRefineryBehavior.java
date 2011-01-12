@@ -13,11 +13,13 @@ public class MainRefineryBehavior extends Behavior
 	Robot rFront;
 	
 	int isLeader = -1; // -1 means unknown, 0 means no, 1 means yes
-	int currFlyer = 0;
+	int currFlyer;
+	int currTank;
 	
-	int rNumBlasters;
+	boolean hasAntenna = false;
 	boolean rHasConstructor;
 	boolean rHasSight;
+	boolean rHasRadar;
 	
 	public MainRefineryBehavior(RobotPlayer player)
 	{
@@ -72,13 +74,14 @@ public class MainRefineryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+    					currFlyer = 0;
     					obj = RefineryBuildOrder.EQUIP_FLYERS;
     				}
     				else
     					obj = RefineryBuildOrder.SLEEP;
     			}
     			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
-    				obj = RefineryBuildOrder.SLEEP;
+	    			obj = RefineryBuildOrder.SLEEP;
     			return;
     			
     		case EQUIP_FLYERS:
@@ -87,7 +90,7 @@ public class MainRefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
     			if ( currFlyer > Constants.MAX_FLYERS )
     			{
-    				obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    				obj = RefineryBuildOrder.SLEEP;
     				return;
     			}
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
@@ -123,45 +126,39 @@ public class MainRefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "");
     			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
     			{
-    				obj = RefineryBuildOrder.EQUIP_WRAITHS;
-    				currFlyer = 0;
+    				currTank = 0;
+    				obj = RefineryBuildOrder.EQUIP_TANKS;
     			}
     			return;
     			
-    		case EQUIP_WRAITHS:
+    		case EQUIP_TANKS:
     			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_WRAITHS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping wraith " + Integer.toString(currFlyer) + ".");
-
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_TANKS");
+    			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + ".");
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
-    				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
+    				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
     				{
-    					rNumBlasters = 0;
-    					rHasSight = false;
+    					rHasRadar = false;
     					for ( ComponentType c : rInfo.components )
     					{
-    						if ( c == ComponentType.BLASTER )
-    							rNumBlasters++;
-    						if ( c == ComponentType.SIGHT )
-    							rHasSight = true;
+    						if ( c == ComponentType.RADAR )
+    							rHasRadar = true;
     					}
-    					if ( rNumBlasters < 2 )
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.IN_AIR);
-    					else if ( !rHasSight )
-    					{
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR);
-    						myPlayer.sleep();
-    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currFlyer);
-    						currFlyer++;
-    					}
+    					if ( !rHasRadar )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
+						myPlayer.sleep();
+						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
+						currTank++;
     					return;
     				}
     			}
+    			return;
     			
     		case SLEEP:
     			
     			Utility.setIndicator(myPlayer, 1, "SLEEP");
+    			Utility.setIndicator(myPlayer, 2, "");
     			myPlayer.myRC.turnOff();
     			return;
     			
@@ -191,8 +188,19 @@ public class MainRefineryBehavior extends Behavior
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
 		if ( t == MsgType.MSG_SEND_NUM )
+		{
 			currFlyer++;
+			currTank++;
+		}
 	}
-	public void onWakeupCallback(int lastActiveRound) {}
+	public void onWakeupCallback(int lastActiveRound)
+	{
+		
+	}
+	
+	public void onDamageCallback(double damageTaken)
+	{
+		
+	}
 
 }

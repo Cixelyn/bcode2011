@@ -1,7 +1,7 @@
 package fibbyBot10.strategies;
 
 
-import fibbyBot10.RobotPlayer;
+import fibbyBot10.*;
 import fibbyBot10.behaviors.*;
 
 

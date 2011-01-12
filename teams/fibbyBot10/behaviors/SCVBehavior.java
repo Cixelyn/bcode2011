@@ -15,6 +15,7 @@ public class SCVBehavior extends Behavior
 	MapLocation unitDock;
 	MapLocation loc;
 	Direction dir;
+	
 	Mine currMine;
 	
 	int dizziness = 0;
@@ -44,27 +45,24 @@ public class SCVBehavior extends Behavior
 				mineFound = false;
 				for ( Mine m : myPlayer.myScanner.detectedMines )
     			{
-    				if ( !mineFound && m.getTeam() == Team.NEUTRAL )
-        			{
-        				if ( myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(m.getID()) )
-        				{
-            				mineFound = true;
-            				currMine = m;
-            				loc = m.getLocation();
-        				}
-        			}
+    				if ( !mineFound && m.getTeam() == Team.NEUTRAL && myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(m.getID()) )
+    				{
+        				mineFound = true;
+        				currMine = m;
+        				loc = m.getLocation();
+    				}
     			}
-    			if ( !mineFound && dizziness < 4 )
+    			if ( !mineFound && dizziness < 5 )
     			{
     				dizziness++;
     				while (myPlayer.myMotor.isActive())
     					myPlayer.sleep();
     				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
     			}
-    			if ( !mineFound && dizziness >= 4 )
+    			if ( !mineFound && dizziness >= 5 )
     			{
     				dizziness = 0;
-    				obj = SCVBuildOrder.WEIRD_SPAWN;
+    				obj = SCVBuildOrder.GET_OFF_MINE;
     			}
     			if ( mineFound )
     			{
@@ -75,6 +73,24 @@ public class SCVBehavior extends Behavior
     					obj = SCVBuildOrder.BUILD_REFINERY;
     			}
     			return;
+    			
+			case GET_OFF_MINE:
+				
+				Utility.setIndicator(myPlayer, 1, "GET_OFF_MINE");
+				for ( Direction d : Direction.values() )
+				{
+					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					{
+						while ( myPlayer.myMotor.isActive() )
+							myPlayer.sleep();
+						myPlayer.myMotor.setDirection(d.opposite());
+						myPlayer.sleep();
+						myPlayer.myMotor.moveBackward();
+						obj = SCVBuildOrder.FIND_MINE;
+						return;
+					}
+				}
+				return;
     			
 			case WAIT_FOR_ANTENNA:
 				
@@ -124,7 +140,7 @@ public class SCVBehavior extends Behavior
 				dizziness = 0;
 				for ( Direction d : Direction.values() )
 				{
-					if ( myPlayer.myMotor.canMove(d) )
+					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
 					{
 						while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.ARMORY.cost )
 							myPlayer.sleep();
@@ -175,15 +191,14 @@ public class SCVBehavior extends Behavior
 				dizziness = 0;
 				 for ( Direction d : Direction.values() )
 					{
-						if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myRC.getLocation().add(d) != hometown && myPlayer.myMotor.canMove(d) )
+						if ( d != Direction.OMNI && d != Direction.NONE && !myPlayer.myRC.getLocation().add(d).equals(unitDock) && myPlayer.myMotor.canMove(d) )
 						{
 							while ( myPlayer.myMotor.isActive() )
 								myPlayer.sleep();
 							myPlayer.myMotor.setDirection(d.opposite());
 							myPlayer.sleep();
 							myPlayer.myMotor.moveBackward();
-							obj = SCVBuildOrder.WAITING;
-							// obj = SCVBuildOrder.BUILD_FACTORY; // switch to me if you want immediate factory!
+							obj = SCVBuildOrder.WAIT_FOR_FACTORY;
 							return;
 						}
 						dizziness++;
@@ -195,10 +210,10 @@ public class SCVBehavior extends Behavior
 					}
 				 return;
     			
-			case WAITING:
+			case WAIT_FOR_FACTORY:
 				
 				Utility.setIndicator(myPlayer, 1, "WAITING");
-				if ( Clock.getRoundNum() > 500 )
+				if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
 					obj = SCVBuildOrder.BUILD_FACTORY;
 				return;
 				
@@ -209,14 +224,27 @@ public class SCVBehavior extends Behavior
 					myPlayer.sleep();
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.FACTORY, RobotLevel.ON_GROUND);
-    			obj = SCVBuildOrder.SLEEP;
+    			myPlayer.sleep();
+    			myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
+    			obj = SCVBuildOrder.WAIT_FOR_HANBANG;
     			return;
+				
+			case WAIT_FOR_HANBANG:
+				
+				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_HANBANG");
+    			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
+    			{
+    				myPlayer.myRC.turnOn(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    				obj = SCVBuildOrder.SLEEP;
+    			}
+				return;
 				
 			case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 1, "SLEEP");
+				myPlayer.myRC.turnOff();
 				return;
-    			
+				
 			case WEIRD_SPAWN:
 				
 				Utility.setIndicator(myPlayer, 1, "WEIRD_SPAWN");
@@ -254,5 +282,13 @@ public class SCVBehavior extends Behavior
 		
 	}
 	
-	public void onWakeupCallback(int lastActiveRound) {}
+	public void onWakeupCallback(int lastActiveRound)
+	{
+		
+	}
+	
+	public void onDamageCallback(double damageTaken)
+	{
+		
+	}
 }

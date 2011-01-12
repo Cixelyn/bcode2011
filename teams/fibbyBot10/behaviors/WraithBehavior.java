@@ -173,4 +173,12 @@ public class WraithBehavior extends Behavior
 		}
 	}
 	public void onWakeupCallback(int lastActiveRound) {}
+	{
+		
+	}
+	
+	public void onDamageCallback(double damage)
+	{
+		
+	}
 }
