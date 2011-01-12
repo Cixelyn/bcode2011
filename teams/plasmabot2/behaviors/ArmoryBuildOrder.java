@@ -4,5 +4,7 @@ public enum ArmoryBuildOrder
 {
 	WAIT_FOR_DOCK,
 	BUILD_FLYERS,
-	WAITING
+	BUILD_DRAGOON,
+	EQUIP_DRAGOON,
+	WAITING;
 }
