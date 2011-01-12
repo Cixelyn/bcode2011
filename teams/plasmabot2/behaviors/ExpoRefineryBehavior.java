@@ -20,6 +20,8 @@ public class ExpoRefineryBehavior extends Behavior
 	boolean rHasConstructor;
 	boolean rHasShield;
 	boolean rHasSight;
+	boolean rHasRadar;
+	int rSMGS;
 	
 	public ExpoRefineryBehavior(RobotPlayer player)
 	{
@@ -126,27 +128,21 @@ public class ExpoRefineryBehavior extends Behavior
     			{
     				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
     				{
-    					rHasShield = false;
-    					rHasSight = false;
-    					rBlasters=0;
+    					rHasRadar = false;
+    					rSMGS=0;
     					for ( ComponentType c : rInfo.components )
     					{
-    						if ( c == ComponentType.BLASTER )
-    							rBlasters=rBlasters+1;
-    						if ( c == ComponentType.SIGHT )
-    							rHasSight = true;
-    						if ( c == ComponentType.SHIELD) {
-    							rHasShield = true;
-    						}
+    						if ( c == ComponentType.SMG )
+    							rSMGS=rSMGS+1;
+    						if ( c == ComponentType.RADAR )
+    							rHasRadar = true;
     					}
-    					if (rBlasters<2) {
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+    					if (rSMGS<3) { 
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
     					}
-    					else if ( !rHasShield )
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-    					else if ( !rHasSight )
+    					else if ( !rHasRadar )
     					{
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.ON_GROUND);
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
     						myPlayer.sleep();
     						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currFlyer);
     						currFlyer++;
@@ -154,7 +150,6 @@ public class ExpoRefineryBehavior extends Behavior
     					return;
     				}
     			}
-    			return;
     			
     	}
 		
