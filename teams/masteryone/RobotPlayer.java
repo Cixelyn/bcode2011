@@ -48,6 +48,7 @@ public class RobotPlayer implements Runnable {
 	//Helper Subsystems
 	public final Messenger myMessenger;
 	public final Scanner myScanner;
+	public final Actions myActions;
 	
 	
 	//Misc Stats
@@ -56,7 +57,9 @@ public class RobotPlayer implements Runnable {
 	private int executeStartByte;
 	private int lastActiveRound;
 	private double lastRoundHP;
+	private int bytecodeLimit;
 	public double myLastRes;
+	
 	
 	
 	
@@ -83,6 +86,7 @@ public class RobotPlayer implements Runnable {
     	myBirthday = Clock.getRoundNum();
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
+    	bytecodeLimit = GameConstants.BYTECODE_LIMIT_BASE;
     	
     	lastActiveRound = myBirthday;
     	lastRoundHP = rc.getHitpoints();
@@ -96,8 +100,9 @@ public class RobotPlayer implements Runnable {
     	myWeapons = new ArrayList<WeaponController>();
     	myMessenger = new Messenger(this);
     	myScanner = new Scanner(this);
+    	myActions = new Actions(this);
     	
-  
+
     	
     	
     	
@@ -320,6 +325,10 @@ public class RobotPlayer implements Runnable {
 				break;
 			default:
 				Utility.println("NotController");
+			}
+			
+			if(c.type()==ComponentType.PROCESSOR) {
+				bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
 				
 			}
 		}		
@@ -348,7 +357,7 @@ public class RobotPlayer implements Runnable {
 	public void stopClock() {
 		if(executeStartTime!=Clock.getRoundNum()) {
 				int currRound = Clock.getRoundNum();
-				int byteCount = (3000-executeStartByte) + (currRound-executeStartTime-1) * 3000 + Clock.getBytecodeNum();
+				int byteCount = (bytecodeLimit-executeStartByte) + (currRound-executeStartTime-1) * bytecodeLimit + Clock.getBytecodeNum();
 				System.out.println("Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
 		}	
 	}

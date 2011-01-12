@@ -15,11 +15,17 @@ public class MarineBehavior extends Behavior
 	boolean hasBlaster;
 	boolean hasRadar;
 	boolean hasShield;
+	boolean engagedInCombat;
+	
+	
+	private final OldNavigation myNav;
 	
 	public MarineBehavior(RobotPlayer player)
 	{
 		super(player);
 		overrideScanner = true;	//disable the scanner subsystem
+		
+		myNav = new OldNavigation(player); //Instantiate an old navigation system for now.
 	}
 
 	
@@ -57,36 +63,107 @@ public class MarineBehavior extends Behavior
 				
 				
 				
+				//Get mylocation
+				MapLocation currLoc = myPlayer.myRC.getLocation();
 				
 				
-				//Scan for enemy robots.
+				//Scan to find closest enemy robot
+				Robot closestRobot = null;
+				RobotInfo closestRobotInfo = null;
+				Direction closestRobotDirection = null;
+				int closestRobotDistance = 999;
+				
 				Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
 				for(Robot r:nearbyRobots) {
-				
+					if(r.getTeam()==myPlayer.myRC.getTeam().opponent()) {
+						RobotInfo rinfo = myPlayer.mySensor.senseRobotInfo(r);
+						int robotDistance = currLoc.distanceSquaredTo(rinfo.location);
+						if(robotDistance<closestRobotDistance) {
+							closestRobot = r;
+							closestRobotInfo = rinfo;
+							closestRobotDistance = robotDistance;
+							closestRobotDirection = currLoc.directionTo(closestRobotInfo.location);
+						}
+						
+					}
 				}
 				
-				
-				
-				
-				
-				
-				
-				
-	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
-	        	
-	        	if ( Utility.senseEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos ) != null )
-	        		return;
-	        	else if ( Clock.getRoundNum() > Constants.DEBRIS_TIME && Utility.senseDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos) != null )
-	        		return;
-	        	else
-	        		Utility.bounceNav(myPlayer);
-	        	return;
-	        	
-	        	
-	        	
+				if(closestRobot!=null) {	//I AM ENGAGED IN BLOODY COMBAT
+					
+					Utility.setIndicator(myPlayer, 1, "Attack!");
+					
+					//Now that i have the closet, shoot at it.
+					if(closestRobotDistance <16) {
+							for(WeaponController w:myPlayer.myWeapons) {
+								if(!w.isActive() && w.withinRange(closestRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
+									w.attackSquare(closestRobotInfo.location, closestRobot.getRobotLevel());
+								}
+							}
+					}
+					
+					
+					//if I'm too closet to enemy units, move back
+					if(closestRobotDistance==16) {
+						return;  //I'm good					
+					} else if(closestRobotDistance<16) {					//I'm too close!
+						myPlayer.myActions.backUpInDir(closestRobotDirection.opposite());
+					} else { //I'm too far
+						myPlayer.myActions.moveInDir(myNav.bugTo(closestRobotInfo.location));
+					}
+					return;
+					
+				} else{														//I am not engaged in bloody combat!
+						Utility.setIndicator(myPlayer, 1, "Bounce!");
+		        		Utility.bounceNav(myPlayer);
+		        	return;
+				}
 	        	
 		}
 	}
+
+	Direction lastHeading;
+	public boolean moveLikeMJ(Direction faceDir, Direction moveDir) {
+		try {
+			RobotController tMyRC = myPlayer.myRC;	//fast access variable
+			MovementController tMyMot = myPlayer.myMotor;
+			if (!tMyMot.isActive() && moveDir.ordinal()<8) {	//can we move
+
+				//first compute whether moveDir is "behind" faceDir
+				Direction oppDir = faceDir.opposite();			//TODO inline these variables
+				Direction moveDirR = moveDir.rotateRight();
+				Direction moveDirL = moveDir.rotateLeft();
+
+				if(oppDir==moveDir || oppDir==moveDirR || oppDir==moveDirL) { 
+					if (tMyRC.getDirection().opposite().equals(moveDir)) { //backwards movement code
+						if (tMyMot.canMove(moveDir)) {
+							tMyMot.moveBackward();
+							return true;
+						}
+					} else {
+						tMyMot.setDirection(moveDir.opposite());
+						lastHeading = moveDir;
+					}					
+				} else {//moveDir is in front of faceDir
+					if (tMyRC.getDirection().equals(moveDir)) {
+						if (tMyMot.canMove(moveDir)) {
+							tMyMot.moveForward();
+							return true;
+						}
+					} else {
+						tMyMot.setDirection(moveDir);
+						lastHeading = moveDir;
+					}	
+				}
+			}
+		} catch(GameActionException e) {
+//			System.out.println("Action Exception: moveLikeMJ");
+			e.printStackTrace();
+		}
+		return false;			
+	}
+	
+	
+	
 	
 	
 	
