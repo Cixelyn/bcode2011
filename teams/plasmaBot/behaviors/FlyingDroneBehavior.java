@@ -1,10 +1,7 @@
-package masteryone.behaviors;
+package plasmaBot.behaviors;
 
 import battlecode.common.*;
-import masteryone.MsgType;
-import masteryone.RobotPlayer;
-import masteryone.Utility;
-import masteryone.Constants;
+import plasmaBot.*;
 
 public class FlyingDroneBehavior extends Behavior {
 	

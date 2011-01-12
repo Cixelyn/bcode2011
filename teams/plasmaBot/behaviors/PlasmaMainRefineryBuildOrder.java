@@ -1,4 +1,4 @@
-package masteryone.behaviors;
+package plasmaBot.behaviors;
 
 public enum PlasmaMainRefineryBuildOrder {
 	EQUIPPING,
@@ -7,5 +7,6 @@ public enum PlasmaMainRefineryBuildOrder {
 	WAIT_FOR_DOCK,
 	EQUIP_FLYERS,
 	WAIT_FOR_HANBANG,
-	BUILD_MARINE
+	BUILD_DRAGOON;
+	
 }

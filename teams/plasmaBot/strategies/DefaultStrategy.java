@@ -1,8 +1,7 @@
-package masteryone.strategies;
+package plasmaBot.strategies;
 
 
-import masteryone.RobotPlayer;
-import masteryone.behaviors.*;
+import plasmaBot.*;
 
 
 /**

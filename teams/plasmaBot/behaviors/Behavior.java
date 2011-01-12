@@ -1,8 +1,8 @@
-package masteryone.behaviors;
+package plasmaBot.behaviors;
 
 import battlecode.common.*;
 
-import masteryone.*;
+import plasmaBot.*;
 
 public abstract class Behavior {
 	

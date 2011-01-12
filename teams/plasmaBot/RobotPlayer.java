@@ -3,8 +3,8 @@ package plasmaBot;
 import java.util.ArrayList;
 import java.util.Random;
 
-import masteryone.strategies.*;
-import masteryone.behaviors.*;
+import plasmaBot.strategies.*;
+import plasmaBot.behaviors.*;
 
 
 import battlecode.common.*;

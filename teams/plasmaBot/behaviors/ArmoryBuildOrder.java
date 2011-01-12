@@ -1,4 +1,4 @@
-package masteryone.behaviors;
+package plasmaBot.behaviors;
 
 public enum ArmoryBuildOrder 
 {

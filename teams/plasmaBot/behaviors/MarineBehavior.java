@@ -1,6 +1,6 @@
-package masteryone.behaviors;
+package plasmaBot.behaviors;
 
-import masteryone.*;
+import plasmaBot.*;
 import battlecode.common.*;
 
 public class MarineBehavior extends Behavior
