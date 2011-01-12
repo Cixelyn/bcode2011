@@ -45,6 +45,7 @@ public class TestFlyerBehavior extends Behavior
 			case EXPAND:
 				
 				Utility.setIndicator(myPlayer, 1, "EXPAND");
+				Utility.setIndicator(myPlayer, 2, "I'm number " + Integer.toString(num) + "!");
 				for ( Mine m : myPlayer.myScanner.detectedMines )
 				{
 					if ( myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null )
@@ -212,4 +213,5 @@ public class TestFlyerBehavior extends Behavior
 		}
 	}
 	public void onWakeupCallback(int lastActiveRound) {}
+	public void onDamageCallback(double damageTaken) {}
 }

@@ -8,6 +8,6 @@ public enum RefineryBuildOrder
 	WAIT_FOR_DOCK,
 	EQUIP_FLYERS,
 	WAIT_FOR_HANBANG,
-	EQUIP_WRAITHS,
+	EQUIP_TANKS,
 	SLEEP
 }
