@@ -1,28 +1,34 @@
-package fibbyBot10.behaviors;
+package fibbyBot11.behaviors;
 
 import battlecode.common.*;
-import fibbyBot10.*;
+import fibbyBot11.*;
 
-public class ExpoRefineryBehavior extends Behavior
+public class MainRefineryBehavior extends Behavior
 {
 	
 	RefineryBuildOrder obj = RefineryBuildOrder.EQUIPPING;
 	
 	MapLocation unitDock;
-
+	
 	Robot rFront;
 	
-	int isLeader = -1;
+	int isLeader = -1; // -1 means unknown, 0 means no, 1 means yes
 	int currFlyer;
 	int currTank;
 	int tanksToMake;
 	double lastIncome;
 	
+	boolean hasAntenna = false;
+	
 	boolean rHasConstructor;
 	boolean rHasSight;
+	
+	int rNumProcessors;
+	boolean rHasAntenna;
+	boolean rHasBlaster;
 	boolean rHasRadar;
 	
-	public ExpoRefineryBehavior(RobotPlayer player)
+	public MainRefineryBehavior(RobotPlayer player)
 	{
 		super(player);
 	}
@@ -38,7 +44,31 @@ public class ExpoRefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIPPING");
     			Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    			obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    			obj = RefineryBuildOrder.DETERMINE_LEADER;
+    			return;
+    			
+    		case DETERMINE_LEADER:
+    			
+    			Utility.setIndicator(myPlayer, 1, "DETERMINE_LEADER");
+    			myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_ID, myPlayer.myRC.getRobot().getID());
+    			if ( isLeader == 1 )
+	    			obj = RefineryBuildOrder.GIVE_ANTENNA;
+    			if ( isLeader == 0 )
+    				obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    			return;
+    			
+    		case GIVE_ANTENNA:
+    			
+    			Utility.setIndicator(myPlayer, 1, "GIVE_ANTENNA");
+    			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
+    			{
+    				if ( rInfo.chassis == Chassis.LIGHT && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() )
+    				{
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(rInfo.location), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+    					obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    					return;
+    				}
+    			}
     			return;
     			
     		case WAIT_FOR_DOCK:
@@ -64,10 +94,10 @@ public class ExpoRefineryBehavior extends Behavior
     		case EQUIP_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
+    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS));
     			if ( currFlyer > Constants.MAX_FLYERS )
     			{
-    				obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    				obj = RefineryBuildOrder.SLEEP;
     				return;
     			}
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
@@ -96,7 +126,7 @@ public class ExpoRefineryBehavior extends Behavior
     				}
     			}
     			return;
-
+    			
     		case WAIT_FOR_HANBANG:
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_HANBANG");
@@ -124,17 +154,34 @@ public class ExpoRefineryBehavior extends Behavior
     			{
     				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
     				{
+    					rNumProcessors = 0;
+    					rHasAntenna = false;
+    					rHasBlaster = false;
     					rHasRadar = false;
     					for ( ComponentType c : rInfo.components )
     					{
+    						if ( c == ComponentType.PROCESSOR )
+    							rNumProcessors++;
+    						if ( c == ComponentType.ANTENNA )
+    							rHasAntenna = true;
+    						if ( c == ComponentType.BLASTER )
+    							rHasBlaster = true;
     						if ( c == ComponentType.RADAR )
     							rHasRadar = true;
     					}
-    					if ( !rHasRadar )
+    					if ( rNumProcessors < 2 )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PROCESSOR, RobotLevel.ON_GROUND);
+    					else if ( !rHasAntenna )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+    					else if ( !rHasBlaster )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+    					else if ( !rHasRadar )
+    					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
+    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
+    						currTank++;
+    					}
 						myPlayer.sleep();
-						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
-						currTank++;
     					return;
     				}
     			}
@@ -154,7 +201,7 @@ public class ExpoRefineryBehavior extends Behavior
 
 	public String toString()
 	{
-		return "ExpoRefineryBehavior";
+		return "MainRefineryBehavior";
 	}
 	
 	public void newComponentCallback(ComponentController[] components)

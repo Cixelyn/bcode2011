@@ -1,7 +1,7 @@
-package fibbyBot10.behaviors;
+package fibbyBot11.behaviors;
 
 import battlecode.common.*;
-import fibbyBot10.*;
+import fibbyBot11.*;
 import java.util.*;
 
 public class SCVBehavior extends Behavior
@@ -35,8 +35,6 @@ public class SCVBehavior extends Behavior
 
 	public void run() throws Exception
 	{
-		
-		Utility.setIndicator(myPlayer, 2, myPlayer.myRC.getLocation().toString());
 		
 		switch (obj)
 		{
@@ -150,7 +148,6 @@ public class SCVBehavior extends Behavior
 						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 						myPlayer.sleep();
 						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-						Utility.setIndicator(myPlayer, 0, unitDock.toString());
 						obj = SCVBuildOrder.VACATE_HOME;
 						return;
 					}

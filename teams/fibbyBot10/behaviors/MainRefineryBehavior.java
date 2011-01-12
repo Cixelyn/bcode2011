@@ -15,6 +15,8 @@ public class MainRefineryBehavior extends Behavior
 	int isLeader = -1; // -1 means unknown, 0 means no, 1 means yes
 	int currFlyer;
 	int currTank;
+	int tanksToMake;
+	double lastIncome;
 	
 	boolean hasAntenna = false;
 	boolean rHasConstructor;
@@ -87,7 +89,7 @@ public class MainRefineryBehavior extends Behavior
     		case EQUIP_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
+    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS));
     			if ( currFlyer > Constants.MAX_FLYERS )
     			{
     				obj = RefineryBuildOrder.SLEEP;
@@ -129,12 +131,20 @@ public class MainRefineryBehavior extends Behavior
     				currTank = 0;
     				obj = RefineryBuildOrder.EQUIP_TANKS;
     			}
+    			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
+    			tanksToMake = Constants.TANKS_PER_EXPO * (int)Math.floor(lastIncome - 5);
     			return;
     			
     		case EQUIP_TANKS:
     			
+    			Utility.setIndicator(myPlayer, 0, "Last: " + Double.toString(lastIncome) + " , Current: " + Double.toString(myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot())));
     			Utility.setIndicator(myPlayer, 1, "EQUIP_TANKS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + ".");
+    			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + " out of " + Integer.toString(tanksToMake));
+    			tanksToMake += Math.max(Constants.TANKS_PER_EXPO * (int)Math.floor(myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) - lastIncome), 0);
+    			if ( currTank < tanksToMake )
+	    			myPlayer.myMessenger.sendNotice(MsgType.MSG_START_TANKS);
+    			else
+    				myPlayer.myMessenger.sendNotice(MsgType.MSG_STOP_TANKS);
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
     				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
@@ -153,6 +163,7 @@ public class MainRefineryBehavior extends Behavior
     					return;
     				}
     			}
+    			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
     			return;
     			
     		case SLEEP:

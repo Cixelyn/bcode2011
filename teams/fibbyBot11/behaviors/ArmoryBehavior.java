@@ -1,7 +1,7 @@
-package fibbyBot10.behaviors;
+package fibbyBot11.behaviors;
 
 import battlecode.common.*;
-import fibbyBot10.*;
+import fibbyBot11.*;
 
 public class ArmoryBehavior extends Behavior
 {

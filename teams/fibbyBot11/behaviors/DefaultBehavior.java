@@ -1,7 +1,7 @@
-package fibbyBot10.behaviors;
+package fibbyBot11.behaviors;
 
 import battlecode.common.*;
-import fibbyBot10.*;
+import fibbyBot11.*;
 
 public class DefaultBehavior extends Behavior
 {
@@ -32,7 +32,7 @@ public class DefaultBehavior extends Behavior
 				else
 					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.RAILGUN )
+			if ( c.type() == ComponentType.PROCESSOR )
 			{
 				myPlayer.swapBehavior(new TankBehavior(myPlayer));
 				myPlayer.myScanner.setDetectionMode(Robot.class);

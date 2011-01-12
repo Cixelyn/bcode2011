@@ -1,4 +1,4 @@
-package fibbyBot10;
+package fibbyBot11;
 
 
 
@@ -26,7 +26,7 @@ public class Constants
 	public static final int FACTORY_TIME = 500; // minimum time factory can be built (may not be built immediately)
 	public static final int HANBANG_TIME = 1000; // when tanks should be spawned
 	public static final int DEBRIS_TIME = 2000; // when tanks should start killing debris
-	public static final int TANKS_PER_EXPO = 6; // how many tanks to make per expo
+	public static final int TANKS_PER_EXPO = 2; // how many tanks to make per expo
 
 	
 	//Max's Go here

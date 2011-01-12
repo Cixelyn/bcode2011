@@ -1,4 +1,4 @@
-package fibbyBot10;
+package fibbyBot11;
 
 import battlecode.common.*;
 import java.util.*;
@@ -252,7 +252,8 @@ public class Utility {
 				gun = (WeaponController) c;
 				if ( gun.type() == ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam() )
 				{
-					destination = rInfo.location;
+					if ( rInfo.chassis != Chassis.BUILDING )
+						destination = rInfo.location;
 					if(!gun.isActive() && rInfo.hitpoints < rInfo.maxHp && gun.withinRange(rInfo.location))
 					{
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());

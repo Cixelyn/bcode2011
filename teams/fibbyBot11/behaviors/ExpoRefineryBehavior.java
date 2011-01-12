@@ -1,7 +1,7 @@
-package fibbyBot10.behaviors;
+package fibbyBot11.behaviors;
 
 import battlecode.common.*;
-import fibbyBot10.*;
+import fibbyBot11.*;
 
 public class ExpoRefineryBehavior extends Behavior
 {
@@ -20,6 +20,10 @@ public class ExpoRefineryBehavior extends Behavior
 	
 	boolean rHasConstructor;
 	boolean rHasSight;
+	
+	int rNumProcessors;
+	boolean rHasAntenna;
+	boolean rHasBlaster;
 	boolean rHasRadar;
 	
 	public ExpoRefineryBehavior(RobotPlayer player)
@@ -124,17 +128,34 @@ public class ExpoRefineryBehavior extends Behavior
     			{
     				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
     				{
+    					rNumProcessors = 0;
+    					rHasAntenna = false;
+    					rHasBlaster = false;
     					rHasRadar = false;
     					for ( ComponentType c : rInfo.components )
     					{
+    						if ( c == ComponentType.PROCESSOR )
+    							rNumProcessors++;
+    						if ( c == ComponentType.ANTENNA )
+    							rHasAntenna = true;
+    						if ( c == ComponentType.BLASTER )
+    							rHasBlaster = true;
     						if ( c == ComponentType.RADAR )
     							rHasRadar = true;
     					}
-    					if ( !rHasRadar )
+    					if ( rNumProcessors < 2 )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PROCESSOR, RobotLevel.ON_GROUND);
+    					else if ( !rHasAntenna )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+    					else if ( !rHasBlaster )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+    					else if ( !rHasRadar )
+    					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
+    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
+    						currTank++;
+    					}
 						myPlayer.sleep();
-						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
-						currTank++;
     					return;
     				}
     			}

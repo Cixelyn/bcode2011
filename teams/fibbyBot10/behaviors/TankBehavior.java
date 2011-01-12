@@ -6,11 +6,17 @@ import battlecode.common.*;
 public class TankBehavior extends Behavior
 {
 	
+	OldNavigation nav = new OldNavigation(myPlayer);
+	
 	TankBuildOrder obj = TankBuildOrder.EQUIPPING;
+	
+	MapLocation allyLoc;
+	MapLocation enemyLoc;
+	MapLocation debrisLoc;
 	
 	boolean hasRadar;
 	boolean hasRailgun;
-	boolean hasRegen;
+	boolean hasMedic;
 	
 	public TankBehavior(RobotPlayer player)
 	{
@@ -33,19 +39,40 @@ public class TankBehavior extends Behavior
 						hasRadar = true;
 					if ( c.type() == ComponentType.RAILGUN )
 						hasRailgun = true;
-					if ( c.type() == ComponentType.REGEN )
-						hasRegen = true;
+					if ( c.type() == ComponentType.MEDIC )
+						hasMedic = true;
 				}
-				if ( hasRadar && hasRailgun && hasRegen )
+				if ( hasRadar && hasRailgun && hasMedic )
+				{
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(Direction.NORTH); // hardcoded swarming?
 					obj = TankBuildOrder.MOVE_OUT;
+				}
 				return;
 	        	
 			case MOVE_OUT:	
 				
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
-	        	if ( Utility.senseEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos ) != null )
+	        	allyLoc = Utility.healAllies(myPlayer, myPlayer.myScanner.scannedRobotInfos);
+	        	enemyLoc = Utility.attackEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos );
+	        	if ( enemyLoc != null )
+	        	{
+	        		if ( !myPlayer.myMotor.isActive() )
+	        		{
+	        			if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()) && myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) <= ComponentType.RAILGUN.range )
+	        				myPlayer.myMotor.moveBackward();
+	        			else
+	        				Utility.navStep(myPlayer, nav, enemyLoc);
+	        		}
 	        		return;
-	        	else if ( Clock.getRoundNum() > Constants.DEBRIS_TIME && Utility.senseDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos) != null )
+	        	}
+	        	else if ( allyLoc != null )
+	        	{
+	        		Utility.navStep(myPlayer, nav, allyLoc);
+	        		return;
+	        	}
+	        	else if ( Clock.getRoundNum() > Constants.DEBRIS_TIME && Utility.attackDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos) != null )
 	        		return;
 	        	else
 	        		Utility.bounceNav(myPlayer);

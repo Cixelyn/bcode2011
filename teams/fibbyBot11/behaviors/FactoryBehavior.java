@@ -1,6 +1,6 @@
-package fibbyBot10.behaviors;
+package fibbyBot11.behaviors;
 
-import fibbyBot10.*;
+import fibbyBot11.*;
 import battlecode.common.*;
 
 public class FactoryBehavior extends Behavior
@@ -61,7 +61,6 @@ public class FactoryBehavior extends Behavior
     				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
     			}
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.MEDIUM);
-    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.MEDIC, RobotLevel.ON_GROUND);
     			tanksBuilt++;
     			return;
