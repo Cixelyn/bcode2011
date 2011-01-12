@@ -184,9 +184,11 @@ public class RobotPlayer implements Runnable {
 		
 		/////////////////////////////////////////////////////////////
 		//Run the scanning subsystems
-		try {
-			myScanner.InitialScan();				
-		} catch(Exception e) {e.printStackTrace();}
+		if(!myBehavior.overrideScanner){
+			try {
+				myScanner.InitialScan();				
+			} catch(Exception e) {e.printStackTrace();}
+		}
 	}
 	
 	

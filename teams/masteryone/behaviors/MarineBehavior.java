@@ -19,14 +19,20 @@ public class MarineBehavior extends Behavior
 	public MarineBehavior(RobotPlayer player)
 	{
 		super(player);
+		overrideScanner = true;	//disable the scanner subsystem
 	}
 
+	
+	
+	
+	
 
 	public void run() throws Exception
 	{
 		
 		switch (obj)
 		{
+			//Fully Equip the Marine
 			case EQUIPPING:
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 	            hasBlaster = false;
@@ -45,8 +51,29 @@ public class MarineBehavior extends Behavior
 					obj = MarineBuildOrder.MOVE_OUT;
 				return;
 	        	
-			case MOVE_OUT:
+				
+			//Running the main loop
+			case MOVE_OUT:	
+				
+				
+				
+				
+				
+				//Scan for enemy robots.
+				Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+				for(Robot r:nearbyRobots) {
+				
+				}
+				
+				
+				
+				
+				
+				
+				
+				
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
+	        	
 	        	if ( Utility.senseEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos ) != null )
 	        		return;
 	        	else if ( Clock.getRoundNum() > Constants.DEBRIS_TIME && Utility.senseDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos) != null )
@@ -54,6 +81,10 @@ public class MarineBehavior extends Behavior
 	        	else
 	        		Utility.bounceNav(myPlayer);
 	        	return;
+	        	
+	        	
+	        	
+	        	
 		}
 	}
 	
