@@ -18,8 +18,8 @@ public class DragoonBehavior extends Behavior
 	MapLocation initialGoal;
 	
 	int plasma;
-	int blasters;
-	boolean hasSight; 
+	int SMGS;
+	boolean hasRadar; 
 	boolean hasShield;
 	boolean foundEdge=false;
 	
@@ -36,22 +36,19 @@ public class DragoonBehavior extends Behavior
 		{
 			case EQUIPPING:
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
-	            hasSight = false;
-	            hasShield = false;
+				hasRadar=false;
 	            plasma=0;
-	            blasters=0;
+	            SMGS=0;
 				for(ComponentController c:myPlayer.myRC.components())
 				{
-					if ( c.type() == ComponentType.BLASTER )
-						blasters=blasters+1;
-					if ( c.type() == ComponentType.SIGHT )
-						hasSight = true;
+					if ( c.type() == ComponentType.SMG )
+						SMGS=SMGS+1;
+					if ( c.type() == ComponentType.RADAR )
+						hasRadar = true;
 					if ( c.type() == ComponentType.PLASMA)
 						plasma=plasma+1;
-					if ( c.type() == ComponentType.SHIELD )
-						hasShield = true;
 				}
-				if ( hasSight && hasShield && blasters==2 && plasma==2 && initialGoal!=null) {
+				if ( hasRadar && SMGS==3 && plasma==2 && initialGoal!=null) {
 					obj = DragoonBuildOrder.MOVE_OUT;
 				}
 				return;
