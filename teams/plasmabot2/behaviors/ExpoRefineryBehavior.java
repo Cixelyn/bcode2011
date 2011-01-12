@@ -15,7 +15,10 @@ public class ExpoRefineryBehavior extends Behavior
 	int isLeader = -1;
 	int currFlyer = 0;
 	
+	boolean hasAntenna = false;
+	int rBlasters;
 	boolean rHasConstructor;
+	boolean rHasShield;
 	boolean rHasSight;
 	
 	public ExpoRefineryBehavior(RobotPlayer player)
@@ -53,7 +56,7 @@ public class ExpoRefineryBehavior extends Behavior
     					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
     			}
     			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
-	    			obj = RefineryBuildOrder.BUILD_MARINE;
+	    			obj = RefineryBuildOrder.EQUIP_DRAGOON;
     			return;
     			
     		case EQUIP_FLYERS:
@@ -62,7 +65,7 @@ public class ExpoRefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
     			if ( currFlyer > Constants.MAX_FLYERS )
     			{
-    				obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    				obj = RefineryBuildOrder.EQUIP_DRAGOON;
     				return;
     			}
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
@@ -97,7 +100,7 @@ public class ExpoRefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_HANBANG");
     			Utility.setIndicator(myPlayer, 2, "");
     			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
-    				obj = RefineryBuildOrder.BUILD_MARINE;
+    				obj = RefineryBuildOrder.EQUIP_DRAGOON;
     			return;
     			
     		case BUILD_MARINE:
@@ -115,6 +118,42 @@ public class ExpoRefineryBehavior extends Behavior
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    			return;
+    			
+    		case EQUIP_DRAGOON:
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_DRAGOON");
+    			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
+    			{
+    				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
+    				{
+    					rHasShield = false;
+    					rHasSight = false;
+    					rBlasters=0;
+    					for ( ComponentType c : rInfo.components )
+    					{
+    						if ( c == ComponentType.BLASTER )
+    							rBlasters=rBlasters+1;
+    						if ( c == ComponentType.SIGHT )
+    							rHasSight = true;
+    						if ( c == ComponentType.SHIELD) {
+    							rHasShield = true;
+    						}
+    					}
+    					if (rBlasters<2) {
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+    					}
+    					else if ( !rHasShield )
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    					else if ( !rHasSight )
+    					{
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.ON_GROUND);
+    						myPlayer.sleep();
+    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currFlyer);
+    						currFlyer++;
+    					}
+    					return;
+    				}
+    			}
     			return;
     			
     	}

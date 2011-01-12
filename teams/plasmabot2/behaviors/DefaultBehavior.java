@@ -25,6 +25,9 @@ public class DefaultBehavior extends Behavior
 	{
 		for ( ComponentController c : components )
 		{
+			if ( c.type() == ComponentType.PLASMA) {
+				myPlayer.swapBehavior(new DragoonBehavior(myPlayer));
+			}
 			if ( c.type() == ComponentType.CONSTRUCTOR )
 			{
 				if ( Clock.getRoundNum() <= 2 )
@@ -33,7 +36,7 @@ public class DefaultBehavior extends Behavior
 					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
 			}
 			if ( c.type() == ComponentType.BLASTER )
-				myPlayer.swapBehavior(new MarineBehavior(myPlayer));
+				myPlayer.swapBehavior(new DragoonBehavior(myPlayer));
 			if ( c.type() == ComponentType.RECYCLER )
 			{
 				if ( Clock.getRoundNum() <= 2 )

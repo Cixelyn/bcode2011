@@ -83,7 +83,6 @@ public class RobotPlayer implements Runnable {
     	myBirthday = Clock.getRoundNum();
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
-    	
     	lastActiveRound = myBirthday;
     	lastRoundHP = rc.getHitpoints();
     	

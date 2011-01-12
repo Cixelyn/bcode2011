@@ -21,7 +21,7 @@ public class Constants
 	
 	public static final int MINE_AFFINITY = 50; // how long SCV should chase a mine before giving up
 	public static final int RESERVE = 2; // desired minimum flux after building
-	public static final int MAX_FLYERS = 10; // the maximum number of flyers the armory should make
+	public static final int MAX_FLYERS = 8; // the maximum number of flyers the armory should make
 	public static final int HANBANG_TIME = 1000; // when marines should be spawned
 	public static final int DEBRIS_TIME = 3000; // when marines should start killing debris
 
