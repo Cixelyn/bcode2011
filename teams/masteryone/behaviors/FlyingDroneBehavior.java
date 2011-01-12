@@ -20,14 +20,14 @@ public class FlyingDroneBehavior extends Behavior {
 	boolean foundVoids=false;
 	int ID=-1;
 	Mine currentMine;
-	double prevRoundHP;
+	double prevRoundHP=10.0;
 	boolean seenOtherSide;
 	static boolean knowEverything;
 	
 	Direction initialDirection;
 	Direction currentDirection;
 
-	int runAwayTime;
+	int runAwayTime=0;
 
 	public FlyingDroneBehavior(RobotPlayer player) {
 		super(player);
@@ -36,6 +36,7 @@ public class FlyingDroneBehavior extends Behavior {
 	@Override
 	public void run() throws Exception {
 		if (myPlayer.myRC.getHitpoints()<prevRoundHP) {
+			Utility.println("ahh i've been hit!");
 			prevRoundHP=myPlayer.myRC.getHitpoints();
 			runAwayTime=0;
 			obj=FlyingDroneActions.RUN_AWAY;
@@ -43,33 +44,38 @@ public class FlyingDroneBehavior extends Behavior {
     	switch (obj) {
     	
     		case EQUIPPING: {
-    			myPlayer.myRC.setIndicatorString(0, "equipping");
+    			Utility.setIndicator(myPlayer, 0, "equipping");
     			if (hasSight && hasConstructor) { //finally we are good to go!
     				obj=FlyingDroneActions.FLYING_DRONE_ID;
     			}
-    			myPlayer.sleep();
     			return;
     		}
     		case FLYING_DRONE_ID: {
-    			myPlayer.myRC.setIndicatorString(0, "waiting for id");
+    			Utility.setIndicator(myPlayer, 0, "waiting for id");
     			if (foundID) {
-    				if (myPlayer.myMotor.isActive()) {
+    				if (!myPlayer.myMotor.isActive()) {
     					setDirectionID(ID);
     					obj=FlyingDroneActions.EXPAND;
     				}
     			}
-    			myPlayer.sleep();
     			return;
     		}
     		case EXPAND: {
-    			myPlayer.myRC.setIndicatorString(0, "expanding");                                                                                  
+    			Utility.setIndicator(myPlayer, 0, "expanding");                                                                                 
     			if (!myPlayer.myMotor.isActive()) {
         			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
-        					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
-        					currentMine=mine;
-        					obj=FlyingDroneActions.FOUND_MINE;
-        					return;
+        					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
+            					currentMine=mine;
+            					obj=FlyingDroneActions.FOUND_MINE;
+            					return;
+        					}
+        					else {
+            					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
+            					currentMine=mine;
+            					obj=FlyingDroneActions.FOUND_MINE;
+            					return;
+        					}
         				}
         			}
         			droneGeneralNav(ID);
@@ -77,18 +83,18 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		}
     		case FOUND_MINE: {
-    			myPlayer.myRC.setIndicatorString(0, "found mine"); 
+    			Utility.setIndicator(myPlayer, 0, "found mine");
 				if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) { //someone is on our mine, gonna just look for other ones
 					obj=FlyingDroneActions.EXPAND;
 					return;
 				}
-    			if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()))) { //i'm right by the mine, build recycler!
-    				if (myPlayer.myRC.getTeamResources()>((ComponentType.RECYCLER.cost+Chassis.BUILDING.cost))) {
-    					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
-    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.MINE);
-    					currentMine=null;
-    					obj=FlyingDroneActions.EXPAND;
-    				}
+				else if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) || (myPlayer.myRC.getLocation().equals(currentMine.getLocation()))) { //i'm right by the mine, build recycler!
+    					if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE ){
+    						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+    						currentMine=null;
+    						obj =  FlyingDroneActions.EXPAND;
+    					}
     			}
     			else {
     				if (!myPlayer.myMotor.isActive())  { //move closer to the mine
@@ -101,15 +107,18 @@ public class FlyingDroneBehavior extends Behavior {
     						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()));
     					}
     				}
+    				return;
     			}
     			return;
     		}
     		case RUN_AWAY: {
+    			Utility.setIndicator(myPlayer, 0, "run away!");
     			int totalX=0;
     			int totalY=0;
     			int totalEnemyRobots=0;
     			boolean enemyInFront=false;
     			if (runAwayTime>Constants.RUN_AWAY_TIME) {
+    				runAwayTime=0;
     				setRunAwayDirection=false;
     				foundVoids=false;
     				obj=FlyingDroneActions.EXPAND;
@@ -199,14 +208,43 @@ public class FlyingDroneBehavior extends Behavior {
 	//////////NAVIGATION/////////
 	/////////////////////////////
 	
-	public void droneGeneralNav(int ID) {
-		
+	public void droneGeneralNav(int ID) throws GameActionException {
+		boolean foundEdge=false;
+		if (myPlayer.myRC.getDirection().isDiagonal()) {
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)) {
+				float probability = myPlayer.myDice.nextFloat();
+				if (probability<.5) {
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+				}
+				else {
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+				}
+				foundEdge=true;
+			}
+		}
+		else if (!myPlayer.myRC.getDirection().isDiagonal()) {
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
+				float probability = myPlayer.myDice.nextFloat();
+				if (probability<.5) {
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+				}
+				else {
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+				}
+				foundEdge=true;
+			}
+		}
+		if (!foundEdge) {
+			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
 	}
 	
 	
 	public void setDirectionID(int ID) throws GameActionException {
 		if (ID==0) {
-			myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+			myPlayer.myMotor.setDirection(Direction.NORTH);
 		}
 		if (ID==1) {
 			myPlayer.myMotor.setDirection(Direction.SOUTH_WEST);
