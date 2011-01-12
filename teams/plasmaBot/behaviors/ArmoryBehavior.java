@@ -47,7 +47,7 @@ public class ArmoryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "BUILD_FLYERS");
     			Utility.setIndicator(myPlayer, 2, "Building flyer " + Integer.toString(flyersBuilt) + ".");
     			if ( flyersBuilt > Constants.MAX_FLYERS )
-	    			obj = ArmoryBuildOrder.WAITING;
+	    			obj = ArmoryBuildOrder.BUILD_DRAGOON;
     			else
     			{
 					rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
@@ -61,6 +61,22 @@ public class ArmoryBehavior extends Behavior
     			}
     			return;
     			
+    		case BUILD_DRAGOON:
+    			Utility.setIndicator(myPlayer, 1, "BUILD_DRAGOONS");
+				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
+	    		while ( rFront != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() < myPlayer.myLastRes + Chassis.MEDIUM.upkeep + Chassis.BUILDING.upkeep )
+	    		{
+	    			myPlayer.sleep();
+	    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
+	    		}
+	    		Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.MEDIUM);
+	    		obj=ArmoryBuildOrder.EQUIP_DRAGOON;
+    			return;
+    		case EQUIP_DRAGOON:
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_DRAGOONS");
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+    			obj=ArmoryBuildOrder.BUILD_DRAGOON;
     		case WAITING:
     			
     			Utility.setIndicator(myPlayer, 1, "WAITING");
