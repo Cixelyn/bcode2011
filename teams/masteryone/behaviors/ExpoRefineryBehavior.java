@@ -146,5 +146,6 @@ public class ExpoRefineryBehavior extends Behavior
 			currFlyer++;
 	}
 	public void onWakeupCallback(int lastActiveRound) {}
+	public void onDamageCallback(double damageTaken) {}
 
 }

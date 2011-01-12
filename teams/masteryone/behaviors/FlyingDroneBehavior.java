@@ -494,6 +494,8 @@ public class FlyingDroneBehavior extends Behavior {
 		}
 	}
 
+	public void onDamageCallback(double damageTaken) {}
+
 	@Override
 	public void onWakeupCallback(int lastActiveRound) {
 		// TODO Auto-generated method stub
