@@ -213,4 +213,5 @@ public class TestFlyerBehavior extends Behavior
 		}
 	}
 	public void onWakeupCallback(int lastActiveRound) {}
+	public void onDamageCallback(double damageTaken) {}
 }

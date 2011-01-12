@@ -54,8 +54,10 @@ public class RobotPlayer implements Runnable {
 	private final int myBirthday;
 	private int executeStartTime;
 	private int executeStartByte;
+	private int lastActiveRound;
+	private double lastRoundHP;
 	public double myLastRes;
-	int lastActiveRound = 0;
+	
 	
 	
 	//Useful Toolkits
@@ -81,6 +83,9 @@ public class RobotPlayer implements Runnable {
     	myBirthday = Clock.getRoundNum();
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
+    	
+    	lastActiveRound = myBirthday;
+    	lastRoundHP = rc.getHitpoints();
     	
     	
     	//initialize base controllers
@@ -133,12 +138,25 @@ public class RobotPlayer implements Runnable {
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 		
 		
+		
 		///////////////////////////////////////////////////////////////
 		//Check if we've just woken up
 		if(myRC.wasTurnedOff()){
 			myBehavior.onWakeupCallback(lastActiveRound);
 		}
 		lastActiveRound = Clock.getRoundNum();
+		
+		
+		
+		/////////////////////////////////////////////////////////////////
+		//Check if we've sustained damage.
+		double damage = lastRoundHP - myRC.getHitpoints();
+		if(damage>0.1) {
+			myBehavior.onDamageCallback(damage);
+		}
+		
+		
+		
 		
 		
 		

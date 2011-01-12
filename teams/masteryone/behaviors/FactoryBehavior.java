@@ -33,5 +33,6 @@ public class FactoryBehavior extends Behavior
 	}
 	
 	public void onWakeupCallback(int lastActiveRound) {}
+	public void onDamageCallback(double damageTaken) {}
 
 }

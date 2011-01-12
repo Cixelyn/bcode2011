@@ -11,6 +11,7 @@ public abstract class Behavior {
 	
 	
 	
+	
 	/**
 	 * Constructor for the behavior system
 	 * @param player
@@ -61,6 +62,13 @@ public abstract class Behavior {
 	 */
 	public abstract void onWakeupCallback(int lastActiveRound);
 	
+	
+	
+	/**
+	 * Callback when damage is sustained
+	 * @param damageTaken the amount of damage a robot has sustained 
+	 */
+	public abstract void onDamageCallback(double damageTaken);
 	
 	
 	
