@@ -21,7 +21,7 @@ public class TankBehavior extends Behavior
 	boolean hasMedic;
 	
 	boolean isLeader;
-	int currLeader;
+	int currLeader = 9999;
 	MapLocation currLeaderLoc;
 	
 	public TankBehavior(RobotPlayer player)
@@ -72,7 +72,14 @@ public class TankBehavior extends Behavior
 	        	myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, myPlayer.myRC.getRobot().getID(), myPlayer.myRC.getLocation());
 	        	isLeader = false;
 	        	if ( myPlayer.myRC.getRobot().getID() < currLeader )
+	        	{
+	        		Utility.setIndicator(myPlayer, 2, "I'm a leader!");
 	        		isLeader = true;
+	        	}
+	        	else
+	        	{
+	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader));
+	        	}
 	        	allyLoc = Utility.healAllies(myPlayer, myPlayer.myScanner.scannedRobotInfos);
 	        	enemyLoc = Utility.attackEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos );
 	        	if ( enemyLoc != null )
@@ -88,7 +95,6 @@ public class TankBehavior extends Behavior
 	        			else
 	        				Utility.navStep(myPlayer, nav, enemyLoc);
 	        		}
-	        		return;
 	        	}
 	        	else
 	        	{
@@ -99,6 +105,7 @@ public class TankBehavior extends Behavior
 		        	else
 		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
 	        	}
+	        	currLeader = 9999;
 	        	return;
 	        	
 		}
