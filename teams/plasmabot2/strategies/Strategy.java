@@ -1,7 +1,7 @@
 package plasmabot2.strategies;
 
-import masteryone.RobotPlayer;
-import masteryone.behaviors.Behavior;
+import plasmabot2.RobotPlayer;
+import plasmabot2.behaviors.Behavior;
 
 /**
  * A strategy is a collection of behaviors that are instantiated upon robot default.
