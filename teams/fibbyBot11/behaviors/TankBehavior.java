@@ -27,7 +27,6 @@ public class TankBehavior extends Behavior
 	
 	MapLocation enemyLocation;
 	int spawn = -1;
-	boolean eeHanTiming = false;
 	
 	public TankBehavior(RobotPlayer player)
 	{
@@ -110,7 +109,7 @@ public class TankBehavior extends Behavior
 		        		Utility.attackDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos);
 		        	if ( isLeader )
 		        	{
-		        		if ( eeHanTiming )
+		        		if ( spawn != -1 )
 		        			Utility.navStep(myPlayer, nav, enemyLocation);
 		        		else
 		        			Utility.bounceNav(myPlayer);
@@ -119,11 +118,9 @@ public class TankBehavior extends Behavior
 		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
 	        	}
 	        	if ( isLeader )
-	        		myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, myPlayer.myRC.getRobot().getID(), myPlayer.myRC.getLocation());
+	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
 	        	else
-	        		myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, currLeader, currLeaderLoc);
-	        	if ( eeHanTiming )
-					myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
 	        	currLeader = 9999;
 	        	return;
 	        	
@@ -148,22 +145,28 @@ public class TankBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_DET_LEADER )
+		if ( t == MsgType.MSG_SEND_NUM )
 		{
-			if ( msg.ints[Messenger.firstData] < currLeader )
+			if ( msg.ints[Messenger.firstData] != -1 )
 			{
-				currLeader = msg.ints[Messenger.firstData];
-				currLeaderLoc = msg.locations[Messenger.firstData];
+				spawn = msg.ints[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
+				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
 			}
 		}
-		if (t == MsgType.MSG_ENEMY_LOC)
+		if ( t == MsgType.MSG_DET_LEADER )
 		{
-			spawn = msg.ints[Messenger.firstData];
-			enemyLocation = msg.locations[Messenger.firstData];
-			Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
-			if ( !eeHanTiming )
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
-			eeHanTiming = true;
+			if ( msg.ints[Messenger.firstData+1] < currLeader )
+			{
+				currLeader = msg.ints[Messenger.firstData+1];
+				currLeaderLoc = msg.locations[Messenger.firstData+1];
+			}
+			if ( spawn != -1 )
+			{
+				spawn = msg.ints[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
+				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+			}
 		}
 	}
 	

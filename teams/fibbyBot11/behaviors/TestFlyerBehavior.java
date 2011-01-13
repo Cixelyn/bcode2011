@@ -15,6 +15,9 @@ public class TestFlyerBehavior extends Behavior
 	
 	int num = -1;
 	
+	MapLocation enemyLocation;
+	int spawn = -1;
+	
 	public TestFlyerBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -38,7 +41,7 @@ public class TestFlyerBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "SET_INITIAL_DIR");
 				while ( myPlayer.myMotor.isActive() )
 					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.values()[num%8]);
+				myPlayer.myMotor.setDirection(Direction.values()[(3*num)%8]);
 				obj = TestFlyerBuildOrder.EXPAND;
 				return;
 				
@@ -209,9 +212,24 @@ public class TestFlyerBehavior extends Behavior
 		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			if ( num == -1 )
-				num = msg.ints[Messenger.firstData];
+				num = msg.ints[Messenger.firstData+1];
+			if ( msg.ints[Messenger.firstData] != -1 )
+			{
+				spawn = msg.ints[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
+				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+			}
 		}
 	}
-	public void onWakeupCallback(int lastActiveRound) {}
-	public void onDamageCallback(double damageTaken) {}
+	
+	public void onWakeupCallback(int lastActiveRound)
+	{
+		
+	}
+	
+	public void onDamageCallback(double damageTaken)
+	{
+		
+	}
+	
 }

@@ -67,7 +67,15 @@ public class FactoryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "PAUSE_TANKS");
     			Utility.setIndicator(myPlayer, 2, "Pausing tank " + Integer.toString(tanksBuilt) + ".");
+    			obj = FactoryBuildOrder.SLEEP;
     			return;
+    			
+			case SLEEP:
+				Utility.setIndicator(myPlayer, 1, "SLEEP");
+    			Utility.setIndicator(myPlayer, 2, "");
+    			myPlayer.myRC.turnOff();
+    			return;
+    			
 		}
 	}
 
@@ -93,7 +101,7 @@ public class FactoryBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		obj = FactoryBuildOrder.BUILD_TANKS;
+		
 	}
 	
 	public void onDamageCallback(double damageTaken)

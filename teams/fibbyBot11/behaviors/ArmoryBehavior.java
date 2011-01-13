@@ -13,6 +13,7 @@ public class ArmoryBehavior extends Behavior
 	Robot rFront;
 	
 	int flyersBuilt = 0;
+	boolean remadeFlyers = false;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -44,11 +45,23 @@ public class ArmoryBehavior extends Behavior
     		case BUILD_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "BUILD_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, "Building flyer " + Integer.toString(flyersBuilt) + ".");
     			if ( flyersBuilt > Constants.MAX_FLYERS )
-	    			obj = ArmoryBuildOrder.SLEEP;
+    			{
+    				Utility.setIndicator(myPlayer, 2, "Pausing flyer " + Integer.toString(flyersBuilt) + ".");
+    				if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    				{
+    					if ( !remadeFlyers )
+    					{
+    						remadeFlyers = true;
+    						flyersBuilt = 0;
+    					}
+    					else
+    						obj = ArmoryBuildOrder.SLEEP;
+    				}
+    			}
     			else
     			{
+    				Utility.setIndicator(myPlayer, 2, "Building flyer " + Integer.toString(flyersBuilt) + ".");
 					rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
 	    			while ( rFront != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() < myPlayer.myLastRes + Chassis.FLYING.upkeep + Chassis.BUILDING.upkeep )
 	    			{
@@ -84,17 +97,16 @@ public class ArmoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
-		if ( t == MsgType.MSG_STOP_TANKS )
-			obj = ArmoryBuildOrder.SLEEP;
 	}
 	
-	public void onWakeupCallback(int lastActiveRound) {}
+	public void onWakeupCallback(int lastActiveRound)
 	{
 		
 	}
-	public void onDamageCallback(double damageTaken) {}
 	
+	public void onDamageCallback(double damageTaken)	
 	{
 		
 	}
+	
 }

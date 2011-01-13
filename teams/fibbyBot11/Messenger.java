@@ -149,7 +149,7 @@ public class Messenger {
 	public void sendInt(MsgType t, int int1)
 	{
 		Message m = buildNewMessage(1,0);
-		m.ints[firstData] = int1;
+		m.ints[firstData       ] = int1;
 		
 		sendMsg(t,m);
 	}
@@ -165,7 +165,7 @@ public class Messenger {
 	public void sendIntLoc(MsgType t, int int1, MapLocation loc1)
 	{
 		Message m = buildNewMessage(1,1);
-		m.ints[firstData] = int1;
+		m.ints[firstData       ] = int1;
 		m.locations[firstData  ] = loc1;
 		
 		sendMsg(t,m);	
@@ -187,6 +187,27 @@ public class Messenger {
 		m.locations[firstData+1] = loc2;
 		
 		sendMsg(t,m);				
+	}
+	
+	public void sendDoubleIntLoc(MsgType t, int int1, int int2, MapLocation loc1)
+	{
+		Message m = buildNewMessage(2,1);
+		m.ints[firstData       ] = int1;
+		m.ints[firstData+1     ] = int2; 
+		m.locations[firstData  ] = loc1;
+		
+		sendMsg(t,m);	
+	}
+	
+	public void sendDoubleIntDoubleLoc(MsgType t, int int1, int int2, MapLocation loc1, MapLocation loc2)
+	{
+		Message m = buildNewMessage(2,2);
+		m.ints[firstData       ] = int1;
+		m.ints[firstData+1     ] = int2; 
+		m.locations[firstData  ] = loc1;
+		m.locations[firstData+1] = loc2;
+		
+		sendMsg(t,m);	
 	}
 	
 	

@@ -34,7 +34,7 @@ public class SCVBehavior extends Behavior
 	int eastEdge = -1;
 	int southEdge = -1;
 	int spawn = -1;
-	boolean eeHanTiming = false;
+	boolean spawnReceived;
 	
 	public SCVBehavior(RobotPlayer player)
 	{
@@ -404,7 +404,7 @@ public class SCVBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "BROADCAST_SPAWN");
     			myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
-    			if ( eeHanTiming )
+    			if ( spawnReceived )
     				obj = SCVBuildOrder.VACATE_SPAWN;
     			else
     				Utility.navStep(myPlayer, nav, destination);
@@ -461,12 +461,8 @@ public class SCVBehavior extends Behavior
 	{
 		if (t == MsgType.MSG_ENEMY_LOC)
 		{
-			spawn = msg.ints[Messenger.firstData];
-			enemyLocation = msg.locations[Messenger.firstData];
 			Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
-			if ( !eeHanTiming )
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
-			eeHanTiming = true;
+			spawnReceived = true;
 		}
 	}
 	

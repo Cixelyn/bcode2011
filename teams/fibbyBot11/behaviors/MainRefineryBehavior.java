@@ -31,7 +31,8 @@ public class MainRefineryBehavior extends Behavior
 	
 	MapLocation enemyLocation;
 	int spawn = -1;
-	boolean eeHanTiming = false;
+	boolean tanksStopped = false;
+	boolean flyersRemade = false;
 	
 	public MainRefineryBehavior(RobotPlayer player)
 	{
@@ -92,18 +93,23 @@ public class MainRefineryBehavior extends Behavior
     				else
     					obj = RefineryBuildOrder.SLEEP;
     			}
-    			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
+    			else if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
 	    			obj = RefineryBuildOrder.SLEEP;
     			return;
     			
     		case EQUIP_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + " out of " + Integer.toString(tanksToMake) + ".");
+    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS) + ".");
     			if ( currFlyer > Constants.MAX_FLYERS )
     			{
-    				obj = RefineryBuildOrder.SLEEP;
-    				return;
+    				if ( !flyersRemade )
+    				{
+    					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    					flyersRemade = true;
+    				}
+    				else
+    					obj = RefineryBuildOrder.SLEEP;
     			}
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
@@ -124,7 +130,7 @@ public class MainRefineryBehavior extends Behavior
     					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR);
     						myPlayer.sleep();
-    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currFlyer);
+    						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, spawn, currFlyer, enemyLocation);
     						currFlyer++;
     					}
     					return;
@@ -147,18 +153,25 @@ public class MainRefineryBehavior extends Behavior
     			
     		case EQUIP_TANKS:
     			
-    			Utility.setIndicator(myPlayer, 0, "Last: " + Double.toString(lastIncome) + " , Current: " + Double.toString(myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot())));
     			Utility.setIndicator(myPlayer, 1, "EQUIP_TANKS");
     			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + " out of " + Integer.toString(tanksToMake) + ".");
     			
-    			if ( myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) > lastIncome )
+    			if ( currTank >= tanksToMake )
+    			{
+    				if ( !tanksStopped )
+    				{
+    					myPlayer.myMessenger.sendNotice(MsgType.MSG_STOP_TANKS);
+    					tanksStopped = true;
+    				}
+    				if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    				{
+    					currFlyer = 0;
+    					obj = RefineryBuildOrder.EQUIP_FLYERS;
+    				}
+    			}
+    			
+				if ( myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) > lastIncome )
     				tanksToMake += Constants.TANKS_PER_EXPO;
-    			
-    			if ( currTank < tanksToMake )
-	    			myPlayer.myMessenger.sendNotice(MsgType.MSG_START_TANKS);
-    			else
-    				myPlayer.myMessenger.sendNotice(MsgType.MSG_STOP_TANKS);
-    			
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
     				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
@@ -188,9 +201,7 @@ public class MainRefineryBehavior extends Behavior
     					else if ( !rHasAntenna )
     					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
-    						if ( eeHanTiming )
-    							myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+    						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, spawn, currTank, enemyLocation);
     						currTank++;
     					}
 						myPlayer.sleep();
@@ -198,6 +209,7 @@ public class MainRefineryBehavior extends Behavior
     					return;
     				}
     			}
+    			
     			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
     			return;
     			
@@ -240,12 +252,13 @@ public class MainRefineryBehavior extends Behavior
 		}
 		if (t == MsgType.MSG_ENEMY_LOC)
 		{
-			spawn = msg.ints[Messenger.firstData];
-			enemyLocation = msg.locations[Messenger.firstData];
-			Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
-			if ( !eeHanTiming )
+			if ( spawn == -1 )
+			{
+				spawn = msg.ints[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
+				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
 				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
-			eeHanTiming = true;
+			}
 		}
 	}
 	public void onWakeupCallback(int lastActiveRound)
