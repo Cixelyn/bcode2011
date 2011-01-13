@@ -62,21 +62,7 @@ public class Actions {
 	 * @return whether retreat was successful.
 	 */
 	public boolean retreatBackwardsInDir(Direction dir) {
-		try {
-			if (!myPlayer.myMotor.isActive() && dir.ordinal()<8) {
-				if (myRC.getDirection().opposite().equals(dir)) {
-					if (myPlayer.myMotor.canMove((dir))) {
-						myPlayer.myMotor.moveBackward();
-						return true;
-					}
-				} else {
-					myPlayer.myMotor.setDirection(dir.opposite());
-				}
-			}
-		} catch (GameActionException e) {
-			System.out.println("Action Exception: backUpInDir");
-			e.printStackTrace();
-		}
+		//TODO: Implement
 		return false;
 	}
 
