@@ -200,24 +200,24 @@ public class Messenger {
 			
 			////////BEGIN MESSAGE VALIDATION SYSTEM
 				///////Begin inlined message validation checker
-					if(m.ints==null) break;
-					if(m.ints.length<minSize) break;
-			
+					if(m.ints==null) continue;
+					if(m.ints.length<minSize) continue;
 					
 				//////We should have a checksum -- make sure the checksum is right.
-					if(m.ints[idxHash]!=teamKey) break;
+					if(m.ints[idxHash]!=teamKey) continue;
 					
 				//////We at least have a valid int header
 					MsgType t = Encoder.decodeMsgType(m.ints[idxHeader]);  //pull out the header
 					
 				//////Now make sure we have enough ints & enough maplocations
-					if(m.ints.length!=t.numInts) break;
-					if(m.locations==null) break;
-					if(m.locations.length!=t.numLocs) break;
+					if(m.ints.length!=t.numInts) continue;
+					if(m.locations==null) continue;
+					if(m.locations.length!=t.numLocs) continue;
 			////////MESSAGE HAS BEEN VALIDATED
 			
 			isValid = true;
 				
+			
 			if(t.shouldCallback) {	//Generic Callback Messages
 				myPlayer.myBehavior.newMessageCallback(t,m);
 			}
