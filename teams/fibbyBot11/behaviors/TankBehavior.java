@@ -15,9 +15,10 @@ public class TankBehavior extends Behavior
 	MapLocation debrisLoc;
 	
 	int numProcessors;
-	boolean hasAntenna;
-	boolean hasBlaster;
+	int numBlasters;
+	boolean hasSMG;
 	boolean hasRadar;
+	boolean hasAntenna;
 	boolean hasMedic;
 	
 	boolean isLeader;
@@ -40,24 +41,27 @@ public class TankBehavior extends Behavior
 				
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				numProcessors = 0;
-				hasAntenna = false;
-				hasBlaster = false;
+				numBlasters = 0;
+				hasSMG = false;
 				hasRadar = false;
+				hasAntenna = false;
 				hasMedic = false;
 				for ( ComponentController c : myPlayer.myRC.components() )
 				{
 					if ( c.type() == ComponentType.PROCESSOR )
 						numProcessors++;
-					if ( c.type() == ComponentType.ANTENNA )
-						hasAntenna = true;
 					if ( c.type() == ComponentType.BLASTER )
-						hasBlaster = true;
+						numBlasters++;
+					if ( c.type() == ComponentType.SMG )
+						hasSMG = true;
 					if ( c.type() == ComponentType.RADAR )
 						hasRadar = true;
+					if ( c.type() == ComponentType.ANTENNA )
+						hasAntenna = true;
 					if ( c.type() == ComponentType.MEDIC )
 						hasMedic = true;
 				}
-				if ( numProcessors >= 2 && hasAntenna && hasBlaster && hasRadar && hasMedic )
+				if ( numProcessors >= 0 && numBlasters >= 2 && hasRadar && hasAntenna && hasMedic )
 				{
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
@@ -78,8 +82,9 @@ public class TankBehavior extends Behavior
 	        	}
 	        	else
 	        	{
-	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader));
+	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
 	        	}
+	        	Utility.healSelf(myPlayer);
 	        	allyLoc = Utility.healAllies(myPlayer, myPlayer.myScanner.scannedRobotInfos);
 	        	enemyLoc = Utility.attackEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos );
 	        	if ( enemyLoc != null )

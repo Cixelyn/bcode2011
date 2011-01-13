@@ -32,7 +32,7 @@ public class DefaultBehavior extends Behavior
 				else
 					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.PROCESSOR )
+			if ( c.type() == ComponentType.BLASTER )
 			{
 				myPlayer.swapBehavior(new TankBehavior(myPlayer));
 				myPlayer.myScanner.setDetectionMode(Robot.class);

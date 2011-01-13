@@ -330,6 +330,29 @@ public class Utility {
     	return destination;
 	}
 	
+	/**
+	 * Shoot itself with a medic gun
+	 * @author JVen
+	 * @param myPlayer The robot player
+	 */
+	
+	public static void healSelf(RobotPlayer myPlayer) throws Exception
+	{
+		WeaponController gun;
+		
+		for ( Object c : myPlayer.myWeapons )
+		{
+			gun = (WeaponController) c;
+			if ( gun.type() == ComponentType.MEDIC )
+			{
+				if(!gun.isActive() && myPlayer.myRC.getHitpoints() < myPlayer.myRC.getMaxHp())
+				{
+					gun.attackSquare(myPlayer.myRC.getLocation(), myPlayer.myRC.getRobot().getRobotLevel());
+				}
+			}
+		}
+	}
+	
 	//Max's Go here
 	
 	

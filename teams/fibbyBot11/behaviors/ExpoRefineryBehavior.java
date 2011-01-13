@@ -22,9 +22,10 @@ public class ExpoRefineryBehavior extends Behavior
 	boolean rHasSight;
 	
 	int rNumProcessors;
-	boolean rHasAntenna;
-	boolean rHasBlaster;
+	int rNumBlasters;
+	boolean rHasSMG;
 	boolean rHasRadar;
+	boolean rHasAntenna;
 	
 	public ExpoRefineryBehavior(RobotPlayer player)
 	{
@@ -68,7 +69,7 @@ public class ExpoRefineryBehavior extends Behavior
     		case EQUIP_FLYERS:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
+    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS));
     			if ( currFlyer > Constants.MAX_FLYERS )
     			{
     				obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
@@ -118,44 +119,50 @@ public class ExpoRefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 0, "Last: " + Double.toString(lastIncome) + " , Current: " + Double.toString(myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot())));
     			Utility.setIndicator(myPlayer, 1, "EQUIP_TANKS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + " out of " + Integer.toString(tanksToMake));
-    			tanksToMake += Math.max(Constants.TANKS_PER_EXPO * (int)Math.floor(myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) - lastIncome), 0);
+    			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + " out of " + Integer.toString(tanksToMake) + ".");
+    			
+    			if ( myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) > lastIncome )
+    				tanksToMake += Constants.TANKS_PER_EXPO;
+    			
     			if ( currTank < tanksToMake )
 	    			myPlayer.myMessenger.sendNotice(MsgType.MSG_START_TANKS);
     			else
     				myPlayer.myMessenger.sendNotice(MsgType.MSG_STOP_TANKS);
+    			
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
     				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
     				{
     					rNumProcessors = 0;
-    					rHasAntenna = false;
-    					rHasBlaster = false;
+    					rNumBlasters = 0;
+    					rHasSMG = false;
     					rHasRadar = false;
+    					rHasAntenna = false;
     					for ( ComponentType c : rInfo.components )
     					{
     						if ( c == ComponentType.PROCESSOR )
     							rNumProcessors++;
-    						if ( c == ComponentType.ANTENNA )
-    							rHasAntenna = true;
     						if ( c == ComponentType.BLASTER )
-    							rHasBlaster = true;
+    							rNumBlasters++;
     						if ( c == ComponentType.RADAR )
     							rHasRadar = true;
+    						if ( c == ComponentType.ANTENNA )
+    							rHasAntenna = true;
     					}
-    					if ( rNumProcessors < 2 )
+    					if ( rNumProcessors < 0 )
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PROCESSOR, RobotLevel.ON_GROUND);
-    					else if ( !rHasAntenna )
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    					else if ( !rHasBlaster )
+    					else if ( rNumBlasters < 2 )
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
     					else if ( !rHasRadar )
-    					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
+    					else if ( !rHasAntenna )
+    					{
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
     						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
     						currTank++;
     					}
 						myPlayer.sleep();
+						lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
     					return;
     				}
     			}
