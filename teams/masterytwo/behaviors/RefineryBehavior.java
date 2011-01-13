@@ -17,7 +17,13 @@ public class RefineryBehavior extends Behavior
 	boolean rHasConstructor;
 	boolean rHasSight;
 	
+	boolean rHasBlaster;
+	boolean rHasRadar;
+	boolean rHasAntenna;
+	
 	Robot babyMarine;
+	Robot rFront;
+	RobotInfo rInfo;
 	
 	MapLocation enemyLocation;
 	int spawn = -1;
@@ -133,7 +139,7 @@ public class RefineryBehavior extends Behavior
     		case MAKE_MARINE:
     			
     			Utility.setIndicator(myPlayer, 1, "MAKE_MARINE");
-    			if ( myPlayer.myMotor.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || lastIncome < myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) )
+    			if ( myPlayer.myMotor.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.LIGHT.upkeep * ((int)Math.floor(lastIncome) - 4) )
     				myPlayer.sleep();
     			else if ( !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null )
     			{
@@ -152,13 +158,34 @@ public class RefineryBehavior extends Behavior
     		case EQUIP_MARINE:
     			
     			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
-    			if ( myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND) == babyMarine )
+    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    			if ( rFront == babyMarine )
     			{
-	    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-	    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
-	    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-	    			if ( spawn != -1 )
-	    				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
+    				rHasBlaster = false;
+    				rHasRadar = false;
+    				rHasAntenna = false;
+    				for ( ComponentType c : rInfo.components )
+    				{
+    					if ( c == ComponentType.BLASTER )
+    						rHasBlaster = true;
+    					if ( c == ComponentType.RADAR )
+    						rHasRadar = true;
+    					if ( c == ComponentType.ANTENNA )
+    						rHasAntenna = true;
+    				}
+    				if ( !rHasBlaster )
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+    				else if ( !rHasRadar )
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
+    				else if ( !rHasAntenna )
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+    				else
+    				{
+    					if ( spawn != -1 )
+    						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+    					obj = RefineryBuildOrder.MAKE_MARINE;
+    				}
     			}
 	    		else
 	    			obj = RefineryBuildOrder.MAKE_MARINE;

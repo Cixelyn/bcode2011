@@ -1,9 +1,8 @@
 package masterytwo.strategies;
 
 
-import masterytwo.Behavior;
-import masterytwo.RobotPlayer;
-import masterytwo.behaviors.DefaultBehavior;
+import masterytwo.*;
+import masterytwo.behaviors.*;
 
 
 /**
