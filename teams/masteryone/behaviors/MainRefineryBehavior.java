@@ -101,15 +101,10 @@ public class MainRefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
     			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS) + ".");
-    			if ( currFlyer > Constants.MAX_FLYERS )
+    			if ( currFlyer > Constants.MAX_FLYERS && !flyersRemade )
     			{
-    				if ( !flyersRemade )
-    				{
-    					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
-    					flyersRemade = true;
-    				}
-    				else
-    					obj = RefineryBuildOrder.SLEEP;
+					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+					flyersRemade = true;
     			}
     			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
     			{
@@ -156,58 +151,61 @@ public class MainRefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "EQUIP_TANKS");
     			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + " out of " + Integer.toString(tanksToMake) + ".");
     			
+    			if ( currTank == tanksToMake - 1 )
+					myPlayer.myMessenger.sendNotice(MsgType.MSG_STOP_TANKS);
+    			
     			if ( currTank >= tanksToMake )
     			{
     				if ( !tanksStopped )
     				{
-    					myPlayer.myMessenger.sendNotice(MsgType.MSG_STOP_TANKS);
     					tanksStopped = true;
-    				}
-    				if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
-    				{
     					currFlyer = 0;
     					obj = RefineryBuildOrder.EQUIP_FLYERS;
     				}
+    				else
+    					obj = RefineryBuildOrder.SLEEP;
     			}
-    			
-				if ( myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) > lastIncome )
-    				tanksToMake += Constants.TANKS_PER_EXPO;
-    			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
-    			{
-    				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
-    				{
-    					rNumProcessors = 0;
-    					rNumBlasters = 0;
-    					rHasSMG = false;
-    					rHasRadar = false;
-    					rHasAntenna = false;
-    					for ( ComponentType c : rInfo.components )
-    					{
-    						if ( c == ComponentType.PROCESSOR )
-    							rNumProcessors++;
-    						if ( c == ComponentType.BLASTER )
-    							rNumBlasters++;
-    						if ( c == ComponentType.RADAR )
-    							rHasRadar = true;
-    						if ( c == ComponentType.ANTENNA )
-    							rHasAntenna = true;
-    					}
-    					if ( rNumProcessors < 0 )
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PROCESSOR, RobotLevel.ON_GROUND);
-    					else if ( rNumBlasters < 2 )
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-    					else if ( !rHasRadar )
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
-    					else if ( !rHasAntenna )
-    					{
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, spawn, currTank, enemyLocation);
-    						currTank++;
-    					}
-						myPlayer.sleep();
-						lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
-    					return;
-    				}
+    			else
+    			{	
+					if ( myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot()) > lastIncome )
+	    				tanksToMake += Constants.TANKS_PER_EXPO;
+	    			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
+	    			{
+	    				if ( rInfo.chassis == Chassis.MEDIUM && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
+	    				{
+	    					rNumProcessors = 0;
+	    					rNumBlasters = 0;
+	    					rHasSMG = false;
+	    					rHasRadar = false;
+	    					rHasAntenna = false;
+	    					for ( ComponentType c : rInfo.components )
+	    					{
+	    						if ( c == ComponentType.PROCESSOR )
+	    							rNumProcessors++;
+	    						if ( c == ComponentType.BLASTER )
+	    							rNumBlasters++;
+	    						if ( c == ComponentType.RADAR )
+	    							rHasRadar = true;
+	    						if ( c == ComponentType.ANTENNA )
+	    							rHasAntenna = true;
+	    					}
+	    					if ( rNumProcessors < 0 )
+	    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PROCESSOR, RobotLevel.ON_GROUND);
+	    					else if ( rNumBlasters < 2 )
+	    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+	    					else if ( !rHasRadar )
+	    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
+	    					else if ( !rHasAntenna )
+	    					{
+	    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+	    						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, spawn, currTank, enemyLocation);
+	    						currTank++;
+	    					}
+							myPlayer.sleep();
+							lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
+	    					return;
+	    				}
+	    			}
     			}
     			
     			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
