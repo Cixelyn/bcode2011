@@ -20,6 +20,7 @@ public enum MsgType {
 	MSG_SEND_ID (   0  , true ,  false,    1  ,   0   		),
 	MSG_SEND_DOCK(  0  , true ,  false,    0  ,   1   		),
 	MSG_SEND_NUM(   0  , true ,  false,    1  ,   0   		);
+	MSG_MINES   (   0  , true ,  false,    0  ,   5         );
 	
 	
 	public int ttl;
@@ -37,6 +38,7 @@ public enum MsgType {
 		numLocs = _numLocs+Messenger.minSize;	//This allows us to save bytecodes in the validation loop
 	}
 					
+	
 	
 	
 	
