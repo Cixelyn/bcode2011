@@ -73,7 +73,6 @@ public class TankBehavior extends Behavior
 			case MOVE_OUT:	
 				
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
-	        	myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, myPlayer.myRC.getRobot().getID(), myPlayer.myRC.getLocation());
 	        	isLeader = false;
 	        	if ( myPlayer.myRC.getRobot().getID() < currLeader )
 	        	{
@@ -110,6 +109,10 @@ public class TankBehavior extends Behavior
 		        	else
 		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
 	        	}
+	        	if ( isLeader )
+	        		myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, myPlayer.myRC.getRobot().getID(), myPlayer.myRC.getLocation());
+	        	else
+	        		myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, currLeader, currLeaderLoc);
 	        	currLeader = 9999;
 	        	return;
 	        	
