@@ -24,7 +24,6 @@ public abstract class Behavior {
 		
 		//Execute Callbacks for starting units that start off with stuff
 		newComponentCallback(myPlayer.myRC.components());
-		
 	}
 	
 	/**
