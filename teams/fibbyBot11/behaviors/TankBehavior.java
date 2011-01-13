@@ -25,6 +25,10 @@ public class TankBehavior extends Behavior
 	int currLeader = 9999;
 	MapLocation currLeaderLoc;
 	
+	MapLocation enemyLocation;
+	int spawn = -1;
+	boolean eeHanTiming = false;
+	
 	public TankBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -105,7 +109,12 @@ public class TankBehavior extends Behavior
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
 		        		Utility.attackDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos);
 		        	if ( isLeader )
-		        		Utility.bounceNav(myPlayer);
+		        	{
+		        		if ( eeHanTiming )
+		        			Utility.navStep(myPlayer, nav, enemyLocation);
+		        		else
+		        			Utility.bounceNav(myPlayer);
+		        	}
 		        	else
 		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
 	        	}
@@ -113,6 +122,8 @@ public class TankBehavior extends Behavior
 	        		myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, myPlayer.myRC.getRobot().getID(), myPlayer.myRC.getLocation());
 	        	else
 	        		myPlayer.myMessenger.sendIntLoc(MsgType.MSG_DET_LEADER, currLeader, currLeaderLoc);
+	        	if ( eeHanTiming )
+					myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
 	        	currLeader = 9999;
 	        	return;
 	        	
@@ -144,6 +155,15 @@ public class TankBehavior extends Behavior
 				currLeader = msg.ints[Messenger.firstData];
 				currLeaderLoc = msg.locations[Messenger.firstData];
 			}
+		}
+		if (t == MsgType.MSG_ENEMY_LOC)
+		{
+			spawn = msg.ints[Messenger.firstData];
+			enemyLocation = msg.locations[Messenger.firstData];
+			Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+			if ( !eeHanTiming )
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+			eeHanTiming = true;
 		}
 	}
 	

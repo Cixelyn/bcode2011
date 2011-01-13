@@ -21,7 +21,8 @@ public enum MsgType {
 	MSG_SEND_NUM(   0  , true , 1 , 0   ),
 	MSG_STOP_TANKS( 0  , true , 0 , 0   ),
 	MSG_START_TANKS(0  , true , 0 , 0   ),
-	MSG_DET_LEADER( 0  , true , 1 , 1   );
+	MSG_DET_LEADER( 0  , true , 1 , 1   ),
+	MSG_ENEMY_LOC(  0  , true , 1 , 1   );
 	
 	
 	public int ttl;

@@ -23,8 +23,6 @@ public class FactoryBehavior extends Behavior
 	public void run() throws Exception
 	{
 		
-		Utility.setIndicator(myPlayer, 0, myPlayer.myRC.getDirection().toString());
-		
 		switch ( obj )
 		{
 			
@@ -38,16 +36,16 @@ public class FactoryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.FACTORY.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-        				obj = FactoryBuildOrder.SLEEP;
+        				obj = FactoryBuildOrder.WAIT_FOR_HANBANG;
     				}
     			}
     			return;
     			
-			case SLEEP:
+			case WAIT_FOR_HANBANG:
 				
-				Utility.setIndicator(myPlayer, 1, "SLEEP");
-				Utility.setIndicator(myPlayer, 2, "");
-				myPlayer.myRC.turnOff();
+				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_HANBANG");
+    			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
+    				obj = FactoryBuildOrder.BUILD_TANKS;
 				return;
 				
 			case BUILD_TANKS:

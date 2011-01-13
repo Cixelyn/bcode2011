@@ -29,6 +29,10 @@ public class MainRefineryBehavior extends Behavior
 	boolean rHasRadar;
 	boolean rHasAntenna;
 	
+	MapLocation enemyLocation;
+	int spawn = -1;
+	boolean eeHanTiming = false;
+	
 	public MainRefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -185,6 +189,8 @@ public class MainRefineryBehavior extends Behavior
     					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
     						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
+    						if ( eeHanTiming )
+    							myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
     						currTank++;
     					}
 						myPlayer.sleep();
@@ -231,6 +237,15 @@ public class MainRefineryBehavior extends Behavior
 		{
 			currFlyer++;
 			currTank++;
+		}
+		if (t == MsgType.MSG_ENEMY_LOC)
+		{
+			spawn = msg.ints[Messenger.firstData];
+			enemyLocation = msg.locations[Messenger.firstData];
+			Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+			if ( !eeHanTiming )
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+			eeHanTiming = true;
 		}
 	}
 	public void onWakeupCallback(int lastActiveRound)

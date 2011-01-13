@@ -12,7 +12,6 @@ public class ExpoRefineryBehavior extends Behavior
 
 	Robot rFront;
 	
-	int isLeader = -1;
 	int currFlyer;
 	int currTank;
 	int tanksToMake;
@@ -26,6 +25,10 @@ public class ExpoRefineryBehavior extends Behavior
 	boolean rHasSMG;
 	boolean rHasRadar;
 	boolean rHasAntenna;
+	
+	MapLocation enemyLocation;
+	int spawn = -1;
+	boolean eeHanTiming = false;
 	
 	public ExpoRefineryBehavior(RobotPlayer player)
 	{
@@ -117,7 +120,6 @@ public class ExpoRefineryBehavior extends Behavior
     			
     		case EQUIP_TANKS:
     			
-    			Utility.setIndicator(myPlayer, 0, "Last: " + Double.toString(lastIncome) + " , Current: " + Double.toString(myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot())));
     			Utility.setIndicator(myPlayer, 1, "EQUIP_TANKS");
     			Utility.setIndicator(myPlayer, 2, "Equipping tank " + Integer.toString(currTank) + " out of " + Integer.toString(tanksToMake) + ".");
     			
@@ -159,6 +161,8 @@ public class ExpoRefineryBehavior extends Behavior
     					{
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
     						myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_NUM, currTank);
+    						if ( eeHanTiming )
+    							myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
     						currTank++;
     					}
 						myPlayer.sleep();
@@ -192,19 +196,21 @@ public class ExpoRefineryBehavior extends Behavior
 	
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_SEND_ID )
-		{
-			if ( msg.ints[Messenger.firstData] < myPlayer.myRC.getRobot().getID() )
-				isLeader = 0;
-			else
-				isLeader = 1;
-		}
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
 		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			currFlyer++;
 			currTank++;
+		}
+		if (t == MsgType.MSG_ENEMY_LOC)
+		{
+			spawn = msg.ints[Messenger.firstData];
+			enemyLocation = msg.locations[Messenger.firstData];
+			Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+			if ( !eeHanTiming )
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+			eeHanTiming = true;
 		}
 	}
 	public void onWakeupCallback(int lastActiveRound)

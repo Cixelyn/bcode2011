@@ -10,7 +10,8 @@ import java.util.*;
  *
  */
 
-public class Utility {
+public class Utility
+{
 	
 	public static final Random rand = new Random();
 	
@@ -351,6 +352,103 @@ public class Utility {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Uses black magic to determine spawn location based on whether off map squares are found in each direction
+	 * @author JVen
+	 * @param westEdge 1 if an off_map square is found to the west, 0 otherwise
+	 * @param northEdge 1 if an off_map square is found to the north, 0 otherwise
+	 * @param eastEdge 1 if an off_map square is found to the east, 0 otherwise
+	 * @param southEdge 1 if an off_map square is found to the south, 0 otherwise
+	 * @return Spawn location: 0 is west, increments clockwise
+	 */
+	public static int getSpawn(int westEdge, int northEdge, int eastEdge, int southEdge)
+	{
+		switch ((westEdge+1)*(2*northEdge+1)*(4*eastEdge+1)*(6*southEdge+1))
+		{
+			case 2:
+				return 0;
+			case 3:
+				return 2;
+			case 5:
+				return 4;
+			case 7:
+				return 6;
+			case 6:
+				return 1;
+			case 14:
+				return 7;
+			case 15:
+				return 3;
+			case 35:
+				return 5;
+		}
+		return 8; // center spawn
+	}
+	
+	/**
+	 * Outputs enemy location based on int returned from getSpawn
+	 * @author JVen
+	 * @param hometown The location the spawn spawned
+	 * @param spawn The region of the spawn
+	 * @return The location of the enemy spawn
+	 */
+	public static MapLocation spawnOpposite(MapLocation hometown, int spawn)
+	{
+		switch (spawn)
+		{
+			case 2:
+			return hometown.add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
+			case 4:
+			return hometown.add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
+			case 6:
+			return hometown.add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
+			case 0:
+			return hometown.add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
+			case 1:
+			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
+			case 3:
+			return hometown.add(Direction.SOUTH_WEST, Constants.MAP_MAX_SIZE);
+			case 7:
+			return hometown.add(Direction.NORTH_EAST, Constants.MAP_MAX_SIZE);
+			case 5:
+			return hometown.add(Direction.NORTH_WEST, Constants.MAP_MAX_SIZE);
+			case 8:
+			return hometown;
+		}
+		return null; // center spawn
+	}
+	
+	/**
+	 * Return string based on spawn location
+	 * @author JVen
+	 * @param spawn The region of the spawn
+	 * @return String specifying starting spawn region
+	 */
+	
+	public static String spawnString(int spawn)
+	{
+		switch (spawn)
+		{
+			case 0:
+				return "west";
+			case 1:
+				return "northwest";
+			case 2:
+				return "north";
+			case 3:
+				return "northeast";
+			case 4:
+				return "east";
+			case 5:
+				return "southeast";
+			case 6:
+				return "south";
+			case 7:
+				return "southwest";
+		}
+		return "center";
 	}
 	
 	//Max's Go here
