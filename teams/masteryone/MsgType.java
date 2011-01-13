@@ -15,13 +15,16 @@ public enum MsgType {
 	//ints   - number of ints in message
 	//locs   - number of locs in message
 	
-				//	ttl, cback,  rbcast,  ints, locs
-	MSG_HELLO	(	1  , true ,  false,    0  ,   0			),
-	MSG_SEND_ID (   0  , true ,  false,    1  ,   0   		),
-	MSG_SEND_DOCK(  0  , true ,  false,    0  ,   1   		),
-	MSG_SEND_NUM(   0  , true ,  false,    1  ,   0   		);
-	MSG_MINES   (   0  , true ,  false,    0  ,   5         );
-	
+				//	ttl, cback,  rbcast,  ints, locs	
+	MSG_HELLO	(	1  , true , false , 0 , 0	),
+	MSG_SEND_ID (   0  , true , false , 1 , 0   ),
+	MSG_SEND_DOCK(  0  , true , false , 0 , 1   ),
+	MSG_SEND_NUM(   0  , true , false , 2 , 1   ),
+	MSG_STOP_TANKS( 0  , true , false , 0 , 0   ),
+	MSG_START_TANKS(0  , true , false , 0 , 0   ),
+	MSG_ENEMY_LOC(  0  , true , false , 1 , 1   ),
+	MSG_DET_LEADER( 0  , true , false , 2 , 2   ),
+	MSG_MINES(      0  , true , false , 0 , 5   );
 	
 	public int ttl;
 	public boolean shouldCallback;

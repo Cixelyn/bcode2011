@@ -2,12 +2,8 @@ package masteryone.behaviors;
 
 import java.util.ArrayList;
 
-import fibbyBot7.Messenger;
+import masteryone.*;
 import battlecode.common.*;
-import masteryone.MsgType;
-import masteryone.RobotPlayer;
-import masteryone.Utility;
-import masteryone.Constants;
 
 public class FlyingDroneBehavior extends Behavior {
 	

@@ -7,7 +7,7 @@ public class Scanner {
 	
 	private final RobotPlayer myPlayer;
 	private boolean canScan;
-	private Class<GameObject> detectionType;
+	private Class<? extends GameObject> detectionType;
 	
 	
 	public GameObject[] nearbyGameObjects;
@@ -83,7 +83,7 @@ public class Scanner {
 		canScan = true;
 	}
 	
-	public void setDetectionMode(Class<GameObject> type) {
+	public void setDetectionMode(Class<? extends GameObject> type) {
 		detectionType = type;		
 	}
 	
