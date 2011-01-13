@@ -1,8 +1,8 @@
 package masteryone.strategies;
 
 import battlecode.common.*;
+import masteryone.Behavior;
 import masteryone.RobotPlayer;
-import masteryone.behaviors.Behavior;
 import masteryone.behaviors.DefaultBehavior;
 import masteryone.behaviors.NavtestBehavior;
 

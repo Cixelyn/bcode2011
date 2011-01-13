@@ -1,4 +1,4 @@
-package masteryone.behaviors;
+package masteryone;
 
 import battlecode.common.*;
 
@@ -6,7 +6,7 @@ import masteryone.*;
 
 public abstract class Behavior {
 	
-	final RobotPlayer myPlayer;		//Our myplayer object
+	public final RobotPlayer myPlayer;		//Our myplayer object
 	int behaviorStartTime;			//Start of the new behavior
 	public boolean overrideScanner;
 	

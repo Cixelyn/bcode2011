@@ -1,8 +1,8 @@
 package masteryone.strategies;
 
 
+import masteryone.Behavior;
 import masteryone.RobotPlayer;
-import masteryone.behaviors.Behavior;
 import masteryone.behaviors.DefaultBehavior;
 
 

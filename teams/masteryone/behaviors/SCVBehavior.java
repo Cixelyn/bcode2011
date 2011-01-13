@@ -2,6 +2,7 @@ package masteryone.behaviors;
 
 import battlecode.common.*;
 import masteryone.*;
+
 import java.util.*;
 
 public class SCVBehavior extends Behavior
