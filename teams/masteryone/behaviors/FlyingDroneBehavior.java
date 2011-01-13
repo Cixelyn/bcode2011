@@ -261,11 +261,11 @@ public class FlyingDroneBehavior extends Behavior {
     						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(currentBroadcastedMine));
     					}
     				}
-    				return;
     			}
-    			return;
+				return;
     		}
     	}
+    	
 		
 	}
 	@Override
