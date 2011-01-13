@@ -353,19 +353,19 @@ public class FlyingDroneBehavior extends Behavior {
 			myPlayer.myMotor.setDirection(Direction.SOUTH_EAST);
 		}
 		if (ID==3) {
-			myPlayer.myMotor.setDirection(Direction.EAST);
+			myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
 		}
 		if (ID==4) {
-			myPlayer.myMotor.setDirection(Direction.WEST);
-		}
-		if (ID==5) {
-			myPlayer.myMotor.setDirection(Direction.NORTH);
-		}		
-		if (ID==6) {
 			myPlayer.myMotor.setDirection(Direction.SOUTH);
 		}
-		if (ID==7) {
+		if (ID==5) {
 			myPlayer.myMotor.setDirection(Direction.NORTH_EAST);
+		}		
+		if (ID==6) {
+			myPlayer.myMotor.setDirection(Direction.WEST);
+		}
+		if (ID==7) {
+			myPlayer.myMotor.setDirection(Direction.EAST);
 		}
 		initialDirection=myPlayer.myRC.getDirection();
 	}
