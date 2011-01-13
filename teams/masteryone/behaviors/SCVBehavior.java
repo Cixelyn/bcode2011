@@ -408,13 +408,13 @@ public class SCVBehavior extends Behavior
     			if ( spawnReceived )
     				obj = SCVBuildOrder.VACATE_SPAWN;
     			else
-    				Utility.navStep(myPlayer, nav, destination);
+    				Utility.navStep(myPlayer, nav, hometown);
     			return;
 				
 			case VACATE_SPAWN:
 				
 				Utility.setIndicator(myPlayer, 1, "VACATE_SPAWN");
-				if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyLocation) < Constants.HOME_PROXIMITY )
+				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) < Constants.HOME_PROXIMITY )
 					Utility.navStep(myPlayer, nav, enemyLocation);
 				else
 					obj = SCVBuildOrder.SLEEP;

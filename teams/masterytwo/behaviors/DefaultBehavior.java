@@ -34,25 +34,17 @@ public class DefaultBehavior extends Behavior
 			}
 			if ( c.type() == ComponentType.BLASTER )
 			{
-				myPlayer.swapBehavior(new TankBehavior(myPlayer));
+				myPlayer.swapBehavior(new MarineBehavior(myPlayer));
 				myPlayer.myScanner.setDetectionMode(Robot.class);
 			}
 			if ( c.type() == ComponentType.RECYCLER )
 			{
-				if ( Clock.getRoundNum() <= 2 )
-					myPlayer.swapBehavior(new MainRefineryBehavior(myPlayer));
-				else
-					myPlayer.swapBehavior(new ExpoRefineryBehavior(myPlayer));
+				myPlayer.swapBehavior(new RefineryBehavior(myPlayer));
 				myPlayer.myScanner.setDetectionMode(Robot.class);
 			}
 			if ( c.type() == ComponentType.ARMORY )
 			{
 				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
-				myPlayer.myScanner.setDetectionMode(Robot.class);
-			}
-			if ( c.type() == ComponentType.FACTORY )
-			{
-				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
 				myPlayer.myScanner.setDetectionMode(Robot.class);
 			}
 		}

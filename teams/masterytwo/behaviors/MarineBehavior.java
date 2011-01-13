@@ -3,32 +3,27 @@ package masterytwo.behaviors;
 import masterytwo.*;
 import battlecode.common.*;
 
-public class TankBehavior extends Behavior
+public class MarineBehavior extends Behavior
 {
+	final OldNavigation nav = new OldNavigation(myPlayer);
 	
-	OldNavigation nav = new OldNavigation(myPlayer);
+	MarineBuildOrder obj = MarineBuildOrder.EQUIPPING;
 	
-	TankBuildOrder obj = TankBuildOrder.EQUIPPING;
-	
-	MapLocation allyLoc;
 	MapLocation enemyLoc;
 	MapLocation debrisLoc;
 	
-	int numProcessors;
-	int numBlasters;
-	boolean hasSMG;
+	boolean hasBlaster;
 	boolean hasRadar;
 	boolean hasAntenna;
-	boolean hasMedic;
 	
 	boolean isLeader;
-	int currLeader = 9999;
+	int currLeader;
 	MapLocation currLeaderLoc;
 	
 	MapLocation enemyLocation;
 	int spawn = -1;
 	
-	public TankBehavior(RobotPlayer player)
+	public MarineBehavior(RobotPlayer player)
 	{
 		super(player);
 	}
@@ -43,39 +38,31 @@ public class TankBehavior extends Behavior
 			case EQUIPPING:
 				
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
-				numProcessors = 0;
-				numBlasters = 0;
-				hasSMG = false;
+				hasBlaster = false;
 				hasRadar = false;
 				hasAntenna = false;
-				hasMedic = false;
 				for ( ComponentController c : myPlayer.myRC.components() )
 				{
-					if ( c.type() == ComponentType.PROCESSOR )
-						numProcessors++;
 					if ( c.type() == ComponentType.BLASTER )
-						numBlasters++;
-					if ( c.type() == ComponentType.SMG )
-						hasSMG = true;
+						hasBlaster = true;
 					if ( c.type() == ComponentType.RADAR )
 						hasRadar = true;
 					if ( c.type() == ComponentType.ANTENNA )
 						hasAntenna = true;
-					if ( c.type() == ComponentType.MEDIC )
-						hasMedic = true;
 				}
-				if ( numProcessors >= 0 && numBlasters >= 2 && hasRadar && hasAntenna && hasMedic )
+				if ( hasBlaster && hasRadar && hasAntenna )
 				{
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
 					myPlayer.myMotor.setDirection(Direction.NORTH); // hard-coded start aids swarming
-					obj = TankBuildOrder.MOVE_OUT;
+					currLeader = 9999; // set high to ensure that each robot initially thinks he is his own leader
+					obj = MarineBuildOrder.MOVE_OUT;
 				}
 				return;
 	        	
 			case MOVE_OUT:	
 				
-	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
+	        	myPlayer.myRC.setIndicatorString(1, "MOVE_OUT");
 	        	isLeader = false;
 	        	if ( myPlayer.myRC.getRobot().getID() < currLeader )
 	        	{
@@ -83,17 +70,13 @@ public class TankBehavior extends Behavior
 	        		isLeader = true;
 	        	}
 	        	else
-	        	{
 	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
-	        	}
-	        	Utility.healSelf(myPlayer);
-	        	allyLoc = Utility.healAllies(myPlayer, myPlayer.myScanner.scannedRobotInfos);
 	        	enemyLoc = Utility.attackEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos);
 	        	if ( enemyLoc != null )
 	        	{
 	        		if ( !myPlayer.myMotor.isActive() )
 	        		{
-	        			if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()) && myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) <= ComponentType.BLASTER.range )
+	        			if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()) && myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) <= ComponentType.BLASTER.range && myPlayer.myRC.getDirection() == myPlayer.myRC.getLocation().directionTo(enemyLoc) )
 	        				myPlayer.myMotor.moveBackward();
 	        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && myPlayer.myRC.getDirection() == myPlayer.myRC.getLocation().directionTo(enemyLoc) )
 	        				myPlayer.myMotor.moveForward();
@@ -131,7 +114,7 @@ public class TankBehavior extends Behavior
 	
 	public String toString()
 	{
-		return "TankBehavior";
+		return "MarineBehavior";
 	}
 
 

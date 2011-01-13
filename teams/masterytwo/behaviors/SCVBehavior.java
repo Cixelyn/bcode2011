@@ -159,7 +159,7 @@ public class SCVBehavior extends Behavior
 						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 						myPlayer.sleep();
 						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-						obj = SCVBuildOrder.VACATE_HOME;
+						obj = SCVBuildOrder.SCOUT_WEST; // to build factory, VACATE_HOME
 						return;
 					}
 					dizziness++;
@@ -408,13 +408,13 @@ public class SCVBehavior extends Behavior
     			if ( spawnReceived )
     				obj = SCVBuildOrder.VACATE_SPAWN;
     			else
-    				Utility.navStep(myPlayer, nav, destination);
+    				Utility.navStep(myPlayer, nav, hometown);
     			return;
 				
 			case VACATE_SPAWN:
 				
 				Utility.setIndicator(myPlayer, 1, "VACATE_SPAWN");
-				if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyLocation) < Constants.HOME_PROXIMITY )
+				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) < Constants.HOME_PROXIMITY )
 					Utility.navStep(myPlayer, nav, enemyLocation);
 				else
 					obj = SCVBuildOrder.SLEEP;
@@ -423,7 +423,7 @@ public class SCVBehavior extends Behavior
 			case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 1, "SLEEP");
-				myPlayer.myRC.turnOff();
+				myPlayer.myRC.suicide(); // can sleep instead but he just gets in the way >:[
 				return;
 				
 			case WEIRD_SPAWN:

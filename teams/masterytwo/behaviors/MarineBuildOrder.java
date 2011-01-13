@@ -1,6 +1,6 @@
 package masterytwo.behaviors;
 
-public enum TankBuildOrder
+public enum MarineBuildOrder
 {
 	EQUIPPING,
 	MOVE_OUT
