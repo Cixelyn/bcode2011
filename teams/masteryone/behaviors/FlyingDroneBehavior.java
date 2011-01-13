@@ -68,7 +68,7 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		}
     		case EXPAND: {
-    			Utility.setIndicator(myPlayer, 0, "expanding");
+    			Utility.setIndicator(myPlayer, 0, "expanding" + initialDirection);
 /*    			if (!returnedHome && Clock.getRoundNum()>Constants.FACTORY_TIME+500) {
     				int steps=0;
     				boolean firstTurn=false;
@@ -283,7 +283,6 @@ public class FlyingDroneBehavior extends Behavior {
 	public void newMessageCallback(MsgType type, Message msg) {
 		if (type.equals(MsgType.MSG_SEND_NUM) && ID==-1) {
 			ID=msg.ints[Messenger.firstData+1]%8;
-			System.out.println(ID);
 			foundID=true;
 		}		
 		if (type.equals(MsgType.MSG_MINES)) {
