@@ -322,15 +322,14 @@ public class RobotPlayer implements Runnable {
 			case ARMOR:
 				break;
 			case MISC:
-				break;
+				if(c.type()==ComponentType.PROCESSOR) {
+					bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
+				}
 			default:
 				Utility.println("NotController");
 			}
 			
-			if(c.type()==ComponentType.PROCESSOR) {
-				bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
-				
-			}
+			
 		}		
 	}
 	

@@ -189,38 +189,84 @@ public class Messenger {
 	 */
 	public void receiveAll() {
 		
+		//Grab the messages
 		Message[] rcv = myPlayer.myRC.getAllMessages();
-		boolean isValid = true;
 		
-		for(Message m: rcv) {
+		
+		//Variable instantiation to reduce bytecode usage
+		Message m;
+		int[] ints;
+		MapLocation[] locs;
+		
+		
+		
+		//Run the main loop
+		for(int i=rcv.length; --i>=0;) {
 			
-			if (!isValid)
-				Utility.println("Message dropped!");
-			isValid = false;
+			m = rcv[i];
+			ints = m.ints;
+			locs = m.locations;
 			
+			
+			///////////////////////////////////////////////////////////////////////////////
 			////////BEGIN MESSAGE VALIDATION SYSTEM
 				///////Begin inlined message validation checker
-					if(m.ints==null) continue;
-					if(m.ints.length<minSize) continue;
+					if(ints==null) continue;
+					if(ints.length<minSize) continue;
 					
 				//////We should have a checksum -- make sure the checksum is right.
-					if(m.ints[idxHash]!=teamKey) continue;
+					if(ints[idxHash]!=teamKey) continue;
 					
 				//////We at least have a valid int header
-					MsgType t = Encoder.decodeMsgType(m.ints[idxHeader]);  //pull out the header
+					MsgType t = Encoder.decodeMsgType(ints[idxHeader]);  //pull out the header
 					
 				//////Now make sure we have enough ints & enough maplocations
-					if(m.ints.length!=t.numInts) continue;
-					if(m.locations==null) continue;
-					if(m.locations.length!=t.numLocs) continue;
+					if(ints.length!=t.numInts) continue;
+					if(locs==null) continue;
+					if(locs.length!=t.numLocs) continue;
 			////////MESSAGE HAS BEEN VALIDATED
-			
-			isValid = true;
-				
-			
-			if(t.shouldCallback) {	//Generic Callback Messages
-				myPlayer.myBehavior.newMessageCallback(t,m);
-			}
+					
+					
+					
+			///////////////////////////////////////////////////////////////////////////////
+			////////BEGIN MESSAGE PROCESSING SYSTEMS
+					
+				//////Genetic Callback Messages
+					if(t.shouldCallback) {
+						myPlayer.myBehavior.newMessageCallback(t,rcv[i]);
+					}
+					
+				//////Message Rebroadcasting
+					if(t.shouldRebroadcast) {
+						
+						
+						
+						
+						/////////////////////////////REBROADCAST VALIDATION SYSTEM
+						int headerData = ints[idxHeader];
+						
+						///////// Check the TTL
+						if(Clock.getRoundNum() - Encoder.decodeMsgTimeStamp(headerData) > t.ttl) continue; 
+						
+						
+						///////// Check the Distance  
+						/////////		(since we heard the message from the sender, we need to be farther from 
+						/////////		 origin than the sender0
+						MapLocation origin = locs[idxOrigin];
+						if(myPlayer.myRC.getLocation().distanceSquaredTo(origin) 
+								<= locs[idxSender].distanceSquaredTo(origin)) continue;
+						
+						
+						///////// Message needs to be rebroadcasted
+						/////////	(We can modify the original message file since it's already been sent to the callback
+						/////////	 and the necessary processing has presumably been done)
+						m.locations[idxSender] = myPlayer.myRC.getLocation();
+						messageQueue.add(m);
+						
+						////////////////////////////////////////////////////////////
+						
+						
+					}
 		}
 	}
 	
