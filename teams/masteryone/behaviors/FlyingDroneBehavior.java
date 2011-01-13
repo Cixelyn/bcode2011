@@ -218,9 +218,11 @@ public class FlyingDroneBehavior extends Behavior {
 					if (!myPlayer.myMotor.isActive()) {
         				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
         					myPlayer.myMotor.moveForward();
+        					runAwayTime=runAwayTime+1;
         					return;
         				}
 					}
+					runAwayTime=runAwayTime+1;
     			}
     			return;
     		}
