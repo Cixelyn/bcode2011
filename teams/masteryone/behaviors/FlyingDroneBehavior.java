@@ -69,7 +69,7 @@ public class FlyingDroneBehavior extends Behavior {
     		}
     		case EXPAND: {
     			Utility.setIndicator(myPlayer, 0, "expanding");
-    			if (!returnedHome && Clock.getRoundNum()>Constants.FACTORY_TIME+500) {
+/*    			if (!returnedHome && Clock.getRoundNum()>Constants.FACTORY_TIME+500) {
     				int steps=0;
     				boolean firstTurn=false;
     				boolean secondTurn=false;
@@ -95,7 +95,7 @@ public class FlyingDroneBehavior extends Behavior {
     						}
     					}
     				}
-    			}
+    			}*/
     			if (!myPlayer.myMotor.isActive()) {
         			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
