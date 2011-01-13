@@ -282,8 +282,9 @@ public class FlyingDroneBehavior extends Behavior {
 	@Override
 	public void newMessageCallback(MsgType type, Message msg) {
 		if (type.equals(MsgType.MSG_SEND_NUM) && ID==-1) {
+			ID=msg.ints[Messenger.firstData+1]%8;
+			System.out.println(ID);
 			foundID=true;
-			ID=msg.ints[Messenger.firstData]%8;
 		}		
 		if (type.equals(MsgType.MSG_MINES)) {
 			for (MapLocation mineLocation : msg.locations) {
@@ -348,31 +349,7 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	
 	public void setDirectionID(int ID) throws GameActionException {
-		ID=(ID*3)%8;
-		if (ID==0) {
-			myPlayer.myMotor.setDirection(Direction.NORTH);
-		}
-		if (ID==1) {
-			myPlayer.myMotor.setDirection(Direction.NORTH_EAST);
-		}
-		if (ID==2) {
-			myPlayer.myMotor.setDirection(Direction.EAST);
-		}
-		if (ID==3) {
-			myPlayer.myMotor.setDirection(Direction.SOUTH_EAST);
-		}
-		if (ID==4) {
-			myPlayer.myMotor.setDirection(Direction.SOUTH);
-		}
-		if (ID==5) {
-			myPlayer.myMotor.setDirection(Direction.SOUTH_WEST);
-		}		
-		if (ID==6) {
-			myPlayer.myMotor.setDirection(Direction.WEST);
-		}
-		if (ID==7) {
-			myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
-		}
+		myPlayer.myMotor.setDirection(Direction.values()[(ID*3)%8]);
 		initialDirection=myPlayer.myRC.getDirection();
 	}
 	

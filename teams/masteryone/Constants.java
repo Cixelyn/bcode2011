@@ -1,4 +1,4 @@
-package masteryone;
+ package masteryone;
 
 import battlecode.common.GameConstants;
 
