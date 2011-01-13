@@ -16,7 +16,7 @@ public class DragoonBehavior extends Behavior
 	
 	int ID=0;
 	MapLocation initialGoal;
-	
+	int blasters;
 	int plasma;
 	int SMGS;
 	boolean hasRadar; 
@@ -39,8 +39,12 @@ public class DragoonBehavior extends Behavior
 				hasRadar=false;
 	            plasma=0;
 	            SMGS=0;
+	            blasters=0;
 				for(ComponentController c:myPlayer.myRC.components())
 				{
+					if ( c.type() == ComponentType.BLASTER) {
+						blasters=blasters+1;
+					}
 					if ( c.type() == ComponentType.SMG )
 						SMGS=SMGS+1;
 					if ( c.type() == ComponentType.RADAR )
@@ -48,7 +52,7 @@ public class DragoonBehavior extends Behavior
 					if ( c.type() == ComponentType.PLASMA)
 						plasma=plasma+1;
 				}
-				if ( hasRadar && SMGS==3 && plasma==2 && initialGoal!=null) {
+				if ( hasRadar && SMGS==1 && plasma==2 && blasters==1 && initialGoal!=null) {
 					obj = DragoonBuildOrder.MOVE_OUT;
 				}
 				return;
@@ -56,8 +60,6 @@ public class DragoonBehavior extends Behavior
 			case MOVE_OUT:
 	        	myPlayer.myRC.setIndicatorString(1,"MOVE_OUT");
 	        	if ( Utility.senseEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos ) != null )
-	        		return;
-	        	else if ( Clock.getRoundNum() > Constants.DEBRIS_TIME && Utility.senseDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos) != null )
 	        		return;
 	        	else {
 	        		if (foundEdge) {
@@ -77,7 +79,6 @@ public class DragoonBehavior extends Behavior
 	        			Utility.bounceNav(myPlayer);
 	        		}
 	        		else {
-	        			System.out.println(initialGoal);
 		        		Direction direction = navigation.bugTo(initialGoal);
 		        		if (myPlayer.myRC.getDirection().equals(direction) && !myPlayer.myMotor.isActive()) {
 		        			myPlayer.myMotor.moveForward();
@@ -108,7 +109,6 @@ public class DragoonBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg) {
 		if (t.equals(MsgType.MSG_SEND_NUM)) {
-			System.out.println("hello");
 			ID=msg.ints[Messenger.firstData]%8;
 			System.out.println(ID);
 			if (ID==0) {
@@ -135,7 +135,6 @@ public class DragoonBehavior extends Behavior
 			if (ID==7) {
 				initialGoal=new MapLocation(myPlayer.myRC.getLocation().x-65,myPlayer.myRC.getLocation().y);
 			}
-			System.out.println(initialGoal);
 		}
 	}
 	

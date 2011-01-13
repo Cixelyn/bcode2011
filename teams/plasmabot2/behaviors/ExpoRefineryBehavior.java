@@ -130,15 +130,22 @@ public class ExpoRefineryBehavior extends Behavior
     				{
     					rHasRadar = false;
     					rSMGS=0;
+    					rBlasters=0;
     					for ( ComponentType c : rInfo.components )
     					{
+    						if ( c == ComponentType.BLASTER) {
+    							rBlasters=rBlasters+1;
+    						}
     						if ( c == ComponentType.SMG )
     							rSMGS=rSMGS+1;
     						if ( c == ComponentType.RADAR )
     							rHasRadar = true;
     					}
-    					if (rSMGS<3) { 
+    					if (rSMGS<1) { 
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+    					}
+    					else if (rBlasters<1) { 
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
     					}
     					else if ( !rHasRadar )
     					{

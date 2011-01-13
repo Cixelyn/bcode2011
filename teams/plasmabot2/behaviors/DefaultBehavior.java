@@ -33,7 +33,7 @@ public class DefaultBehavior extends Behavior
 				if ( Clock.getRoundNum() <= 2 )
 					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
 				else
-					myPlayer.swapBehavior(new TestFlyerBehavior(myPlayer));
+					myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
 			}
 			if ( c.type() == ComponentType.BLASTER )
 				myPlayer.swapBehavior(new DragoonBehavior(myPlayer));
