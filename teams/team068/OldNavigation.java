@@ -1,7 +1,7 @@
 package team068;
 import battlecode.common.*;
 
-public class Navigation {
+public class OldNavigation {
 	private final RobotPlayer player;
 	private final RobotController myRC;
 	private final MovementController motor;
@@ -9,7 +9,7 @@ public class Navigation {
 	
 
 
-	public Navigation(RobotPlayer player) {
+	public OldNavigation(RobotPlayer player) {
 		this.player = player;
 		myRC = player.myRC;
 		motor=player.myMotor;

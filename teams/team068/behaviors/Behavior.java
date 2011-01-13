@@ -1,12 +1,14 @@
-package team068;
+package team068.behaviors;
 
 import battlecode.common.*;
-import java.util.*;
+import team068.*;
 
 public abstract class Behavior {
 	
 	final RobotPlayer myPlayer;		//Our myplayer object
 	int behaviorStartTime;			//Start of the new behavior
+	public boolean overrideScanner;
+	
 	
 	
 	
@@ -17,6 +19,7 @@ public abstract class Behavior {
 	public Behavior(RobotPlayer player){
 		myPlayer = player;
 		behaviorStartTime = Clock.getRoundNum();
+		overrideScanner = false;
 		
 		//Execute Callbacks for starting units that start off with stuff
 		newComponentCallback(myPlayer.myRC.components());
@@ -53,6 +56,20 @@ public abstract class Behavior {
 	public abstract void newMessageCallback(MsgType type, Message msg);
 
 
+	/**
+	 * This callback is triggered whenever a unit is reactivated.
+	 * Useful for lategame strategies, etc.
+	 * @param lastActiveRound the last round the robot was reported awake
+	 */
+	public abstract void onWakeupCallback(int lastActiveRound);
+	
+	
+	
+	/**
+	 * Callback when damage is sustained
+	 * @param damageTaken the amount of damage a robot has sustained 
+	 */
+	public abstract void onDamageCallback(double damageTaken);
 	
 	
 	
