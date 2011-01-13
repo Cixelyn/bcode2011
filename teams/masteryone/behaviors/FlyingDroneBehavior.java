@@ -44,7 +44,6 @@ public class FlyingDroneBehavior extends Behavior {
 	@Override
 	public void run() throws Exception {
 		if (myPlayer.myRC.getHitpoints()<prevRoundHP) {
-			Utility.println("ahh i've been hit!");
 			prevRoundHP=myPlayer.myRC.getHitpoints();
 			runAwayTime=0;
 			obj=FlyingDroneActions.RUN_AWAY;
@@ -287,7 +286,9 @@ public class FlyingDroneBehavior extends Behavior {
 		}		
 		if (type.equals(MsgType.MSG_MINES)) {
 			for (MapLocation mineLocation : msg.locations) {
-				broadcastedMines.add(mineLocation);
+				if (!broadcastedMines.contains(mineLocation)) {
+					broadcastedMines.add(mineLocation);
+				}
 			}
 			for (int j=0;j<broadcastedMines.size();j++) {
 				broadcastedMines.remove(null);
