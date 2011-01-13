@@ -103,9 +103,9 @@ public class MarineBehavior extends Behavior
 					
 					
 					//if I'm too closet to enemy units, move back
-					if(closestRobotDistance==16) {
+					if(closestRobotDistance<=16 && closestRobotDistance > 9) {
 						return;  //I'm good					
-					} else if(closestRobotDistance<16) {					//I'm too close!
+					} else if(closestRobotDistance<=9) {					//I'm too close!
 						myPlayer.myActions.backUpInDir(closestRobotDirection.opposite());
 					} else { //I'm too far
 						myPlayer.myActions.moveInDir(myNav.bugTo(closestRobotInfo.location));
