@@ -233,6 +233,7 @@ public class FlyingDroneBehavior extends Behavior {
     				obj=FlyingDroneActions.FIND_BROADCASTED_MINE;
     				
     			}
+    			return;
     		}
     		
     		case FIND_BROADCASTED_MINE: {
