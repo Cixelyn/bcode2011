@@ -25,6 +25,7 @@ public class FlyingDroneBehavior extends Behavior {
 	boolean seenOtherSide;
 	static boolean knowEverything;
 	boolean returnedHome;
+	int timeTrying=0;
 	
 	ArrayList<MapLocation> broadcastedMines= new ArrayList<MapLocation>();
 	
@@ -82,6 +83,10 @@ public class FlyingDroneBehavior extends Behavior {
     							if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
     								myPlayer.myMotor.moveForward();
     								steps=steps+1;
+    							}
+    							else {
+        							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(spawnLocation));
+        							returnedHome=true;
     							}
     						}
     						else if (!secondTurn) {
