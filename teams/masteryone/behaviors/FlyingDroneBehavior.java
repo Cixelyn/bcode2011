@@ -340,6 +340,9 @@ public class FlyingDroneBehavior extends Behavior {
 			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 				myPlayer.myMotor.moveForward();
 			}
+			else {
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+			}
 		}
 	}
 	
