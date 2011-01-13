@@ -130,6 +130,21 @@ public class FlyingDroneBehavior extends Behavior {
     						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
     						currentMine=null;
+    	        			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
+    	        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
+    	        					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
+    	            					currentMine=mine;
+    	            					obj=FlyingDroneActions.FOUND_MINE;
+    	            					return;
+    	        					}
+    	        					else {
+    	            					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
+    	            					currentMine=mine;
+    	            					obj=FlyingDroneActions.FOUND_MINE;
+    	            					return;
+    	        					}
+    	        				}
+    	        			}
     						myPlayer.myMotor.setDirection(initialDirection);
     						obj =  FlyingDroneActions.EXPAND;
     					}
