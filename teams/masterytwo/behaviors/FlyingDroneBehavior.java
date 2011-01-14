@@ -154,11 +154,12 @@ public class FlyingDroneBehavior extends Behavior {
     			// I'm in the right spot and facing the mine -> build and wait
     			else if ( myPlayer.myRC.getLocation().equals(minePlacement) && myPlayer.myRC.getDirection() == myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()) )
     			{
-    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
-    					myPlayer.sleep();
-    				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
-					Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-					obj =  FlyingDroneActions.WAIT_FOR_ACK;
+    				if ( myPlayer.myRC.getTeamResources() >= Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+    				{
+	    				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
+						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+						obj =  FlyingDroneActions.WAIT_FOR_ACK;
+    				}
     			}
     			// I'm in the right spot but not facing the right mine -> turn
     			else if ( myPlayer.myRC.getLocation().equals(minePlacement) && myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()) )
