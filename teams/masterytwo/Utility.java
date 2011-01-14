@@ -243,17 +243,19 @@ public class Utility {
 		WeaponController gun;
 		RobotInfo rInfo;
 		MapLocation destination = null;
+		Robot r;
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
-    	for ( Robot r : nearbyRobots )
+    	for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
     	{
-    		rInfo = myPlayer.mySensor.senseRobotInfo(r);
-			for ( Object c : myPlayer.myWeapons )
+    		r = nearbyRobots[i];
+			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
 			{
-				gun = (WeaponController) c;
+				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( gun.type() == ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam() )
 				{
+					rInfo = myPlayer.mySensor.senseRobotInfo(r);
 					if ( rInfo.chassis != Chassis.BUILDING )
 						destination = rInfo.location;
 					if(!gun.isActive() && rInfo.hitpoints < rInfo.maxHp && gun.withinRange(rInfo.location))
@@ -279,14 +281,16 @@ public class Utility {
 		WeaponController gun;
 		RobotInfo rInfo;
 		MapLocation destination = null;
+		Robot r;
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
-    	for ( Robot r : nearbyRobots )
+		for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
     	{
-			for ( Object c : myPlayer.myWeapons )
+    		r = nearbyRobots[i];
+			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
 			{
-				gun = (WeaponController) c;
+				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( gun.type() != ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam().opponent() )
 				{
 					rInfo = myPlayer.mySensor.senseRobotInfo(r);
@@ -314,21 +318,24 @@ public class Utility {
 		WeaponController gun;
 		RobotInfo rInfo;
 		MapLocation destination = null;
+		Robot r;
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
-    	for ( Robot r : nearbyRobots )
+		for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
     	{
-    		rInfo = myPlayer.mySensor.senseRobotInfo(r);
-			for ( Object c : myPlayer.myWeapons )
+    		r = nearbyRobots[i];
+			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
 			{
-				gun = (WeaponController) c;
+				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( r.getTeam() == Team.NEUTRAL )
 				{
+					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+					destination = rInfo.location;
 					if(!gun.isActive() && rInfo.hitpoints > 0 && gun.withinRange(rInfo.location))
 					{
 						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-				 		destination = rInfo.location;
+				 		
 					}
 				}
 			}
@@ -348,9 +355,9 @@ public class Utility {
 		
 		if ( myPlayer.myRC.getHitpoints() < myPlayer.myRC.getMaxHp() )
 		{
-			for ( Object c : myPlayer.myWeapons )
+			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
 			{
-				gun = (WeaponController) c;
+				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( gun.type() == ComponentType.MEDIC )
 				{
 					if(!gun.isActive())
@@ -376,23 +383,23 @@ public class Utility {
 		switch ((westEdge+1)*(2*northEdge+1)*(4*eastEdge+1)*(6*southEdge+1))
 		{
 			case 2:
-				return 0;
-			case 3:
-				return 2;
-			case 5:
-				return 4;
-			case 7:
 				return 6;
+			case 3:
+				return 0;
+			case 5:
+				return 2;
+			case 7:
+				return 4;
 			case 6:
-				return 1;
-			case 14:
 				return 7;
-			case 15:
-				return 3;
-			case 35:
+			case 14:
 				return 5;
+			case 15:
+				return 1;
+			case 35:
+				return 3;
 		}
-		return 8; // center spawn
+		return -1; // center spawn
 	}
 	
 	/**
@@ -406,26 +413,24 @@ public class Utility {
 	{
 		switch (spawn)
 		{
-			case 2:
-			return hometown.add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
-			case 4:
-			return hometown.add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
-			case 6:
-			return hometown.add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
 			case 0:
-			return hometown.add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
+			return hometown.add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
 			case 1:
-			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
-			case 3:
 			return hometown.add(Direction.SOUTH_WEST, Constants.MAP_MAX_SIZE);
-			case 7:
-			return hometown.add(Direction.NORTH_EAST, Constants.MAP_MAX_SIZE);
-			case 5:
+			case 2:
+			return hometown.add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
+			case 3:
 			return hometown.add(Direction.NORTH_WEST, Constants.MAP_MAX_SIZE);
-			case 8:
-			return hometown;
+			case 4:
+			return hometown.add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
+			case 5:
+			return hometown.add(Direction.NORTH_EAST, Constants.MAP_MAX_SIZE);
+			case 6:
+			return hometown.add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
+			case 7:
+			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
 		}
-		return null; // center spawn
+		return null; // should not be reachable
 	}
 	
 	//Max's Go here

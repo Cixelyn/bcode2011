@@ -2,6 +2,7 @@ package masterytwo.behaviors;
 
 import battlecode.common.*;
 import masterytwo.*;
+import java.util.*;
 
 public class RefineryBehavior extends Behavior
 {
@@ -28,6 +29,8 @@ public class RefineryBehavior extends Behavior
 	
 	MapLocation enemyLocation;
 	int spawn = -1; // -1 means unknown
+	
+	final Random random = new Random();
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -83,11 +86,13 @@ public class RefineryBehavior extends Behavior
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
 						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
-					}
-					if ( spawn != -1 )
 						Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+					}
 					else
-						Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
+					{
+						spawn = random.nextInt();
+						Utility.setIndicator(myPlayer, 0, "I think we spawned center, arbitrarily choosing: " + Direction.values()[spawn].toString() + ".");
+					}
 					obj = RefineryBuildOrder.EQUIPPING;
 				}
 				return;
@@ -291,9 +296,10 @@ public class RefineryBehavior extends Behavior
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
 				if ( spawn != -1 )
-					Utility.setIndicator(myPlayer, 0, "We spawned " + Direction.values()[spawn].toString() + ".");
+					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 				else
-					Utility.setIndicator(myPlayer, 0, "We spawned center.");
+					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
+					
 				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
 			}
 		}
