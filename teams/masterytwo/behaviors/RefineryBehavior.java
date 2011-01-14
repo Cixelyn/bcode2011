@@ -28,9 +28,6 @@ public class RefineryBehavior extends Behavior
 	MapLocation enemyLocation;
 	int spawn = -1; // -1 means unknown
 	
-	int parentID = -1; // -1 means unknown
-	int rally = -1; // -1 means unknown
-	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -48,7 +45,7 @@ public class RefineryBehavior extends Behavior
 			case WAIT_FOR_RALLY:
 				
 				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_RALLY");
-				if ( rally == -1 && Clock.getRoundNum() - myPlayer.myBirthday < Constants.RALLY_WAIT )
+				if ( spawn == -1 && Clock.getRoundNum() - myPlayer.myBirthday < Constants.RALLY_WAIT )
 				{
 					for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
 					{
@@ -66,28 +63,29 @@ public class RefineryBehavior extends Behavior
 						}
 						if ( rInfo.chassis == Chassis.FLYING && rInfo.direction == rInfo.location.directionTo(myPlayer.myRC.getLocation()) )
 						{
-							if ( rally != -1 ) // this is bad, two flyers facing me have been found, wait longer plz
+							if ( spawn != -1 ) // this is bad, two flyers facing me have been found, wait longer plz
 							{
-								rally = -1;
-								parentID = -1;
+								spawn = -1;
+								enemyLocation = null;
 								return;
 							}
-							rally = myPlayer.myRC.getLocation().directionTo(rInfo.location).ordinal();
-							parentID = rInfo.robot.getID();
+							spawn = (myPlayer.myRC.getLocation().directionTo(rInfo.location).ordinal() + 4) % 8; // opposite the rally
+							enemyLocation = Utility.spawnOpposite(myPlayer.myRC.getLocation(), spawn);
 						}
 					}
 				}
 				else // rally has been determined or timeout
 				{
-					if ( rally != -1 )
+					if ( spawn != -1 )
 					{
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
-						myPlayer.myMotor.setDirection(Direction.values()[rally]);
-						Utility.setIndicator(myPlayer, 0, "I am an expo refinery, rally set: " + Direction.values()[rally].toString());
+						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
 					}
+					if ( spawn != -1 )
+						Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 					else
-						Utility.setIndicator(myPlayer, 0, "I am an expo refinery, rally not known.");
+						Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
 					obj = RefineryBuildOrder.EQUIPPING;
 				}
 				return;
@@ -284,7 +282,10 @@ public class RefineryBehavior extends Behavior
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
-				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+				if ( spawn != -1 )
+					Utility.setIndicator(myPlayer, 0, "We spawned " + Direction.values()[spawn].toString() + ".");
+				else
+					Utility.setIndicator(myPlayer, 0, "We spawned center.");
 				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
 			}
 		}

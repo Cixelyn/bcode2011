@@ -159,7 +159,9 @@ public class SCVBehavior extends Behavior
 						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 						myPlayer.sleep();
 						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-						obj = SCVBuildOrder.SCOUT_WEST; // to build factory, VACATE_HOME
+						myPlayer.sleep(); // comment me to stay alive
+						myPlayer.myRC.suicide(); // comment me to stay alive, un-comment next line
+						//obj = SCVBuildOrder.SCOUT_WEST; // to build factory, VACATE_HOME
 						return;
 					}
 					dizziness++;
@@ -462,7 +464,10 @@ public class SCVBehavior extends Behavior
 	{
 		if (t == MsgType.MSG_ENEMY_LOC)
 		{
-			Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+			if ( spawn != -1 )
+				Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+			else
+				Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
 			spawnReceived = true;
 		}
 	}

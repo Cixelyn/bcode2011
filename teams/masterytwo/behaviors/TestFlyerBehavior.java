@@ -217,7 +217,10 @@ public class TestFlyerBehavior extends Behavior
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
-				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+				if ( spawn != -1 )
+					Utility.setIndicator(myPlayer, 0, "We spawned " + Direction.values()[spawn].toString() + ".");
+				else
+					Utility.setIndicator(myPlayer, 0, "We spawned center.");
 			}
 		}
 	}
