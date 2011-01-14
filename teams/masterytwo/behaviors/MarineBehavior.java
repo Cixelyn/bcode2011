@@ -71,7 +71,7 @@ public class MarineBehavior extends Behavior
 	        	}
 	        	else
 	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
-	        	//enemyLoc = Utility.attackEnemies(myPlayer);
+	        	enemyLoc = Utility.attackEnemies(myPlayer);
 	        	if ( enemyLoc != null )
 	        	{
 	        		if ( !myPlayer.myMotor.isActive() )
@@ -89,7 +89,7 @@ public class MarineBehavior extends Behavior
 	        	else
 	        	{
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
-		        		//Utility.attackDebris(myPlayer);
+		        		Utility.attackDebris(myPlayer);
 		        	if ( isLeader )
 		        	{
 		        		if ( spawn != -1 )
@@ -100,10 +100,10 @@ public class MarineBehavior extends Behavior
 		        	else
 		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
 	        	}
-	        	//if ( isLeader )
-	        		//myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
-	        	//else
-	        		//myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
+	        	if ( isLeader )
+	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
+	        	else
+	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
 	        	currLeader = 9999;
 	        	return;
 	        	
