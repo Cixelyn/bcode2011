@@ -54,7 +54,7 @@ public class SCVBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "FIND_MINE");
 				mineFound = false;
-				for ( Mine m : myPlayer.myScanner.detectedMines )
+				for ( Mine m : myPlayer.detectedMines )
     			{
     				if ( !mineFound && m.getTeam() == Team.NEUTRAL && myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(m.getID()) )
     				{

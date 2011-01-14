@@ -71,7 +71,7 @@ public class MarineBehavior extends Behavior
 	        	}
 	        	else
 	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
-	        	enemyLoc = Utility.attackEnemies(myPlayer, myPlayer.myScanner.scannedRobotInfos);
+	        	enemyLoc = Utility.attackEnemies(myPlayer);
 	        	if ( enemyLoc != null )
 	        	{
 	        		if ( !myPlayer.myMotor.isActive() )
@@ -89,7 +89,7 @@ public class MarineBehavior extends Behavior
 	        	else
 	        	{
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
-		        		Utility.attackDebris(myPlayer, myPlayer.myScanner.scannedRobotInfos);
+		        		Utility.attackDebris(myPlayer);
 		        	if ( isLeader )
 		        	{
 		        		if ( spawn != -1 )

@@ -238,15 +238,15 @@ public class Utility {
 	 * @return The location of a harmed enemy, or null if none are found
 	 */
 	
-	public static MapLocation healAllies(RobotPlayer myPlayer, ArrayDeque<RobotInfo> nearbyRobots) throws Exception
+	public static MapLocation healAllies(RobotPlayer myPlayer) throws Exception
 	{
 		WeaponController gun;
-		Robot r;
+		RobotInfo rInfo;
 		MapLocation destination = null;
 		
-    	for ( RobotInfo rInfo : nearbyRobots )
+    	for ( Robot r : myPlayer.detectedRobots )
     	{
-    		r = rInfo.robot;
+    		rInfo = myPlayer.mySensor.senseRobotInfo(r);
 			for ( Object c : myPlayer.myWeapons )
 			{
 				gun = (WeaponController) c;
@@ -272,15 +272,15 @@ public class Utility {
 	 * @return The location of a sensed enemy, or null if none are found
 	 */
 	
-	public static MapLocation attackEnemies(RobotPlayer myPlayer, ArrayDeque<RobotInfo> nearbyRobots) throws Exception
+	public static MapLocation attackEnemies(RobotPlayer myPlayer) throws Exception
 	{
 		WeaponController gun;
-		Robot r;
+		RobotInfo rInfo;
 		MapLocation destination = null;
 		
-    	for ( RobotInfo rInfo : nearbyRobots )
+    	for ( Robot r : myPlayer.detectedRobots )
     	{
-    		r = rInfo.robot;
+    		rInfo = myPlayer.mySensor.senseRobotInfo(r);
 			for ( Object c : myPlayer.myWeapons )
 			{
 				gun = (WeaponController) c;
@@ -305,15 +305,15 @@ public class Utility {
 	 * @return The location of a sensed debris, or null if none are found
 	 */
 	
-	public static MapLocation attackDebris(RobotPlayer myPlayer, ArrayDeque<RobotInfo> nearbyRobots) throws Exception
+	public static MapLocation attackDebris(RobotPlayer myPlayer) throws Exception
 	{
 		WeaponController gun;
-		Robot r;
+		RobotInfo rInfo;
 		MapLocation destination = null;
 		
-    	for ( RobotInfo rInfo : nearbyRobots )
+    	for ( Robot r : myPlayer.detectedRobots )
     	{
-    		r = rInfo.robot;
+    		rInfo = myPlayer.mySensor.senseRobotInfo(r);
 			for ( Object c : myPlayer.myWeapons )
 			{
 				gun = (WeaponController) c;

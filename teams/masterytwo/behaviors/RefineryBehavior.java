@@ -45,8 +45,9 @@ public class RefineryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_RALLY");
 				if ( spawn == -1 && Clock.getRoundNum() - myPlayer.myBirthday < Constants.RALLY_WAIT )
 				{
-					for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
+					for ( Robot r : myPlayer.detectedRobots )
 					{
+						rInfo = myPlayer.mySensor.senseRobotInfo(r);
 						if ( rInfo.chassis == Chassis.LIGHT )
 						{
 							for ( ComponentType c : rInfo.components )
@@ -111,8 +112,9 @@ public class RefineryBehavior extends Behavior
     		case GIVE_ANTENNA:
     			
     			Utility.setIndicator(myPlayer, 1, "GIVE_ANTENNA");
-    			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
+    			for ( Robot r : myPlayer.detectedRobots )
     			{
+    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.LIGHT && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() )
     				{
     					Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(rInfo.location), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
@@ -148,8 +150,9 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS) + ".");
     			if ( currFlyer > Constants.MAX_FLYERS )
 					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
-    			for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
+    			for ( Robot r : myPlayer.detectedRobots )
     			{
+    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
     				{
     					rHasConstructor = false;
