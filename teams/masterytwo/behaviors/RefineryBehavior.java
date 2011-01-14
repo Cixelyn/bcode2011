@@ -56,6 +56,7 @@ public class RefineryBehavior extends Behavior
 							{
 								if ( c == ComponentType.CONSTRUCTOR ) // initial SCV found, I should not wait for rally
 								{
+									Utility.setIndicator(myPlayer, 0, "I am one of the first four refineries.");
 									obj = RefineryBuildOrder.EQUIPPING;
 									return;
 								}
@@ -74,12 +75,17 @@ public class RefineryBehavior extends Behavior
 						}
 					}
 				}
-				else // rally has been determined
+				else // rally has been determined or timeout
 				{
-					while ( myPlayer.myMotor.isActive() )
-						myPlayer.sleep();
-					myPlayer.myMotor.setDirection(Direction.values()[rally]);
-					Utility.setIndicator(myPlayer, 2, "Rally set: " + Direction.values()[rally].toString());
+					if ( rally != -1 )
+					{
+						while ( myPlayer.myMotor.isActive() )
+							myPlayer.sleep();
+						myPlayer.myMotor.setDirection(Direction.values()[rally]);
+						Utility.setIndicator(myPlayer, 0, "I am an expo refinery, rally set: " + Direction.values()[rally].toString());
+					}
+					else
+						Utility.setIndicator(myPlayer, 0, "I am an expo refinery, rally not known.");
 					obj = RefineryBuildOrder.EQUIPPING;
 				}
 				return;
