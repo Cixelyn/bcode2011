@@ -13,7 +13,7 @@ public class ArmoryBehavior extends Behavior
 	Robot rFront;
 	
 	int flyersBuilt = 0;
-	boolean remadeFlyers = false;
+	boolean flyerRemake = false;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -47,12 +47,12 @@ public class ArmoryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "BUILD_FLYERS");
     			if ( flyersBuilt > Constants.MAX_FLYERS )
     			{
-    				Utility.setIndicator(myPlayer, 2, "Pausing flyer " + Integer.toString(flyersBuilt) + ".");
+    				Utility.setIndicator(myPlayer, 2, "Pausing flyer production.");
     				if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
     				{
-    					if ( !remadeFlyers )
+    					if ( !flyerRemake )
     					{
-    						remadeFlyers = true;
+    						flyerRemake = true;
     						flyersBuilt = 0;
     					}
     					else

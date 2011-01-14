@@ -32,6 +32,8 @@ public class RefineryBehavior extends Behavior
 	
 	final Random random = new Random();
 	
+	boolean flyerRemake = false;
+	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -87,13 +89,15 @@ public class RefineryBehavior extends Behavior
 							myPlayer.sleep();
 						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
 						Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+						obj = RefineryBuildOrder.EQUIPPING;
 					}
 					else
 					{
-						spawn = random.nextInt();
-						Utility.setIndicator(myPlayer, 0, "I think we spawned center, arbitrarily choosing: " + Direction.values()[spawn].toString() + ".");
+						//spawn = random.nextInt();
+						//Utility.setIndicator(myPlayer, 0, "I think we spawned center, arbitrarily choosing: " + Direction.values()[spawn].toString() + ".");
+						Utility.setIndicator(myPlayer, 0, "Spawn could not be determined. Shutting down.");
+						obj = RefineryBuildOrder.SLEEP;
 					}
-					obj = RefineryBuildOrder.EQUIPPING;
 				}
 				return;
 			
@@ -159,7 +163,15 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
     			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS) + ".");
     			if ( currFlyer > Constants.MAX_FLYERS )
-					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    			{
+    				if ( !flyerRemake )
+    				{
+    					flyerRemake = true;
+    					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    				}
+    				else
+    					obj = RefineryBuildOrder.MAKE_MARINE;
+    			}
     			
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
     			for ( Robot r : nearbyRobots )
@@ -202,6 +214,12 @@ public class RefineryBehavior extends Behavior
     		case MAKE_MARINE:
     			
     			Utility.setIndicator(myPlayer, 1, "MAKE_MARINE");
+    			if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    			{
+    				currFlyer = 0;
+    				obj = RefineryBuildOrder.EQUIP_FLYERS;
+    				return;
+    			}
     			if ( myPlayer.myMotor.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.LIGHT.upkeep * Math.max((int)Math.floor(lastIncome) - 6, 0) )
     				myPlayer.sleep();
     			else if ( !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null )
