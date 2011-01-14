@@ -76,7 +76,10 @@ public class RefineryBehavior extends Behavior
 				}
 				else // rally has been determined
 				{
-					myPlayer.myMessenger.sendInt(MsgType.MSG_RALLY_SET, parentID);
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(Direction.values()[rally]);
+					Utility.setIndicator(myPlayer, 2, "Rally set: " + Direction.values()[rally].toString());
 					obj = RefineryBuildOrder.EQUIPPING;
 				}
 				return;
