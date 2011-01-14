@@ -306,7 +306,7 @@ public class FlyingDroneBehavior extends Behavior {
     			else {
         			for (Robot robot : myPlayer.myScanner.detectedRobots) {
         				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(robot);
-        				if (rInfo.location.equals(currentMine) && rInfo.direction.equals(myPlayer.myRC.getDirection().opposite())) {
+        				if (rInfo.location.equals(currentMine) && rInfo.location.add(rInfo.direction).equals(myPlayer.myRC.getLocation())) {
                 			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
                 				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
                 					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
