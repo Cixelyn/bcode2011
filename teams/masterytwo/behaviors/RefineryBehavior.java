@@ -40,6 +40,8 @@ public class RefineryBehavior extends Behavior
 	public void run() throws Exception
 	{
 		
+		Utility.setIndicator(myPlayer, 2, "My direction: " + myPlayer.myRC.getDirection().toString());
+		
 		switch(obj)
     	{
 		
