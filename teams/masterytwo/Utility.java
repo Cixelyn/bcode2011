@@ -251,10 +251,10 @@ public class Utility {
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
-    	for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
+    	for ( int i = nearbyRobots.length; --i>=0;)
     	{
     		r = nearbyRobots[i];
-			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
+			for ( int j = myPlayer.myWeapons.size(); --j>= 0;)
 			{
 				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( gun.type() == ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam() )
@@ -289,10 +289,10 @@ public class Utility {
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
-		for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
+		for ( int i = nearbyRobots.length; --i>=0;)
     	{
     		r = nearbyRobots[i];
-			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
+			for ( int j = myPlayer.myWeapons.size(); --j>=0;)
 			{
 				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( gun.type() != ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam().opponent() )
@@ -326,10 +326,10 @@ public class Utility {
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
-		for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
+		for ( int i = nearbyRobots.length; --i >=0;)
     	{
     		r = nearbyRobots[i];
-			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
+			for ( int j = myPlayer.myWeapons.size(); --j>=0;)
 			{
 				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( r.getTeam() == Team.NEUTRAL )
@@ -359,7 +359,7 @@ public class Utility {
 		
 		if ( myPlayer.myRC.getHitpoints() < myPlayer.myRC.getMaxHp() )
 		{
-			for ( int j = myPlayer.myWeapons.size() - 1 ; j >= 0 ; j-- )
+			for ( int j = myPlayer.myWeapons.size(); --j>=0;)
 			{
 				gun = (WeaponController) myPlayer.myWeapons.get(j);
 				if ( gun.type() == ComponentType.MEDIC )
