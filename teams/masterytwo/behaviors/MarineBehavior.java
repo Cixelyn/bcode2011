@@ -135,18 +135,6 @@ public class MarineBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_SEND_NUM )
-		{
-			if ( msg.ints[Messenger.firstData] != -1 )
-			{
-				spawn = msg.ints[Messenger.firstData];
-				enemyLocation = msg.locations[Messenger.firstData];
-				if ( spawn != -1 )
-					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-				else
-					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
-			}
-		}
 		if ( t == MsgType.MSG_DET_LEADER )
 		{
 			if ( msg.ints[Messenger.firstData+1] < currLeader )
@@ -154,21 +142,13 @@ public class MarineBehavior extends Behavior
 				currLeader = msg.ints[Messenger.firstData+1];
 				currLeaderLoc = msg.locations[Messenger.firstData+1];
 			}
-			if ( spawn == -1 )
-			{
-				spawn = msg.ints[Messenger.firstData];
-				enemyLocation = msg.locations[Messenger.firstData];
-				if ( spawn != -1 )
-					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-			}
 		}
-		if (t == MsgType.MSG_ENEMY_LOC)
+		
+		if ( msg.ints[Messenger.firstData] != -1 )
 		{
-			if ( spawn == -1 )
-			{
-				spawn = msg.ints[Messenger.firstData];
-				enemyLocation = msg.locations[Messenger.firstData];
-			}
+			spawn = msg.ints[Messenger.firstData];
+			enemyLocation = msg.locations[Messenger.firstData];
+			Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 		}
 	}
 	
