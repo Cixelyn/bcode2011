@@ -23,8 +23,9 @@ public class DefaultBehavior extends Behavior
 	
 	public void newComponentCallback(ComponentController[] components)
 	{
-		for ( ComponentController c : components )
+		for ( int i = components.length - 1 ; i >= 0 ; i-- )
 		{
+			ComponentController c = components[i];
 			if ( c.type() == ComponentType.CONSTRUCTOR )
 			{
 				if ( Clock.getRoundNum() <= 2 )

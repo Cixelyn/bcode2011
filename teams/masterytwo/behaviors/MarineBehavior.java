@@ -41,8 +41,9 @@ public class MarineBehavior extends Behavior
 				hasBlaster = false;
 				hasRadar = false;
 				hasAntenna = false;
-				for ( ComponentController c : myPlayer.myRC.components() )
+				for ( int i = myPlayer.myRC.components().length - 1 ; i >= 0 ; i-- )
 				{
+					ComponentController c = myPlayer.myRC.components()[i];
 					if ( c.type() == ComponentType.BLASTER )
 						hasBlaster = true;
 					if ( c.type() == ComponentType.RADAR )
@@ -104,9 +105,9 @@ public class MarineBehavior extends Behavior
 	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
 	        	else
 	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
-	        	if ( spawn != -1 && myPlayer.myRC.getDirection() == Direction.values()[(spawn+4)%8] && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4)) == TerrainTile.OFF_MAP )
+	        	if ( spawn != -1 && myPlayer.myRC.getDirection() == Direction.values()[(2*(spawn/2)+4)%8] && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4)) == TerrainTile.OFF_MAP ) // 4 is smallest value that works for diagonal directions also
 	        	{
-	        		spawn = (spawn + 2) % 8;
+	        		spawn = (2*(spawn/2) + 2) % 8; // try a different ORTHOGONAL direction!
 	        		enemyLocation = Utility.spawnOpposite(myPlayer.myRC.getLocation(), spawn);
 	        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 	        	}
@@ -167,11 +168,6 @@ public class MarineBehavior extends Behavior
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
-				if ( spawn != -1 )
-				{
-					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-					myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
-				}	
 			}
 		}
 	}
