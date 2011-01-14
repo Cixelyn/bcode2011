@@ -119,8 +119,7 @@ public class FlyingDroneBehavior extends Behavior {
         			for (Mine mine : detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
             					currentMine=mine;
-            					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
-            					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
+            					minePlacement=currentMine.getLocation().add(currentMine.getLocation().directionTo(spawnLocation).opposite());
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
         				}

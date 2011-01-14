@@ -20,6 +20,7 @@ public class Constants
 	
 	
 	//Justin's Go Here
+	
 	public static final int MAP_MAX_SIZE = (int) Math.ceil(Math.sqrt(GameConstants.MAP_MAX_HEIGHT*GameConstants.MAP_MAX_HEIGHT + GameConstants.MAP_MAX_WIDTH * GameConstants.MAP_MAX_WIDTH));
 	public static final int MINE_AFFINITY = 10; // how long SCV should chase a mine before giving up
 	public static final int RESERVE = 2; // desired minimum flux after building
@@ -32,7 +33,6 @@ public class Constants
 	public static final int MARINES_PER_EXPO = 2; // how many marines to make per expo
 	public static final int RALLY_WAIT = 50; // how long refinery should wait to determine rally
 	
-
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;
 	public static final int STEPS=4;
