@@ -71,6 +71,9 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		}
     		case EXPAND: {
+    			if (initialDirection==null) {
+    				initialDirection=myPlayer.myRC.getDirection();
+    			}
     			Utility.setIndicator(myPlayer, 0, "expanding" + initialDirection);
 /*    			if (!returnedHome && Clock.getRoundNum()>Constants.FACTORY_TIME+500) {
     				int steps=0;
@@ -370,7 +373,7 @@ public class FlyingDroneBehavior extends Behavior {
 	@Override
 	public void newMessageCallback(MsgType type, Message msg) {
 		if (type.equals(MsgType.MSG_SEND_NUM) && ID==-1) {
-			ID=msg.ints[Messenger.firstData+1]%8;
+			ID=msg.ints[Messenger.firstData+1];
 			foundID=true;
 		}		
 		if (type.equals(MsgType.MSG_MINES)) {
@@ -400,6 +403,7 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	public void droneGeneralNav(int ID) throws GameActionException {
 		boolean foundEdge=false;
+		Utility.setIndicator(myPlayer, 2, initialDirection.toString());
 		if (myPlayer.myRC.getDirection().isDiagonal()) {
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)) {
 				float probability = myPlayer.myDice.nextFloat();
@@ -437,7 +441,6 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	public void setDirectionID(int ID) throws GameActionException {
 		myPlayer.myMotor.setDirection(Direction.values()[(ID*3)%8]);
-		initialDirection=myPlayer.myRC.getDirection();
 	}
 	
 	public void droneNav() throws GameActionException {
