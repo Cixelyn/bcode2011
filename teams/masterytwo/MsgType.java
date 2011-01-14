@@ -25,6 +25,7 @@ public enum MsgType {
 	MSG_START_TANKS(0  , true , false , 0 , 0   ),
 	MSG_ENEMY_LOC(  0  , true , false , 1 , 1   ),
 	MSG_DET_LEADER( 0  , true , false , 2 , 2   ),
+	MSG_WRONG_SPAWN(Constants.WRONG_SPAWN_TTL , true , true , 2 , 1   ),
 	MSG_MINES(      0  , true , false , 0 , 5   );
 	
 	public int ttl;

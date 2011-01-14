@@ -110,7 +110,7 @@ public class RefineryBehavior extends Behavior
 					{
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
-						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
+						myPlayer.myMotor.setDirection(Direction.values()[(spawn + 4) % 8]);
 						Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 						obj = RefineryBuildOrder.EQUIPPING;
 					}
@@ -297,7 +297,7 @@ public class RefineryBehavior extends Behavior
     						{
 		    					while ( myPlayer.myMotor.isActive() )
 									myPlayer.sleep();
-								myPlayer.myMotor.setDirection(Direction.values()[spawn]);
+		    					myPlayer.myMotor.setDirection(Direction.values()[(spawn + 4) % 8]);
     						}
     					}
     					obj = RefineryBuildOrder.MAKE_MARINE;
@@ -309,7 +309,7 @@ public class RefineryBehavior extends Behavior
 	    			{
 		    			while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
-						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
+		    			myPlayer.myMotor.setDirection(Direction.values()[(spawn + 4) % 8]);
 	    			}
 	    			obj = RefineryBuildOrder.MAKE_MARINE;
 	    		}

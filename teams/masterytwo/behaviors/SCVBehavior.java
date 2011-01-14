@@ -141,6 +141,7 @@ public class SCVBehavior extends Behavior
         			}
         			else
         			{
+        				Utility.setIndicator(myPlayer, 2, "Building!");
         				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
 							myPlayer.sleep();
         				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(loc), Chassis.BUILDING);

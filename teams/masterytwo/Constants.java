@@ -15,7 +15,7 @@ public class Constants
 	
 	//Debug Flags
 	public static final boolean DEBUG = true;
-	public static final boolean DEBUG_BYTECODE_OVERFLOW = true;
+	public static final boolean DEBUG_BYTECODE_OVERFLOW = false;
 	
 	
 	
@@ -32,6 +32,7 @@ public class Constants
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
 	public static final int MARINES_PER_EXPO = 2; // how many marines to make per expo
 	public static final int RALLY_WAIT = 50; // how long refinery should wait to determine rally
+	public static final int WRONG_SPAWN_TTL = 5; // if off_map is encountered and marine sends msg saying to change spawn, the rebroadcast will die after this # of rounds
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;

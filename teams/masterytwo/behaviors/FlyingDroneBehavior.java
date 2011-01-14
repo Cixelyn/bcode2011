@@ -362,7 +362,7 @@ public class FlyingDroneBehavior extends Behavior {
                 				}
                 			}
                 			timeout=0;
-        					myPlayer.myMotor.setDirection(initialDirection);
+        					myPlayer.myMotor.setDirection(initialDirection); // TODO This is throwing exceptions, unwrapped in !isActive
         					obj =  FlyingDroneActions.EXPAND;
         					return;
         				}

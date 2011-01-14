@@ -207,6 +207,8 @@ public class Utility {
 			loc = player.myRC.getLocation();
 		while ( player.myRC.getTeamResources() < chassis.cost || player.myBuilder.isActive() )
 			player.sleep();
+		if ( player.mySensor != null && player.mySensor.withinRange(loc) && player.mySensor.senseObjectAtLocation(loc, chassis.level) != null )
+			return;
 		player.myBuilder.build(chassis, loc);
 	}
 
@@ -237,6 +239,18 @@ public class Utility {
 			loc = player.myRC.getLocation();
 		while ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
 			player.sleep();
+		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
+		{
+			Robot r = (Robot)player.mySensor.senseObjectAtLocation(loc, level);
+			if ( r == null || r.getTeam() != player.myRC.getRobot().getTeam() )
+				return;
+			else
+			{
+				RobotInfo rInfo = player.mySensor.senseRobotInfo(r);
+				if ( totalWeight(rInfo.components) + component.weight > rInfo.chassis.weight )
+					return;
+			}
+		}
 		player.myBuilder.build(component, loc, level);
 	}
 	
@@ -388,6 +402,7 @@ public class Utility {
 	 * @param southEdge 1 if an off_map square is found to the south, 0 otherwise
 	 * @return Spawn location: 0 is west, increments clockwise
 	 */
+	
 	public static int getSpawn(int westEdge, int northEdge, int eastEdge, int southEdge)
 	{
 		switch ((westEdge+1)*(2*northEdge+1)*(4*eastEdge+1)*(6*southEdge+1))
@@ -419,6 +434,7 @@ public class Utility {
 	 * @param spawn The region of the spawn
 	 * @return The location of the enemy spawn
 	 */
+	
 	public static MapLocation spawnOpposite(MapLocation hometown, int spawn)
 	{
 		switch (spawn)
@@ -441,6 +457,21 @@ public class Utility {
 			return hometown.add(Direction.SOUTH_EAST, Constants.MAP_MAX_SIZE);
 		}
 		return null; // should not be reachable
+	}
+	
+	/**
+	 * Returns total weight of a list of components
+	 * @author JVen
+	 * @param components An array of components
+	 * @return The total weight of components
+	 */
+	
+	public static int totalWeight(ComponentType[] components)
+	{
+		int ans = 0;
+		for ( int i = components.length-1 ; i >= 0 ; i-- )
+			ans += components[i].weight;
+		return ans;
 	}
 	
 	//Max's Go here
