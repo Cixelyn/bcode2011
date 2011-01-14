@@ -328,7 +328,9 @@ public class FlyingDroneBehavior extends Behavior {
         					}
         				}
         			}
-					myPlayer.myMotor.setDirection(initialDirection); // TODO This is throwing exceptions, unwrapped in !isActive
+        			while ( myPlayer.myMotor.isActive() )
+        				myPlayer.sleep();
+					myPlayer.myMotor.setDirection(initialDirection);
 					obj =  FlyingDroneActions.EXPAND;
 					return;
     			}
@@ -362,7 +364,9 @@ public class FlyingDroneBehavior extends Behavior {
                 				}
                 			}
                 			timeout=0;
-        					myPlayer.myMotor.setDirection(initialDirection); // TODO This is throwing exceptions, unwrapped in !isActive
+                			while ( myPlayer.myMotor.isActive() )
+                				myPlayer.sleep();
+        					myPlayer.myMotor.setDirection(initialDirection);
         					obj =  FlyingDroneActions.EXPAND;
         					return;
         				}
