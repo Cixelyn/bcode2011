@@ -45,6 +45,9 @@ public class RefineryBehavior extends Behavior
 	
 	MapLocation enemyLocation;
 	int spawn = -1; // -1 means unknown
+	MapLocation realEnemyLocation;
+	int realSpawn = -1; // -1 means unknown
+	
 	
 	final Random random = new Random();
 	
@@ -128,7 +131,7 @@ public class RefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIPPING");
     			Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    			if ( Clock.getRoundNum() < 5 ) // I'm a main refinery
+    			if ( Clock.getRoundNum() < 5 ) // I'm one of the first two refineries
     				obj = RefineryBuildOrder.DETERMINE_LEADER;
     			else
     				obj = RefineryBuildOrder.WAIT_FOR_DOCK;
@@ -293,7 +296,17 @@ public class RefineryBehavior extends Behavior
     					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
     				else
     				{
-    					if ( spawn != -1 )
+    					if ( realSpawn != -1 )
+    					{
+    						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
+    						if ( myPlayer.myRC.getDirection() != Direction.values()[realSpawn] )
+    						{
+		    					while ( myPlayer.myMotor.isActive() )
+									myPlayer.sleep();
+		    					myPlayer.myMotor.setDirection(Direction.values()[(realSpawn + 4) % 8]);
+    						}
+    					}
+    					else
     					{
     						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
     						if ( myPlayer.myRC.getDirection() != Direction.values()[spawn] )
@@ -353,18 +366,25 @@ public class RefineryBehavior extends Behavior
 			unitDock = msg.locations[Messenger.firstData];
 		if ( t == MsgType.MSG_SEND_NUM )
 			currFlyer++;
-		if (t == MsgType.MSG_ENEMY_LOC)
+		if ( t == MsgType.MSG_ENEMY_LOC )
 		{
-			if ( spawn == -1 )
+			if ( realSpawn == -1 && spawn == -1 )
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
-				if ( spawn != -1 )
-					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-				else
-					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
-					
+				Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+			}
+		}
+		if ( t == MsgType.MSG_REAL_ENEMY_LOC )
+		{
+			if ( realSpawn == -1 )
+			{
+				realSpawn = msg.ints[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
+				spawn = realSpawn;
+				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[realSpawn].toString() + ".");
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
 			}
 		}
 	}

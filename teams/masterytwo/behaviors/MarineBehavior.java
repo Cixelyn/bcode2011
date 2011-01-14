@@ -24,12 +24,10 @@ public class MarineBehavior extends Behavior
 		MOVE_OUT
 	}
 	
-	
 	private final OldNavigation nav = new OldNavigation(myPlayer);
 	private MarineBuildOrder obj = MarineBuildOrder.EQUIPPING;
 	
 	private MapLocation enemyLoc;
-	private MapLocation debrisLoc;
 	
 	boolean hasBlaster;
 	boolean hasRadar;
@@ -40,8 +38,13 @@ public class MarineBehavior extends Behavior
 	MapLocation currLeaderLoc;
 	
 	MapLocation enemyLocation;
-	int oldSpawn = -1;
-	int spawn = -1;
+	int spawn = -1; // -1 if unknown
+	MapLocation realEnemyLocation;
+	int realSpawn = -1; // -1 if unknown
+
+	int oldSpawn = -1; // -1 if unknown
+	
+	boolean offMapFound = false;
 	
 	public MarineBehavior(RobotPlayer player)
 	{
@@ -76,7 +79,7 @@ public class MarineBehavior extends Behavior
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
 					myPlayer.myMotor.setDirection(Direction.NORTH); // hard-coded start aids swarming
-					currLeader = 9999; // set high to ensure that each robot initially thinks he is his own leader
+					currLeader = myPlayer.myRC.getRobot().getID(); // set high to ensure that each robot initially thinks he is his own leader
 					obj = MarineBuildOrder.MOVE_OUT;
 				}
 				return;
@@ -85,7 +88,7 @@ public class MarineBehavior extends Behavior
 				
 	        	myPlayer.myRC.setIndicatorString(1, "MOVE_OUT");
 	        	isLeader = false;
-	        	if ( myPlayer.myRC.getRobot().getID() < currLeader )
+	        	if ( myPlayer.myRC.getRobot().getID() == currLeader )
 	        	{
 	        		Utility.setIndicator(myPlayer, 2, "I'm a leader!");
 	        		isLeader = true;
@@ -95,6 +98,7 @@ public class MarineBehavior extends Behavior
 	        	
 	        	
 	        	enemyLoc = Utility.attackEnemies(myPlayer);
+	        	//Found an enemy
 	        	if ( enemyLoc != null && !myPlayer.myRC.getLocation().equals(enemyLoc) )
 	        	{
 	        		if ( !myPlayer.myMotor.isActive() )
@@ -109,38 +113,43 @@ public class MarineBehavior extends Behavior
 	        				Utility.navStep(myPlayer, nav, enemyLoc);
 	        		}
 	        	}
-	        	else	//There is no enemy
+	        	//There is no enemy
+	        	else
 	        	{
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
 		        		Utility.attackDebris(myPlayer);
 		        	if ( isLeader )
-		        	{
-		        		if ( spawn != -1 )
-		        			Utility.navStep(myPlayer, nav, enemyLocation);
-		        		else
-		        			Utility.bounceNav(myPlayer);
-		        	}
+		        		Utility.navStep(myPlayer, nav, enemyLocation);
 		        	else
 		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
 	        	}
 	        	
-	        	
-	        	
 	        	// off_map found
-	        	if ( spawn != -1 && myPlayer.myRC.getDirection() == Direction.values()[(2*(spawn/2)+4)%8] && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4)) == TerrainTile.OFF_MAP ) // 4 is smallest value that works for diagonal directions also
+	        	if ( myPlayer.myRC.getDirection() == Direction.values()[(2*(spawn/2)+4)%8] && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4)) == TerrainTile.OFF_MAP ) // 4 is smallest value that works for diagonal directions also
 	        	{
+	        		offMapFound = true;
 	        		oldSpawn = spawn;
 	        		spawn = (2*(spawn/2) + 2) % 8; // try a different ORTHOGONAL direction!
 	        		enemyLocation = Utility.spawnOpposite(myPlayer.myRC.getLocation(), spawn);
-	        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-	        		myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_WRONG_SPAWN, oldSpawn, spawn, enemyLocation);
-	        	}
+	        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[(spawn+4)%8].toString() + ".");
+	        		myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_RERALLY, oldSpawn, spawn, enemyLocation);
+	        	}	        	
 	        	// Leader Code
 	        	else if ( isLeader )
-	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
+	        	{
+	        		if ( realSpawn != -1 )
+	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_REAL_DET_LEADER, realSpawn, myPlayer.myRC.getRobot().getID(), realEnemyLocation, myPlayer.myRC.getLocation());
+	        		else
+	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
+	        	}
 	        	else
-	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
-	        	currLeader = 9999;
+	        	{
+	        		if ( realSpawn != -1 )
+	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_REAL_DET_LEADER, realSpawn, currLeader, realEnemyLocation, currLeaderLoc);
+	        		else
+	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
+	        	}
+	        	currLeader = myPlayer.myRC.getRobot().getID();
 	        	return;
 	        	
 		}
@@ -164,6 +173,7 @@ public class MarineBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
+		
 		if ( t == MsgType.MSG_DET_LEADER )
 		{
 			if ( msg.ints[Messenger.firstData+1] < currLeader )
@@ -171,40 +181,56 @@ public class MarineBehavior extends Behavior
 				currLeader = msg.ints[Messenger.firstData+1];
 				currLeaderLoc = msg.locations[Messenger.firstData+1];
 			}
-			if ( msg.ints[Messenger.firstData] != -1 )
+		}
+		
+		if ( t == MsgType.MSG_REAL_DET_LEADER )
+		{
+			if ( msg.ints[Messenger.firstData+1] < currLeader )
 			{
-				spawn = msg.ints[Messenger.firstData];
-				enemyLocation = msg.locations[Messenger.firstData];
-				if ( spawn != -1 )
-					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-				else
-					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
+				currLeader = msg.ints[Messenger.firstData+1];
+				currLeaderLoc = msg.locations[Messenger.firstData+1];
+			}
+			if ( realSpawn == -1 )
+			{
+				realSpawn = msg.ints[Messenger.firstData];
+				realEnemyLocation = msg.locations[Messenger.firstData];
+				spawn = realSpawn;
+				enemyLocation = realEnemyLocation;
+				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[realSpawn].toString() + ".");
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
 			}
 		}
 		
 		if ( t == MsgType.MSG_ENEMY_LOC )
 		{
-			if ( msg.ints[Messenger.firstData] != -1 )
+			if ( realSpawn == -1 && spawn == -1 )
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
-				if ( spawn != -1 )
-					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-				else
-					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
+				Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 			}
 		}
 		
-		if ( t == MsgType.MSG_WRONG_SPAWN )
+		if ( t == MsgType.MSG_REAL_ENEMY_LOC )
 		{
-			if ( msg.ints[Messenger.firstData] == spawn )
+			if ( realSpawn == -1 )
+			{
+				realSpawn = msg.ints[Messenger.firstData];
+				realEnemyLocation = msg.locations[Messenger.firstData];
+				spawn = realSpawn;
+				enemyLocation = realEnemyLocation;
+				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[realSpawn].toString() + ".");
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
+			}
+		}
+		
+		if ( t == MsgType.MSG_RERALLY )
+		{
+			if ( msg.ints[Messenger.firstData] == spawn && ( realSpawn == -1 || offMapFound ) )
 			{
 				spawn = msg.ints[Messenger.firstData + 1];
 				enemyLocation = msg.locations[Messenger.firstData];
-                if ( spawn != -1 )
-  					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-  				else
-  					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");                           ;
+  				Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[(spawn+4)%8].toString() + ".");
 			}
 		}
 	}
