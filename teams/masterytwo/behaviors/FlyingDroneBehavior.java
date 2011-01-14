@@ -100,7 +100,7 @@ public class FlyingDroneBehavior extends Behavior {
     				}
     			}*/
     			if (!myPlayer.myMotor.isActive()) {
-        			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
+        			for (Mine mine : myPlayer.detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
         					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
             					currentMine=mine;
@@ -172,7 +172,7 @@ public class FlyingDroneBehavior extends Behavior {
     				obj=FlyingDroneActions.EXPAND;
     				return;
     			}
-    			for (Robot robot : myPlayer.myScanner.detectedRobots) {
+    			for (Robot robot : myPlayer.detectedRobots) {
     				if (robot.getTeam().equals(myPlayer.myRC.getTeam().opponent())) {
     					RobotInfo rInfo= myPlayer.mySensor.senseRobotInfo(robot);
     					totalX=totalX+rInfo.location.x;
@@ -283,7 +283,7 @@ public class FlyingDroneBehavior extends Behavior {
     		case WAIT_FOR_ACK: {
     			Utility.setIndicator(myPlayer, 0, myPlayer.myRC.getLocation().toString());
     			if (timeout>Constants.TIMEOUT) {
-        			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
+        			for (Mine mine : myPlayer.detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
         					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
             					currentMine=mine;
@@ -307,14 +307,14 @@ public class FlyingDroneBehavior extends Behavior {
 					return;
     			}
     			else {
-        			for (Robot robot : myPlayer.myScanner.detectedRobots) {
+        			for (Robot robot : myPlayer.detectedRobots) {
         				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(robot);
         				if (robot.getTeam().equals(myPlayer.myRC.getTeam())) {
         					Utility.setIndicator(myPlayer, 1, robot.toString());
         					Utility.setIndicator(myPlayer, 2, rInfo.location.toString() + "," + rInfo.direction.toString());
         				}
         				if (rInfo.location.equals(currentMine.getLocation()) && rInfo.location.add(rInfo.direction).equals(myPlayer.myRC.getLocation())) {
-                			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
+                			for (Mine mine : myPlayer.detectedMines) { //look for mines, if we find one, lets go get it
                 				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
                 					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
                     					currentMine=mine;
