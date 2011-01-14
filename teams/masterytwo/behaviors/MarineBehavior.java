@@ -3,14 +3,33 @@ package masterytwo.behaviors;
 import masterytwo.*;
 import battlecode.common.*;
 
+
+
+
+/**
+ * Current marine iteration receives spawn location from towers, and then rushes forward in the correct direction
+ * 
+ * @since MASTeRYtwo v1.0
+ * @author FiBsTeR
+ *
+ */
 public class MarineBehavior extends Behavior
 {
-	final OldNavigation nav = new OldNavigation(myPlayer);
 	
-	MarineBuildOrder obj = MarineBuildOrder.EQUIPPING;
 	
-	MapLocation enemyLoc;
-	MapLocation debrisLoc;
+	//define our states here:
+	private enum MarineBuildOrder
+	{
+		EQUIPPING,
+		MOVE_OUT
+	}
+	
+	
+	private final OldNavigation nav = new OldNavigation(myPlayer);
+	private MarineBuildOrder obj = MarineBuildOrder.EQUIPPING;
+	
+	private MapLocation enemyLoc;
+	private MapLocation debrisLoc;
 	
 	boolean hasBlaster;
 	boolean hasRadar;
@@ -89,7 +108,7 @@ public class MarineBehavior extends Behavior
 	        				Utility.navStep(myPlayer, nav, enemyLoc);
 	        		}
 	        	}
-	        	else
+	        	else	//There is no enemy
 	        	{
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
 		        		Utility.attackDebris(myPlayer);
