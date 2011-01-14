@@ -1,7 +1,7 @@
-package masterytwo.behaviors;
+package masterytwob.behaviors;
 
 import battlecode.common.*;
-import masterytwo.*;
+import masterytwob.*;
 
 public class SCVBehavior extends Behavior
 {

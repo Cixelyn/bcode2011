@@ -1,8 +1,8 @@
-package masterytwo.behaviors;
+package masterytwob.behaviors;
 
 import java.util.*;
 
-import masterytwo.*;
+import masterytwob.*;
 import battlecode.common.*;
 
 public class FlyingDroneBehavior extends Behavior {
@@ -310,7 +310,7 @@ public class FlyingDroneBehavior extends Behavior {
         					}
         				}
         			}
-					myPlayer.myMotor.setDirection(initialDirection); // TODO This is throwing exceptions, unwrapped in !isActive
+					myPlayer.myMotor.setDirection(initialDirection);
 					obj =  FlyingDroneActions.EXPAND;
 					return;
     			}

@@ -1,7 +1,7 @@
-package masterytwo.behaviors;
+package masterytwob.behaviors;
 
 import battlecode.common.*;
-import masterytwo.*;
+import masterytwob.*;
 import java.util.*;
 
 public class RefineryBehavior extends Behavior
@@ -20,7 +20,7 @@ public class RefineryBehavior extends Behavior
 	
 	boolean rHasBlaster;
 	boolean rHasRadar;
-	boolean rHasAntenna;
+	boolean rHasShield;
 	
 	Robot[] nearbyRobots;
 	Robot babyMarine;
@@ -200,7 +200,7 @@ public class RefineryBehavior extends Behavior
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.CONSTRUCTOR, RobotLevel.IN_AIR);
     					else if ( !rHasSight )
     					{
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR); // TODO this is throwing exceptions
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR);
     						myPlayer.sleep();
     						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, spawn, currFlyer, enemyLocation);
     						currFlyer++;
@@ -253,7 +253,7 @@ public class RefineryBehavior extends Behavior
     				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
     				rHasBlaster = false;
     				rHasRadar = false;
-    				rHasAntenna = false;
+    				rHasShield = false;
     				for ( int i = rInfo.components.length - 1 ; i >= 0 ; i-- )
     				{
     					c = rInfo.components[i];
@@ -261,15 +261,15 @@ public class RefineryBehavior extends Behavior
     						rHasBlaster = true;
     					if ( c == ComponentType.RADAR )
     						rHasRadar = true;
-    					if ( c == ComponentType.ANTENNA )
-    						rHasAntenna = true;
+    					if ( c == ComponentType.SHIELD )
+    						rHasShield = true;
     				}
     				if ( !rHasBlaster )
     					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
     				else if ( !rHasRadar )
     					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
-    				else if ( !rHasAntenna )
-    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+    				else if ( !rHasShield )
+    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
     				else
     				{
     					if ( spawn != -1 )

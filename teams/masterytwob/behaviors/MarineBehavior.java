@@ -1,6 +1,6 @@
-package masterytwo.behaviors;
+package masterytwob.behaviors;
 
-import masterytwo.*;
+import masterytwob.*;
 import battlecode.common.*;
 
 public class MarineBehavior extends Behavior
@@ -14,11 +14,7 @@ public class MarineBehavior extends Behavior
 	
 	boolean hasBlaster;
 	boolean hasRadar;
-	boolean hasAntenna;
-	
-	boolean isLeader;
-	int currLeader;
-	MapLocation currLeaderLoc;
+	boolean hasShield;
 	
 	MapLocation enemyLocation;
 	int spawn = -1;
@@ -40,7 +36,7 @@ public class MarineBehavior extends Behavior
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				hasBlaster = false;
 				hasRadar = false;
-				hasAntenna = false;
+				hasShield = false;
 				for ( int i = myPlayer.myRC.components().length - 1 ; i >= 0 ; i-- )
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
@@ -48,15 +44,14 @@ public class MarineBehavior extends Behavior
 						hasBlaster = true;
 					if ( c.type() == ComponentType.RADAR )
 						hasRadar = true;
-					if ( c.type() == ComponentType.ANTENNA )
-						hasAntenna = true;
+					if ( c.type() == ComponentType.SHIELD )
+						hasShield = true;
 				}
-				if ( hasBlaster && hasRadar && hasAntenna )
+				if ( hasBlaster && hasRadar && hasShield )
 				{
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
 					myPlayer.myMotor.setDirection(Direction.NORTH); // hard-coded start aids swarming
-					currLeader = 9999; // set high to ensure that each robot initially thinks he is his own leader
 					obj = MarineBuildOrder.MOVE_OUT;
 				}
 				return;
@@ -64,14 +59,6 @@ public class MarineBehavior extends Behavior
 			case MOVE_OUT:	
 				
 	        	myPlayer.myRC.setIndicatorString(1, "MOVE_OUT");
-	        	isLeader = false;
-	        	if ( myPlayer.myRC.getRobot().getID() < currLeader )
-	        	{
-	        		Utility.setIndicator(myPlayer, 2, "I'm a leader!");
-	        		isLeader = true;
-	        	}
-	        	else
-	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
 	        	enemyLoc = Utility.attackEnemies(myPlayer);
 	        	if ( enemyLoc != null )
 	        	{
@@ -91,27 +78,17 @@ public class MarineBehavior extends Behavior
 	        	{
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
 		        		Utility.attackDebris(myPlayer);
-		        	if ( isLeader )
-		        	{
-		        		if ( spawn != -1 )
-		        			Utility.navStep(myPlayer, nav, enemyLocation);
-		        		else
-		        			Utility.bounceNav(myPlayer);
-		        	}
-		        	else
-		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
+	        		if ( spawn != -1 )
+	        			Utility.navStep(myPlayer, nav, enemyLocation);
+	        		else
+	        			Utility.bounceNav(myPlayer);
 	        	}
-	        	if ( isLeader )
-	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
-	        	else
-	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
 	        	if ( spawn != -1 && myPlayer.myRC.getDirection() == Direction.values()[(2*(spawn/2)+4)%8] && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4)) == TerrainTile.OFF_MAP ) // 4 is smallest value that works for diagonal directions also
 	        	{
 	        		spawn = (2*(spawn/2) + 2) % 8; // try a different ORTHOGONAL direction!
 	        		enemyLocation = Utility.spawnOpposite(myPlayer.myRC.getLocation(), spawn);
 	        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 	        	}
-	        	currLeader = 9999;
 	        	return;
 	        	
 		}
@@ -135,7 +112,7 @@ public class MarineBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_DET_LEADER || t == MsgType.MSG_ENEMY_LOC )
+		if ( t == MsgType.MSG_ENEMY_LOC )
 		{
 			if ( msg.ints[Messenger.firstData] != -1 )
 			{
@@ -145,14 +122,6 @@ public class MarineBehavior extends Behavior
 					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 				else
 					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
-			}
-		}
-		if ( t == MsgType.MSG_DET_LEADER )
-		{
-			if ( msg.ints[Messenger.firstData+1] < currLeader )
-			{
-				currLeader = msg.ints[Messenger.firstData+1];
-				currLeaderLoc = msg.locations[Messenger.firstData+1];
 			}
 		}
 	}
