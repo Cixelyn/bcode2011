@@ -285,6 +285,9 @@ public class FlyingDroneBehavior extends Behavior {
     					if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
     						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentBroadcastedMine), Chassis.BUILDING);
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentBroadcastedMine), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+    						while (myPlayer.myMotor.isActive()) {
+    							myPlayer.sleep();
+    						}
     						myPlayer.myMotor.setDirection(initialDirection);
     						obj =  FlyingDroneActions.EXPAND;
     					}
@@ -297,6 +300,9 @@ public class FlyingDroneBehavior extends Behavior {
             				}
     					}
     					else {
+    						while (myPlayer.myMotor.isActive()) {
+    							myPlayer.sleep();
+    						}
     						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(currentBroadcastedMine));
     					}
     				}
@@ -319,6 +325,9 @@ public class FlyingDroneBehavior extends Behavior {
             					return;
         					}
         					else {
+        						while (myPlayer.myMotor.isActive()) {
+        							myPlayer.sleep();
+        						}
             					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
             					currentMine=mine;
             					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
@@ -328,6 +337,9 @@ public class FlyingDroneBehavior extends Behavior {
         					}
         				}
         			}
+					while (myPlayer.myMotor.isActive()) {
+						myPlayer.sleep();
+					}
 					myPlayer.myMotor.setDirection(currentDirection); // TODO This is throwing exceptions, unwrapped in !isActive
 					obj =  FlyingDroneActions.EXPAND;
 					return;
@@ -351,6 +363,9 @@ public class FlyingDroneBehavior extends Behavior {
                     					return;
                 					}
                 					else {
+                						while (myPlayer.myMotor.isActive()) {
+                							myPlayer.sleep();
+                						}
                     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
                     					currentMine=mine;
                     					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
@@ -362,6 +377,9 @@ public class FlyingDroneBehavior extends Behavior {
                 				}
                 			}
                 			timeout=0;
+    						while (myPlayer.myMotor.isActive()) {
+    							myPlayer.sleep();
+    						}
         					myPlayer.myMotor.setDirection(currentDirection);
         					obj =  FlyingDroneActions.EXPAND;
         					return;
