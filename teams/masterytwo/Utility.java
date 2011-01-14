@@ -346,14 +346,17 @@ public class Utility {
 	{
 		WeaponController gun;
 		
-		for ( Object c : myPlayer.myWeapons )
+		if ( myPlayer.myRC.getHitpoints() < myPlayer.myRC.getMaxHp() )
 		{
-			gun = (WeaponController) c;
-			if ( gun.type() == ComponentType.MEDIC )
+			for ( Object c : myPlayer.myWeapons )
 			{
-				if(!gun.isActive() && myPlayer.myRC.getHitpoints() < myPlayer.myRC.getMaxHp())
+				gun = (WeaponController) c;
+				if ( gun.type() == ComponentType.MEDIC )
 				{
-					gun.attackSquare(myPlayer.myRC.getLocation(), myPlayer.myRC.getRobot().getRobotLevel());
+					if(!gun.isActive())
+					{
+						gun.attackSquare(myPlayer.myRC.getLocation(), myPlayer.myRC.getRobot().getRobotLevel());
+					}
 				}
 			}
 		}

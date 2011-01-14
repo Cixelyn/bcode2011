@@ -303,7 +303,7 @@ public class Messenger {
 	
 	
 	public void sendAll() throws Exception{
-		if(!messageQueue.isEmpty() && !myPlayer.myBroadcaster.isActive()) {
+		if(canSend && !messageQueue.isEmpty() && !myPlayer.myBroadcaster.isActive()) {
 			myPlayer.myBroadcaster.broadcast(messageQueue.pop());
 		}
 	}

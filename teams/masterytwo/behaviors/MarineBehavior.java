@@ -82,7 +82,7 @@ public class MarineBehavior extends Behavior
 	        				myPlayer.myMotor.moveForward();
 	        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(enemyLoc) )
 	        				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
-	        			else
+	        			else	
 	        				Utility.navStep(myPlayer, nav, enemyLoc);
 	        		}
 	        	}
