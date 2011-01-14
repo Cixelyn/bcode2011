@@ -35,17 +35,14 @@ public class DefaultBehavior extends Behavior
 			if ( c.type() == ComponentType.BLASTER )
 			{
 				myPlayer.swapBehavior(new MarineBehavior(myPlayer));
-				myPlayer.myScanner.setDetectionMode(Robot.class);
 			}
 			if ( c.type() == ComponentType.RECYCLER )
 			{
 				myPlayer.swapBehavior(new RefineryBehavior(myPlayer));
-				myPlayer.myScanner.setDetectionMode(Robot.class);
 			}
 			if ( c.type() == ComponentType.ARMORY )
 			{
 				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
-				myPlayer.myScanner.setDetectionMode(Robot.class);
 			}
 		}
 	}

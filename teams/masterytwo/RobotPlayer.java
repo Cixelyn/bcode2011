@@ -1,7 +1,6 @@
 package masterytwo;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 import masterytwo.strategies.*;
 import masterytwo.behaviors.*;
@@ -47,7 +46,6 @@ public class RobotPlayer implements Runnable {
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
-	public final Scanner myScanner;
 	public final Actions myActions;
 	
 	
@@ -59,6 +57,11 @@ public class RobotPlayer implements Runnable {
 	private double lastRoundHP;
 	private int bytecodeLimit;
 	public double myLastRes;
+	
+	
+	//Sensed nearby game objects
+	public final ArrayDeque<Robot> detectedRobots = new ArrayDeque<Robot>(144);
+	public final ArrayDeque<Mine> detectedMines = new ArrayDeque<Mine>(144);
 	
 	
 	
@@ -99,7 +102,6 @@ public class RobotPlayer implements Runnable {
     	myBroadcaster = null;
     	myWeapons = new ArrayList<WeaponController>();
     	myMessenger = new Messenger(this);
-    	myScanner = new Scanner(this);
     	myActions = new Actions(this);
     	
 
@@ -188,12 +190,23 @@ public class RobotPlayer implements Runnable {
 		
 		
 		/////////////////////////////////////////////////////////////
-		//Run the scanning subsystems
-		if(!myBehavior.overrideScanner){
-			try {
-				myScanner.InitialScan();				
-			} catch(Exception e) {e.printStackTrace();}
+		// Sense for nearby game objects if we has a sensor
+		
+		if ( mySensor != null )
+		{
+			detectedRobots.clear();
+			detectedMines.clear();
+			for ( GameObject obj : mySensor.senseNearbyGameObjects(GameObject.class) )
+			{
+				if(obj instanceof Robot)
+					detectedRobots.add((Robot)obj);
+				
+				if(obj instanceof Mine)
+					detectedMines.add((Mine)obj);
+			}
 		}
+		
+		
 	}
 	
 	
@@ -307,7 +320,6 @@ public class RobotPlayer implements Runnable {
 				break;
 			case SENSOR:
 				mySensor = (SensorController)c;
-				myScanner.enableScanner();
 				break;
 			case BUILDER:
 				myBuilder = (BuilderController)c;
