@@ -111,7 +111,7 @@ public class SCVBehavior extends Behavior
     			
 				Utility.setIndicator(myPlayer, 1, "BUILD_REFINERY");
 				Utility.setIndicator(myPlayer, 2, "Giving up in " + Integer.toString(Constants.MINE_AFFINITY - tiredness) + "...");
-    			if ( tiredness < Constants.MINE_AFFINITY & (!myPlayer.mySensor.withinRange(loc) || myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) )
+    			if ( tiredness < Constants.MINE_AFFINITY && (!myPlayer.mySensor.withinRange(loc) || myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) == null) )
     			{
         			if (myPlayer.myRC.getLocation().distanceSquaredTo(loc) > myPlayer.myBuilder.type().range)
         			{
@@ -135,7 +135,6 @@ public class SCVBehavior extends Behavior
     			}
     			else
     			{
-    				minesCapped++; // in order to ignore bad initial mines
     				obj = SCVBuildOrder.WEIRD_SPAWN;
     				tiredness = 0;
     			}
@@ -179,7 +178,7 @@ public class SCVBehavior extends Behavior
 			case WEIRD_SPAWN:
 				
 				Utility.setIndicator(myPlayer, 1, "WEIRD_SPAWN");
-				Utility.setIndicator(myPlayer, 1, "This is crazy!! Going back to my supply depot home.");
+				Utility.setIndicator(myPlayer, 2, "This is crazy!! Going back to my supply depot home.");
 				if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) > 0)
     				Utility.navStep(myPlayer, nav, hometown);
 				else
