@@ -37,6 +37,7 @@ public class Constants
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;
 	public static final int STEPS=4;
+	public static final int TIMEOUT=100;
 	
 	
 	

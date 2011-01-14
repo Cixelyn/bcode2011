@@ -8,6 +8,7 @@ public enum FlyingDroneActions {
 	RUN_AWAY,
 	FIND_BROADCASTED,
 	FIND_BROADCASTED_MINE,
+	WAIT_FOR_ACK,
 	EXPAND;
 
 }

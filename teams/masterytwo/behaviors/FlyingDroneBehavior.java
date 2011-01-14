@@ -2,6 +2,7 @@ package masterytwo.behaviors;
 
 import java.util.ArrayList;
 
+import masterytwo.behaviors.FlyingDroneActions;
 import masterytwo.*;
 import battlecode.common.*;
 
@@ -27,7 +28,7 @@ public class FlyingDroneBehavior extends Behavior {
 	static boolean knowEverything;
 	boolean returnedHome;
 	int timeTrying=0;
-	
+	int timeout=0;
 	ArrayList<MapLocation> broadcastedMines= new ArrayList<MapLocation>();
 	
 	Direction initialDirection;
@@ -140,28 +141,8 @@ public class FlyingDroneBehavior extends Behavior {
 						else if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
     						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-    						currentMine=null;
-    	        			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
-    	        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
-    	        					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
-    	            					currentMine=mine;
-    	            					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
-    	            					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
-    	            					obj=FlyingDroneActions.FOUND_MINE;
-    	            					return;
-    	        					}
-    	        					else {
-    	            					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
-    	            					currentMine=mine;
-    	            					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
-    	            					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
-    	            					obj=FlyingDroneActions.FOUND_MINE;
-    	            					return;
-    	        					}
-    	        				}
-    	        			}
     						myPlayer.myMotor.setDirection(initialDirection);
-    						obj =  FlyingDroneActions.EXPAND;
+    						obj =  FlyingDroneActions.WAIT_FOR_ACK;
     					}
     			}
     			else {
@@ -296,6 +277,64 @@ public class FlyingDroneBehavior extends Behavior {
     			}
 				return;
     		}
+    		
+    		case WAIT_FOR_ACK: {
+    			if (timeout>Constants.TIMEOUT) {
+        			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
+        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
+        					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
+            					currentMine=mine;
+            					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
+            					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
+            					obj=FlyingDroneActions.FOUND_MINE;
+            					return;
+        					}
+        					else {
+            					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
+            					currentMine=mine;
+            					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
+            					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
+            					obj=FlyingDroneActions.FOUND_MINE;
+            					return;
+        					}
+        				}
+        			}
+					myPlayer.myMotor.setDirection(initialDirection);
+					obj =  FlyingDroneActions.EXPAND;
+					return;
+    			}
+    			else {
+        			for (Robot robot : myPlayer.myScanner.detectedRobots) {
+        				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(robot);
+        				if (rInfo.location.equals(currentMine) && rInfo.direction.equals(myPlayer.myRC.getDirection().opposite())) {
+                			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
+                				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
+                					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
+                    					currentMine=mine;
+                    					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
+                    					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
+                    					obj=FlyingDroneActions.FOUND_MINE;
+                    					return;
+                					}
+                					else {
+                    					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
+                    					currentMine=mine;
+                    					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
+                    					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
+                    					obj=FlyingDroneActions.FOUND_MINE;
+                    					return;
+                					}
+                				}
+                			}
+        					myPlayer.myMotor.setDirection(initialDirection);
+        					obj =  FlyingDroneActions.EXPAND;
+        					return;
+        				}
+        			}
+    			}
+    			return;
+    		}
+    			
     		
     	}
     	
