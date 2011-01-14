@@ -11,6 +11,7 @@ public class TestFlyerBehavior extends Behavior
 	MapLocation[] farSquares = new MapLocation[4];
 	boolean[] offMapFound = new boolean[4];
 	
+	Mine[] nearbyMines;
 	Mine currMine = null;
 	
 	int num = -1;
@@ -49,7 +50,8 @@ public class TestFlyerBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "EXPAND");
 				Utility.setIndicator(myPlayer, 2, "I'm number " + Integer.toString(num) + "!");
-				for ( Mine m : myPlayer.detectedMines )
+				nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
+				for ( Mine m : nearbyMines )
 				{
 					if ( myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null )
 					{

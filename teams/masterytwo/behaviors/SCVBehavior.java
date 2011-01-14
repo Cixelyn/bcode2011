@@ -17,6 +17,7 @@ public class SCVBehavior extends Behavior
 	MapLocation loc;
 	Direction dir;
 	
+	Mine[] nearbyMines;
 	Mine currMine;
 	
 	int dizziness = 0;
@@ -54,7 +55,8 @@ public class SCVBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "FIND_MINE");
 				mineFound = false;
-				for ( Mine m : myPlayer.detectedMines )
+				nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class); 
+				for ( Mine m : nearbyMines )
     			{
     				if ( !mineFound && m.getTeam() == Team.NEUTRAL && myPlayer.mySensor.senseObjectAtLocation(m.getLocation(), RobotLevel.ON_GROUND) == null && !badMines.contains(m.getID()) )
     				{

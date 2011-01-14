@@ -21,6 +21,7 @@ public class RefineryBehavior extends Behavior
 	boolean rHasRadar;
 	boolean rHasAntenna;
 	
+	Robot[] nearbyRobots;
 	Robot babyMarine;
 	Robot rFront;
 	RobotInfo rInfo;
@@ -43,9 +44,11 @@ public class RefineryBehavior extends Behavior
 			case WAIT_FOR_RALLY:
 				
 				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_RALLY");
+				
+				nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 				if ( spawn == -1 && Clock.getRoundNum() - myPlayer.myBirthday < Constants.RALLY_WAIT )
 				{
-					for ( Robot r : myPlayer.detectedRobots )
+					for ( Robot r : nearbyRobots )
 					{
 						rInfo = myPlayer.mySensor.senseRobotInfo(r);
 						if ( rInfo.chassis == Chassis.LIGHT )
@@ -112,7 +115,9 @@ public class RefineryBehavior extends Behavior
     		case GIVE_ANTENNA:
     			
     			Utility.setIndicator(myPlayer, 1, "GIVE_ANTENNA");
-    			for ( Robot r : myPlayer.detectedRobots )
+    			
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
+    			for ( Robot r : nearbyRobots )
     			{
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.LIGHT && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() )
@@ -150,7 +155,9 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS) + ".");
     			if ( currFlyer > Constants.MAX_FLYERS )
 					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
-    			for ( Robot r : myPlayer.detectedRobots )
+    			
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
+    			for ( Robot r : nearbyRobots )
     			{
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )

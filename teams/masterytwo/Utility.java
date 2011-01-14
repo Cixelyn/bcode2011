@@ -244,7 +244,9 @@ public class Utility {
 		RobotInfo rInfo;
 		MapLocation destination = null;
 		
-    	for ( Robot r : myPlayer.detectedRobots )
+		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
+		
+    	for ( Robot r : nearbyRobots )
     	{
     		rInfo = myPlayer.mySensor.senseRobotInfo(r);
 			for ( Object c : myPlayer.myWeapons )
@@ -278,7 +280,9 @@ public class Utility {
 		RobotInfo rInfo;
 		MapLocation destination = null;
 		
-    	for ( Robot r : myPlayer.detectedRobots )
+		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
+		
+    	for ( Robot r : nearbyRobots )
     	{
 			for ( Object c : myPlayer.myWeapons )
 			{
@@ -311,7 +315,9 @@ public class Utility {
 		RobotInfo rInfo;
 		MapLocation destination = null;
 		
-    	for ( Robot r : myPlayer.detectedRobots )
+		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
+		
+    	for ( Robot r : nearbyRobots )
     	{
     		rInfo = myPlayer.mySensor.senseRobotInfo(r);
 			for ( Object c : myPlayer.myWeapons )
