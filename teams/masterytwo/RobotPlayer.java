@@ -42,7 +42,9 @@ public class RobotPlayer implements Runnable {
 	public BuilderController myBuilder;
 	public MovementController myMotor;
 	public BroadcastController myBroadcaster;
-	public final ArrayList<WeaponController> myWeapons;
+	
+	private final ArrayList<WeaponController> myWeaponsInternal;
+	public WeaponController[] myWeapons;
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
@@ -93,7 +95,11 @@ public class RobotPlayer implements Runnable {
     	myMotor = null;
     	mySensor = null;
     	myBroadcaster = null;
-    	myWeapons = new ArrayList<WeaponController>();
+    	
+    	myWeaponsInternal = new ArrayList<WeaponController>();
+    	myWeapons = new WeaponController[0];
+    	
+    	
     	myMessenger = new Messenger(this);
     	myActions = new Actions(this);
     	
@@ -290,31 +296,38 @@ public class RobotPlayer implements Runnable {
 		
 		for(ComponentController c : components) {
 			switch(c.componentClass()) {
-			case WEAPON:
-				myWeapons.add((WeaponController)c);
-				break;
-			case SENSOR:
-				mySensor = (SensorController)c;
-				break;
-			case BUILDER:
-				myBuilder = (BuilderController)c;
-				break;
-			case MOTOR:
-				myMotor = (MovementController)c;
-				break;
-			case COMM:
-				myBroadcaster = (BroadcastController)c;
-				myMessenger.enableSender();
-				break;
-			case ARMOR:
-				break;
-			case MISC:
-				if(c.type()==ComponentType.PROCESSOR) {
-					bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
-				}
-			default:
-				Utility.println("NotController");
+				case WEAPON:
+					myWeaponsInternal.add((WeaponController)c);
+					break;
+				case SENSOR:
+					mySensor = (SensorController)c;
+					break;
+				case BUILDER:
+					myBuilder = (BuilderController)c;
+					break;
+				case MOTOR:
+					myMotor = (MovementController)c;
+					break;
+				case COMM:
+					myBroadcaster = (BroadcastController)c;
+					myMessenger.enableSender();
+					break;
+				case ARMOR:
+					break;
+				case MISC:
+					if(c.type()==ComponentType.PROCESSOR) {
+						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
+					}
+				default:
+					Utility.println("NotController");
 			}
+			
+			
+			//We can afford this expensive call because allocation doesn't happen often.
+			//Also, because myWeapons only increases and never decreases, we shouldn't ever get nulls
+			myWeapons = myWeaponsInternal.toArray(new WeaponController[myWeaponsInternal.size()]);
+			
+			
 			
 			
 		}		
