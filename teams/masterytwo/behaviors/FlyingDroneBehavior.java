@@ -121,6 +121,7 @@ public class FlyingDroneBehavior extends Behavior {
             					currentMine=mine;
             					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
             					minePlacement=currentMine.getLocation().add(spawnDirection);
+            					currentDirection=myPlayer.myRC.getDirection();myPlayer.myMotor.moveForward();
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
         				}
@@ -327,7 +328,7 @@ public class FlyingDroneBehavior extends Behavior {
         					}
         				}
         			}
-					myPlayer.myMotor.setDirection(initialDirection); // TODO This is throwing exceptions, unwrapped in !isActive
+					myPlayer.myMotor.setDirection(currentDirection); // TODO This is throwing exceptions, unwrapped in !isActive
 					obj =  FlyingDroneActions.EXPAND;
 					return;
     			}
@@ -361,7 +362,7 @@ public class FlyingDroneBehavior extends Behavior {
                 				}
                 			}
                 			timeout=0;
-        					myPlayer.myMotor.setDirection(initialDirection);
+        					myPlayer.myMotor.setDirection(currentDirection);
         					obj =  FlyingDroneActions.EXPAND;
         					return;
         				}
@@ -422,38 +423,30 @@ public class FlyingDroneBehavior extends Behavior {
 	public void droneGeneralNav(int ID) throws GameActionException {
 		boolean foundEdge=false;
 		Utility.setIndicator(myPlayer, 2, initialDirection.toString());
-		if (myPlayer.myRC.getDirection().isDiagonal()) {
+		try {
+			Utility.bounceNavForFlyers(myPlayer);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+/*		if (myPlayer.myRC.getDirection().isDiagonal()) {
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)) {
-				float probability = myPlayer.myDice.nextFloat();
-				if (probability<.5) {
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
-				}
-				else {
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
-				}
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 				foundEdge=true;
 			}
 		}
 		else if (!myPlayer.myRC.getDirection().isDiagonal()) {
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
-				float probability = myPlayer.myDice.nextFloat();
-				if (probability<.5) {
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
-				}
-				else {
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
-				}
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 				foundEdge=true;
 			}
 		}
 		if (!foundEdge) {
-			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
-				myPlayer.myMotor.moveForward();
+			try {
+				Utility.bounceNav(myPlayer);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			else {
-				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
-			}
-		}
+		}*/
 	}
 	
 	
@@ -461,6 +454,142 @@ public class FlyingDroneBehavior extends Behavior {
 		myPlayer.myMotor.setDirection(Direction.values()[(ID*3)%8]);
 	}
 	
+	public void droneNav() throws GameActionException {
+		if (knowEverything) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+			droneKnowEverything();
+		}
+		else {
+			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+	}
+	
+	public void droneKnowEverything() {
+		
+	}
+	public void Drone0Nav() throws GameActionException {
+		if (knowEverything) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+			Drone0KnowEverything();
+		}
+		else {
+			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+	}
+	
+	public void Drone0KnowEverything() throws GameActionException {
+		while (!knowEverything) {
+			if (!myPlayer.myMotor.isActive()) {
+				myPlayer.myRC.setIndicatorString(0, "trying to lean everything");
+				myPlayer.myMotor.setDirection(Direction.NORTH);
+				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+					currentDirection=Direction.SOUTH_WEST;
+				}
+				else {
+					currentDirection=Direction.NORTH_EAST;
+				}
+				myPlayer.sleep();
+				myPlayer.myMotor.setDirection(currentDirection);
+				knowEverything=true;
+			}
+		}
+		
+	}
+	
+	public void Drone1Nav() throws GameActionException {
+		if (knowEverything) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+			Drone1KnowEverything();
+		}
+		else {
+			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+	}
+	
+	public void Drone1KnowEverything() throws GameActionException {
+		while (!knowEverything) {
+			if (!myPlayer.myMotor.isActive()) {
+				myPlayer.myMotor.setDirection(Direction.SOUTH);
+				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+					currentDirection=Direction.NORTH_WEST;
+				}
+				else {
+					currentDirection=Direction.SOUTH_EAST;
+				}
+				myPlayer.sleep();
+				myPlayer.myMotor.setDirection(currentDirection);
+				knowEverything=true;
+			}
+		}
+		
+	}
+	public void Drone2Nav() throws GameActionException {
+		if (knowEverything) {
+			myPlayer.myRC.setIndicatorString(0, "know everything");
+			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+		else if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+			Drone2KnowEverything();
+		}
+		else {
+			if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.myMotor.moveForward();
+			}
+		}
+	}
+	
+	public void Drone2KnowEverything() throws GameActionException {
+		while (!knowEverything) {
+			if (!myPlayer.myMotor.isActive()) {
+				myPlayer.myMotor.setDirection(Direction.SOUTH);
+				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)){
+					currentDirection=Direction.NORTH_EAST;
+				}
+				else {
+					currentDirection=Direction.SOUTH_WEST;
+				}
+				myPlayer.sleep();
+				myPlayer.myMotor.setDirection(currentDirection);
+				knowEverything=true;
+			}
+		}
+		
+	}
 	
 	
 	public Direction getMostVoidsDirection() {
