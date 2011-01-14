@@ -141,7 +141,6 @@ public class FlyingDroneBehavior extends Behavior {
 						else if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
     						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-    						myPlayer.myMotor.setDirection(initialDirection);
     						obj =  FlyingDroneActions.WAIT_FOR_ACK;
     					}
     			}
