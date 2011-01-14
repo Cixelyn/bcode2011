@@ -62,6 +62,8 @@ public class RefineryBehavior extends Behavior
 	public void run() throws Exception
 	{
 		
+		Utility.setIndicator(myPlayer, 2, "Current direction: " + myPlayer.myRC.getDirection().toString());
+		
 		switch(obj)
     	{
 		
@@ -289,12 +291,28 @@ public class RefineryBehavior extends Behavior
     				else
     				{
     					if ( spawn != -1 )
+    					{
     						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+    						if ( myPlayer.myRC.getDirection() != Direction.values()[spawn] )
+    						{
+		    					while ( myPlayer.myMotor.isActive() )
+									myPlayer.sleep();
+								myPlayer.myMotor.setDirection(Direction.values()[spawn]);
+    						}
+    					}
     					obj = RefineryBuildOrder.MAKE_MARINE;
     				}
     			}
 	    		else
+	    		{
+	    			if ( spawn != -1 && myPlayer.myRC.getDirection() != Direction.values()[spawn] )
+	    			{
+		    			while ( myPlayer.myMotor.isActive() )
+							myPlayer.sleep();
+						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
+	    			}
 	    			obj = RefineryBuildOrder.MAKE_MARINE;
+	    		}
     			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
     			return;
     			
