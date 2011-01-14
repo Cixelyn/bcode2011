@@ -59,13 +59,6 @@ public class RobotPlayer implements Runnable {
 	public double myLastRes;
 	
 	
-	//Sensed nearby game objects
-	public final ArrayDeque<Robot> detectedRobots = new ArrayDeque<Robot>(144);
-	public final ArrayDeque<Mine> detectedMines = new ArrayDeque<Mine>(144);
-	
-	
-	
-	
 	//Useful Toolkits
 	public final Random myDice;
 	
@@ -187,24 +180,6 @@ public class RobotPlayer implements Runnable {
 				myBehavior.newComponentCallback(components);
 			}
 		} catch(Exception e) {e.printStackTrace();}
-		
-		
-		/////////////////////////////////////////////////////////////
-		// Sense for nearby game objects if we has a sensor
-		
-		if ( mySensor != null )
-		{
-			detectedRobots.clear();
-			detectedMines.clear();
-			for ( GameObject obj : mySensor.senseNearbyGameObjects(GameObject.class) )
-			{
-				if(obj instanceof Robot)
-					detectedRobots.add((Robot)obj);
-				
-				if(obj instanceof Mine)
-					detectedMines.add((Mine)obj);
-			}
-		}
 		
 		
 	}

@@ -280,12 +280,12 @@ public class Utility {
 		
     	for ( Robot r : myPlayer.detectedRobots )
     	{
-    		rInfo = myPlayer.mySensor.senseRobotInfo(r);
 			for ( Object c : myPlayer.myWeapons )
 			{
 				gun = (WeaponController) c;
 				if ( gun.type() != ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam().opponent() )
 				{
+					rInfo = myPlayer.mySensor.senseRobotInfo(r);
 					destination = rInfo.location;
 					if(!gun.isActive() && rInfo.hitpoints > 0 && gun.withinRange(rInfo.location))
 					{
