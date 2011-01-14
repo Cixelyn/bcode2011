@@ -278,6 +278,7 @@ public class FlyingDroneBehavior extends Behavior {
     		}
     		
     		case WAIT_FOR_ACK: {
+    			Utility.setIndicator(myPlayer, 0, "waiting for ack");
     			if (timeout>Constants.TIMEOUT) {
         			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
@@ -313,6 +314,7 @@ public class FlyingDroneBehavior extends Behavior {
                     					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
                     					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
                     					obj=FlyingDroneActions.FOUND_MINE;
+                    					timeout=0;
                     					return;
                 					}
                 					else {
@@ -321,14 +323,17 @@ public class FlyingDroneBehavior extends Behavior {
                     					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
                     					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
                     					obj=FlyingDroneActions.FOUND_MINE;
+                    					timeout=0;
                     					return;
                 					}
                 				}
                 			}
+                			timeout=0;
         					myPlayer.myMotor.setDirection(initialDirection);
         					obj =  FlyingDroneActions.EXPAND;
         					return;
         				}
+        				timeout=timeout+1;
         			}
     			}
     			return;
