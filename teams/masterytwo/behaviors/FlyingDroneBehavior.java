@@ -312,7 +312,7 @@ public class FlyingDroneBehavior extends Behavior {
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
         					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
             					currentMine=mine;
-            					spawnDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
+            					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
             					minePlacement=currentMine.getLocation().add(spawnDirection);
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
@@ -320,7 +320,7 @@ public class FlyingDroneBehavior extends Behavior {
         					else {
             					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
             					currentMine=mine;
-            					spawnDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
+            					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
             					minePlacement=currentMine.getLocation().add(spawnDirection);
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
@@ -343,7 +343,7 @@ public class FlyingDroneBehavior extends Behavior {
                 				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
                 					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
                     					currentMine=mine;
-                    					spawnDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
+                    					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
                     					minePlacement=currentMine.getLocation().add(spawnDirection);
                     					obj=FlyingDroneActions.FOUND_MINE;
                     					timeout=0;
@@ -352,7 +352,7 @@ public class FlyingDroneBehavior extends Behavior {
                 					else {
                     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
                     					currentMine=mine;
-                    					spawnDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
+                    					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
                     					minePlacement=currentMine.getLocation().add(spawnDirection);
                     					obj=FlyingDroneActions.FOUND_MINE;
                     					timeout=0;
