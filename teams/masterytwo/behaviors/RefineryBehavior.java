@@ -99,7 +99,7 @@ public class RefineryBehavior extends Behavior
 								enemyLocation = null;
 								return;
 							}
-							spawn = (myPlayer.myRC.getLocation().directionTo(rInfo.location).ordinal() + 4) % 8; // opposite the rally
+							spawn = myPlayer.myRC.getLocation().directionTo(rInfo.location).ordinal(); // opposite the rally
 							enemyLocation = Utility.spawnOpposite(myPlayer.myRC.getLocation(), spawn);
 						}
 					}
@@ -110,7 +110,7 @@ public class RefineryBehavior extends Behavior
 					{
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
-						myPlayer.myMotor.setDirection(Direction.values()[(spawn + 4) % 8]);
+						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
 						Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
 						obj = RefineryBuildOrder.EQUIPPING;
 					}
