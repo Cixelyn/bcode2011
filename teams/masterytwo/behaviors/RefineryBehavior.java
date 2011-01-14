@@ -158,7 +158,7 @@ public class RefineryBehavior extends Behavior
     					obj = RefineryBuildOrder.EQUIP_FLYERS;
     				}
     				else
-    					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    					obj = RefineryBuildOrder.SLEEP; // I am one of the first four but not near armory
     			}
     			else if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
 	    			obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
@@ -222,7 +222,7 @@ public class RefineryBehavior extends Behavior
     		case MAKE_MARINE:
     			
     			Utility.setIndicator(myPlayer, 1, "MAKE_MARINE");
-    			if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    			if ( unitDock != null && Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
     			{
     				currFlyer = 0;
     				obj = RefineryBuildOrder.EQUIP_FLYERS;
