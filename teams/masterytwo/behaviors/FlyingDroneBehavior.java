@@ -184,6 +184,9 @@ public class FlyingDroneBehavior extends Behavior {
     			if (enemyInFront) {
     				MapLocation vector=new MapLocation(totalX/totalEnemyRobots,totalY/totalEnemyRobots);
     				Direction runAway=myPlayer.myRC.getLocation().directionTo(vector).opposite();
+    				if (runAway.equals(Direction.OMNI) || runAway.equals(Direction.NONE)) {
+    					runAway=myPlayer.myRC.getDirection().opposite();
+    				}
     				if (myPlayer.myMotor.canMove(runAway)) {
     					if (!setRunAwayDirection) {
         					if (!myPlayer.myMotor.isActive()) {
@@ -278,7 +281,7 @@ public class FlyingDroneBehavior extends Behavior {
     		}
     		
     		case WAIT_FOR_ACK: {
-    			Utility.setIndicator(myPlayer, 0, "waiting for ack");
+    			Utility.setIndicator(myPlayer, 0, myPlayer.myRC.getLocation().toString());
     			if (timeout>Constants.TIMEOUT) {
         			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
@@ -306,7 +309,11 @@ public class FlyingDroneBehavior extends Behavior {
     			else {
         			for (Robot robot : myPlayer.myScanner.detectedRobots) {
         				RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(robot);
-        				if (rInfo.location.equals(currentMine) && rInfo.location.add(rInfo.direction).equals(myPlayer.myRC.getLocation())) {
+        				if (robot.getTeam().equals(myPlayer.myRC.getTeam())) {
+        					Utility.setIndicator(myPlayer, 1, robot.toString());
+        					Utility.setIndicator(myPlayer, 2, rInfo.location.toString() + "," + rInfo.direction.toString());
+        				}
+        				if (rInfo.location.equals(currentMine.getLocation()) && rInfo.location.add(rInfo.direction).equals(myPlayer.myRC.getLocation())) {
                 			for (Mine mine : myPlayer.myScanner.detectedMines) { //look for mines, if we find one, lets go get it
                 				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
                 					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
