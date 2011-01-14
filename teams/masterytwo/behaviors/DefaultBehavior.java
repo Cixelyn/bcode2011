@@ -31,7 +31,10 @@ public class DefaultBehavior extends Behavior
 				if ( Clock.getRoundNum() <= 2 )
 					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
 				else
+				{
 					myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
+					Utility.setIndicator(myPlayer, 1, ""); // >:[ -JVen
+				}
 			}
 			if ( c.type() == ComponentType.BLASTER )
 			{

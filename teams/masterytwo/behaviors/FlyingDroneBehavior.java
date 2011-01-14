@@ -106,66 +106,69 @@ public class FlyingDroneBehavior extends Behavior {
     				Mine[] detectedMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
         			for (Mine mine : detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
-        					if (myPlayer.myRC.getLocation().equals(mine.getLocation())) {
             					currentMine=mine;
             					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
             					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
-        					}
-        					else {
-            					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
-            					currentMine=mine;
-            					oppositeOfSpawn=myPlayer.myRC.getLocation().directionTo(spawnLocation).opposite();
-            					minePlacement=currentMine.getLocation().add(oppositeOfSpawn);
-            					obj=FlyingDroneActions.FOUND_MINE;
-            					return;
-        					}
         				}
         			}
         			droneGeneralNav(ID);
     			}
     			return;
     		}
-    		case FOUND_MINE: {
+    		
+    		case FOUND_MINE:
+    			
     			Utility.setIndicator(myPlayer, 0, "found mine");
-    			if (myPlayer.mySensor.withinRange(minePlacement) && myPlayer.myRC.senseTerrainTile(minePlacement).equals(TerrainTile.OFF_MAP)) {
-    				minePlacement=currentMine.getLocation().add(myPlayer.myRC.getLocation().directionTo(spawnLocation));
+    			Utility.setIndicator(myPlayer, 1, "Current location: " + myPlayer.myRC.getLocation().toString());
+    			Utility.setIndicator(myPlayer, 2, "Mine placement: " + minePlacement.toString());
+    			
+    			// The mine is occupied -> leave
+    			if ( myPlayer.mySensor.withinRange(currentMine.getLocation()) && myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND) != null )
+    				obj = FlyingDroneActions.EXPAND;
+    			// The right spot is off map -> just build on top of it
+    			else if ( myPlayer.mySensor.withinRange(minePlacement) && myPlayer.myRC.senseTerrainTile(minePlacement) == TerrainTile.OFF_MAP )
+					minePlacement = currentMine.getLocation();
+    			// I'm on top of the mine and it is the right spot -> just build and go
+    			else if ( myPlayer.myRC.getLocation().equals(currentMine.getLocation()) && minePlacement.equals(currentMine.getLocation()) )
+    			{
+    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+    					myPlayer.sleep();
+    				Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+					obj = FlyingDroneActions.EXPAND;
     			}
-    			if (myPlayer.myRC.getLocation().equals(minePlacement) && !myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()))) {
-					if (!myPlayer.myMotor.isActive()) {
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()));
-					}
+    			// I'm in the right spot and facing the mine -> build and wait
+    			else if ( myPlayer.myRC.getLocation().equals(minePlacement) && myPlayer.myRC.getDirection() == myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()) )
+    			{
+    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+    					myPlayer.sleep();
+    				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+					obj =  FlyingDroneActions.WAIT_FOR_ACK;
     			}
-				else if (minePlacement.equals(myPlayer.myRC.getLocation())) { //i'm right by the mine, build recycler!
-						if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) { //someone is on our mine, gonna just look for other ones
-							if (!myPlayer.myMotor.isActive()) {
-								myPlayer.myMotor.setDirection(initialDirection);
-								obj=FlyingDroneActions.EXPAND;
-								return;
-							}
-						}
-						else if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
-    						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-    						obj =  FlyingDroneActions.WAIT_FOR_ACK;
-    					}
+    			// I'm in the right spot but not facing the right mine -> turn
+    			else if ( myPlayer.myRC.getLocation().equals(minePlacement) && myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()) )
+    			{
+    				while ( myPlayer.myMotor.isActive() )
+    					myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()));
     			}
-    			else {
-    				if (!myPlayer.myMotor.isActive())  { //move closer to the mine
-    					if (myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(minePlacement))) {
-            				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
-            					myPlayer.myMotor.moveForward();
-            				}
-    					}
-    					else {
-    						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(minePlacement));
-    					}
+    			// I'm not on the right spot -> go there
+    			else if ( !myPlayer.myMotor.isActive() )
+    			{
+    				// Move towards the target, turn if necessary 
+    				if ( myPlayer.myRC.getDirection() == myPlayer.myRC.getLocation().directionTo(minePlacement) )
+    				{
+    					if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) )
+    						myPlayer.myMotor.moveForward();
     				}
-    				return;
+					else
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(minePlacement));
     			}
     			return;
-    		}
+    		
     		case RUN_AWAY: {
     			Utility.setIndicator(myPlayer, 0, "run away!");
     			int totalX=0;

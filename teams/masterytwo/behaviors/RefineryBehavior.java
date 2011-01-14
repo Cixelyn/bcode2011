@@ -32,6 +32,11 @@ public class RefineryBehavior extends Behavior
 	
 	final Random random = new Random();
 	
+	boolean flyerRemake = false;
+	
+	Robot r;
+	ComponentType c;
+	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -51,13 +56,15 @@ public class RefineryBehavior extends Behavior
 				nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 				if ( spawn == -1 && Clock.getRoundNum() - myPlayer.myBirthday < Constants.RALLY_WAIT )
 				{
-					for ( Robot r : nearbyRobots )
+					for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
 					{
+						r = nearbyRobots[i];
 						rInfo = myPlayer.mySensor.senseRobotInfo(r);
 						if ( rInfo.chassis == Chassis.LIGHT )
 						{
-							for ( ComponentType c : rInfo.components )
+							for ( int j = rInfo.components.length - 1 ; j >= 0 ; j-- )
 							{
+								c = rInfo.components[j];
 								if ( c == ComponentType.CONSTRUCTOR ) // initial SCV found, I should not wait for rally
 								{
 									Utility.setIndicator(myPlayer, 0, "I am one of the first four refineries.");
@@ -87,13 +94,15 @@ public class RefineryBehavior extends Behavior
 							myPlayer.sleep();
 						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
 						Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+						obj = RefineryBuildOrder.EQUIPPING;
 					}
 					else
 					{
-						spawn = random.nextInt();
-						Utility.setIndicator(myPlayer, 0, "I think we spawned center, arbitrarily choosing: " + Direction.values()[spawn].toString() + ".");
+						//spawn = random.nextInt();
+						//Utility.setIndicator(myPlayer, 0, "I think we spawned center, arbitrarily choosing: " + Direction.values()[spawn].toString() + ".");
+						Utility.setIndicator(myPlayer, 0, "Spawn could not be determined. Shutting down.");
+						obj = RefineryBuildOrder.SLEEP;
 					}
-					obj = RefineryBuildOrder.EQUIPPING;
 				}
 				return;
 			
@@ -122,8 +131,9 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "GIVE_ANTENNA");
     			
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
-    			for ( Robot r : nearbyRobots )
+    			for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
     			{
+    				r = nearbyRobots[i];
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.LIGHT && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() )
     				{
@@ -159,18 +169,28 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
     			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS) + ".");
     			if ( currFlyer > Constants.MAX_FLYERS )
-					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    			{
+    				if ( !flyerRemake )
+    				{
+    					flyerRemake = true;
+    					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    				}
+    				else
+    					obj = RefineryBuildOrder.MAKE_MARINE;
+    			}
     			
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
-    			for ( Robot r : nearbyRobots )
+    			for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
     			{
+    				r = nearbyRobots[i];
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
     				{
     					rHasConstructor = false;
     					rHasSight = false;
-    					for ( ComponentType c : rInfo.components )
+    					for ( int j = rInfo.components.length - 1 ; j >= 0 ; j-- )
     					{
+    						c = rInfo.components[j];
     						if ( c == ComponentType.CONSTRUCTOR )
     							rHasConstructor = true;
     						if ( c == ComponentType.SIGHT )
@@ -202,6 +222,12 @@ public class RefineryBehavior extends Behavior
     		case MAKE_MARINE:
     			
     			Utility.setIndicator(myPlayer, 1, "MAKE_MARINE");
+    			if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    			{
+    				currFlyer = 0;
+    				obj = RefineryBuildOrder.EQUIP_FLYERS;
+    				return;
+    			}
     			if ( myPlayer.myMotor.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.LIGHT.upkeep * Math.max((int)Math.floor(lastIncome) - 6, 0) )
     				myPlayer.sleep();
     			else if ( !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null )
@@ -228,8 +254,9 @@ public class RefineryBehavior extends Behavior
     				rHasBlaster = false;
     				rHasRadar = false;
     				rHasAntenna = false;
-    				for ( ComponentType c : rInfo.components )
+    				for ( int i = rInfo.components.length - 1 ; i >= 0 ; i-- )
     				{
+    					c = rInfo.components[i];
     					if ( c == ComponentType.BLASTER )
     						rHasBlaster = true;
     					if ( c == ComponentType.RADAR )

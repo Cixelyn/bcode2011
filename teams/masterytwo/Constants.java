@@ -27,7 +27,7 @@ public class Constants
 	public static final int MAX_FLYERS = 8; // the maximum number of flyers the armory should make
 	public static final int HANBANG_TIME = 400; // when marines should be spawned
 	public static final int DEBRIS_TIME = 1500; // when marines should start killing debris
-	public static final int REMAKE_FLYER_TIME = 9999; // when armory should be powered on and flyers remade
+	public static final int REMAKE_FLYER_TIME = 2000; // when armory should be powered on and flyers remade
 	public static final int SCOUTING_DISTANCE = 7; // how far out the SCV should scout
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
 	public static final int MARINES_PER_EXPO = 2; // how many marines to make per expo

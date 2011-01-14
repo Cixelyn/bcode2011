@@ -195,6 +195,10 @@ public class Utility {
 	public static void buildChassis(RobotPlayer player, Direction dir, Chassis chassis) throws Exception
 	{
 		MapLocation loc = player.myRC.getLocation().add(dir);
+		if ( dir != Direction.OMNI && dir != Direction.NONE )
+			loc = player.myRC.getLocation().add(dir);
+		else
+			loc = player.myRC.getLocation();
 		while ( player.myRC.getTeamResources() < chassis.cost || player.myBuilder.isActive() )
 			player.sleep();
 		player.myBuilder.build(chassis, loc);
