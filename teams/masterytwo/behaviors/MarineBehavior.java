@@ -18,8 +18,6 @@ public class MarineBehavior extends Behavior
 {
 	
 	
-	
-	//define our states here:
 	private enum MarineBuildOrder
 	{
 		EQUIPPING,

@@ -290,11 +290,19 @@ public class RefineryBehavior extends Behavior
     				{
     					if ( spawn != -1 )
     						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+    					while ( myPlayer.myMotor.isActive() )
+							myPlayer.sleep();
+						myPlayer.myMotor.setDirection(Direction.values()[spawn]);
     					obj = RefineryBuildOrder.MAKE_MARINE;
     				}
     			}
 	    		else
+	    		{
+	    			while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(Direction.values()[spawn]);
 	    			obj = RefineryBuildOrder.MAKE_MARINE;
+	    		}
     			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
     			return;
     			
