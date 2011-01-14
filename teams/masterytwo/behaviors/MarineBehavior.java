@@ -95,7 +95,7 @@ public class MarineBehavior extends Behavior
 	        	
 	        	
 	        	enemyLoc = Utility.attackEnemies(myPlayer);
-	        	if ( enemyLoc != null )
+	        	if ( enemyLoc != null && !myPlayer.myRC.getLocation().equals(enemyLoc) )
 	        	{
 	        		if ( !myPlayer.myMotor.isActive() )
 	        		{
