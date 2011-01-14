@@ -6,6 +6,15 @@ import masterytwo.*;
 public class ArmoryBehavior extends Behavior
 {
 	
+	
+	private enum ArmoryBuildOrder 
+	{
+		WAIT_FOR_DOCK,
+		BUILD_FLYERS,
+		SLEEP
+	}
+	
+	
 	ArmoryBuildOrder obj = ArmoryBuildOrder.WAIT_FOR_DOCK;
 	
 	MapLocation unitDock;

@@ -5,7 +5,24 @@ import java.util.*;
 import masterytwo.*;
 import battlecode.common.*;
 
+
 public class FlyingDroneBehavior extends Behavior {
+	
+	
+	private enum FlyingDroneActions
+	{
+		
+		EQUIPPING,
+		FLYING_DRONE_ID,
+		FOUND_MINE,
+		RUN_AWAY,
+		FIND_BROADCASTED,
+		FIND_BROADCASTED_MINE,
+		WAIT_FOR_ACK,
+		EXPAND;
+
+	}
+	
 	
 	//TODO remember past mines, perhaps fix if we run into someone as we are running away
 	
