@@ -129,6 +129,9 @@ public class FlyingDroneBehavior extends Behavior {
     		}
     		case FOUND_MINE: {
     			Utility.setIndicator(myPlayer, 0, "found mine");
+    			if (myPlayer.mySensor.withinRange(minePlacement) && myPlayer.myRC.senseTerrainTile(minePlacement).equals(TerrainTile.OFF_MAP)) {
+    				minePlacement=currentMine.getLocation().add(myPlayer.myRC.getLocation().directionTo(spawnLocation));
+    			}
     			if (myPlayer.myRC.getLocation().equals(minePlacement) && !myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()))) {
 					if (!myPlayer.myMotor.isActive()) {
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()));
