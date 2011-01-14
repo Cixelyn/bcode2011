@@ -673,8 +673,11 @@ public class FlyingDroneBehavior extends Behavior {
 		}
 	}
 
-	public void onDamageCallback(double damageTaken) {}
-
+	public void onDamageCallback(double damageTaken) {
+		if (!obj.equals(FlyingDroneActions.EQUIPPING) && !obj.equals(FlyingDroneActions.FLYING_DRONE_ID)) {
+			obj=FlyingDroneActions.RUN_AWAY;
+		}
+	}
 	@Override
 	public void onWakeupCallback(int lastActiveRound) {
 		// TODO Auto-generated method stub
