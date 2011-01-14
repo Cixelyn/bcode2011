@@ -7,7 +7,8 @@ import battlecode.common.*;
 
 
 /**
- * Current marine iteration receives spawn location from towers, and then rushes forward in the correct direction
+ * Current marine iteration receives spawn location from towers, and then rushes forward in the correct direction.
+ * Small micro battle tricks added in order to make combat a little bit better
  * 
  * @since MASTeRYtwo v1.0
  * @author FiBsTeR
@@ -15,6 +16,7 @@ import battlecode.common.*;
  */
 public class MarineBehavior extends Behavior
 {
+	
 	
 	
 	//define our states here:
@@ -60,7 +62,7 @@ public class MarineBehavior extends Behavior
 				hasBlaster = false;
 				hasRadar = false;
 				hasAntenna = false;
-				for ( int i = myPlayer.myRC.components().length - 1 ; i >= 0 ; i-- )
+				for ( int i = myPlayer.myRC.components().length; --i>= 0;)
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
 					if ( c.type() == ComponentType.BLASTER )
