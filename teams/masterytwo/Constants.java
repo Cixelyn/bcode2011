@@ -22,7 +22,7 @@ public class Constants
 	//Justin's Go Here
 	
 	public static final int MAP_MAX_SIZE = (int) Math.ceil(Math.sqrt(GameConstants.MAP_MAX_HEIGHT*GameConstants.MAP_MAX_HEIGHT + GameConstants.MAP_MAX_WIDTH * GameConstants.MAP_MAX_WIDTH));
-	public static final int MINE_AFFINITY = 50; // how long SCV should chase a mine before giving up
+	public static final int MINE_AFFINITY = 10; // how long SCV should chase a mine before giving up
 	public static final int RESERVE = 2; // desired minimum flux after building
 	public static final int MAX_FLYERS = 8; // the maximum number of flyers the armory should make
 	public static final int FACTORY_TIME = 500; // minimum time factory can be built (may not be built immediately)
