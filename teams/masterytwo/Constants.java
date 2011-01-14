@@ -32,6 +32,7 @@ public class Constants
 	public static final int SCOUTING_DISTANCE = 7; // how far out the SCV should scout
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
 	public static final int MARINES_PER_EXPO = 2; // how many marines to make per expo
+	public static final int RALLY_WAIT = 50; // how long refinery should wait to determine rally
 
 	
 	//Max's Go here

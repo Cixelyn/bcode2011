@@ -2,6 +2,7 @@ package masterytwo.behaviors;
 
 public enum RefineryBuildOrder 
 {
+	WAIT_FOR_RALLY,
 	EQUIPPING,
 	GIVE_ANTENNA,
 	DETERMINE_LEADER,

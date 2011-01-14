@@ -6,7 +6,7 @@ import masterytwo.*;
 public class RefineryBehavior extends Behavior
 {
 	
-	RefineryBuildOrder obj = RefineryBuildOrder.EQUIPPING;
+	RefineryBuildOrder obj = RefineryBuildOrder.WAIT_FOR_RALLY;
 	
 	MapLocation unitDock;
 	
@@ -26,7 +26,10 @@ public class RefineryBehavior extends Behavior
 	RobotInfo rInfo;
 	
 	MapLocation enemyLocation;
-	int spawn = -1;
+	int spawn = -1; // -1 means unknown
+	
+	int parentID = -1; // -1 means unknown
+	int rally = -1; // -1 means unknown
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -40,6 +43,44 @@ public class RefineryBehavior extends Behavior
 		switch(obj)
     	{
 		
+			case WAIT_FOR_RALLY:
+				
+				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_RALLY");
+				if ( rally == -1 && Clock.getRoundNum() - myPlayer.myBirthday < Constants.RALLY_WAIT )
+				{
+					for ( RobotInfo rInfo : myPlayer.myScanner.scannedRobotInfos )
+					{
+						if ( rInfo.chassis == Chassis.LIGHT )
+						{
+							for ( ComponentType c : rInfo.components )
+							{
+								if ( c == ComponentType.CONSTRUCTOR ) // initial SCV found, I should not wait for rally
+								{
+									obj = RefineryBuildOrder.EQUIPPING;
+									return;
+								}
+							}
+						}
+						if ( rInfo.chassis == Chassis.FLYING && rInfo.direction == rInfo.location.directionTo(myPlayer.myRC.getLocation()) )
+						{
+							if ( rally != -1 ) // this is bad, two flyers facing me have been found, wait longer plz
+							{
+								rally = -1;
+								parentID = -1;
+								return;
+							}
+							rally = myPlayer.myRC.getLocation().directionTo(rInfo.location).ordinal();
+							parentID = rInfo.robot.getID();
+						}
+					}
+				}
+				else // rally has been determined
+				{
+					myPlayer.myMessenger.sendInt(MsgType.MSG_RALLY_SET, parentID);
+					obj = RefineryBuildOrder.EQUIPPING;
+				}
+				return;
+			
     		case EQUIPPING:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIPPING");

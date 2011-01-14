@@ -20,6 +20,7 @@ public enum MsgType {
 	MSG_SEND_ID (   0  , true , false , 1 , 0   ),
 	MSG_SEND_DOCK(  0  , true , false , 0 , 1   ),
 	MSG_SEND_NUM(   0  , true , false , 2 , 1   ),
+	MSG_RALLY_SET(  0  , true , false , 1 , 0   ),
 	MSG_STOP_TANKS( 0  , true , false , 0 , 0   ),
 	MSG_START_TANKS(0  , true , false , 0 , 0   ),
 	MSG_ENEMY_LOC(  0  , true , false , 1 , 1   ),

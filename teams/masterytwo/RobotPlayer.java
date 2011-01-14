@@ -52,7 +52,7 @@ public class RobotPlayer implements Runnable {
 	
 	
 	//Misc Stats
-	private final int myBirthday;
+	public final int myBirthday;
 	private int executeStartTime;
 	private int executeStartByte;
 	private int lastActiveRound;
