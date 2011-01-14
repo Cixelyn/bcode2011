@@ -167,10 +167,10 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
     			if ( unitDock != null )
     			{
-    				while ( myPlayer.myMotor.isActive() )
-    					myPlayer.sleep();
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range )
     				{
+    					while ( myPlayer.myMotor.isActive() )
+        					myPlayer.sleep();
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
     					currFlyer = 0;
     					obj = RefineryBuildOrder.EQUIP_FLYERS;
@@ -218,7 +218,7 @@ public class RefineryBehavior extends Behavior
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.CONSTRUCTOR, RobotLevel.IN_AIR);
     					else if ( !rHasSight )
     					{
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR); // TODO this is throwing exceptions
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR);
     						myPlayer.sleep();
     						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, spawn, currFlyer, enemyLocation);
     						currFlyer++;
@@ -242,6 +242,9 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "MAKE_MARINE");
     			if ( unitDock != null && Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
     			{
+    				while ( myPlayer.myMotor.isActive() )
+    					myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
     				currFlyer = 0;
     				obj = RefineryBuildOrder.EQUIP_FLYERS;
     				return;

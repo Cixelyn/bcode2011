@@ -33,6 +33,7 @@ public class Constants
 	public static final int MARINES_PER_EXPO = 2; // how many marines to make per expo
 	public static final int RALLY_WAIT = 50; // how long refinery should wait to determine rally
 	public static final int WRONG_SPAWN_TTL = 5; // if off_map is encountered and marine sends msg saying to change spawn, the rebroadcast will die after this # of rounds
+	public static final int FLYERS_TO_BUILD_FAST = 3; // how many flyers in the first round to prioritize before expos
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;
