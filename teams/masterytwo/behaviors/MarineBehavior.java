@@ -134,7 +134,10 @@ public class MarineBehavior extends Behavior
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
-				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+				if ( spawn != -1 )
+					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+				else
+					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
 			}
 		}
 		if ( t == MsgType.MSG_DET_LEADER )
@@ -148,7 +151,23 @@ public class MarineBehavior extends Behavior
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
-				Utility.setIndicator(myPlayer, 0, "We spawned " + Utility.spawnString(spawn) + ".");
+				if ( spawn != -1 )
+					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+				else
+					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
+			}
+		}
+		if (t == MsgType.MSG_ENEMY_LOC)
+		{
+			if ( spawn == -1 )
+			{
+				spawn = msg.ints[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
+				if ( spawn != -1 )
+					Utility.setIndicator(myPlayer, 0, "We spawned " + Direction.values()[spawn].toString() + ".");
+				else
+					Utility.setIndicator(myPlayer, 0, "We spawned center.");
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
 			}
 		}
 	}

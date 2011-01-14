@@ -419,37 +419,6 @@ public class Utility {
 		return null; // center spawn
 	}
 	
-	/**
-	 * Return string based on spawn location
-	 * @author JVen
-	 * @param spawn The region of the spawn
-	 * @return String specifying starting spawn region
-	 */
-	
-	public static String spawnString(int spawn)
-	{
-		switch (spawn)
-		{
-			case 0:
-				return "west";
-			case 1:
-				return "northwest";
-			case 2:
-				return "north";
-			case 3:
-				return "northeast";
-			case 4:
-				return "east";
-			case 5:
-				return "southeast";
-			case 6:
-				return "south";
-			case 7:
-				return "southwest";
-		}
-		return "center";
-	}
-	
 	//Max's Go here
 	
 	
