@@ -104,6 +104,12 @@ public class MarineBehavior extends Behavior
 	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
 	        	else
 	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
+	        	if ( spawn != -1 && myPlayer.myRC.getDirection() == Direction.values()[(spawn+4)%8] && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4)) == TerrainTile.OFF_MAP )
+	        	{
+	        		spawn = (spawn + 2) % 8;
+	        		enemyLocation = Utility.spawnOpposite(myPlayer.myRC.getLocation(), spawn);
+	        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+	        	}
 	        	currLeader = 9999;
 	        	return;
 	        	
@@ -147,14 +153,12 @@ public class MarineBehavior extends Behavior
 				currLeader = msg.ints[Messenger.firstData+1];
 				currLeaderLoc = msg.locations[Messenger.firstData+1];
 			}
-			if ( spawn != -1 )
+			if ( spawn == -1 )
 			{
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
 				if ( spawn != -1 )
 					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-				else
-					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
 			}
 		}
 		if (t == MsgType.MSG_ENEMY_LOC)
@@ -164,10 +168,10 @@ public class MarineBehavior extends Behavior
 				spawn = msg.ints[Messenger.firstData];
 				enemyLocation = msg.locations[Messenger.firstData];
 				if ( spawn != -1 )
-					Utility.setIndicator(myPlayer, 0, "We spawned " + Direction.values()[spawn].toString() + ".");
-				else
-					Utility.setIndicator(myPlayer, 0, "We spawned center.");
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+				{
+					Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
+					myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
+				}	
 			}
 		}
 	}
