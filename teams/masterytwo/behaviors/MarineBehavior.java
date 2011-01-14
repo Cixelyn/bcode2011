@@ -72,6 +72,8 @@ public class MarineBehavior extends Behavior
 	        	}
 	        	else
 	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
+	        	
+	        	
 	        	enemyLoc = Utility.attackEnemies(myPlayer);
 	        	if ( enemyLoc != null )
 	        	{
@@ -101,10 +103,14 @@ public class MarineBehavior extends Behavior
 		        	else
 		        		Utility.navStep(myPlayer, nav, currLeaderLoc);
 	        	}
+	        	
+	        	//Leader Code
 	        	if ( isLeader )
 	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
 	        	else
 	        		myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
+	        	
+	        	
 	        	if ( spawn != -1 && myPlayer.myRC.getDirection() == Direction.values()[(2*(spawn/2)+4)%8] && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),4)) == TerrainTile.OFF_MAP ) // 4 is smallest value that works for diagonal directions also
 	        	{
 	        		spawn = (2*(spawn/2) + 2) % 8; // try a different ORTHOGONAL direction!
@@ -146,13 +152,15 @@ public class MarineBehavior extends Behavior
 				else
 					Utility.setIndicator(myPlayer, 0, "I think we spawned center.");
 			}
-		}
-		if ( t == MsgType.MSG_DET_LEADER )
-		{
-			if ( msg.ints[Messenger.firstData+1] < currLeader )
+		
+			//cory: switched to inner check to save bytecode costs
+			if ( t == MsgType.MSG_DET_LEADER )
 			{
-				currLeader = msg.ints[Messenger.firstData+1];
-				currLeaderLoc = msg.locations[Messenger.firstData+1];
+				if ( msg.ints[Messenger.firstData+1] < currLeader )
+				{
+					currLeader = msg.ints[Messenger.firstData+1];
+					currLeaderLoc = msg.locations[Messenger.firstData+1];
+				}
 			}
 		}
 	}
