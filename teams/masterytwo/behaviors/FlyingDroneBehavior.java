@@ -469,7 +469,12 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	
 	public void setDirectionID(int ID) throws GameActionException {
-		myPlayer.myMotor.setDirection(Direction.values()[(ID*3)%8]);
+		if (myPlayer.myRC.getTeam().equals(Team.A)) {
+			myPlayer.myMotor.setDirection(Direction.values()[((ID*3)+4)%8]);
+		}
+		else {
+			myPlayer.myMotor.setDirection(Direction.values()[(ID*3)%8]);
+		}
 	}
 	
 	public void droneNav() throws GameActionException {
