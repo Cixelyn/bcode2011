@@ -366,7 +366,8 @@ public class SCVBehavior extends Behavior
     		case BROADCAST_SPAWN:
     			
     			Utility.setIndicator(myPlayer, 1, "BROADCAST_SPAWN");
-    			myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
+    			if ( realSpawn != -1 )
+    				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
     			if ( spawnReceived )
     				obj = SCVBuildOrder.VACATE_SPAWN;
     			else

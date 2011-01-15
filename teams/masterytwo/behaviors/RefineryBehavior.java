@@ -45,7 +45,6 @@ public class RefineryBehavior extends Behavior
 	
 	MapLocation enemyLocation;
 	int spawn = -1; // -1 means unknown
-	MapLocation realEnemyLocation;
 	int realSpawn = -1; // -1 means unknown
 	
 	
@@ -298,7 +297,7 @@ public class RefineryBehavior extends Behavior
     				{
     					if ( realSpawn != -1 )
     					{
-    						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
+    						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, enemyLocation);
     						if ( myPlayer.myRC.getDirection() != Direction.values()[realSpawn] )
     						{
 		    					while ( myPlayer.myMotor.isActive() )
@@ -384,7 +383,7 @@ public class RefineryBehavior extends Behavior
 				enemyLocation = msg.locations[Messenger.firstData];
 				spawn = realSpawn;
 				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[realSpawn].toString() + ".");
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, enemyLocation);
 			}
 		}
 	}

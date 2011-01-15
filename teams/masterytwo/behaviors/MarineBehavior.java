@@ -39,7 +39,6 @@ public class MarineBehavior extends Behavior
 	
 	MapLocation enemyLocation;
 	int spawn = -1; // -1 if unknown
-	MapLocation realEnemyLocation;
 	int realSpawn = -1; // -1 if unknown
 
 	int oldSpawn = -1; // -1 if unknown
@@ -54,6 +53,8 @@ public class MarineBehavior extends Behavior
 
 	public void run() throws Exception
 	{
+		
+		Utility.setIndicator(myPlayer, 2, "Is enemy location null? " + (enemyLocation == null));
 		
 		switch (obj)
 		{
@@ -88,13 +89,13 @@ public class MarineBehavior extends Behavior
 				
 	        	myPlayer.myRC.setIndicatorString(1, "MOVE_OUT");
 	        	isLeader = false;
-	        	if ( myPlayer.myRC.getRobot().getID() == currLeader )
+	        	if ( myPlayer.myRC.getRobot().getID() <= currLeader )
 	        	{
-	        		Utility.setIndicator(myPlayer, 2, "I'm a leader!");
+	        		//Utility.setIndicator(myPlayer, 2, "I'm a leader!");
 	        		isLeader = true;
 	        	}
-	        	else
-	        		Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
+	        	//else
+	        		//Utility.setIndicator(myPlayer, 2, "Leader is " + Integer.toString(currLeader) + ".");
 	        	
 	        	
 	        	enemyLoc = Utility.attackEnemies(myPlayer);
@@ -133,19 +134,19 @@ public class MarineBehavior extends Behavior
 	        		enemyLocation = Utility.spawnOpposite(myPlayer.myRC.getLocation(), spawn);
 	        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[(spawn+4)%8].toString() + ".");
 	        		myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_RERALLY, oldSpawn, spawn, enemyLocation);
-	        	}	        	
+	        	}
 	        	// Leader Code
 	        	else if ( isLeader )
 	        	{
 	        		if ( realSpawn != -1 )
-	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_REAL_DET_LEADER, realSpawn, myPlayer.myRC.getRobot().getID(), realEnemyLocation, myPlayer.myRC.getLocation());
+	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_REAL_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
 	        		else
 	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, myPlayer.myRC.getRobot().getID(), enemyLocation, myPlayer.myRC.getLocation());
 	        	}
 	        	else
 	        	{
 	        		if ( realSpawn != -1 )
-	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_REAL_DET_LEADER, realSpawn, currLeader, realEnemyLocation, currLeaderLoc);
+	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_REAL_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
 	        		else
 	        			myPlayer.myMessenger.sendDoubleIntDoubleLoc(MsgType.MSG_DET_LEADER, spawn, currLeader, enemyLocation, currLeaderLoc);
 	        	}
@@ -183,7 +184,7 @@ public class MarineBehavior extends Behavior
 			}
 		}
 		
-		if ( t == MsgType.MSG_REAL_DET_LEADER )
+		else if ( t == MsgType.MSG_REAL_DET_LEADER )
 		{
 			if ( msg.ints[Messenger.firstData+1] < currLeader )
 			{
@@ -193,15 +194,14 @@ public class MarineBehavior extends Behavior
 			if ( realSpawn == -1 )
 			{
 				realSpawn = msg.ints[Messenger.firstData];
-				realEnemyLocation = msg.locations[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
 				spawn = realSpawn;
-				enemyLocation = realEnemyLocation;
-				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[realSpawn].toString() + ".");
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
+				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ".");
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, enemyLocation);
 			}
 		}
 		
-		if ( t == MsgType.MSG_ENEMY_LOC )
+		else if ( t == MsgType.MSG_ENEMY_LOC )
 		{
 			if ( realSpawn == -1 && spawn == -1 )
 			{
@@ -211,20 +211,19 @@ public class MarineBehavior extends Behavior
 			}
 		}
 		
-		if ( t == MsgType.MSG_REAL_ENEMY_LOC )
+		else if ( t == MsgType.MSG_REAL_ENEMY_LOC )
 		{
 			if ( realSpawn == -1 )
 			{
 				realSpawn = msg.ints[Messenger.firstData];
-				realEnemyLocation = msg.locations[Messenger.firstData];
+				enemyLocation = msg.locations[Messenger.firstData];
 				spawn = realSpawn;
-				enemyLocation = realEnemyLocation;
-				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[realSpawn].toString() + ".");
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
+				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ".");
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, enemyLocation);
 			}
 		}
 		
-		if ( t == MsgType.MSG_RERALLY )
+		else if ( t == MsgType.MSG_RERALLY )
 		{
 			if ( msg.ints[Messenger.firstData] == spawn && ( realSpawn == -1 || offMapFound ) )
 			{

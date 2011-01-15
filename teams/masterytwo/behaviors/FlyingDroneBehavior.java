@@ -121,7 +121,7 @@ public class FlyingDroneBehavior extends Behavior {
             					currentMine=mine;
             					spawnDirection=currentMine.getLocation().directionTo(spawnLocation);
             					minePlacement=currentMine.getLocation().add(spawnDirection);
-            					currentDirection=myPlayer.myRC.getDirection();myPlayer.myMotor.moveForward();
+            					currentDirection=myPlayer.myRC.getDirection();
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
         				}
