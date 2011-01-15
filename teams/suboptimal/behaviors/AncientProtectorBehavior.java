@@ -56,7 +56,7 @@ public class AncientProtectorBehavior extends Behavior {
 
 	@Override
 	public void onWakeupCallback(int lastActiveRound) {
-		
+		 
 	}
 
 	@Override
