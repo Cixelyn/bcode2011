@@ -1,6 +1,5 @@
 package suboptimal.behaviors;
 
-import java.util.*;
 
 import suboptimal.*;
 import battlecode.common.*;;
