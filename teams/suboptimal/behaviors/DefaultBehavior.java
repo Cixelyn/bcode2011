@@ -41,7 +41,8 @@ public class DefaultBehavior extends Behavior
 			}
 			else if ( c.type() == ComponentType.REGEN && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 			{
-				myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
+				//myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
+				myPlayer.swapBehavior(new TestHeavyBehavior2(myPlayer));
 			}
 			else if ( c.type() == ComponentType.RECYCLER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{

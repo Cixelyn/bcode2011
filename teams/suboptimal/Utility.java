@@ -379,8 +379,8 @@ public class Utility {
     				else
     				{
     					minDist2 = minDist1;
-    					enemyMin2 = enemyMin1;
     					minDist1 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    					enemyMin2 = enemyMin1;
     					enemyMin1 = rInfo;
     				}
     			}

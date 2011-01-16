@@ -251,8 +251,11 @@ public class TestHeavyBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_NUM_HEAVY )
 		{
-			num = msg.ints[Messenger.firstData+1];
-			Utility.setIndicator(myPlayer, 2, "I'm heavy " + Integer.toString(num) + "!");
+			if ( num == -1 )
+			{
+				num = msg.ints[Messenger.firstData+1];
+				Utility.setIndicator(myPlayer, 2, "I'm heavy " + Integer.toString(num) + "!");
+			}
 		}
 	}
 	

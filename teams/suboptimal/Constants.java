@@ -18,7 +18,7 @@ public class Constants
 	public static final boolean DEBUG_BYTECODE_OVERFLOW = false;
 	
 	public static final boolean CUSTOM_INDICATORS = false;
-	public static final String INDICATOR0 = "GGGGGGGGGGGGGGGGGGG";
+	public static final String INDICATOR0 = "GGGGGGGGGGGGGGGGGGG"; // -____-;;   -JVen
 	public static final String INDICATOR1 = "GGGGGGGGGGGGGGGGGGG";
 	public static final String INDICATOR2 = "GGGGGGGGGGGGGGGGGGG";
 	
