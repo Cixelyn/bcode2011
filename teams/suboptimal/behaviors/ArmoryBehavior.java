@@ -10,14 +10,14 @@ public class ArmoryBehavior extends Behavior
 	private enum ArmoryBuildOrder 
 	{
 		WAIT_FOR_DOCK,
-		EQUIP_UNITS,
-		SLEEP
+		EQUIP_UNITS
 	}
 	
 	
 	ArmoryBuildOrder obj = ArmoryBuildOrder.WAIT_FOR_DOCK;
 	
 	MapLocation unitDock;
+	MapLocation towerLoc;
 	
 	RobotInfo rInfo;
 	Robot r;
@@ -28,6 +28,8 @@ public class ArmoryBehavior extends Behavior
 	
 	int currFlyer = 0;
 	double minFluxToBuild;
+	
+	boolean towerEquipped = false;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -98,16 +100,24 @@ public class ArmoryBehavior extends Behavior
 		    			currFlyer++;
 					}
 				}
+				else if ( !towerEquipped && towerLoc != null && myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND) != null )
+				{
+					Utility.setIndicator(myPlayer, 2, "Equipping missile turret.");
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(towerLoc));
+					myPlayer.sleep();
+					if ( myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND) != null && !myPlayer.myBuilder.isActive() )
+						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SATELLITE, RobotLevel.ON_GROUND);
+					towerEquipped = true;
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+				}
 				else
 					Utility.setIndicator(myPlayer, 2, "Idle.");
 				return;
-    			
-    		case SLEEP:
-    			
-    			Utility.setIndicator(myPlayer, 1, "SLEEP");
-    			Utility.setIndicator(myPlayer, 2, "Done building flyers.");
-    			myPlayer.myRC.turnOff();
-    			return;
+				
     	}
 		
 	}
@@ -126,6 +136,8 @@ public class ArmoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
+		if ( t == MsgType.MSG_SEND_TOWER )
+			towerLoc = msg.locations[Messenger.firstData];
 	}
 	
 	public void onWakeupCallback(int lastActiveRound)

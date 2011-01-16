@@ -338,7 +338,7 @@ public class Utility {
 			loc = player.myRC.getLocation().add(dir);
 		else
 			loc = player.myRC.getLocation();
-		while ( player.myRC.getTeamResources() < chassis.cost || player.myBuilder.isActive() )
+		while ( player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive() )
 			player.sleep();
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) && player.mySensor.senseObjectAtLocation(loc, chassis.level) != null )
 			return;
@@ -370,7 +370,7 @@ public class Utility {
 		}
 		else
 			loc = player.myRC.getLocation();
-		while ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
+		while ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive() )
 			player.sleep();
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
 		{
@@ -414,7 +414,7 @@ public class Utility {
 		}
 		else
 			loc = player.myRC.getLocation();
-		if ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
+		if ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive() )
 			return false;
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
 		{
