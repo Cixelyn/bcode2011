@@ -134,6 +134,33 @@ public class FlyingDroneBehavior extends Behavior {
                 					return;
     	        				}
     	        			}
+    	        			
+    	        			
+        					for (int i=0;i<3;i++) { //spin and check all our other directions
+        						Mine[] nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
+        	        			for (Mine mine : nearbyMines) { //look for mines, if we find one, lets go get it
+        	        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
+        	        					while (myPlayer.myMotor.isActive()) {
+        	        						myPlayer.sleep();
+        	        					}
+        	            				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
+                    					currentMine=mine;
+                    					towerDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
+                    					towerPlacement=currentMine.getLocation().add(towerDirection);
+                    					currentDirection=myPlayer.myRC.getDirection();
+                    					obj=FlyingDroneActions.FOUND_MINE;
+                    					return;
+        	        				}
+        	        			}
+	        					while (myPlayer.myMotor.isActive()) {
+	        						myPlayer.sleep();
+	        					}
+	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+        					}
+        					
+        					while (myPlayer.myMotor.isActive()) {
+        						myPlayer.sleep();
+        					}
     						myPlayer.myMotor.setDirection(initialDirection);
     						if (steps>Constants.STEPS) {
     							obj =  FlyingDroneActions.BUILD_TOWER;
