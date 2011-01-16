@@ -4,17 +4,17 @@ import suboptimal.*;
 import battlecode.common.*;
 
 
-public class TestHeavyBehavior extends Behavior
+public class TestHeavyBehavior2 extends Behavior
 {
 	
 	
-	private enum TestHeavyBuildOrder
+	private enum TestHeavyBuildOrder2
 	{
 		EQUIPPING,
 		MOVE_OUT
 	}
 	
-	TestHeavyBuildOrder obj = TestHeavyBuildOrder.EQUIPPING;
+	TestHeavyBuildOrder2 obj = TestHeavyBuildOrder2.EQUIPPING;
 	
 	final OldNavigation nav = new OldNavigation(myPlayer);
 	
@@ -34,7 +34,7 @@ public class TestHeavyBehavior extends Behavior
 	boolean hasRegen;
 	int numBlasters;
 	
-	public TestHeavyBehavior(RobotPlayer player)
+	public TestHeavyBehavior2(RobotPlayer player)
 	{
 		super(player);
 	}
@@ -88,7 +88,7 @@ public class TestHeavyBehavior extends Behavior
 						rally = (3 * num) % 8;
 						destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
 					}
-					obj = TestHeavyBuildOrder.MOVE_OUT;
+					obj = TestHeavyBuildOrder2.MOVE_OUT;
 				}
 				return;
 	        	
