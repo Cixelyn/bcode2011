@@ -659,8 +659,27 @@ public class Utility {
 	
 	
 	//Cory's Go here
-	
-	
+
+	public static boolean isOnLine(MapLocation point, MapLocation source, MapLocation dest)
+	{
+
+		double x1 = source.x;
+		double y1 = source.y;
+		double x2 = dest.x;
+		double y2 = dest.x;
+		double x = point.x;
+		double y = point.y;
+		double m = (y2 - y1 + 0.0) / (x2 - x1);
+		return 
+		(point.equals(source)) ||
+		(point.equals(dest)) ||
+		(x1 == x2 && ((y > y1 && y < y2) ||	(y < y1 && y > y2))) ||
+		(y - 0.5 < (m*(x - 0.5 - x1) + y1) ) && (y + 0.5 > (m*(x - 0.5 - x1) + y1)) ||
+		(y - 0.5 < (m*(x + 0.5 - x1) + y1) ) && (y + 0.5 > (m*(x + 0.5 - x1) + y1)) ||
+		(y + 0.5 < (m*(x - 0.5 - x1) + y1) ) && (y - 0.5 > (m*(x + 0.5 - x1) + y1))	||
+		(y - 0.5 < (m*(x - 0.5 - x1) + y1) ) && (y + 0.5 > (m*(x + 0.5 - x1) + y1));
+
+	}
 	
 	
 	
