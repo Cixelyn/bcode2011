@@ -660,6 +660,23 @@ public class Utility {
 	
 	//Cory's Go here
 	
+	public static int NUM_COMPONENT_TYPES = ComponentType.values().length;
+	
+	/**
+	 * Counts the number of component types given an array of component types.
+	 * Useful in determining the loadout of a robot.
+	 * @param components
+	 * @return
+	 */
+	public static int[] countComponents(ComponentType[] components) {
+		int[] list = new int[NUM_COMPONENT_TYPES];
+		for(int i=components.length; --i>=0;) {
+			list[components[i].ordinal()]++;
+		}
+		return list;
+	}
+	
+	
 	
 	
 	
