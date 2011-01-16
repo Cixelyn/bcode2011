@@ -33,12 +33,12 @@ public class DefaultBehavior extends Behavior
 				else
 				{
 					myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
-					Utility.setIndicator(myPlayer, 1, ""); // >:[ -JVen
+					Utility.setIndicator(myPlayer, 1, ""); // >:[ Clear out your "WHO AM I" indicator string Max!!! -Jven
 				}
 			}
-			if ( c.type() == ComponentType.BLASTER )
+			if ( c.type() == ComponentType.REGEN )
 			{
-				myPlayer.swapBehavior(new MarineBehavior(myPlayer));
+				myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
 			}
 			if ( c.type() == ComponentType.RECYCLER )
 			{
@@ -47,6 +47,10 @@ public class DefaultBehavior extends Behavior
 			if ( c.type() == ComponentType.ARMORY )
 			{
 				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
+			}
+			if ( c.type() == ComponentType.FACTORY )
+			{
+				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
 			}
 		}
 	}

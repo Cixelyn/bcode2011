@@ -54,8 +54,6 @@ public class MarineBehavior extends Behavior
 	public void run() throws Exception
 	{
 		
-		Utility.setIndicator(myPlayer, 2, "Is enemy location null? " + (enemyLocation == null));
-		
 		switch (obj)
 		{
 			
