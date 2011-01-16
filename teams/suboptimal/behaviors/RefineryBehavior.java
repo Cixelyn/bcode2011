@@ -34,6 +34,7 @@ public class RefineryBehavior extends Behavior
 	boolean rHasSight;
 	
 	int rNumBlasters;
+	int rNumShields;
 	boolean rHasRadar;
 	
 	Robot[] nearbyRobots;
@@ -151,23 +152,35 @@ public class RefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_TOWERS");
     			Utility.setIndicator(myPlayer, 2, "Equipping tower with ID " + Integer.toString(r.getID()) + ".");
-				rNumBlasters = 0;
-				rHasRadar = false;
-				for ( int j = rInfo.components.length ; --j >= 0 ; )
-				{
-					c = rInfo.components[j];
-					if ( c == ComponentType.BLASTER )
-						rNumBlasters++;
-					if ( c == ComponentType.RADAR )
-						rHasRadar = true;
-				}
-				if ( rNumBlasters < 2 )
-					Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-				else if ( !rHasRadar )
-				{
-					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND) )
-						obj = RefineryBuildOrder.CLAIM_TOWERS;
-				}
+    			if ( myPlayer.mySensor.canSenseObject(r) )
+    			{
+	    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
+					rNumBlasters = 0;
+					rNumShields = 0;
+					rHasRadar = false;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.BLASTER )
+							rNumBlasters++;
+						if ( c == ComponentType.SHIELD )
+							rNumShields++;
+						if ( c == ComponentType.RADAR )
+							rHasRadar = true;
+					}
+					if ( rNumBlasters < Constants.BLASTERS_PER_TOWER )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+					else if ( rNumShields < Constants.SHIELDS_PER_TOWER )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+					else if ( !rHasRadar )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
+							obj = RefineryBuildOrder.CLAIM_TOWERS;
+					}
+	    			return;
+    			}
+    			else
+    				obj = RefineryBuildOrder.CLAIM_TOWERS;
     			return;
     			
     		case EQUIP_UNITS:
@@ -193,7 +206,7 @@ public class RefineryBehavior extends Behavior
 						{
 							if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND) )
 							{
-								myPlayer.sleep(); // NECESSARY TO GIVE FLYER TIME TO REALIZE WHO HE IS
+								myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
 								myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, spawn, currHeavy, enemyLocation);
 								currHeavy++;
 							}
@@ -209,7 +222,7 @@ public class RefineryBehavior extends Behavior
 					Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
 					rHasConstructor = false;
 					rHasSight = false;
-					for ( int j = rInfo.components.length - 1 ; --j >= 0 ; )
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
 						if ( c == ComponentType.CONSTRUCTOR )
