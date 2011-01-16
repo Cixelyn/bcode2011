@@ -54,6 +54,8 @@ public class RobotPlayer implements Runnable {
 	
 	//Misc Stats
 	public final int myBirthday;
+	public final MapLocation myBirthplace;
+	
 	private int executeStartTime;
 	private int executeStartByte;
 	private int lastActiveRound;
@@ -83,6 +85,7 @@ public class RobotPlayer implements Runnable {
     	
     	//variables and utilities that other pieces depend on
     	myBirthday = Clock.getRoundNum();
+    	myBirthplace = myRC.getLocation();
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
     	bytecodeLimit = GameConstants.BYTECODE_LIMIT_BASE;
