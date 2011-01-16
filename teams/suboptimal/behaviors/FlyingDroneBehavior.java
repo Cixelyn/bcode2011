@@ -158,7 +158,6 @@ public class FlyingDroneBehavior extends Behavior {
 	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
         					}
         					
-        					
         					while (myPlayer.myMotor.isActive()) {
         						myPlayer.sleep();
         					}
