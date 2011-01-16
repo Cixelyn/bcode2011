@@ -660,6 +660,15 @@ public class Utility {
 	
 	//Cory's Go here
 
+	/**
+	 * Returns true if the line segment from source to dest intersects the interior of point
+	 * @author JVen
+	 * @param point The square whose existence on the line segment is questioned
+	 * @param source One of the ends of the line segment
+	 * @param dest The other end of the line segment
+	 * @return True if point is on the segment, false otherwise
+	 */
+	
 	public static boolean isOnLine(MapLocation point, MapLocation source, MapLocation dest)
 	{
 
