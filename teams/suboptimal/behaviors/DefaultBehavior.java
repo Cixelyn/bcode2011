@@ -26,35 +26,38 @@ public class DefaultBehavior extends Behavior
 		for ( int i = components.length - 1 ; i >= 0 ; i-- )
 		{
 			ComponentController c = components[i];
-			if ( c.type() == ComponentType.CONSTRUCTOR )
+			if ( c.type() == ComponentType.CONSTRUCTOR && myPlayer.myRC.getChassis() == Chassis.LIGHT )
 			{
-				if ( Clock.getRoundNum() <= 2 )
-					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
-				else
-				{
-					myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
-					Utility.setIndicator(myPlayer, 1, ""); // >:[ Clear out your "WHO AM I" indicator string Max!!! -Jven
-				}
+				myPlayer.swapBehavior(new SCVBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.BLASTER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+			else if ( c.type() == ComponentType.CONSTRUCTOR && myPlayer.myRC.getChassis() == Chassis.FLYING )
+			{
+				myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
+				Utility.setIndicator(myPlayer, 1, ""); // >:[ Clear out your "WHO AM I" indicator string Max!!! -Jven
+			}
+			else if ( c.type() == ComponentType.BLASTER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
 				myPlayer.swapBehavior(new AncientProtectorBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.REGEN )
+			else if ( c.type() == ComponentType.REGEN && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 			{
 				myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.RECYCLER )
+			else if ( c.type() == ComponentType.RECYCLER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
 				myPlayer.swapBehavior(new RefineryBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.ARMORY )
+			else if ( c.type() == ComponentType.ARMORY && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
 				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
 			}
-			if ( c.type() == ComponentType.FACTORY )
+			else if ( c.type() == ComponentType.FACTORY && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
 				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
+			}
+			else if ( c.type() == ComponentType.SATELLITE && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+			{
+				myPlayer.swapBehavior(new MissileTurretBehavior(myPlayer));
 			}
 		}
 	}
