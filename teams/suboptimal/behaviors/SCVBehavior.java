@@ -60,6 +60,8 @@ public class SCVBehavior extends Behavior
 	MapLocation realEnemyLocation;
 	boolean spawnReceived;
 	
+	int[] mainRefineries = {-1,-1};
+	
 	public SCVBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -187,10 +189,10 @@ public class SCVBehavior extends Behavior
 						Utility.buildChassis(myPlayer, d, Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 						myPlayer.sleep();
+						myPlayer.myBroadcaster.broadcastTurnOn(mainRefineries);
+						myPlayer.sleep();
 						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
 						obj = SCVBuildOrder.VACATE_HOME;
-						//myPlayer.sleep();
-						//myPlayer.myRC.suicide();
 						return;
 					}
 					dizziness++;
@@ -502,6 +504,13 @@ public class SCVBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
+		if ( t == MsgType.MSG_SEND_ID )
+		{
+			if ( mainRefineries[0] == -1 )
+				mainRefineries[0] = msg.ints[Messenger.firstData];
+			else if ( mainRefineries[1] == -1 )
+				mainRefineries[1] = msg.ints[Messenger.firstData];
+		}
 		if ( t == MsgType.MSG_REAL_ENEMY_LOC )
 			spawnReceived = true;
 	}

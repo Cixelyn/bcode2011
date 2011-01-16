@@ -49,6 +49,8 @@ public class RefineryBehavior extends Behavior
 	
 	final Random random = new Random();
 	
+	boolean sleepy = true;
+	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -58,8 +60,6 @@ public class RefineryBehavior extends Behavior
 	public void run() throws Exception
 	{
 		
-		Utility.setIndicator(myPlayer, 2, "Current direction: " + myPlayer.myRC.getDirection().toString());
-		
 		switch(obj)
     	{
 			
@@ -67,7 +67,7 @@ public class RefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIPPING");
     			Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    			if ( Clock.getRoundNum() < 5 ) // I'm one of the first two refineries
+    			if ( Clock.getRoundNum() < 10 ) // I'm one of the first two refineries
     				obj = RefineryBuildOrder.DETERMINE_LEADER;
     			else
     				obj = RefineryBuildOrder.WAIT_FOR_DOCK;
@@ -77,6 +77,7 @@ public class RefineryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "DETERMINE_LEADER");
     			myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_ID, myPlayer.myRC.getRobot().getID());
+    			myPlayer.sleep();
     			if ( isLeader == 1 )
 	    			obj = RefineryBuildOrder.GIVE_ANTENNA;
     			if ( isLeader == 0 )
@@ -104,7 +105,13 @@ public class RefineryBehavior extends Behavior
     		case WAIT_FOR_DOCK:
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
-    			if ( unitDock != null )
+    			if ( isLeader != -1 && sleepy )
+    			{
+    				myPlayer.myRC.turnOff();
+    				sleepy = false;
+    				return;
+    			}
+    			else if ( unitDock != null )
     			{
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range )
     				{
