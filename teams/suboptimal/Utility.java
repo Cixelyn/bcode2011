@@ -659,7 +659,6 @@ public class Utility {
 	
 	
 	//Cory's Go here
-	
 	public static int NUM_COMPONENT_TYPES = ComponentType.values().length;
 	
 	/**

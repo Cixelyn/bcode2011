@@ -7,7 +7,6 @@ import battlecode.common.*;
 public class TestHeavyBehavior extends Behavior
 {
 	
-	
 	private enum TestHeavyBuildOrder
 	{
 		EQUIPPING,
@@ -22,6 +21,10 @@ public class TestHeavyBehavior extends Behavior
 	boolean hasSatellite;
 	boolean hasRegen;
 	int numBlasters;
+	
+	boolean[] hasSeenRobot = new boolean[1024];
+	
+	
 	
 	public TestHeavyBehavior(RobotPlayer player)
 	{
@@ -67,11 +70,53 @@ public class TestHeavyBehavior extends Behavior
 					obj = TestHeavyBuildOrder.MOVE_OUT;
 				return;
 	        	
+			
 				
-			case MOVE_OUT:	
 				
 				
-	        	myPlayer.myRC.setIndicatorString(1, "MOVE_OUT");
+			/*
+			 * Our main movement & attack code.
+			 */
+			case MOVE_OUT:				
+	        	satelliteScanMapEdge();
+	        	
+	        	
+	        	
+	        	//RUN SUPER SPECIAL CUSTOM SENSOR CODE
+	        	Robot[] robots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+	        	
+	        	
+	        	//QUICK CODE FOR JUST FINDING THE NEAREST ROBOT
+	        	//FIXME: I'll eventually get around to adding some extra thing;
+	        	//		TODO:add prioritization based on components, etc.	        	
+	        	Robot 		nearestEnemyRobot			= null;
+	        	RobotInfo	nearestEnemyRobotInfo		= null;
+	        	int			nearestEnemyRobotDistance	= 999;
+	        	Direction	nearestEnemyRobotDirection  = null;
+	        	
+	        	MapLocation myLoc = myPlayer.myRC.getLocation();
+	        	
+	        	for(int i=robots.length; --i>=0;) {
+	        		if(robots[i].getTeam()==myPlayer.myOpponent) {
+	        			RobotInfo rinfo = myPlayer.mySensor.senseRobotInfo(robots[i]);
+	        			
+	        			int robotDistance = myLoc.distanceSquaredTo(rinfo.location);
+	        			if(robotDistance < nearestEnemyRobotDistance) {
+	        				nearestEnemyRobot = robots[i];
+	        				nearestEnemyRobotInfo = rinfo;
+	        				nearestEnemyRobotDistance = robotDistance;
+	        				nearestEnemyRobotDirection = myLoc.directionTo(nearestEnemyRobotInfo.location);
+	        			}
+	        		}
+	        	}
+	        	
+
+	        	if(nearestEnemyRobot!=null) {
+	        		
+	        	}
+	        	
+	        	
+	        	
 	        	Utility.bounceNav(myPlayer);
 	        	return;
 	        	
