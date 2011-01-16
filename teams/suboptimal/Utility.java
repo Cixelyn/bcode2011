@@ -661,7 +661,7 @@ public class Utility {
 	//Cory's Go here
 
 	/**
-	 * Returns true if the line segment from source to dest intersects the interior of point
+	 * Returns true if the line segment from source to dest intersects the point (interior AND perimeter)
 	 * @author JVen
 	 * @param point The square whose existence on the line segment is questioned
 	 * @param source One of the ends of the line segment
@@ -679,14 +679,14 @@ public class Utility {
 		double x = point.x;
 		double y = point.y;
 		double m = (y2 - y1) / (x2 - x1);
+		double mInv = (x2 - x1) / (y2 - y1);
 		return 
-		(point.equals(source)) ||
-		(point.equals(dest)) ||
-		(x1 == x2 && ((y > y1 && y < y2) ||	(y < y1 && y > y2))) ||
-		(y - 0.5 < (m*(x - 0.5 - x1) + y1) ) && (y + 0.5 > (m*(x - 0.5 - x1) + y1)) ||
-		(y - 0.5 < (m*(x + 0.5 - x1) + y1) ) && (y + 0.5 > (m*(x + 0.5 - x1) + y1)) ||
-		(y + 0.5 < (m*(x - 0.5 - x1) + y1) ) && (y - 0.5 > (m*(x + 0.5 - x1) + y1))	||
-		(y - 0.5 < (m*(x - 0.5 - x1) + y1) ) && (y + 0.5 > (m*(x + 0.5 - x1) + y1));
+		( (x1 == x2) && ((y >= y1 && y <= y2) || (y >= y2 && y <= y1)) ) ||                    // vertical line
+		( (y1 == y2) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1)) ) ||                    // horizontal line
+		( (m * (x - 0.5 - x1) + y1 >= y - 0.5) && (m * (x - 0.5 - x1) + y1 <= y + 0.5) ) ||    // intersect left side of square
+		( (m * (x + 0.5 - x1) + y1 >= y - 0.5) && (m * (x + 0.5 - x1) + y1 <= y + 0.5) ) ||    // intersect right side of square
+		( (mInv * (y - 0.5 - y1) + x1 >= x - 0.5) && (m * (y - 0.5 - y1) + x1 <= x + 0.5) ) || // intersect bottom side of square
+		( (mInv * (y + 0.5 - y1) + x1 >= x - 0.5) && (m * (y + 0.5 - y1) + x1 <= x + 0.5) );   // intersect top side of square
 
 	}
 	
