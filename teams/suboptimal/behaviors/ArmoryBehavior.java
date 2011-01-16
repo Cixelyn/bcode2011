@@ -10,7 +10,7 @@ public class ArmoryBehavior extends Behavior
 	private enum ArmoryBuildOrder 
 	{
 		WAIT_FOR_DOCK,
-		BUILD_FLYERS,
+		EQUIP_UNITS,
 		SLEEP
 	}
 	
@@ -19,10 +19,15 @@ public class ArmoryBehavior extends Behavior
 	
 	MapLocation unitDock;
 	
-	Robot rFront;
+	RobotInfo rInfo;
+	Robot r;
+	ComponentType c;
 	
-	int flyersBuilt = 0;
-	boolean flyerRemake = false;
+	boolean hasJump;
+	boolean hasSatellite;
+	
+	int currFlyer = 0;
+	double minFluxToBuild;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -46,52 +51,56 @@ public class ArmoryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.ARMORY.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-        				obj = ArmoryBuildOrder.BUILD_FLYERS;
+        				obj = ArmoryBuildOrder.EQUIP_UNITS;
     				}
     			}
     			return;
     			
-    		case BUILD_FLYERS:
+    		case EQUIP_UNITS:
     			
     			Utility.setIndicator(myPlayer, 1, "BUILD_FLYERS");
-    			if ( flyersBuilt > Constants.MAX_FLYERS )
-    			{
-    				Utility.setIndicator(myPlayer, 2, "Pausing flyer production.");
-    				if ( Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
-    				{
-    					if ( !flyerRemake )
-    					{
-    						flyerRemake = true;
-    						flyersBuilt = 0;
-    					}
-    					else
-    						obj = ArmoryBuildOrder.SLEEP;
-    				}
-    			}
-    			else
-    			{
-    				Utility.setIndicator(myPlayer, 2, "Building flyer " + Integer.toString(flyersBuilt) + ".");
-					rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
-					if ( flyerRemake || flyersBuilt >= Constants.FLYERS_TO_BUILD_FAST )
+    			
+    			r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+				if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
+				{
+					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+					if ( rInfo.chassis == Chassis.HEAVY )
 					{
-		    			while ( rFront != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() < myPlayer.myLastRes + Chassis.FLYING.upkeep + Chassis.BUILDING.upkeep )
-		    			{
-		    				myPlayer.sleep();
-		    				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
-		    			}
+						Utility.setIndicator(myPlayer, 2, "Equipping heavy.");
+						hasJump = false;
+						hasSatellite = false;
+						for ( int j = rInfo.components.length - 1 ; j >= 0 ; j-- )
+						{
+							c = rInfo.components[j];
+							if ( c == ComponentType.JUMP )
+								hasJump = true;
+							if ( c == ComponentType.SATELLITE )
+								hasSatellite = true;
+						}
+						if ( !hasJump )
+							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND);
+						else if ( !hasSatellite )
+							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SATELLITE, RobotLevel.ON_GROUND);
+						return;
 					}
+				}
+				else if ( currFlyer < Constants.MAX_FLYERS )
+				{
+					Utility.setIndicator(myPlayer, 2, "Building flyer " + Integer.toString(currFlyer) + ".");
+					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
+					if ( currFlyer >= Constants.FLYERS_TO_BUILD_FAST )
+						minFluxToBuild = Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2*Constants.RESERVE;
 					else
+						minFluxToBuild = Chassis.FLYING.cost + ComponentType.CONSTRUCTOR.cost + ComponentType.SIGHT.cost + Constants.RESERVE;
+					if ( r == null && !myPlayer.myBuilder.isActive() && myPlayer.myRC.getTeamResources() > minFluxToBuild && myPlayer.myRC.getTeamResources() - myPlayer.myLastRes > Chassis.FLYING.upkeep + Chassis.BUILDING.upkeep )
 					{
-						while ( rFront != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.CONSTRUCTOR.cost + ComponentType.SIGHT.cost + Constants.RESERVE )
-		    			{
-		    				myPlayer.sleep();
-		    				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
-		    			}
+						Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.FLYING);
+		    			currFlyer++;
 					}
-	    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.FLYING);
-	    			flyersBuilt++;
-    			}
-    			return;
+				}
+				else
+					Utility.setIndicator(myPlayer, 2, "Idle.");
+				return;
     			
     		case SLEEP:
     			

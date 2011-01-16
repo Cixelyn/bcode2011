@@ -15,10 +15,7 @@ public class RefineryBehavior extends Behavior
 		GIVE_ANTENNA,
 		DETERMINE_LEADER,
 		WAIT_FOR_DOCK,
-		EQUIP_FLYERS,
-		WAIT_FOR_HANBANG,
-		MAKE_MARINE,
-		EQUIP_MARINE,
+		EQUIP_UNITS,
 		SLEEP
 	}
 	
@@ -29,31 +26,24 @@ public class RefineryBehavior extends Behavior
 	
 	int isLeader = -1; // -1 means unknown, 0 means no, 1 means yes
 	int currFlyer;
+	int currHeavy;
 	double lastIncome;
 	
 	boolean rHasConstructor;
 	boolean rHasSight;
 	
-	boolean rHasBlaster;
-	boolean rHasRadar;
-	boolean rHasAntenna;
+	int rNumBlasters;
 	
 	Robot[] nearbyRobots;
-	Robot babyMarine;
-	Robot rFront;
 	RobotInfo rInfo;
+	Robot r;
+	ComponentType c;
 	
 	MapLocation enemyLocation;
 	int spawn = -1; // -1 means unknown
 	int realSpawn = -1; // -1 means unknown
 	
-	
 	final Random random = new Random();
-	
-	boolean flyerRemake = false;
-	
-	Robot r;
-	ComponentType c;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -87,6 +77,7 @@ public class RefineryBehavior extends Behavior
 								c = rInfo.components[j];
 								if ( c == ComponentType.CONSTRUCTOR ) // initial SCV found, I should not wait for rally
 								{
+									spawn = 0;
 									Utility.setIndicator(myPlayer, 0, "I am one of the first four refineries.");
 									obj = RefineryBuildOrder.EQUIPPING;
 									return;
@@ -175,161 +166,77 @@ public class RefineryBehavior extends Behavior
         					myPlayer.sleep();
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
     					currFlyer = 0;
-    					obj = RefineryBuildOrder.EQUIP_FLYERS;
+    					obj = RefineryBuildOrder.EQUIP_UNITS;
     				}
     				else
     					obj = RefineryBuildOrder.SLEEP; // I am one of the first four but not near armory
     			}
-    			else if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
-	    			obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
+    			else if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
+	    			obj = RefineryBuildOrder.SLEEP; // TODO switch to tower equipping state
     			return;
     			
-    		case EQUIP_FLYERS:
+    		case EQUIP_UNITS:
     			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_FLYERS");
-    			Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + " out of " + Integer.toString(Constants.MAX_FLYERS) + ".");
-    			if ( currFlyer > Constants.MAX_FLYERS )
-    			{
-    				if ( !flyerRemake )
-    				{
-    					flyerRemake = true;
-    					obj = RefineryBuildOrder.WAIT_FOR_HANBANG;
-    				}
-    				else
-    					obj = RefineryBuildOrder.MAKE_MARINE;
-    			}
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_UNITS");
     			
-    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
-    			for ( int i = nearbyRobots.length - 1 ; i >= 0 ; i-- )
-    			{
-    				r = nearbyRobots[i];
+    			r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+				if ( r != null )
+				{
+					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+					if ( rInfo.chassis == Chassis.HEAVY && r.getTeam() == myPlayer.myRC.getTeam() )
+					{
+						Utility.setIndicator(myPlayer, 2, "Equipping heavy " + Integer.toString(currHeavy) + ".");
+						rNumBlasters = 0;
+						for ( int j = rInfo.components.length - 1 ; j >= 0 ; j-- )
+						{
+							c = rInfo.components[j];
+							if ( c == ComponentType.BLASTER )
+								rNumBlasters++;
+						}
+						if ( rNumBlasters == 0 )
+							Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+						else if ( rNumBlasters == 1 )
+						{
+							if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND) )
+							{
+								myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, spawn, currHeavy, enemyLocation);
+								currHeavy++;
+							}
+						}
+						return;
+					}
+				}
+    			
+				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
+				if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
+				{
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if ( rInfo.chassis == Chassis.FLYING && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() && rInfo.location.equals(unitDock) )
-    				{
-    					rHasConstructor = false;
-    					rHasSight = false;
-    					for ( int j = rInfo.components.length - 1 ; j >= 0 ; j-- )
-    					{
-    						c = rInfo.components[j];
-    						if ( c == ComponentType.CONSTRUCTOR )
-    							rHasConstructor = true;
-    						if ( c == ComponentType.SIGHT )
-    							rHasSight = true;
-    					}
-    					if ( !rHasConstructor )
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.CONSTRUCTOR, RobotLevel.IN_AIR);
-    					else if ( !rHasSight )
-    					{
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR);
-    						myPlayer.sleep();
-    						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, spawn, currFlyer, enemyLocation);
-    						currFlyer++;
-    					}
-    					return;
-    				}
-    			}
-    			return;
-    			
-    		case WAIT_FOR_HANBANG:
-    			
-    			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_HANBANG");
-    			Utility.setIndicator(myPlayer, 2, "");
-    			if ( Clock.getRoundNum() > Constants.HANBANG_TIME )
-    				obj = RefineryBuildOrder.MAKE_MARINE;
-    			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
-    			return;
-    			
-    		case MAKE_MARINE:
-    			
-    			Utility.setIndicator(myPlayer, 1, "MAKE_MARINE");
-    			if ( unitDock != null && Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
-    			{
-    				while ( myPlayer.myMotor.isActive() )
-    					myPlayer.sleep();
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-    				currFlyer = 0;
-    				obj = RefineryBuildOrder.EQUIP_FLYERS;
-    				return;
-    			}
-    			if ( myPlayer.myMotor.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE + 5 || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.LIGHT.upkeep * Math.max((int)Math.floor(lastIncome) - 6, 0) )
-    				myPlayer.sleep();
-    			else if ( !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) || myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.MINE) != null )
-    			{
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
-					myPlayer.sleep();
-    			}
-    			else
-    			{
-					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.LIGHT);
-					babyMarine = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-					obj = RefineryBuildOrder.EQUIP_MARINE;
-    			}
-    			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
-    			return;
-    			
-    		case EQUIP_MARINE:
-    			
-    			myPlayer.myRC.setIndicatorString(1, "EQUIP_MARINE");
-    			rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			if ( rFront == babyMarine )
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(rFront);
-    				rHasBlaster = false;
-    				rHasRadar = false;
-    				rHasAntenna = false;
-    				for ( int i = rInfo.components.length - 1 ; i >= 0 ; i-- )
-    				{
-    					c = rInfo.components[i];
-    					if ( c == ComponentType.BLASTER )
-    						rHasBlaster = true;
-    					if ( c == ComponentType.RADAR )
-    						rHasRadar = true;
-    					if ( c == ComponentType.ANTENNA )
-    						rHasAntenna = true;
-    				}
-    				if ( !rHasBlaster )
-    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-    				else if ( !rHasRadar )
-    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
-    				else if ( !rHasAntenna )
-    					Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    				else
-    				{
-    					if ( realSpawn != -1 )
-    					{
-    						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, enemyLocation);
-    						if ( myPlayer.myRC.getDirection() != Direction.values()[realSpawn] )
-    						{
-		    					while ( myPlayer.myMotor.isActive() )
-									myPlayer.sleep();
-		    					myPlayer.myMotor.setDirection(Direction.values()[(realSpawn + 4) % 8]);
-    						}
-    					}
-    					else
-    					{
-    						myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
-    						if ( myPlayer.myRC.getDirection() != Direction.values()[spawn] )
-    						{
-		    					while ( myPlayer.myMotor.isActive() )
-									myPlayer.sleep();
-		    					myPlayer.myMotor.setDirection(Direction.values()[(spawn + 4) % 8]);
-    						}
-    					}
-    					obj = RefineryBuildOrder.MAKE_MARINE;
-    				}
-    			}
-	    		else
-	    		{
-	    			if ( spawn != -1 && myPlayer.myRC.getDirection() != Direction.values()[spawn] )
-	    			{
-		    			while ( myPlayer.myMotor.isActive() )
-							myPlayer.sleep();
-		    			myPlayer.myMotor.setDirection(Direction.values()[(spawn + 4) % 8]);
-	    			}
-	    			obj = RefineryBuildOrder.MAKE_MARINE;
-	    		}
-    			lastIncome = myPlayer.mySensor.senseIncome(myPlayer.myRC.getRobot());
-    			return;
+					Utility.setIndicator(myPlayer, 2, "Equipping flyer " + Integer.toString(currFlyer) + ".");
+					rHasConstructor = false;
+					rHasSight = false;
+					for ( int j = rInfo.components.length - 1 ; j >= 0 ; j-- )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.CONSTRUCTOR )
+							rHasConstructor = true;
+						if ( c == ComponentType.SIGHT )
+							rHasSight = true;
+					}
+					if ( !rHasConstructor )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.CONSTRUCTOR, RobotLevel.IN_AIR);
+					else if ( !rHasSight )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR) )
+						{
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, spawn, currFlyer, enemyLocation);
+							currFlyer++;
+						}
+					}
+					return;
+				}
+				
+				Utility.setIndicator(myPlayer, 2, "Idle.");
+				return;
     			
     		case SLEEP:
     			
@@ -363,29 +270,10 @@ public class RefineryBehavior extends Behavior
 		}
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
-		if ( t == MsgType.MSG_SEND_NUM )
+		if ( t == MsgType.MSG_SEND_NUM_FLYER )
 			currFlyer++;
-		if ( t == MsgType.MSG_ENEMY_LOC )
-		{
-			if ( realSpawn == -1 && spawn == -1 )
-			{
-				spawn = msg.ints[Messenger.firstData];
-				enemyLocation = msg.locations[Messenger.firstData];
-				Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ".");
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_ENEMY_LOC, spawn, enemyLocation);
-			}
-		}
-		if ( t == MsgType.MSG_REAL_ENEMY_LOC )
-		{
-			if ( realSpawn == -1 )
-			{
-				realSpawn = msg.ints[Messenger.firstData];
-				enemyLocation = msg.locations[Messenger.firstData];
-				spawn = realSpawn;
-				Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[realSpawn].toString() + ".");
-				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, enemyLocation);
-			}
-		}
+		if ( t == MsgType.MSG_SEND_NUM_HEAVY )
+			currHeavy++;
 	}
 	public void onWakeupCallback(int lastActiveRound)
 	{

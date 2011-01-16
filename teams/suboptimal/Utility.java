@@ -329,7 +329,6 @@ public class Utility {
 	 * @param player The robot player
 	 * @param dir The direction in which to build
 	 * @param chassis The chassis type to build
-	 * @return boolean True if chassis is built, false otherwise
 	 */
 	
 	public static void buildChassis(RobotPlayer player, Direction dir, Chassis chassis) throws Exception
@@ -344,6 +343,7 @@ public class Utility {
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) && player.mySensor.senseObjectAtLocation(loc, chassis.level) != null )
 			return;
 		player.myBuilder.build(chassis, loc);
+		return;
 	}
 
 	/**
@@ -353,7 +353,6 @@ public class Utility {
 	 * @param dir The direction in which to build
 	 * @param component The component type to build
 	 * @param level The robot level of the robot on which to build
-	 * @return boolean True if component is built, false otherwise
 	 */
 	
 	public static void buildComponent(RobotPlayer player, Direction dir, ComponentType component, RobotLevel level) throws Exception
@@ -362,11 +361,11 @@ public class Utility {
 		if ( dir != Direction.OMNI && dir != Direction.NONE )
 		{
 			loc = player.myRC.getLocation().add(dir);
-			while ( player.myRC.getDirection() != dir )
+			if ( player.myRC.getDirection() != dir )
 			{
-				player.sleep();
-				if ( !player.myMotor.isActive() )
-					player.myMotor.setDirection(dir);
+				while ( player.myMotor.isActive() )
+					player.sleep();
+				player.myMotor.setDirection(dir);
 			}
 		}
 		else
@@ -386,6 +385,51 @@ public class Utility {
 			}
 		}
 		player.myBuilder.build(component, loc, level);
+		return;
+	}
+	
+	/**
+	 * Will try to build a component in ONE ROUND: don't use this unless you know you need to
+	 * @author JVen
+	 * @param player The robot player
+	 * @param dir The direction in which to build
+	 * @param component The component type to build
+	 * @param level The robot level of the robot on which to build
+	 * @return boolean True if component is built, false otherwise
+	 */
+	
+	public static boolean tryBuildComponent(RobotPlayer player, Direction dir, ComponentType component, RobotLevel level) throws Exception
+	{
+		MapLocation loc;
+		if ( dir != Direction.OMNI && dir != Direction.NONE )
+		{
+			loc = player.myRC.getLocation().add(dir);
+			if ( player.myRC.getDirection() != dir )
+			{
+				while ( player.myMotor.isActive() )
+					player.sleep();
+				player.myMotor.setDirection(dir);
+				return false;
+			}
+		}
+		else
+			loc = player.myRC.getLocation();
+		if ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
+			return false;
+		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
+		{
+			Robot r = (Robot)player.mySensor.senseObjectAtLocation(loc, level);
+			if ( r == null || r.getTeam() != player.myRC.getRobot().getTeam() )
+				return false;
+			else
+			{
+				RobotInfo rInfo = player.mySensor.senseRobotInfo(r);
+				if ( totalWeight(rInfo.components) + component.weight > rInfo.chassis.weight )
+					return false;
+			}
+		}
+		player.myBuilder.build(component, loc, level);
+		return true;
 	}
 	
 	/**
