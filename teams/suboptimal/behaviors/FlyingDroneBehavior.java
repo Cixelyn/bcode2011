@@ -44,6 +44,7 @@ public class FlyingDroneBehavior extends Behavior {
 	boolean returnedHome;
 	int timeTrying=0;
 	int timeout=0;
+	int steps=0;
 	ArrayList<MapLocation> broadcastedMines= new ArrayList<MapLocation>();
 	int triedDirections=0;
 	
@@ -133,7 +134,12 @@ public class FlyingDroneBehavior extends Behavior {
     	        				}
     	        			}
     						myPlayer.myMotor.setDirection(initialDirection);
-    						obj =  FlyingDroneActions.BUILD_TOWER;
+    						if (steps>Constants.STEPS) {
+    							obj =  FlyingDroneActions.BUILD_TOWER;
+    						}
+    						else {
+    							obj = FlyingDroneActions.EXPAND;
+    						}
     					}
     			}
     			else {
@@ -141,6 +147,7 @@ public class FlyingDroneBehavior extends Behavior {
     					if (myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()))) {
             				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
             					myPlayer.myMotor.moveForward();
+            					steps=steps+1;
             				}
     					}
     					else {
@@ -168,6 +175,7 @@ public class FlyingDroneBehavior extends Behavior {
     							if (myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(towerPlacement))) {
     								if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
     									myPlayer.myMotor.moveForward();
+    									steps=steps+1;
     								}
     							}
     							else {
@@ -187,6 +195,7 @@ public class FlyingDroneBehavior extends Behavior {
 						if (myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(towerPlacement))) {
 							if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 								myPlayer.myMotor.moveForward();
+								steps=steps+1;
 							}
 						}
 						else {
@@ -254,6 +263,7 @@ public class FlyingDroneBehavior extends Behavior {
 					if (!myPlayer.myMotor.isActive()) {
         				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
         					myPlayer.myMotor.moveForward();
+        					steps=steps +1;
         					return;
         				}
 					}
