@@ -20,7 +20,7 @@ public class MissileTurretBehavior extends Behavior
 	MapLocation enemyLoc;
 	
 	boolean hasSatellite;
-	int numRailguns;
+	boolean hasRailgun;
 	
 	public MissileTurretBehavior(RobotPlayer player)
 	{
@@ -37,16 +37,16 @@ public class MissileTurretBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				hasSatellite = false;
-				numRailguns = 0;
+				hasRailgun = false;
 				for ( int i = myPlayer.myRC.components().length ; --i >= 0 ; )
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
 					if ( c.type() == ComponentType.SATELLITE )
 						hasSatellite = true;
 					if ( c.type() == ComponentType.RAILGUN )
-						numRailguns++;
+						hasRailgun = true;
 				}
-				if ( hasSatellite && numRailguns >= 2 )
+				if ( hasSatellite && hasRailgun )
 					obj = MissileTurretBuildOrder.DEFENSE;
 				return;
 			

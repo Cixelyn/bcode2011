@@ -68,7 +68,10 @@ public class FactoryBehavior extends Behavior
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(towerLoc));
 					myPlayer.sleep();
 					if ( r == null && !myPlayer.myBuilder.isActive() && myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND) != null )
+					{
 						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+					}
 					towerEquipped = true;
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
