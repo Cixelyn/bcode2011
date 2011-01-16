@@ -11,12 +11,11 @@ public class AncientProtectorBehavior extends Behavior
 	{
 		
 		EQUIPPING,
-		ROOTED,
-		THROWING_ROCKS
+		DEFENSE
 
 	}
 	
-	APActions obj = APActions.ROOTED;
+	APActions obj = APActions.EQUIPPING;
 	
 	MapLocation enemyLoc;
 	
@@ -52,27 +51,24 @@ public class AncientProtectorBehavior extends Behavior
 						hasRadar = true;
 				}
 				if ( numBlasters >= Constants.BLASTERS_PER_TOWER && numShields >= Constants.SHIELDS_PER_TOWER && hasRadar )
-					obj = APActions.ROOTED;
+					obj = APActions.DEFENSE;
 				return;
 			
-			case ROOTED:
+			case DEFENSE:
 				
-				Utility.setIndicator(myPlayer, 1, "ROOTED");
+				Utility.setIndicator(myPlayer, 1, "DEFENSE");
 				enemyLoc = Utility.attackEnemies(myPlayer);
-				if (enemyLoc!=null) {
-					obj = APActions.THROWING_ROCKS;
-					return;
+				if ( enemyLoc == null || myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) > ComponentType.BLASTER.range )
+				{
+					Utility.setIndicator(myPlayer, 2, "No enemies nearby.");
+					if (!myPlayer.myMotor.isActive())
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 				}
-				if (!myPlayer.myMotor.isActive())
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
-				return;
-				
-			case THROWING_ROCKS:
-				
-				Utility.setIndicator(myPlayer, 1, "THROWING_ROCKS");
-				enemyLoc = Utility.attackEnemies(myPlayer);
-				if (enemyLoc==null) {
-					obj = APActions.ROOTED;
+				else
+				{
+					Utility.setIndicator(myPlayer, 2, "Enemy detected!");
+					if (!myPlayer.myMotor.isActive())
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
 				}
 				return;
 				
