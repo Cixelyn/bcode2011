@@ -197,8 +197,6 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		
     		case RUN_AWAY: {
-    			System.out.println("WHY O WHY?");
-    			System.out.println(myPlayer.myRC.getHitpoints());
     			Utility.setIndicator(myPlayer, 0, "run away!");
     			int totalX=0;
     			int totalY=0;
@@ -407,7 +405,6 @@ public class FlyingDroneBehavior extends Behavior {
 
 	public void onDamageCallback(double damageTaken) {
 		if (!obj.equals(FlyingDroneActions.EQUIPPING) && !obj.equals(FlyingDroneActions.FLYING_DRONE_ID)) {
-			System.out.println(myPlayer.myRC.getHitpoints());
 			obj=FlyingDroneActions.RUN_AWAY;
 		}
 	}
