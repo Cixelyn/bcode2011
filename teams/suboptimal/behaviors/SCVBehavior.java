@@ -188,7 +188,7 @@ public class SCVBehavior extends Behavior
 						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 						myPlayer.sleep();
 						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-						obj = SCVBuildOrder.SCOUT_WEST;
+						obj = SCVBuildOrder.VACATE_HOME;
 						//myPlayer.sleep();
 						//myPlayer.myRC.suicide();
 						return;
@@ -196,11 +196,82 @@ public class SCVBehavior extends Behavior
 					dizziness++;
 					if ( dizziness >= 8 )
 					{
-						myPlayer.myRC.turnOff(); // SCV is trapped... but then how did you get there?
+						myPlayer.myRC.suicide(); // SCV is trapped... but then how did you get there?
 						return;
 					}
 				}
 				return;
+				
+			case VACATE_HOME:
+				
+				Utility.setIndicator(myPlayer, 1, "VACATE_HOME");
+				dizziness = 0;
+				for ( Direction d : Direction.values() )
+				{
+					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					{
+						while ( myPlayer.myMotor.isActive() )
+							myPlayer.sleep();
+						myPlayer.myMotor.setDirection(d);
+						myPlayer.sleep();
+						myPlayer.myMotor.moveForward();
+						obj = SCVBuildOrder.VACATE_FACTORY;
+						return;
+					}
+					dizziness++;
+					if ( dizziness >= 8 )
+					{
+						obj = SCVBuildOrder.WEIRD_SPAWN;
+						return;
+					}
+				}
+				return;
+				
+			case VACATE_FACTORY:
+				 
+				Utility.setIndicator(myPlayer, 1, "VACATE_FACTORY");
+				dizziness = 0;
+				 for ( Direction d : Direction.values() )
+					{
+						if ( d != Direction.OMNI && d != Direction.NONE && !myPlayer.myRC.getLocation().add(d).equals(unitDock) && myPlayer.myMotor.canMove(d) )
+						{
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.setDirection(d.opposite());
+							myPlayer.sleep();
+							myPlayer.myMotor.moveBackward();
+							obj = SCVBuildOrder.WAIT_FOR_FACTORY;
+							return;
+						}
+						dizziness++;
+						if ( dizziness >= 8 )
+						{
+							obj = SCVBuildOrder.WEIRD_SPAWN;
+							return;
+						}
+					}
+				 return;
+    			
+			case WAIT_FOR_FACTORY:
+				
+				Utility.setIndicator(myPlayer, 1, "WAITING");
+				if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
+					obj = SCVBuildOrder.BUILD_FACTORY;
+				return;
+				
+			case BUILD_FACTORY:
+				
+				Utility.setIndicator(myPlayer, 1, "BUILD_FACTORY");
+				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.FACTORY.cost )
+					myPlayer.sleep();
+    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.FACTORY, RobotLevel.ON_GROUND);
+    			myPlayer.sleep();
+    			myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
+    			myPlayer.sleep();
+    			myPlayer.myRC.suicide(); // uncomment me and above line to scout
+    			obj = SCVBuildOrder.SCOUT_WEST;
+    			return;
 				
 			case SCOUT_WEST:
 				

@@ -409,7 +409,7 @@ public class FlyingDroneBehavior extends Behavior {
 
 	@Override
 	public void newMessageCallback(MsgType type, Message msg) {
-		if (type.equals(MsgType.MSG_SEND_NUM) && ID==-1) {
+		if (type.equals(MsgType.MSG_SEND_NUM_FLYER) && ID==-1) {
 			ID=msg.ints[Messenger.firstData+1];
 			foundID=true;
 		}		

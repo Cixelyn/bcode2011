@@ -42,6 +42,7 @@ public class RobotPlayer implements Runnable {
 	public BuilderController myBuilder;
 	public MovementController myMotor;
 	public BroadcastController myBroadcaster;
+	public JumpController myJump;
 	
 	private final ArrayList<WeaponController> myWeaponsInternal;
 	public WeaponController[] myWeapons;
@@ -315,9 +316,11 @@ public class RobotPlayer implements Runnable {
 				case ARMOR:
 					break;
 				case MISC:
-					if(c.type()==ComponentType.PROCESSOR) {
+					if ( c.type() == ComponentType.PROCESSOR )
 						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
-					}
+					if ( c.type() == ComponentType.JUMP )
+						myJump = (JumpController) c;
+					break;
 				default:
 					Utility.println("NotController");
 			}
