@@ -63,6 +63,8 @@ public class RobotPlayer implements Runnable {
 	private int bytecodeLimit;
 	public double myLastRes;
 	
+	public final Team myOpponent;
+	
 	
 	//Useful Toolkits
 	public final Random myDice;
@@ -90,6 +92,8 @@ public class RobotPlayer implements Runnable {
     	myLastRes = 9999;
     	bytecodeLimit = GameConstants.BYTECODE_LIMIT_BASE;
     	
+    	myOpponent = myRC.getTeam().opponent();
+    	
     	lastActiveRound = myBirthday;
     	lastRoundHP = rc.getHitpoints();
     	
@@ -106,6 +110,15 @@ public class RobotPlayer implements Runnable {
     	
     	myMessenger = new Messenger(this);
     	myActions = new Actions(this);
+    	
+    	
+    	
+    	
+    	if(Constants.CUSTOM_INDICATORS) {
+    		myRC.setIndicatorString(0, Constants.INDICATOR0);
+    		myRC.setIndicatorString(1, Constants.INDICATOR1);
+    		myRC.setIndicatorString(2, Constants.INDICATOR2);
+    	}
     	
 
     	
