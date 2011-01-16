@@ -407,7 +407,7 @@ public class FlyingDroneBehavior extends Behavior {
 
 	public void onDamageCallback(double damageTaken) {
 		if (!obj.equals(FlyingDroneActions.EQUIPPING) && !obj.equals(FlyingDroneActions.FLYING_DRONE_ID)) {
-			System.out.println(myPlayer.myRC.getHitpoints());
+			Utility.println(Double.toString(myPlayer.myRC.getHitpoints()));
 			obj=FlyingDroneActions.RUN_AWAY;
 		}
 	}
