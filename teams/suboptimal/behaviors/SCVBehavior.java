@@ -9,6 +9,7 @@ public class SCVBehavior extends Behavior
 	
 	private enum SCVBuildOrder 
 	{
+		GET_INITIAL_IDS,
 		FIND_MINE,
 		GET_OFF_MINE,
 		WAIT_FOR_ANTENNA,
@@ -18,29 +19,30 @@ public class SCVBehavior extends Behavior
 		VACATE_FACTORY,
 		WAIT_FOR_FACTORY,
 		BUILD_FACTORY,
-		SCOUT_WEST,
-		SCOUT_NORTH,
-		SCOUT_EAST,
-		SCOUT_SOUTH,
-		RETURN_HOME,
-		BROADCAST_SPAWN,
-		WAIT_FOR_HANBANG,
-		VACATE_SPAWN,
+		COMPUTE_TOWER,
+		BUILD_TOWER,
 		SLEEP,
 		WEIRD_SPAWN
 	}
 	
 	final OldNavigation nav = new OldNavigation(myPlayer);
 	
-	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
+	SCVBuildOrder obj = SCVBuildOrder.GET_INITIAL_IDS;
 	
 	MapLocation hometown = myPlayer.myRC.getLocation();
 	MapLocation unitDock;
+	MapLocation[] mineLocs = {null, null, null, null};
+	MapLocation armoryLoc;
+	MapLocation factoryLoc;
+	MapLocation towerLoc;
 	MapLocation loc;
 	Direction dir;
 	
+	Robot[] nearbyRobots;
 	Mine[] nearbyMines;
+	Robot r;
 	Mine currMine;
+	RobotInfo rInfo;
 	
 	int dizziness = 0;
 	int tiredness = 0;
@@ -60,6 +62,8 @@ public class SCVBehavior extends Behavior
 	MapLocation realEnemyLocation;
 	boolean spawnReceived;
 	
+	int[] mainRefineries = {-1,-1};
+	
 	public SCVBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -73,6 +77,36 @@ public class SCVBehavior extends Behavior
 		switch (obj)
 		{
 		
+			case GET_INITIAL_IDS:
+				
+				Utility.setIndicator(myPlayer, 1, "GET_INITIAL_IDS");
+				Utility.setIndicator(myPlayer, 2, "[" + Integer.toString(mainRefineries[0]) + ", " + Integer.toString(mainRefineries[1]) + "]");
+				nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+				for ( int i = nearbyRobots.length ; --i >= 0 ; )
+				{
+					r = nearbyRobots[i];
+					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+					if ( mainRefineries[0] == -1 )
+					{
+						mainRefineries[0] = r.getID();
+						mineLocs[0] = rInfo.location;
+					}
+					else if ( r.getID() != mainRefineries[0] && mainRefineries[1] == -1 )
+					{
+						mainRefineries[1] = r.getID();
+						mineLocs[1] = rInfo.location;
+					}
+				}
+				if ( mainRefineries[0] != -1 && mainRefineries[1] != -1 )
+					obj = SCVBuildOrder.FIND_MINE;
+				else
+				{
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+				}
+				return;
+			
 			case FIND_MINE:
 				
 				Utility.setIndicator(myPlayer, 1, "FIND_MINE");
@@ -158,9 +192,15 @@ public class SCVBehavior extends Behavior
         				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(loc), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
         				minesCapped++;
         				if (minesCapped == 2)
+        				{
         					obj = SCVBuildOrder.BUILD_ARMORY;
+        					mineLocs[3] = loc;
+        				}
         				else
+        				{
         					obj = SCVBuildOrder.FIND_MINE;
+        					mineLocs[2] = loc;
+        				}
         				tiredness = 0;
         				return;
         			}
@@ -182,15 +222,16 @@ public class SCVBehavior extends Behavior
 				{
 					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
 					{
+						armoryLoc = myPlayer.myRC.getLocation().add(d);
 						while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.ARMORY.cost )
 							myPlayer.sleep();
 						Utility.buildChassis(myPlayer, d, Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 						myPlayer.sleep();
+						myPlayer.myBroadcaster.broadcastTurnOn(mainRefineries);
+						myPlayer.sleep();
 						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
 						obj = SCVBuildOrder.VACATE_HOME;
-						//myPlayer.sleep();
-						//myPlayer.myRC.suicide();
 						return;
 					}
 					dizziness++;
@@ -262,204 +303,79 @@ public class SCVBehavior extends Behavior
 			case BUILD_FACTORY:
 				
 				Utility.setIndicator(myPlayer, 1, "BUILD_FACTORY");
+				factoryLoc = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
 				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.FACTORY.cost )
 					myPlayer.sleep();
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.FACTORY, RobotLevel.ON_GROUND);
     			myPlayer.sleep();
     			myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-    			myPlayer.sleep();
-    			myPlayer.myRC.suicide(); // uncomment me and above line to scout
-    			obj = SCVBuildOrder.SCOUT_WEST;
+    			//myPlayer.sleep();
+    			//myPlayer.myRC.suicide(); // uncomment me and above line to scout
+    			obj = SCVBuildOrder.COMPUTE_TOWER;
     			return;
 				
-			case SCOUT_WEST:
+			case COMPUTE_TOWER:
 				
-    			Utility.setIndicator(myPlayer, 1, "SCOUT_WEST");
-    			if ( tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE )
-    			{
-    				tiredness++;
-    				obj = SCVBuildOrder.RETURN_HOME;
-    				return;
-    			}	
-    			westEdge = 0;
-    			while(myPlayer.myMotor.isActive())
-    				myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.WEST);
-				myPlayer.sleep();
-				if(myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.WEST,3)) == TerrainTile.OFF_MAP) // sqrt(SENSORTYPE.range) = 3
-				{
-					westEdge = 1;
-					obj = SCVBuildOrder.RETURN_HOME;
-				}
-    			loc = myPlayer.myRC.getLocation().add(Direction.WEST, GameConstants.MAP_MAX_WIDTH);
-    			breadcrumbs.add(myPlayer.myRC.getLocation());
-    			Utility.navStep(myPlayer, nav, loc);
-				if ( Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE )
-					obj = SCVBuildOrder.RETURN_HOME;
-    			return;
-    			
-    		case SCOUT_NORTH:
-    			
-    			Utility.setIndicator(myPlayer, 1, "SCOUT_NORTH");
-    			if ( tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE )
-    			{
-    				tiredness++;
-    				obj = SCVBuildOrder.RETURN_HOME;
-    				return;
-    			}	
-    			northEdge = 0;
-    			while(myPlayer.myMotor.isActive())
-    				myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.NORTH);
-				myPlayer.sleep();
-				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.NORTH,3)) == TerrainTile.OFF_MAP ) // sqrt(SENSORTYPE.range) = 3
-				{
-					northEdge = 1;
-					obj = SCVBuildOrder.RETURN_HOME;
-				}
-    			loc = myPlayer.myRC.getLocation().add(Direction.NORTH, GameConstants.MAP_MAX_HEIGHT);
-    			breadcrumbs.add(myPlayer.myRC.getLocation());
-    			Utility.navStep(myPlayer, nav, loc);
-				if ( Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE )
-					obj = SCVBuildOrder.RETURN_HOME;
-    			return;
-    			
-    		case SCOUT_EAST:
-    			
-    			Utility.setIndicator(myPlayer, 1, "SCOUT_EAST");
-    			if ( tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE )
-    			{
-    				tiredness++;
-    				obj = SCVBuildOrder.RETURN_HOME;
-    				return;
-    			}	
-    			eastEdge = 0;
-    			while ( myPlayer.myMotor.isActive() )
-    				myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.EAST);
-				myPlayer.sleep();
-				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.EAST,3)) == TerrainTile.OFF_MAP ) // sqrt(SENSORTYPE.range) = 3
-				{
-					eastEdge = 1;
-					obj = SCVBuildOrder.RETURN_HOME;
-				}
-    			loc = myPlayer.myRC.getLocation().add(Direction.EAST, GameConstants.MAP_MAX_WIDTH);
-    			breadcrumbs.add(myPlayer.myRC.getLocation());
-    			Utility.navStep(myPlayer, nav, loc);
-				if ( Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > 2*Constants.SCOUTING_DISTANCE )
-					obj = SCVBuildOrder.RETURN_HOME;
-    			return;
-    			
-    		case SCOUT_SOUTH:
-    			myPlayer.myRC.setIndicatorString(1, "SCOUT_SOUTH");
-    			if ( tiredness > Constants.SCOUTING_DISTANCE * Constants.SCOUTING_DISTANCE )
-    			{
-    				tiredness++;
-    				obj = SCVBuildOrder.RETURN_HOME;
-    				return;
-    			}	
-    			southEdge = 0;
-    			while ( myPlayer.myMotor.isActive() )
-    				myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.SOUTH);
-				myPlayer.sleep();
-				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.SOUTH,3)) == TerrainTile.OFF_MAP ) // sqrt(SENSORTYPE.range) = 3
-				{
-					southEdge = 1;
-					obj = SCVBuildOrder.RETURN_HOME;
-				}
-    			loc = myPlayer.myRC.getLocation().add(Direction.SOUTH, GameConstants.MAP_MAX_HEIGHT);
-    			breadcrumbs.add(myPlayer.myRC.getLocation());
-    			Utility.navStep(myPlayer, nav, loc);
-				if ( Math.abs(myPlayer.myRC.getLocation().y - hometown.y) > Constants.SCOUTING_DISTANCE || Math.abs(myPlayer.myRC.getLocation().x - hometown.x) > 2*Constants.SCOUTING_DISTANCE )
-					obj = SCVBuildOrder.RETURN_HOME;
-    			return;
-    			
-    		case RETURN_HOME:
-    			
-    			Utility.setIndicator(myPlayer, 1, "RETURN_HOME");
-    			tiredness = 0;
-    			if ( !breadcrumbs.isEmpty() )
-    			{
-    				loc = breadcrumbs.pollLast();
-    				Direction direction = myPlayer.myRC.getLocation().directionTo(loc);
-    				if ( direction != Direction.OMNI && direction != Direction.NONE )
-    				{
-    					while(myPlayer.myMotor.isActive())
-    						myPlayer.sleep();
-    					myPlayer.myMotor.setDirection(direction);
-    					while(myPlayer.myMotor.isActive() || !myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
-    						myPlayer.sleep();
-    					myPlayer.myMotor.moveForward();
-    				}
-    			}
-				if ( myPlayer.myRC.getLocation().distanceSquaredTo(hometown) <= Constants.HOME_PROXIMITY )
-				{
-					breadcrumbs.clear();
-					if ( westEdge == -1 )
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_TOWER");
+				for ( int i = Math.min(armoryLoc.x, factoryLoc.x) - 1 ; i <= Math.max(armoryLoc.x, factoryLoc.x) + 1 ; i++ )
+					for ( int j = Math.min(armoryLoc.y, factoryLoc.y) - 1 ; j <= Math.max(armoryLoc.y, factoryLoc.y) + 1 ; j++)
 					{
-						obj = SCVBuildOrder.SCOUT_WEST;
+						towerLoc = new MapLocation(i,j);
+						if ( myPlayer.myRC.senseTerrainTile(towerLoc) != TerrainTile.LAND )
+							continue;
+						if ( towerLoc.distanceSquaredTo(armoryLoc) > ComponentType.ARMORY.range )
+							continue;
+						if ( towerLoc.distanceSquaredTo(factoryLoc) > ComponentType.FACTORY.range )
+							continue;
+						if ( towerLoc.equals(unitDock) )
+							continue;
+						if ( towerLoc.equals(mineLocs[0]) )
+							continue;
+						if ( towerLoc.equals(mineLocs[1]) )
+							continue;
+						if ( mineLocs[2] != null && towerLoc.equals(mineLocs[2]) )
+							continue;
+						if ( mineLocs[3] != null && towerLoc.equals(mineLocs[3]) )
+							continue;
+						obj = SCVBuildOrder.BUILD_TOWER;
+						tiredness = 0;
+						return;
 					}
-					else if ( northEdge == -1 )
-						obj = SCVBuildOrder.SCOUT_NORTH;
-					else if ( eastEdge == -1 )
-					{
-						if ( westEdge == 1 && northEdge == 1 )
-						{
-							eastEdge = 0;
-							southEdge = 0;
-							obj = SCVBuildOrder.BROADCAST_SPAWN;
-						}
-						else
-							obj = SCVBuildOrder.SCOUT_EAST;
-					}
-					else if ( southEdge == -1 )
-					{
-						if ( northEdge == 1 )
-						{
-							southEdge = 0;
-							obj = SCVBuildOrder.BROADCAST_SPAWN;
-						}
-						else
-							obj = SCVBuildOrder.SCOUT_SOUTH;
-					}
-					else
-						obj = SCVBuildOrder.BROADCAST_SPAWN;
-					if ( westEdge != -1 && northEdge != -1 && eastEdge != -1 && southEdge != -1 )
-					{
-						realSpawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-						realEnemyLocation = Utility.spawnOpposite(hometown, realSpawn);
-					}
-				}
-    			return;
-    			
-    		case BROADCAST_SPAWN:
-    			
-    			Utility.setIndicator(myPlayer, 1, "BROADCAST_SPAWN");
-    			if ( realSpawn != -1 )
-    				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_REAL_ENEMY_LOC, realSpawn, realEnemyLocation);
-    			if ( spawnReceived )
-    				obj = SCVBuildOrder.VACATE_SPAWN;
-    			else
-    				Utility.navStep(myPlayer, nav, hometown);
-    			return;
+				myPlayer.myRC.suicide(); // no suitable location for tower
+				return;
 				
-			case VACATE_SPAWN:
-				
-				Utility.setIndicator(myPlayer, 1, "VACATE_SPAWN");
-				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) < Constants.HOME_PROXIMITY )
-					Utility.navStep(myPlayer, nav, realEnemyLocation);
+			case BUILD_TOWER:
+			
+				Utility.setIndicator(myPlayer, 1, "BUILD_TOWER");
+				Utility.setIndicator(myPlayer, 2, "Giving up in " + Integer.toString(Constants.MINE_AFFINITY - tiredness) + "...");
+				if ( tiredness < Constants.MINE_AFFINITY )
+	    		{
+					if (myPlayer.myRC.getLocation().distanceSquaredTo(towerLoc) > myPlayer.myBuilder.type().range)
+	    			{
+	    				Utility.navStep(myPlayer, nav, towerLoc);
+	    				tiredness++;
+	    			}
+	    			else
+	    			{
+	    				Utility.setIndicator(myPlayer, 2, "Building!");
+	    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + Constants.RESERVE )
+							myPlayer.sleep();
+	    				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(towerLoc), Chassis.BUILDING);
+	    				myPlayer.sleep();
+	    				myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_TOWER, towerLoc);
+	    				myPlayer.sleep();
+	    				myPlayer.myRC.suicide();
+	    			}
+	    		}
 				else
-				{
-					myPlayer.myRC.suicide(); // he gets in the way >:[
-					//obj = SCVBuildOrder.SLEEP;
-				}
+					myPlayer.myRC.suicide();
 				return;
 				
 			case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 1, "SLEEP");
+				Utility.setIndicator(myPlayer, 1, "zzzzzzz");
 				myPlayer.myRC.turnOff();
 				return;
 				

@@ -338,7 +338,7 @@ public class Utility {
 			loc = player.myRC.getLocation().add(dir);
 		else
 			loc = player.myRC.getLocation();
-		while ( player.myRC.getTeamResources() < chassis.cost || player.myBuilder.isActive() )
+		while ( player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive() )
 			player.sleep();
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) && player.mySensor.senseObjectAtLocation(loc, chassis.level) != null )
 			return;
@@ -370,7 +370,7 @@ public class Utility {
 		}
 		else
 			loc = player.myRC.getLocation();
-		while ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
+		while ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive() )
 			player.sleep();
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
 		{
@@ -414,7 +414,7 @@ public class Utility {
 		}
 		else
 			loc = player.myRC.getLocation();
-		if ( player.myRC.getTeamResources() < component.cost || player.myBuilder.isActive() )
+		if ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive() )
 			return false;
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
 		{
@@ -471,7 +471,10 @@ public class Utility {
 	}
 	
 	/**
-	 * Looks for enemies and shoots at one if one is found
+	 * Looks for enemies and shoots at the closest one if one is found
+	 * NOTE: As of now, it does not re-sense when firing to determine killshots.
+	 * This DOES require rescanning since trying to compute without a satellite
+	 * ignores armor
 	 * @author JVen
 	 * @param myPlayer The robot player
 	 * @param nearbyRobots A list of RobotInfos of nearby robots
@@ -482,33 +485,61 @@ public class Utility {
 	{
 		WeaponController gun;
 		RobotInfo rInfo;
-		MapLocation destination = null;
 		Robot r;
+		
+		RobotInfo enemyMin1 = null;
+		RobotInfo enemyMin2 = null;
+		int minDist1 = 9998; // sentinel value
+		int minDist2 = 9999; // sentinel value
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
 		for ( int i = nearbyRobots.length; --i>=0;)
     	{
     		r = nearbyRobots[i];
+    		if ( r.getTeam() == myPlayer.myRC.getTeam().opponent() )
+    		{
+    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    			if ( myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location) < minDist1 )
+    			{
+    				if ( enemyMin2 == null )
+    				{
+    					minDist1 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    					minDist2 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    					enemyMin1 = rInfo;
+    					enemyMin2 = rInfo;
+    				}
+    				else
+    				{
+    					minDist2 = minDist1;
+    					enemyMin2 = enemyMin1;
+    					minDist1 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    					enemyMin1 = rInfo;
+    				}
+    			}
+    			else if ( myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location) < minDist2 )
+    			{
+    				minDist2 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+					enemyMin2 = rInfo;
+    			}
+    		}
+    	}
+		if ( enemyMin1 != null )
+		{
 			for ( int j = myPlayer.myWeapons.length; --j>=0;)
 			{
 				gun =  myPlayer.myWeapons[j];
-				if ( gun.type() != ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam().opponent() )
-				{
-					rInfo = myPlayer.mySensor.senseRobotInfo(r);
-					destination = rInfo.location;
-					if(!gun.isActive() && rInfo.hitpoints > 0 && gun.withinRange(rInfo.location))
-					{
-						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-					}
-				}
+				if ( gun.type() != ComponentType.MEDIC && !gun.isActive() && gun.withinRange(enemyMin1.location))
+					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
 			}
-    	}
-    	return destination;
+			return enemyMin1.location;
+		}
+		return null;
+			
 	}
 	
 	/**
-	 * Looks for debris and shoots at one if one is found
+	 * Looks for debris and shoots at the closest one if one is found
 	 * @author JVen
 	 * @param myPlayer The robot player
 	 * @param nearbyRobots A list of RobotInfos of nearby robots
@@ -519,30 +550,38 @@ public class Utility {
 	{
 		WeaponController gun;
 		RobotInfo rInfo;
-		MapLocation destination = null;
 		Robot r;
+		
+		RobotInfo rockMin = null;
+		int minDist = 9999; // sentinel value
 		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
-		for ( int i = nearbyRobots.length; --i >=0;)
+		for ( int i = nearbyRobots.length; --i>=0;)
     	{
     		r = nearbyRobots[i];
+    		if ( r.getTeam() == Team.NEUTRAL )
+    		{
+    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    			if ( myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location) < minDist )
+    			{
+    				minDist = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    				rockMin = rInfo;
+    			}
+    		}
+    	}
+		if ( rockMin != null )
+		{
 			for ( int j = myPlayer.myWeapons.length; --j>=0;)
 			{
 				gun =  myPlayer.myWeapons[j];
-				if ( r.getTeam() == Team.NEUTRAL )
-				{
-					rInfo = myPlayer.mySensor.senseRobotInfo(r);
-					destination = rInfo.location;
-					if(!gun.isActive() && rInfo.hitpoints > 0 && gun.withinRange(rInfo.location))
-					{
-						gun.attackSquare(rInfo.location, rInfo.robot.getRobotLevel());
-				 		
-					}
-				}
+				if ( gun.type() != ComponentType.MEDIC && !gun.isActive() && gun.withinRange(rockMin.location))
+					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
 			}
-    	}
-    	return destination;
+			return rockMin.location;
+		}
+		return null;
+		
 	}
 	
 	/**
@@ -676,7 +715,34 @@ public class Utility {
 	}
 	
 	
-	
+	/**
+	 * Returns true if the line segment from source to dest intersects the point (interior AND perimeter)
+	 * @author JVen
+	 * @param point The square whose existence on the line segment is questioned
+	 * @param source One of the ends of the line segment
+	 * @param dest The other end of the line segment
+	 * @return True if point is on the segment, false otherwise
+	 */
+	public static boolean isOnLine(MapLocation point, MapLocation source, MapLocation dest)
+	{
+
+		double x1 = source.x;
+		double y1 = source.y;
+		double x2 = dest.x;
+		double y2 = dest.x;
+		double x = point.x;
+		double y = point.y;
+		double m = (y2 - y1) / (x2 - x1);
+		double mInv = (x2 - x1) / (y2 - y1);
+		return 
+		( (x1 == x2) && ((y >= y1 && y <= y2) || (y >= y2 && y <= y1)) ) ||                    // vertical line
+		( (y1 == y2) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1)) ) ||                    // horizontal line
+		( (m * (x - 0.5 - x1) + y1 >= y - 0.5) && (m * (x - 0.5 - x1) + y1 <= y + 0.5) ) ||    // intersect left side of square
+		( (m * (x + 0.5 - x1) + y1 >= y - 0.5) && (m * (x + 0.5 - x1) + y1 <= y + 0.5) ) ||    // intersect right side of square
+		( (mInv * (y - 0.5 - y1) + x1 >= x - 0.5) && (m * (y - 0.5 - y1) + x1 <= x + 0.5) ) || // intersect bottom side of square
+		( (mInv * (y + 0.5 - y1) + x1 >= x - 0.5) && (m * (y + 0.5 - y1) + x1 <= x + 0.5) );   // intersect top side of square
+
+	}
 	
 	
 	

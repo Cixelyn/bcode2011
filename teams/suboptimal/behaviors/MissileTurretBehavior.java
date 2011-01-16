@@ -4,10 +4,10 @@ package suboptimal.behaviors;
 import suboptimal.*;
 import battlecode.common.*;;
 
-public class AncientProtectorBehavior extends Behavior
+public class MissileTurretBehavior extends Behavior
 {
 	
-	private enum APActions
+	private enum MissileTurretBuildOrder
 	{
 		
 		EQUIPPING,
@@ -15,15 +15,14 @@ public class AncientProtectorBehavior extends Behavior
 
 	}
 	
-	APActions obj = APActions.EQUIPPING;
+	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
 	
 	MapLocation enemyLoc;
 	
-	int numBlasters;
-	int numShields;
-	boolean hasRadar;
+	boolean hasSatellite;
+	boolean hasRailgun;
 	
-	public AncientProtectorBehavior(RobotPlayer player)
+	public MissileTurretBehavior(RobotPlayer player)
 	{
 		super(player);
 	}
@@ -37,36 +36,39 @@ public class AncientProtectorBehavior extends Behavior
 			case EQUIPPING:
 				
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
-				numBlasters = 0;
-				numShields = 0;
-				hasRadar = false;
+				hasSatellite = false;
+				hasRailgun = false;
 				for ( int i = myPlayer.myRC.components().length ; --i >= 0 ; )
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
-					if ( c.type() == ComponentType.BLASTER )
-						numBlasters++;
-					if ( c.type() == ComponentType.SHIELD )
-						numShields++;
-					if ( c.type() == ComponentType.RADAR )
-						hasRadar = true;
+					if ( c.type() == ComponentType.SATELLITE )
+						hasSatellite = true;
+					if ( c.type() == ComponentType.RAILGUN )
+						hasRailgun = true;
 				}
-				if ( numBlasters >= Constants.BLASTERS_PER_TOWER && numShields >= Constants.SHIELDS_PER_TOWER && hasRadar )
-					obj = APActions.DEFENSE;
+				if ( hasSatellite && hasRailgun )
+					obj = MissileTurretBuildOrder.DEFENSE;
 				return;
 			
 			case DEFENSE:
 				
 				Utility.setIndicator(myPlayer, 1, "DEFENSE");
 				enemyLoc = Utility.attackEnemies(myPlayer);
-				if ( enemyLoc == null || myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) > ComponentType.BLASTER.range )
+				if ( enemyLoc == null )
 				{
 					Utility.setIndicator(myPlayer, 2, "No enemies nearby.");
 					if (!myPlayer.myMotor.isActive())
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+				}
+				else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) > ComponentType.BLASTER.range )
+				{
+					Utility.setIndicator(myPlayer, 2, "Enemy detected.");
+					if (!myPlayer.myMotor.isActive())
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
 				}
 				else
 				{
-					Utility.setIndicator(myPlayer, 2, "Enemy detected!");
+					Utility.setIndicator(myPlayer, 2, "Enemy in range!");
 					if (!myPlayer.myMotor.isActive())
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
 				}

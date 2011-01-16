@@ -17,10 +17,13 @@ public class FactoryBehavior extends Behavior
 	FactoryBuildOrder obj = FactoryBuildOrder.WAIT_FOR_DOCK;
 	
 	MapLocation unitDock;
+	MapLocation towerLoc;
 	
-	Robot rFront;
+	Robot r;
 	
 	int currHeavy;
+	
+	boolean towerEquipped = false;
 	
 	public FactoryBehavior(RobotPlayer player)
 	{
@@ -57,19 +60,40 @@ public class FactoryBehavior extends Behavior
 			case BUILD_HEAVY:
 				
 				Utility.setIndicator(myPlayer, 1, "BUILD_TANKS");
-    			Utility.setIndicator(myPlayer, 2, "Building heavy " + Integer.toString(currHeavy) + ".");
-				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			while ( rFront != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 3*Constants.RESERVE || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.HEAVY.upkeep * (currHeavy + 1) )
-    			{
-    				myPlayer.sleep();
-    				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			}
-    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.HEAVY);
-    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.REGEN, RobotLevel.ON_GROUND);
-    			currHeavy++;
+				if ( !towerEquipped && towerLoc != null && myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND) != null )
+				{
+					Utility.setIndicator(myPlayer, 2, "Equipping missile turret.");
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(towerLoc));
+					myPlayer.sleep();
+					if ( r == null && !myPlayer.myBuilder.isActive() && myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND) != null )
+					{
+						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+					}
+					towerEquipped = true;
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+				}
+				else
+				{
+	    			Utility.setIndicator(myPlayer, 2, "Building heavy " + Integer.toString(currHeavy) + ".");
+					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+	    			while ( r != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 3*Constants.RESERVE || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.HEAVY.upkeep * (currHeavy + 1) )
+	    			{
+	    				myPlayer.sleep();
+	    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+	    			}
+	    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.HEAVY);
+	    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.REGEN, RobotLevel.ON_GROUND);
+	    			currHeavy++;
+				}
     			return;
     			
 			case SLEEP:
+				
 				Utility.setIndicator(myPlayer, 1, "SLEEP");
     			Utility.setIndicator(myPlayer, 2, "");
     			myPlayer.myRC.turnOff();
@@ -92,6 +116,8 @@ public class FactoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
+		if ( t == MsgType.MSG_SEND_TOWER )
+			towerLoc = msg.locations[Messenger.firstData];
 	}
 	
 	public void onWakeupCallback(int lastActiveRound)
