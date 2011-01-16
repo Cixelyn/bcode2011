@@ -45,6 +45,7 @@ public class FlyingDroneBehavior extends Behavior {
 	int timeTrying=0;
 	int timeout=0;
 	int steps=0;
+	int waiting=0;
 	ArrayList<MapLocation> broadcastedMines= new ArrayList<MapLocation>();
 	int triedDirections=0;
 	

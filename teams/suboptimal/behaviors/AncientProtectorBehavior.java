@@ -27,7 +27,7 @@ public class AncientProtectorBehavior extends Behavior {
 					return;
 				}
 				if (!myPlayer.myMotor.isActive())
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 				return;
 				
 			case THROWING_ROCKS:
