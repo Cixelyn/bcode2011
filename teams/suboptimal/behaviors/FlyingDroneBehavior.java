@@ -166,7 +166,7 @@ public class FlyingDroneBehavior extends Behavior {
     			}
     			else if (myPlayer.mySensor.withinRange(towerPlacement)) {
     				if (myPlayer.myRC.senseTerrainTile(towerPlacement).equals(TerrainTile.LAND) && myPlayer.mySensor.senseObjectAtLocation(towerPlacement, RobotLevel.ON_GROUND)==null) {
-    					if (myPlayer.myBuilder.withinRange(towerPlacement)) {
+    					if (myPlayer.myBuilder.withinRange(towerPlacement) && myPlayer.myRC.getTeamResources() >Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2 * Constants.RESERVE) {
     						triedDirections=0;
     						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(towerPlacement), Chassis.BUILDING);
     						obj =  FlyingDroneActions.EXPAND;
