@@ -180,6 +180,8 @@ public class RefineryBehavior extends Behavior
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 							obj = RefineryBuildOrder.CLAIM_TOWERS;
 					}
+					else
+						obj = RefineryBuildOrder.CLAIM_TOWERS;
 	    			return;
     			}
     			else
