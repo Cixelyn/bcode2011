@@ -19,8 +19,8 @@ public enum MsgType {
 	
 				   //	   ttl, cback,  rbcast,  ints, locs	
 	MSG_HELLO(                      1 , true ,  false ,   0 ,   0	),
-	MSG_SEND_ID(                    0 , true ,  false ,   1 ,   0   ),
 	MSG_SEND_DOCK(                  0 , true ,  false ,   0 ,   1   ),
+	MSG_SEND_TOWER(                 0 , true ,  false ,   0 ,   1   ),
 	MSG_SEND_NUM_FLYER(             0 , true ,  false ,   2 ,   1   ),
 	MSG_SEND_NUM_HEAVY(             0 , true ,  false ,   2 ,   1   ),
 	MSG_MINES(                      0 , true ,  false ,   0 ,   5   ),

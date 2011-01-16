@@ -10,7 +10,7 @@ public class RefineryBehavior extends Behavior
 	
 	private enum RefineryBuildOrder 
 	{
-		EQUIPPING,
+		INITIALIZE,
 		GIVE_ANTENNA,
 		DETERMINE_LEADER,
 		WAIT_FOR_DOCK,
@@ -21,11 +21,10 @@ public class RefineryBehavior extends Behavior
 	}
 	
 	
-	RefineryBuildOrder obj = RefineryBuildOrder.EQUIPPING;
+	RefineryBuildOrder obj = RefineryBuildOrder.INITIALIZE;
 	
 	MapLocation unitDock;
 	
-	int isLeader = -1; // -1 means unknown, 0 means no, 1 means yes
 	int currFlyer;
 	int currHeavy;
 	double lastIncome;
@@ -49,6 +48,8 @@ public class RefineryBehavior extends Behavior
 	
 	final Random random = new Random();
 	
+	boolean sleepy = true;
+	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -58,16 +59,13 @@ public class RefineryBehavior extends Behavior
 	public void run() throws Exception
 	{
 		
-		Utility.setIndicator(myPlayer, 2, "Current direction: " + myPlayer.myRC.getDirection().toString());
-		
 		switch(obj)
     	{
 			
-    		case EQUIPPING:
+    		case INITIALIZE:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIPPING");
-    			Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    			if ( Clock.getRoundNum() < 5 ) // I'm one of the first two refineries
+    			if ( Clock.getRoundNum() < 10 ) // I'm one of the first two refineries
     				obj = RefineryBuildOrder.DETERMINE_LEADER;
     			else
     				obj = RefineryBuildOrder.WAIT_FOR_DOCK;
@@ -76,17 +74,26 @@ public class RefineryBehavior extends Behavior
     		case DETERMINE_LEADER:
     			
     			Utility.setIndicator(myPlayer, 1, "DETERMINE_LEADER");
-    			myPlayer.myMessenger.sendInt(MsgType.MSG_SEND_ID, myPlayer.myRC.getRobot().getID());
-    			if ( isLeader == 1 )
-	    			obj = RefineryBuildOrder.GIVE_ANTENNA;
-    			if ( isLeader == 0 )
-    				obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for ( int i = nearbyRobots.length ; --i >= 0 ; )
+    			{
+    				r = nearbyRobots[i];
+    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getID() < myPlayer.myRC.getRobot().getID() )
+    				{
+    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    					if ( rInfo.chassis == Chassis.BUILDING )
+    					{
+    						obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    						return;
+    					}
+    				}
+    			}
+    			obj = RefineryBuildOrder.GIVE_ANTENNA;
     			return;
     			
     		case GIVE_ANTENNA:
     			
     			Utility.setIndicator(myPlayer, 1, "GIVE_ANTENNA");
-    			
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
     			for ( int i = nearbyRobots.length ; --i >= 0 ; )
     			{
@@ -104,18 +111,39 @@ public class RefineryBehavior extends Behavior
     		case WAIT_FOR_DOCK:
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
-    			if ( unitDock != null )
+    			if ( Clock.getRoundNum() < 20 )
+    			{
+    				myPlayer.myRC.turnOff();
+    				sleepy = false;
+    				return;
+    			}
+    			else if ( unitDock != null )
     			{
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range )
     				{
-    					while ( myPlayer.myMotor.isActive() )
+    					nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    	    			for ( int i = nearbyRobots.length ; --i >= 0 ; )
+    	    			{
+    	    				r = nearbyRobots[i];
+    	    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getID() < myPlayer.myRC.getRobot().getID() )
+    	    				{
+    	    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    	    					if ( rInfo.location.distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range && rInfo.chassis == Chassis.BUILDING )
+    	    					{
+    	    						obj = RefineryBuildOrder.SLEEP; // I am one of the first four near armory but not with least ID
+    	    						return;
+    	    					}
+    	    				}
+    	    			}
+    	    			Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+    	    			while ( myPlayer.myMotor.isActive() )
         					myPlayer.sleep();
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
     					currFlyer = 0;
-    					obj = RefineryBuildOrder.EQUIP_UNITS;
+    	    			obj = RefineryBuildOrder.EQUIP_UNITS;       // I am one of the first four near armory and with least ID
     				}
     				else
-    					obj = RefineryBuildOrder.SLEEP; // I am one of the first four but not near armory
+    					obj = RefineryBuildOrder.SLEEP;             // I am one of the first four but not near armory
     			}
     			else if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
 	    			obj = RefineryBuildOrder.CLAIM_TOWERS;
@@ -275,19 +303,8 @@ public class RefineryBehavior extends Behavior
 	
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_SEND_ID )
-		{
-			if ( msg.ints[Messenger.firstData] < myPlayer.myRC.getRobot().getID() )
-				isLeader = 0;
-			else
-				isLeader = 1;
-		}
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
-		if ( t == MsgType.MSG_SEND_NUM_FLYER )
-			currFlyer++;
-		if ( t == MsgType.MSG_SEND_NUM_HEAVY )
-			currHeavy++;
 	}
 	public void onWakeupCallback(int lastActiveRound)
 	{

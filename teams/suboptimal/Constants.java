@@ -37,8 +37,8 @@ public class Constants
 	public static final int RUN_AWAY_TIME=5;
 	public static final int STEPS=0;
 	public static final int TIMEOUT=100;
-	public static final int BLASTERS_PER_TOWER = 3; //   WE REQUIRE (2*numBlasters + numShields) <= 15
-	public static final int SHIELDS_PER_TOWER = 0;  //   WE REQUIRE (2*numBlasters + numShields) <= 15 
+	public static final int BLASTERS_PER_TOWER = 2; //   WE REQUIRE (2*numBlasters + numShields) <= 15
+	public static final int SHIELDS_PER_TOWER = 2;  //   WE REQUIRE (2*numBlasters + numShields) <= 15 
 	
 	
 	
