@@ -17,7 +17,8 @@ public class TestHeavyBehavior2 extends Behavior
 	
 	TestHeavyBuildOrder2 obj = TestHeavyBuildOrder2.EQUIPPING;
 	
-	final OldNavigation nav = new OldNavigation(myPlayer);
+	//final OldNavigation nav = new OldNavigation(myPlayer);
+	final JumpNavigation jumpNav = new JumpNavigation(myPlayer);
 	
 	MapLocation enemyLoc;
 	int spawn;
@@ -68,6 +69,7 @@ public class TestHeavyBehavior2 extends Behavior
 				}
 				if ( hasJump && hasSatellite && hasRegen && numBlasters >= 2 )
 				{
+					myPlayer.sleep();
 					while ( myPlayer.mySensor.isActive() )
 						myPlayer.sleep();
 					if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.WEST, 10)) == TerrainTile.OFF_MAP )
@@ -98,6 +100,11 @@ public class TestHeavyBehavior2 extends Behavior
 			case ADVANCE:	
 				
 	        	myPlayer.myRC.setIndicatorString(1, "ADVANCE");
+	        	
+	        	// Jump if you can
+	        	
+	        	if ( !myPlayer.myJump.isActive() )
+		        	myPlayer.myJump.jump(jumpNav.jumpTo(rally));
 	        	
 	        	// Rerally code
 	        	
@@ -146,7 +153,7 @@ public class TestHeavyBehavior2 extends Behavior
 	        	}
 	        	
 	        	
-	        	enemyLoc = Utility.attackEnemies(myPlayer);
+	        	//enemyLoc = Utility.attackEnemies(myPlayer);
 	        	//Found an enemy
 	        	if ( enemyLoc != null )
 	        	{
@@ -164,8 +171,8 @@ public class TestHeavyBehavior2 extends Behavior
         			else
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
-        				if ( !myPlayer.myMotor.isActive() )
-        					Utility.navStep(myPlayer, nav, enemyLoc);
+        				//if ( !myPlayer.myMotor.isActive() )
+        					//Utility.navStep(myPlayer, nav, enemyLoc);
         			}
 	        	}
 	        	//There is no enemy
@@ -174,8 +181,8 @@ public class TestHeavyBehavior2 extends Behavior
 	        		Utility.setIndicator(myPlayer, 2, "No enemies nearby, advancing.");
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
 		        		Utility.attackDebris(myPlayer);
-		        	else
-		        		Utility.navStep(myPlayer, nav, destination);
+		        	//else
+		        		//Utility.navStep(myPlayer, nav, destination);
 	        	}
 	        	return;
 	        	
