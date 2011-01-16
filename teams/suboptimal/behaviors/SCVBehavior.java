@@ -9,6 +9,7 @@ public class SCVBehavior extends Behavior
 	
 	private enum SCVBuildOrder 
 	{
+		GET_INITIAL_IDS,
 		FIND_MINE,
 		GET_OFF_MINE,
 		WAIT_FOR_ANTENNA,
@@ -32,14 +33,16 @@ public class SCVBehavior extends Behavior
 	
 	final OldNavigation nav = new OldNavigation(myPlayer);
 	
-	SCVBuildOrder obj = SCVBuildOrder.FIND_MINE;
+	SCVBuildOrder obj = SCVBuildOrder.GET_INITIAL_IDS;
 	
 	MapLocation hometown = myPlayer.myRC.getLocation();
 	MapLocation unitDock;
 	MapLocation loc;
 	Direction dir;
 	
+	Robot[] nearbyRobots;
 	Mine[] nearbyMines;
+	Robot r;
 	Mine currMine;
 	
 	int dizziness = 0;
@@ -75,6 +78,29 @@ public class SCVBehavior extends Behavior
 		switch (obj)
 		{
 		
+			case GET_INITIAL_IDS:
+				
+				Utility.setIndicator(myPlayer, 1, "GET_INITIAL_IDS");
+				Utility.setIndicator(myPlayer, 2, "[" + Integer.toString(mainRefineries[0]) + ", " + Integer.toString(mainRefineries[1]) + "]");
+				nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+				for ( int i = nearbyRobots.length ; --i >= 0 ; )
+				{
+					r = nearbyRobots[i];
+					if ( mainRefineries[0] == -1 )
+						mainRefineries[0] = r.getID();
+					else if ( r.getID() != mainRefineries[0] && mainRefineries[1] == -1 )
+						mainRefineries[1] = r.getID();
+				}
+				if ( mainRefineries[0] != -1 && mainRefineries[1] != -1 )
+					obj = SCVBuildOrder.FIND_MINE;
+				else
+				{
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+				}
+				return;
+			
 			case FIND_MINE:
 				
 				Utility.setIndicator(myPlayer, 1, "FIND_MINE");
@@ -504,13 +530,6 @@ public class SCVBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_SEND_ID )
-		{
-			if ( mainRefineries[0] == -1 )
-				mainRefineries[0] = msg.ints[Messenger.firstData];
-			else if ( mainRefineries[1] == -1 )
-				mainRefineries[1] = msg.ints[Messenger.firstData];
-		}
 		if ( t == MsgType.MSG_REAL_ENEMY_LOC )
 			spawnReceived = true;
 	}
