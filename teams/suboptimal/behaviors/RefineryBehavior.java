@@ -33,6 +33,7 @@ public class RefineryBehavior extends Behavior
 	boolean rHasConstructor;
 	boolean rHasSight;
 	
+	boolean keepWaiting;
 	int rNumBlasters;
 	int rNumShields;
 	boolean rHasRadar;
@@ -117,20 +118,23 @@ public class RefineryBehavior extends Behavior
     					obj = RefineryBuildOrder.SLEEP; // I am one of the first four but not near armory
     			}
     			else if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
-	    			obj = RefineryBuildOrder.CLAIM_TOWERS; // TODO switch to tower equipping state
+	    			obj = RefineryBuildOrder.CLAIM_TOWERS;
     			return;
     		
     		case CLAIM_TOWERS:
     			
     			Utility.setIndicator(myPlayer, 1, "CLAIM_TOWERS");
+    			keepWaiting = false;
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
     			for ( int i = nearbyRobots.length ; --i >= 0 ; )
     			{
     				r = nearbyRobots[i];
+    				if ( r.getRobotLevel() == RobotLevel.IN_AIR && r.getTeam() == myPlayer.myRC.getTeam() )
+    					keepWaiting = true;
     				if ( r.getRobotLevel() == RobotLevel.ON_GROUND && r.getTeam() == myPlayer.myRC.getTeam() )
     				{
     					rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    					if ( myPlayer.myBuilder.withinRange(rInfo.location) && rInfo.chassis == Chassis.BUILDING && Utility.totalWeight(rInfo.components) == 0 )
+    					if ( myPlayer.myBuilder.withinRange(rInfo.location) && rInfo.chassis == Chassis.BUILDING && myPlayer.mySensor.senseObjectAtLocation(rInfo.location, RobotLevel.MINE) == null && Utility.totalWeight(rInfo.components) == 0 )
     					{
     						if ( myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(rInfo.location) )
     						{
@@ -143,9 +147,8 @@ public class RefineryBehavior extends Behavior
     					}
     				}
     			}
-    			
-    			// No more unequipped towers nearby
-    			obj = RefineryBuildOrder.SLEEP;
+    			if ( !keepWaiting )
+    				obj = RefineryBuildOrder.SLEEP; // there are no unequipped towers nearby and there is no flyer nearby to build any
     			return;
     			
     		case EQUIP_TOWERS:
