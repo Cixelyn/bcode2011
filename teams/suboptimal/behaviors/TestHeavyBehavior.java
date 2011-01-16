@@ -7,36 +7,37 @@ import battlecode.common.*;
 public class TestHeavyBehavior extends Behavior
 {
 	
-	
 	private enum TestHeavyBuildOrder
 	{
 		EQUIPPING,
 		MOVE_OUT
 	}
 	
-	TestHeavyBuildOrder obj = TestHeavyBuildOrder.EQUIPPING;
-	
-	final OldNavigation nav = new OldNavigation(myPlayer);
-	
-	MapLocation enemyLoc;
-	int spawn;
-	int rally; // index in Direction.values()
-	MapLocation destination;
+	private TestHeavyBuildOrder obj = TestHeavyBuildOrder.EQUIPPING;
 	
 	int num;
-	int westEdge = 0;
-	int northEdge = 0;
-	int eastEdge = 0;
-	int southEdge = 0;
 	
 	boolean hasJump;
 	boolean hasSatellite;
 	boolean hasRegen;
 	int numBlasters;
 	
+	boolean[] hasSeenRobot = new boolean[1024];
+	
+	
+	
 	public TestHeavyBehavior(RobotPlayer player)
 	{
 		super(player);
+		
+		
+		//lets initialize our map navigation variables.
+		mapLeftEdge = myPlayer.myBirthplace.x;
+		mapRightEdge = myPlayer.myBirthplace.x;
+		mapBottomEdge = myPlayer.myBirthplace.y;
+		mapTopEdge = myPlayer.myBirthplace.y;
+		
+			
 	}
 
 
@@ -66,74 +67,57 @@ public class TestHeavyBehavior extends Behavior
 						numBlasters++;
 				}
 				if ( hasJump && hasSatellite && hasRegen && numBlasters >= 2 )
-				{
-					while ( myPlayer.mySensor.isActive() )
-						myPlayer.sleep();
-					if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.WEST, 10)) == TerrainTile.OFF_MAP )
-						westEdge = 1;
-					if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.NORTH, 10)) == TerrainTile.OFF_MAP )
-						northEdge = 1;
-					if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.EAST, 10)) == TerrainTile.OFF_MAP )
-						eastEdge = 1;
-					if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.SOUTH, 10)) == TerrainTile.OFF_MAP )
-						southEdge = 1;
-					spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-					if ( spawn != -1 )
-					{
-						rally = (spawn + 4) % 8;
-						destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
-					}
-					else
-					{
-						rally = (3 * num) % 8;
-						destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
-					}
 					obj = TestHeavyBuildOrder.MOVE_OUT;
-				}
 				return;
 	        	
-			case MOVE_OUT:	
+			
 				
-	        	myPlayer.myRC.setIndicatorString(1, "MOVE_OUT");
-	        	enemyLoc = Utility.attackEnemies(myPlayer);
-	        	//Found an enemy
-	        	if ( enemyLoc != null && !myPlayer.myRC.getLocation().equals(enemyLoc) )
-	        	{
-	        		if ( !myPlayer.myMotor.isActive() )
-	        		{
-	        			if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()) && myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) <= ComponentType.BLASTER.range && myPlayer.myRC.getDirection() == myPlayer.myRC.getLocation().directionTo(enemyLoc) )
-	        				myPlayer.myMotor.moveBackward();
-	        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) > ComponentType.BLASTER.range && myPlayer.myRC.getDirection() == myPlayer.myRC.getLocation().directionTo(enemyLoc) )
-	        				myPlayer.myMotor.moveForward();
-	        			else if ( myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(enemyLoc) )
-	        				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
-	        			else	
-	        				Utility.navStep(myPlayer, nav, enemyLoc);
+				
+				
+			/*
+			 * Our main movement & attack code.
+			 */
+			case MOVE_OUT:				
+	        	satelliteScanMapEdge();
+	        	
+	        	
+	        	
+	        	//RUN SUPER SPECIAL CUSTOM SENSOR CODE
+	        	Robot[] robots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+	        	
+	        	
+	        	//QUICK CODE FOR JUST FINDING THE NEAREST ROBOT
+	        	//FIXME: I'll eventually get around to adding some extra thing;
+	        	//		TODO:add prioritization based on components, etc.	        	
+	        	Robot 		nearestEnemyRobot			= null;
+	        	RobotInfo	nearestEnemyRobotInfo		= null;
+	        	int			nearestEnemyRobotDistance	= 999;
+	        	Direction	nearestEnemyRobotDirection  = null;
+	        	
+	        	MapLocation myLoc = myPlayer.myRC.getLocation();
+	        	
+	        	for(int i=robots.length; --i>=0;) {
+	        		if(robots[i].getTeam()==myPlayer.myOpponent) {
+	        			RobotInfo rinfo = myPlayer.mySensor.senseRobotInfo(robots[i]);
+	        			
+	        			int robotDistance = myLoc.distanceSquaredTo(rinfo.location);
+	        			if(robotDistance < nearestEnemyRobotDistance) {
+	        				nearestEnemyRobot = robots[i];
+	        				nearestEnemyRobotInfo = rinfo;
+	        				nearestEnemyRobotDistance = robotDistance;
+	        				nearestEnemyRobotDirection = myLoc.directionTo(nearestEnemyRobotInfo.location);
+	        			}
 	        		}
 	        	}
-	        	//There is no enemy
-	        	else
-	        	{
-		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
-		        		Utility.attackDebris(myPlayer);
-		        	else
-		        		Utility.navStep(myPlayer, nav, destination);
+	        	
+
+	        	if(nearestEnemyRobot!=null) {
+	        		
 	        	}
 	        	
-	        	// off_map found in orthogonal direction
-	        	if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],10)) == TerrainTile.OFF_MAP )
-	        	{
-	        		rally = (rally + 2) % 8; // try a different ORTHOGONAL direction!
-	        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-	        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
-	        	}
-	        	// off_map found in diagonal direction
-	        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],7)) == TerrainTile.OFF_MAP )
-	        	{
-	        		rally = (rally + 3) % 8; // try a different ORTHOGONAL direction!
-	        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-	        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
-	        	}
+	        	
+	        	
+	        	Utility.bounceNav(myPlayer);
 	        	return;
 	        	
 		}
@@ -141,12 +125,120 @@ public class TestHeavyBehavior extends Behavior
 	
 	
 	
-	public String toString()
-	{
-		return "TestHeavyBehavior";
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	///////////// MAP POSITION ESTIMATION CODE /////////////////////////////////////////
+	
+	
+	//Booleans whether edges are ofund
+	boolean foundTopEdge = false;
+	boolean foundRightEdge = false;
+	boolean foundBottomEdge = false;
+	boolean foundLeftEdge = false;
+	
+	//Edges of the map (or farthest location if edges haven't been found)
+	int mapLeftEdge;
+	int mapRightEdge;
+	int mapBottomEdge;
+	int mapTopEdge;
+	
+	
+	//Quick constant here for some faster access
+	private static final int SATRANGE = ComponentType.SATELLITE.range;
+	
+	
+	
+	/**
+	 * 
+	 * We only need to scan for edges that we have yet to detect.
+	 * This code is optimized for and only works w/ satellites
+	 * 
+	 * Map edges are scanned, and results are stored into the
+	 * mapXXX,foundXXX variables.
+	 *  
+	 */
+	public void satelliteScanMapEdge() {
+		
+		MapLocation toScan;
+		MapLocation currLoc = myPlayer.myRC.getLocation();
+		int myX = currLoc.x;
+		int myY = currLoc.y;
+		
+		if(!foundTopEdge) {
+			toScan = new MapLocation(myX,myY-SATRANGE);
+			if(myPlayer.myRC.senseTerrainTile(toScan)==TerrainTile.OFF_MAP) {
+				foundTopEdge = true;
+				mapTopEdge = scanForLand(toScan,0,-1).y;
+			} else {
+				if(myY<mapTopEdge) mapTopEdge=myY;
+			}
+		}
+		if(!foundRightEdge) {
+			toScan = new MapLocation(myX+SATRANGE,myY);
+			if(myPlayer.myRC.senseTerrainTile(toScan)==TerrainTile.OFF_MAP) {
+				foundRightEdge = true;
+				mapRightEdge= scanForLand(toScan,+1,0).x;
+			} else{
+				if(myX>mapRightEdge) mapRightEdge = myX;
+			}
+		}
+		if(!foundBottomEdge) {
+			toScan = new MapLocation(myX,myY+SATRANGE);
+			if(myPlayer.myRC.senseTerrainTile(toScan)==TerrainTile.OFF_MAP) {
+				foundBottomEdge = true;
+				mapBottomEdge = scanForLand(toScan,0,+1).y;				
+			} else{
+				if(myY>mapBottomEdge) mapBottomEdge = myY;
+			}
+		}
+		if(!foundLeftEdge) {
+			toScan = new MapLocation(myX-SATRANGE,myY);
+			if(myPlayer.myRC.senseTerrainTile(toScan)==TerrainTile.OFF_MAP) {
+				foundLeftEdge = true;
+				mapLeftEdge = scanForLand(toScan,-1,0).x;
+			} else{
+				if(myX<mapLeftEdge) mapLeftEdge = myX;
+			}
+		}
 	}
+	
+	
+	
+	
+	/**
+	 * This function returns the first maplocation that is on-tile and not a void.
+	 * Used in conjunction with satelliteScanMapEdge in order to find the true map edge.
+	 * @param startLoc
+	 * @param dX
+	 * @param dY
+	 * @return MapLocation that is on tile.
+	 */
+	public MapLocation scanForLand(MapLocation startLoc, int dX, int dY) {
+		do {
+			startLoc = new MapLocation(startLoc.x + dX, startLoc.y + dY);
+		}while(myPlayer.myRC.senseTerrainTile(startLoc)==TerrainTile.OFF_MAP);
+		return startLoc;
+	}
+	
+	
+	/**
+	 * This function uses collected sensor data to estimate where the center of the map is.
+	 * @return
+	 */
+	public MapLocation estimateCenter(){
+		return null;
+	};
+	
+	
+	
 
-
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	///////////// CALLBACKS /////////////////// /////////////////////////////////////////
+	
 	@Override
 	public void newComponentCallback(ComponentController[] components)
 	{
@@ -164,14 +256,24 @@ public class TestHeavyBehavior extends Behavior
 		}
 	}
 	
-	public void onWakeupCallback(int lastActiveRound)
-	{
-		
-	}
+	public void onWakeupCallback(int lastActiveRound) {}
 	
-	public void onDamageCallback(double damageTaken)
+	public void onDamageCallback(double damageTaken)  {}
+
+	
+	
+	
+	
+	
+	
+	
+
+	
+	public String toString()
 	{
-		
+		return "TestHeavyBehavior";
 	}
+
+
 	
 }

@@ -54,12 +54,16 @@ public class RobotPlayer implements Runnable {
 	
 	//Misc Stats
 	public final int myBirthday;
+	public final MapLocation myBirthplace;
+	
 	private int executeStartTime;
 	private int executeStartByte;
 	private int lastActiveRound;
 	private double lastRoundHP;
 	private int bytecodeLimit;
 	public double myLastRes;
+	
+	public final Team myOpponent;
 	
 	
 	//Useful Toolkits
@@ -83,9 +87,12 @@ public class RobotPlayer implements Runnable {
     	
     	//variables and utilities that other pieces depend on
     	myBirthday = Clock.getRoundNum();
+    	myBirthplace = myRC.getLocation();
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
     	bytecodeLimit = GameConstants.BYTECODE_LIMIT_BASE;
+    	
+    	myOpponent = myRC.getTeam().opponent();
     	
     	lastActiveRound = myBirthday;
     	lastRoundHP = rc.getHitpoints();
@@ -103,6 +110,15 @@ public class RobotPlayer implements Runnable {
     	
     	myMessenger = new Messenger(this);
     	myActions = new Actions(this);
+    	
+    	
+    	
+    	
+    	if(Constants.CUSTOM_INDICATORS) {
+    		myRC.setIndicatorString(0, Constants.INDICATOR0);
+    		myRC.setIndicatorString(1, Constants.INDICATOR1);
+    		myRC.setIndicatorString(2, Constants.INDICATOR2);
+    	}
     	
 
     	
