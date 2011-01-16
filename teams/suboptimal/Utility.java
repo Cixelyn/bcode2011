@@ -678,7 +678,7 @@ public class Utility {
 		double y2 = dest.x;
 		double x = point.x;
 		double y = point.y;
-		double m = (y2 - y1 + 0.0) / (x2 - x1);
+		double m = (y2 - y1) / (x2 - x1);
 		return 
 		(point.equals(source)) ||
 		(point.equals(dest)) ||
