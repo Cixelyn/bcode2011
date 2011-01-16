@@ -36,6 +36,10 @@ public class DefaultBehavior extends Behavior
 					Utility.setIndicator(myPlayer, 1, ""); // >:[ Clear out your "WHO AM I" indicator string Max!!! -Jven
 				}
 			}
+			if ( c.type() == ComponentType.BLASTER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+			{
+				myPlayer.swapBehavior(new AncientProtectorBehavior(myPlayer));
+			}
 			if ( c.type() == ComponentType.REGEN )
 			{
 				myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
