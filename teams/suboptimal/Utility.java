@@ -728,15 +728,17 @@ public class Utility {
 		}
 		
 		
-		
 		/**
-		 * Fast method to compare two arrays and see if their contents are equal.  
+		 * Fast method to compare two components and ensure that they're equal  
 		 * 
 		 * @return
 		 */
-		public static boolean compareArray(int[] a, int[] b) {
-			for(int i=a.length; --i>=0;) {
-				if(a[i]!=b[i]) return false;
+		public static boolean compareComponents(RobotPlayer player, int[] requestedLoadOut ) {
+			
+			int[] currentLoadOut = countComponents(player.myRC.components()); 
+			
+			for(int i=NUM_COMPONENT_TYPES; --i>=0;) {
+				if(currentLoadOut[i]<requestedLoadOut[i]) return false;
 			}
 			return true;
 		}
