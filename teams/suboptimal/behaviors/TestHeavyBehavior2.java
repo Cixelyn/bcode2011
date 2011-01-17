@@ -17,8 +17,8 @@ public class TestHeavyBehavior2 extends Behavior
 	
 	TestHeavyBuildOrder2 obj = TestHeavyBuildOrder2.EQUIPPING;
 	
-	//final OldNavigation nav = new OldNavigation(myPlayer);
-	final JumpNavigation jumpNav = new JumpNavigation(myPlayer);
+	final OldNavigation nav = new OldNavigation(myPlayer);
+	//final JumpNavigation jumpNav = new JumpNavigation(myPlayer);
 	
 	MapLocation enemyLoc;
 	int spawn;
@@ -32,9 +32,10 @@ public class TestHeavyBehavior2 extends Behavior
 	int southEdge = 0;
 	
 	boolean hasJump;
-	boolean hasSatellite;
-	boolean hasRegen;
-	int numBlasters;
+	boolean hasRailgun;
+	boolean hasRadar;
+	int numSMGs;
+	int numShields;
 	
 	public TestHeavyBehavior2(RobotPlayer player)
 	{
@@ -52,22 +53,25 @@ public class TestHeavyBehavior2 extends Behavior
 				
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				hasJump = false;
-				hasSatellite = false;
-				hasRegen = false;
-				int numBlasters = 0;
+				hasRailgun = false;
+				hasRadar = false;
+				numSMGs = 0;
+				numShields = 0;
 				for ( int i = myPlayer.myRC.components().length; --i >= 0;)
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
 					if ( c.type() == ComponentType.JUMP )
 						hasJump = true;
-					if ( c.type() == ComponentType.SATELLITE )
-						hasSatellite = true;
-					if ( c.type() == ComponentType.REGEN )
-						hasRegen = true;
-					if ( c.type() == ComponentType.BLASTER )
-						numBlasters++;
+					if ( c.type() == ComponentType.RAILGUN )
+						hasRailgun = true;
+					if ( c.type() == ComponentType.RADAR )
+						hasRadar = true;
+					if ( c.type() == ComponentType.SMG )
+						numSMGs++;
+					if ( c.type() == ComponentType.SHIELD )
+						numShields++;
 				}
-				if ( hasJump && hasSatellite && hasRegen && numBlasters >= 2 )
+				if ( hasJump && hasRailgun && hasRadar && numSMGs >= 2 && numShields >= 5 )
 				{
 					myPlayer.sleep();
 					while ( myPlayer.mySensor.isActive() )
@@ -103,8 +107,8 @@ public class TestHeavyBehavior2 extends Behavior
 	        	
 	        	// Jump if you can
 	        	
-	        	if ( !myPlayer.myJump.isActive() )
-		        	myPlayer.myJump.jump(jumpNav.jumpTo(rally));
+	        	/*if ( !myPlayer.myJump.isActive() )
+		        	myPlayer.myJump.jump(jumpNav.jumpTo(rally));*/
 	        	
 	        	// Rerally code
 	        	
@@ -153,7 +157,7 @@ public class TestHeavyBehavior2 extends Behavior
 	        	}
 	        	
 	        	
-	        	//enemyLoc = Utility.attackEnemies(myPlayer);
+	        	enemyLoc = Utility.attackEnemies(myPlayer);
 	        	//Found an enemy
 	        	if ( enemyLoc != null )
 	        	{
@@ -171,8 +175,8 @@ public class TestHeavyBehavior2 extends Behavior
         			else
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
-        				//if ( !myPlayer.myMotor.isActive() )
-        					//Utility.navStep(myPlayer, nav, enemyLoc);
+        				if ( !myPlayer.myMotor.isActive() )
+        					Utility.navStep(myPlayer, nav, enemyLoc);
         			}
 	        	}
 	        	//There is no enemy
@@ -181,8 +185,8 @@ public class TestHeavyBehavior2 extends Behavior
 	        		Utility.setIndicator(myPlayer, 2, "No enemies nearby, advancing.");
 		        	if ( Clock.getRoundNum() > Constants.DEBRIS_TIME )
 		        		Utility.attackDebris(myPlayer);
-		        	//else
-		        		//Utility.navStep(myPlayer, nav, destination);
+		        	else
+		        		Utility.navStep(myPlayer, nav, destination);
 	        	}
 	        	return;
 	        	
@@ -193,7 +197,7 @@ public class TestHeavyBehavior2 extends Behavior
 	
 	public String toString()
 	{
-		return "TestHeavyBehavior";
+		return "TestHeavyBehavior2";
 	}
 
 
