@@ -59,7 +59,7 @@ public class WraithBehavior extends Behavior
 					if ( c.type() == ComponentType.RADAR )
 						hasRadar = true;
 				}
-				if ( hasBlaster && hasRadar )
+				if ( hasBlaster && hasRadar && num != -1 )
 					obj = WraithBuildOrder.DETERMINE_SPAWN;
 				return;
 				
@@ -109,7 +109,7 @@ public class WraithBehavior extends Behavior
 				}
 				else
 				{
-					rally = (3 * num) % 8;
+					rally = (2 * num + 1) % 8;
 					destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
 					Utility.setIndicator(myPlayer, 0, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
@@ -121,45 +121,59 @@ public class WraithBehavior extends Behavior
 	        	myPlayer.myRC.setIndicatorString(1, "ADVANCE");
 	        	
 	        	// Rerally code
-	        	
-	        	
-	        	// off_map found in orthogonal direction, try a different ORTHOGONAL direction!
-	        	if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
+	        	if ( spawn != -1 )
 	        	{
-	        		if ( numBounces == 0 )
-	        			rally = (rally + 2) % 8;
-	        		else if ( numBounces == 1 )
-	        			rally = (rally + 4) % 8;
-	        		else
-	        		{
-	        			if ( num % 2 == 0 )
+		        	// off_map found in orthogonal direction, try a different ORTHOGONAL direction!
+		        	if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
+		        	{
+		        		if ( numBounces == 0 )
 		        			rally = (rally + 2) % 8;
+		        		else if ( numBounces == 1 )
+		        			rally = (rally + 4) % 8;
 		        		else
-		        			rally = (rally - 2) % 8;
-	        		}
-	        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-	        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
-	        		numBounces++;
+		        		{
+		        			if ( num % 2 == 0 )
+			        			rally = (rally + 2) % 8;
+			        		else
+			        			rally = (rally - 2) % 8;
+		        		}
+		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
+		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		numBounces++;
+		        	}
+		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
+		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
+		        	{
+		        		rally = (rally + 1) % 8;
+		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
+		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		numBounces++;
+		        	}
+		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
+		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
+		        	{
+		        		rally = (rally - 1) % 8;
+		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
+		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		numBounces++;
+		        	}
 	        	}
-	        	// off_map found in orthogonal direction, try a different ORTHOGONAL direction!
-	        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],4)) == TerrainTile.OFF_MAP )
+	        	else
 	        	{
-	        		if ( numBounces == 0 )
-	        			rally = (rally + 3) % 8;
-	        		else
-	        		{
-	        			if ( num % 2 == 0 )
-		        			rally = (rally + 2) % 8;
-		        		else
-		        			rally = (rally - 2) % 8;
-	        		}
-	        		if ( num % 2 == 0 )
-	        			rally = (rally + 3) % 8;
-	        		else
-	        			rally = (rally - 3) % 8;
-	        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-	        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
-	        		numBounces++;
+	        		if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
+		        	{
+		        		rally = (rally + 3) % 8;
+		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
+		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		numBounces++;
+		        	}
+		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
+		        	{
+		        		rally = (rally + 5) % 8;
+		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
+		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		numBounces++;
+		        	}
 	        	}
 	        	
 	        	
@@ -186,6 +200,8 @@ public class WraithBehavior extends Behavior
         					if ( myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(enemyInfo.location) )
         						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
         					else if ( enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateLeft() && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateRight() )
+        						myPlayer.myMotor.moveForward();
+        					else if ( enemyInfo.chassis != Chassis.FLYING && enemyInfo.chassis != Chassis.LIGHT )
         						myPlayer.myMotor.moveForward();
         				}
         			}
