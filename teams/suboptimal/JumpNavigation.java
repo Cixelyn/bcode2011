@@ -101,7 +101,7 @@ public class JumpNavigation
 				{  -99   ,  -99   ,   0    ,  -1    ,  -3    ,  -1    ,  -4    ,  -99   ,  -99   },
 				{  -99   ,  -99   ,  -99   ,  -99   ,  -2    ,  -99   ,  -99   ,  -99   ,  -99   }
 			},
-			
+				
 			// NORTHWEST
 			{
 				{  -99   ,  -99   ,  -99   ,  -99   ,   0    ,  -99   ,  -99   ,  -99   ,  -99   },
@@ -150,7 +150,7 @@ public class JumpNavigation
 		for ( int i = 9 ; --i >= 0 ; )
 			for ( int j = 9 ; --j >= 0 ; )
 			{
-				if ( myPlayer.myRC.senseTerrainTile(myLoc.add(i - 4, j -4)) != TerrainTile.LAND || myPlayer.mySensor.senseObjectAtLocation(myLoc.add(i - 4, j -4), RobotLevel.ON_GROUND) != null )
+				if ( myPlayer.myRC.senseTerrainTile(myLoc.add(j - 4, i - 4)) != TerrainTile.LAND || myPlayer.mySensor.senseObjectAtLocation(myLoc.add(j - 4, i - 4), RobotLevel.ON_GROUND) != null )
 					locScores[i][j] = -99;
 				else
 					locScores[i][j] += rallyScores[rally][i][j];
@@ -208,7 +208,7 @@ public class JumpNavigation
 					// TODO occupied square restriction removed if removed above
 					if ( locScores[j][k] > -60 )
 					{
-						loc = myLoc.add(j - 4, k - 4);
+						loc = myLoc.add(k - 4, j - 4);
 						if ( rRanges.get(i) >= 0 )
 						{
 							if ( loc.distanceSquaredTo(rLoc) <= 2 ) // 1 or 2
@@ -255,7 +255,7 @@ public class JumpNavigation
 		
 		// return maximum square
 		
-		return myLoc.add((maxIndices / 10) - 4, (maxIndices % 10) - 4);
+		return myLoc.add((maxIndices % 10) - 4, (maxIndices / 10) - 4);
 		
 	}
 	

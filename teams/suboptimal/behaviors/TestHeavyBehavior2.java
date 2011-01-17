@@ -55,7 +55,7 @@ public class TestHeavyBehavior2 extends Behavior
 				hasSatellite = false;
 				hasRegen = false;
 				int numBlasters = 0;
-				for ( int i = myPlayer.myRC.components().length; --i>= 0;)
+				for ( int i = myPlayer.myRC.components().length; --i >= 0;)
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
 					if ( c.type() == ComponentType.JUMP )
@@ -85,7 +85,7 @@ public class TestHeavyBehavior2 extends Behavior
 					{
 						rally = (spawn + 4) % 8;
 						destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
-						Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+						Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 					}
 					else
 					{
