@@ -119,21 +119,6 @@ public class FlyingDroneBehavior extends Behavior {
     					if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
     						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-    						Mine[] detectedMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
-    	        			for (Mine mine : detectedMines) { //look for mines, if we find one, lets go get it
-    	        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
-    	        					while (myPlayer.myMotor.isActive()) {
-    	        						myPlayer.sleep();
-    	        					}
-    	            				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
-                					currentMine=mine;
-                					towerDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
-                					towerPlacement=currentMine.getLocation().add(towerDirection);
-                					currentDirection=myPlayer.myRC.getDirection();
-                					obj=FlyingDroneActions.FOUND_MINE;
-                					return;
-    	        				}
-    	        			}
     	        			
     	        			
         					for (int i=0;i<3;i++) { //spin and check all our other directions
