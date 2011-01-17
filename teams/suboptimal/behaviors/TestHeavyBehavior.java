@@ -8,8 +8,6 @@ public class TestHeavyBehavior extends Behavior
 {
 	
 	
-	
-	
 	private enum TestHeavyBuildOrder
 	{
 		EQUIPPING,
@@ -29,6 +27,10 @@ public class TestHeavyBehavior extends Behavior
 	
 	
 	
+	
+	private int[] componentLoadOut;
+	
+	
 	public TestHeavyBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -44,10 +46,16 @@ public class TestHeavyBehavior extends Behavior
 		//initialize our old navigation engine
 		myNav = new OldNavigation(player);
 		
-			
+		
+		componentLoadOut = Utility.countComponents(new ComponentType[]    
+		                               {ComponentType.JUMP,
+										ComponentType.SATELLITE,
+										ComponentType.REGEN,
+										ComponentType.BLASTER,
+										ComponentType.BLASTER});
 	}
 
-
+	
 	public void run() throws Exception
 	{
 		
@@ -56,25 +64,9 @@ public class TestHeavyBehavior extends Behavior
 			
 			case EQUIPPING:
 				
-				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
-				hasJump = false;
-				hasSatellite = false;
-				hasRegen = false;
-				int numBlasters = 0;
-				for ( int i = myPlayer.myRC.components().length; --i>= 0;)
-				{
-					ComponentController c = myPlayer.myRC.components()[i];
-					if ( c.type() == ComponentType.JUMP )
-						hasJump = true;
-					if ( c.type() == ComponentType.SATELLITE )
-						hasSatellite = true;
-					if ( c.type() == ComponentType.REGEN )
-						hasRegen = true;
-					if ( c.type() == ComponentType.BLASTER )
-						numBlasters++;
-				}
-				if ( hasJump && hasSatellite && hasRegen && numBlasters >= 2 )
+				if(Utility.compareComponents(myPlayer, componentLoadOut)) {
 					obj = TestHeavyBuildOrder.MOVE_OUT;
+				}
 				return;
 	        	
 			
