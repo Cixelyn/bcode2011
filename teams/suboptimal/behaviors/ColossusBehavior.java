@@ -236,7 +236,7 @@ public class ColossusBehavior extends Behavior
 				//I AM NOT ENGAGED IN COMBAT, SO RUN NAVIGATION
 				} else{
 					Utility.setIndicator(myPlayer, 1, "Jump Navigation");
-					
+					jumpInDir(Direction.values()[rally]);
 					
 					
 					
