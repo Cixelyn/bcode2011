@@ -1,6 +1,6 @@
-package suboptimal.behaviors;
+package fibbyBot12.behaviors;
 
-import suboptimal.*;
+import fibbyBot12.*;
 import battlecode.common.*;
 
 
