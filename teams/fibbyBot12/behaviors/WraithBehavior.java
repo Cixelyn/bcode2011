@@ -199,9 +199,9 @@ public class WraithBehavior extends Behavior
         				{
         					if ( myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(enemyInfo.location) )
         						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
-        					else if ( enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateLeft() && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateRight() )
+        					else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateLeft() && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateRight() )
         						myPlayer.myMotor.moveForward();
-        					else if ( enemyInfo.chassis != Chassis.FLYING && enemyInfo.chassis != Chassis.LIGHT )
+        					else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && enemyInfo.chassis != Chassis.FLYING && enemyInfo.chassis != Chassis.LIGHT )
         						myPlayer.myMotor.moveForward();
         				}
         			}
