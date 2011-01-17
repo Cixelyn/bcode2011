@@ -27,7 +27,7 @@ public class Constants
 	//Justin's Go Here
 	
 	public static final int MAP_MAX_SIZE = (int) Math.ceil(Math.sqrt(GameConstants.MAP_MAX_HEIGHT*GameConstants.MAP_MAX_HEIGHT + GameConstants.MAP_MAX_WIDTH * GameConstants.MAP_MAX_WIDTH));
-	public static final int MINE_AFFINITY = 20; // how long SCV should chase a mine before giving up
+	public static final int MINE_AFFINITY = 30; // how long SCV should chase a mine before giving up
 	public static final int RESERVE = 4; // desired minimum flux after building
 	public static final int FACTORY_TIME = 500; // minimum time factory can be built (may not be built immediately)
 	public static final int DEBRIS_TIME = 1500; // when marines should start killing debris

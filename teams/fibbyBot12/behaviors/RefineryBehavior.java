@@ -38,8 +38,6 @@ public class RefineryBehavior extends Behavior
 	Robot r;
 	ComponentType c;
 	
-	boolean sleepy = true;
-	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -55,7 +53,7 @@ public class RefineryBehavior extends Behavior
     		case INITIALIZE:
     			
     			Utility.setIndicator(myPlayer, 1, "INITIALIZE");
-    			if ( Clock.getRoundNum() < 10 ) // I'm one of the first two refineries
+    			if ( Clock.getRoundNum() < 80 ) // I'm one of the first three refineries (change to 10 for first two)
     				obj = RefineryBuildOrder.DETERMINE_LEADER;
     			else
     				obj = RefineryBuildOrder.WAIT_FOR_DOCK;
@@ -73,7 +71,7 @@ public class RefineryBehavior extends Behavior
     					rInfo = myPlayer.mySensor.senseRobotInfo(r);
     					if ( rInfo.chassis == Chassis.BUILDING )
     					{
-    						obj = RefineryBuildOrder.WAIT_FOR_DOCK; // I'm not the leader
+    						obj = RefineryBuildOrder.SLEEP; // I'm not the leader
     						return;
     					}
     				}
@@ -92,7 +90,7 @@ public class RefineryBehavior extends Behavior
     				if ( rInfo.chassis == Chassis.LIGHT && rInfo.robot.getTeam() == myPlayer.myRC.getTeam() )
     				{
     					Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(rInfo.location), ComponentType.ANTENNA, RobotLevel.ON_GROUND);
-    					obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    					obj = RefineryBuildOrder.SLEEP;
     					return;
     				}
     			}
@@ -101,13 +99,7 @@ public class RefineryBehavior extends Behavior
     		case WAIT_FOR_DOCK:
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
-    			if ( Clock.getRoundNum() < 20 )
-    			{
-    				myPlayer.myRC.turnOff(); // I'm one of the first two refineries
-    				sleepy = false;
-    				return;
-    			}
-    			else if ( unitDock != null )
+    			if ( unitDock != null )
     			{
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range )
     				{
@@ -118,9 +110,9 @@ public class RefineryBehavior extends Behavior
     	    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getID() < myPlayer.myRC.getRobot().getID() )
     	    				{
     	    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    	    					if ( rInfo.location.distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range && rInfo.chassis == Chassis.BUILDING )
+    	    					if ( rInfo.on && rInfo.location.distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range && rInfo.chassis == Chassis.BUILDING )
     	    					{
-    	    						obj = RefineryBuildOrder.SLEEP; // I am one of the first four near armory but not with least ID
+    	    						obj = RefineryBuildOrder.SLEEP; // I am one of the first two capped but not with least ID
     	    						return;
     	    					}
     	    				}
@@ -131,13 +123,13 @@ public class RefineryBehavior extends Behavior
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
     					currWraith = 0;
     					currDrone = 0;
-    	    			obj = RefineryBuildOrder.EQUIP_WRAITHS;     // I am one of the first four near armory and with least ID
+    	    			obj = RefineryBuildOrder.EQUIP_WRAITHS;     // I am one of the first two capped and with least ID
     				}
     				else
-    					obj = RefineryBuildOrder.SLEEP;             // I am one of the first four but not near armory
+    					obj = RefineryBuildOrder.SLEEP;             // I am one of the first two capped but not near armory
     			}
     			else if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
-	    			obj = RefineryBuildOrder.SLEEP;
+	    			obj = RefineryBuildOrder.SLEEP;                 // I am not one of the first two capped
     			return;
     			
     		case EQUIP_WRAITHS:
