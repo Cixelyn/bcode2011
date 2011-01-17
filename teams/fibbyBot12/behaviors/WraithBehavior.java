@@ -160,6 +160,23 @@ public class WraithBehavior extends Behavior
 	        	}
 	        	else
 	        	{
+	        		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
+		        	{
+		        		if ( numBounces == 0 )
+		        			rally = (rally + 2) % 8;
+		        		else if ( numBounces == 1 )
+		        			rally = (rally + 4) % 8;
+		        		else
+		        		{
+		        			if ( num % 2 == 0 )
+			        			rally = (rally + 2) % 8;
+			        		else
+			        			rally = (rally - 2) % 8;
+		        		}
+		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
+		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		numBounces++;
+		        	}
 	        		if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 3) % 8;
