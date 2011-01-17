@@ -25,7 +25,7 @@ public class TestHeavyBehavior2 extends Behavior
 	int rally; // index in Direction.values()
 	MapLocation destination;
 	
-	int num;
+	int num=-1;
 	int westEdge = 0;
 	int northEdge = 0;
 	int eastEdge = 0;
