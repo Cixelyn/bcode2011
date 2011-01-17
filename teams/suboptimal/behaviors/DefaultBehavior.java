@@ -17,7 +17,7 @@ public class DefaultBehavior extends Behavior
 	}
 
 	public String toString()
-	{
+	{	
 		return "DefaultBehavior";
 	}
 	
@@ -42,7 +42,7 @@ public class DefaultBehavior extends Behavior
 			else if ( c.type() == ComponentType.RAILGUN && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 			{
 				//myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
-				myPlayer.swapBehavior(new TestHeavyBehavior2(myPlayer));
+				myPlayer.swapBehavior(new ColossusBehavior(myPlayer));
 			}
 			else if ( c.type() == ComponentType.RECYCLER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
