@@ -338,7 +338,7 @@ public class RobotPlayer implements Runnable {
 						myJump = (JumpController) c;
 					break;
 				default:
-					Utility.println("NotController");
+					Utility.printMsg(this,"NotController");
 			}
 			
 			
@@ -376,7 +376,7 @@ public class RobotPlayer implements Runnable {
 		if(executeStartTime!=Clock.getRoundNum()) {
 				int currRound = Clock.getRoundNum();
 				int byteCount = (bytecodeLimit-executeStartByte) + (currRound-executeStartTime-1) * bytecodeLimit + Clock.getBytecodeNum();
-				System.out.println("Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
+				Utility.printMsg(this,"Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
 		}	
 	}
 	
