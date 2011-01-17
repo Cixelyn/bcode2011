@@ -117,13 +117,36 @@ public class TestHeavyBehavior extends Behavior
 	        		}
 	        	}
 	        	
-	        	if(nearestEnemyRobot!=null) {	//I AM ENGAGED IN BLOODY COMBAT
-					
-					Utility.setIndicator(myPlayer, 1, "Attack!");
-					
-					//Now that i have the closet, shoot at it.
-					if(nearestEnemyRobotDistance <16) {
-							for(WeaponController w:myPlayer.myWeapons) {
+	        	
+	        	//I AM ENGAGED IN BLOODY COMBAT	
+	        	if(nearestEnemyRobot!=null) {	
+	        		
+	        		
+	
+	        		
+	        		//HOW FAR AWAY IS THE ENEMY
+	        		if(nearestEnemyRobotDistance >64 ) { 		//checks range: (64,inf)
+	        			myPlayer.myActions.moveInDir(myNav.bugTo(nearestEnemyRobotInfo.location));
+	        		}else if(nearestEnemyRobotDistance >16) { 	// checks range: (16,64]
+	        			
+	        			if(strikeReady()) { //if i can jump in, attack, and move
+	        				
+	        				
+	        				//Jump
+	        				//Fire
+	        				//Step back
+	        				
+	        				
+	        				return;
+	        			} else {	//we sleep
+	        				return;
+	        			}
+	        			
+	        			
+	        			
+	        		}
+	        		else if(nearestEnemyRobotDistance<=16) {	// checks range: [0,16]
+							for(WeaponController w:myPlayer.myWeapons) { 
 								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
 									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
 								}
@@ -149,6 +172,14 @@ public class TestHeavyBehavior extends Behavior
 		}
 	}
 	
+	
+	
+	public boolean strikeReady() {
+		if(myPlayer.myMotor.isActive()) return false;
+		if(myPlayer.myWeapons[0].isActive()) return false;  //FIXME: fix hardcodededness of this eventually
+		if(myPlayer.myWeapons[1].isActive()) return false;
+		return true;
+	}
 	
 	
 	
