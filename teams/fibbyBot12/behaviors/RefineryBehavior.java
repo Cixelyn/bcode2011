@@ -178,8 +178,8 @@ public class RefineryBehavior extends Behavior
 					return;
 				}
 				
-				/*if ( currWraith % 5 == 4 )
-					obj = RefineryBuildOrder.EQUIP_DRONES;*/
+				if ( currWraith % 4 == 3 )
+					obj = RefineryBuildOrder.EQUIP_DRONES;
 				return;
     		
     		case EQUIP_DRONES:
@@ -210,11 +210,13 @@ public class RefineryBehavior extends Behavior
 							myPlayer.sleep(); // NECESSARY TO GIVE FLYER TIME TO REALIZE WHO HE IS
 							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, spawn, currDrone, enemyLocation);
 							currDrone++;
-							obj = RefineryBuildOrder.EQUIP_WRAITHS;
 						}
 					}
 					return;
 				}
+				
+				if ( currDrone % 3 == 2 )
+					obj = RefineryBuildOrder.EQUIP_WRAITHS;
 				return;
 				
     		case SLEEP:

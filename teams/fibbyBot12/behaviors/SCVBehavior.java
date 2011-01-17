@@ -231,7 +231,9 @@ public class SCVBehavior extends Behavior
 						myPlayer.myBroadcaster.broadcastTurnOn(mainRefineries);
 						myPlayer.sleep();
 						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-						obj = SCVBuildOrder.VACATE_HOME;
+						myPlayer.sleep();   // comment me for fac
+						myPlayer.myRC.suicide(); // comment me for fac
+						//obj = SCVBuildOrder.VACATE_HOME; // uncomment me for fac
 						return;
 					}
 					dizziness++;
