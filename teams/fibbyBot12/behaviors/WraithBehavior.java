@@ -108,7 +108,7 @@ public class WraithBehavior extends Behavior
 					{
 						rally = (3 * num) % 8;
 						destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
-						Utility.setIndicator(myPlayer, 0, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + "");
+						Utility.setIndicator(myPlayer, 0, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 					}
 					obj = WraithBuildOrder.ADVANCE;
 				}

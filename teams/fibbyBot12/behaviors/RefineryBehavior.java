@@ -178,8 +178,8 @@ public class RefineryBehavior extends Behavior
 					return;
 				}
 				
-				if ( currWraith % 5 == 4 )
-					obj = RefineryBuildOrder.EQUIP_DRONES;
+				/*if ( currWraith % 5 == 4 )
+					obj = RefineryBuildOrder.EQUIP_DRONES;*/
 				return;
     		
     		case EQUIP_DRONES:
