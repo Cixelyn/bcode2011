@@ -693,9 +693,57 @@ public class Utility {
 			}
 		}
 	}
+
+ 	//Cory's Go here
+ 	
+		
+		public static int NUM_COMPONENT_TYPES = ComponentType.values().length;
+		/**
+		 * Counts the number of component types given an array of component types.
+		 * Useful in determining the loadout of a robot.
+		 * @param components
+		 * @return int array filled with counts of each ComponentType
+		 */
+		public static int[] countComponents(ComponentType[] components) {
+			int[] list = new int[NUM_COMPONENT_TYPES];
+			for(int i=components.length; --i>=0;) {
+				list[components[i].ordinal()]++;
+			}
+			return list;
+		}
+		
+		/**
+		 * Alternate version of {@link #countComponents(ComponentType[])} which counts an array of ComponentController instead
+		 * allowing the output of <code>myRC.components()</code> to be counted.
+		 * @see #countComponents(ComponentType[])
+		 * @param components
+		 * @return int array filled with counts of each ComponentType
+		 */
+		public static int[] countComponents(ComponentController[] components) {
+			int[] list = new int[NUM_COMPONENT_TYPES];
+			for(int i=components.length; --i>=0;) {
+				list[components[i].type().ordinal()]++;
+			}
+			return list;
+		}
+		
+		
+		
+		/**
+		 * Fast method to compare two arrays and see if their contents are equal.  
+		 * 
+		 * @return
+		 */
+		public static boolean compareArray(int[] a, int[] b) {
+			for(int i=a.length; --i>=0;) {
+				if(a[i]!=b[i]) return false;
+			}
+			return true;
+		}
 	
 	
-	//Cory's Go here
+	
+	
 
 	/**
 	 * Returns true if the line segment from source to dest intersects the point (interior AND perimeter)
