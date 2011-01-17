@@ -26,7 +26,6 @@ public class RefineryBehavior extends Behavior
 	
 	int currWraith;
 	int currDrone;
-	double lastIncome;
 	
 	boolean rHasConstructor;
 	boolean rHasSight;
@@ -38,10 +37,6 @@ public class RefineryBehavior extends Behavior
 	RobotInfo rInfo;
 	Robot r;
 	ComponentType c;
-	
-	MapLocation enemyLocation;
-	int spawn = -1; // -1 means unknown
-	int realSpawn = -1; // -1 means unknown
 	
 	boolean sleepy = true;
 	
@@ -171,7 +166,7 @@ public class RefineryBehavior extends Behavior
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.IN_AIR) )
 						{
 							myPlayer.sleep(); // NECESSARY TO GIVE FLYER TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, spawn, currWraith, enemyLocation);
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, -1, currWraith, null);
 							currWraith++;
 						}
 					}
@@ -208,7 +203,7 @@ public class RefineryBehavior extends Behavior
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR) )
 						{
 							myPlayer.sleep(); // NECESSARY TO GIVE FLYER TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, spawn, currDrone, enemyLocation);
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, -1, currDrone, null);
 							currDrone++;
 						}
 					}

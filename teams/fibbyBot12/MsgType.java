@@ -22,7 +22,7 @@ public enum MsgType {
 	MSG_SEND_DOCK(                  0 , true ,  false ,   0 ,   1   ),
 	MSG_SEND_TOWER(                 0 , true ,  false ,   0 ,   1   ),
 	MSG_SEND_NUM_FLYER(             0 , true ,  false ,   2 ,   1   ),
-	MSG_SEND_NUM_HEAVY(             0 , true ,  false ,   2 ,   1   ),
+	MSG_SEND_NUM_HEAVY(             0 , true ,  false ,   3 ,   1   ),
 	MSG_MINES(                      0 , true ,  false ,   0 ,   5   ),
 	MSG_RALLY_SET(                  0 , true ,  false ,   1 ,   0   ),
 	MSG_ENEMY_LOC(                  0 , true ,  false ,   1 ,   1   ),

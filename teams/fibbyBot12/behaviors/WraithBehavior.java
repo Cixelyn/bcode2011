@@ -135,7 +135,7 @@ public class WraithBehavior extends Behavior
 		        			if ( num % 2 == 0 )
 			        			rally = (rally + 2) % 8;
 			        		else
-			        			rally = (rally - 2) % 8;
+			        			rally = (rally + 6) % 8;
 		        		}
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
 		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
@@ -152,7 +152,7 @@ public class WraithBehavior extends Behavior
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
-		        		rally = (rally - 1) % 8;
+		        		rally = (rally + 7) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
 		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
@@ -171,7 +171,7 @@ public class WraithBehavior extends Behavior
 		        			if ( num % 2 == 0 )
 			        			rally = (rally + 2) % 8;
 			        		else
-			        			rally = (rally - 2) % 8;
+			        			rally = (rally + 6) % 8;
 		        		}
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
 		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
