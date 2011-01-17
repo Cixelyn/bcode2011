@@ -33,9 +33,10 @@ public class RefineryBehavior extends Behavior
 	boolean rHasSight;
 	
 	boolean keepWaiting;
-	int rNumBlasters;
-	int rNumShields;
 	boolean rHasRadar;
+	int rNumBlasters;
+	int rNumSMGs;
+	int rNumShields;
 	
 	Robot[] nearbyRobots;
 	RobotInfo rInfo;
@@ -226,18 +227,26 @@ public class RefineryBehavior extends Behavior
 					if ( rInfo.chassis == Chassis.HEAVY && r.getTeam() == myPlayer.myRC.getTeam() )
 					{
 						Utility.setIndicator(myPlayer, 2, "Equipping heavy " + Integer.toString(currHeavy) + ".");
-						rNumBlasters = 0;
+						rHasRadar = false;
+						rNumSMGs = 0;
+						rNumShields = 0;
 						for ( int j = rInfo.components.length ; --j >= 0 ; )
 						{
 							c = rInfo.components[j];
-							if ( c == ComponentType.BLASTER )
-								rNumBlasters++;
+							if ( c == ComponentType.RADAR )
+								rHasRadar = true;
+							if ( c == ComponentType.SMG )
+								rNumSMGs++;
+							if ( c == ComponentType.SHIELD )
+								rNumShields++;
 						}
-						if ( rNumBlasters == 0 )
-							Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-						else if ( rNumBlasters == 1 )
+						if ( rNumSMGs < 2 )
+							Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+						else if ( rNumShields < 5 )
+							Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+						else if ( !rHasRadar )
 						{
-							if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND) )
+							if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 							{
 								myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
 								myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, spawn, currHeavy, enemyLocation);

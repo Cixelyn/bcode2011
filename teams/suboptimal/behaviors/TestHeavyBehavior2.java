@@ -32,9 +32,10 @@ public class TestHeavyBehavior2 extends Behavior
 	int southEdge = 0;
 	
 	boolean hasJump;
-	boolean hasSatellite;
-	boolean hasRegen;
-	int numBlasters;
+	boolean hasRailgun;
+	boolean hasRadar;
+	int numSMGs;
+	int numShields;
 	
 	public TestHeavyBehavior2(RobotPlayer player)
 	{
@@ -52,22 +53,25 @@ public class TestHeavyBehavior2 extends Behavior
 				
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				hasJump = false;
-				hasSatellite = false;
-				hasRegen = false;
-				int numBlasters = 0;
+				hasRailgun = false;
+				hasRadar = false;
+				numSMGs = 0;
+				numShields = 0;
 				for ( int i = myPlayer.myRC.components().length; --i >= 0;)
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
 					if ( c.type() == ComponentType.JUMP )
 						hasJump = true;
-					if ( c.type() == ComponentType.SATELLITE )
-						hasSatellite = true;
-					if ( c.type() == ComponentType.REGEN )
-						hasRegen = true;
-					if ( c.type() == ComponentType.BLASTER )
-						numBlasters++;
+					if ( c.type() == ComponentType.RAILGUN )
+						hasRailgun = true;
+					if ( c.type() == ComponentType.RADAR )
+						hasRadar = true;
+					if ( c.type() == ComponentType.SMG )
+						numSMGs++;
+					if ( c.type() == ComponentType.SHIELD )
+						numShields++;
 				}
-				if ( hasJump && hasSatellite && hasRegen && numBlasters >= 2 )
+				if ( hasJump && hasRailgun && hasRadar && numSMGs >= 2 && numShields >= 5 )
 				{
 					myPlayer.sleep();
 					while ( myPlayer.mySensor.isActive() )

@@ -24,7 +24,6 @@ public class ArmoryBehavior extends Behavior
 	ComponentType c;
 	
 	boolean hasJump;
-	boolean hasSatellite;
 	
 	int currFlyer = 0;
 	double minFluxToBuild;
@@ -70,19 +69,14 @@ public class ArmoryBehavior extends Behavior
 					{
 						Utility.setIndicator(myPlayer, 2, "Equipping heavy.");
 						hasJump = false;
-						hasSatellite = false;
 						for ( int j = rInfo.components.length - 1 ; j >= 0 ; j-- )
 						{
 							c = rInfo.components[j];
 							if ( c == ComponentType.JUMP )
 								hasJump = true;
-							if ( c == ComponentType.SATELLITE )
-								hasSatellite = true;
 						}
 						if ( !hasJump )
 							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND);
-						else if ( !hasSatellite )
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SATELLITE, RobotLevel.ON_GROUND);
 						return;
 					}
 				}
