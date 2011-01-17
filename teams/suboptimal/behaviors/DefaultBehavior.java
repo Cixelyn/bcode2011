@@ -39,7 +39,7 @@ public class DefaultBehavior extends Behavior
 			{
 				myPlayer.swapBehavior(new AncientProtectorBehavior(myPlayer));
 			}
-			else if ( c.type() == ComponentType.REGEN && myPlayer.myRC.getChassis() == Chassis.HEAVY )
+			else if ( c.type() == ComponentType.RAILGUN && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 			{
 				//myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
 				myPlayer.swapBehavior(new TestHeavyBehavior2(myPlayer));

@@ -15,7 +15,7 @@ public class Constants
 	
 	//Debug Flags
 	public static final boolean DEBUG = true;
-	public static final boolean DEBUG_BYTECODE_OVERFLOW = false;
+	public static final boolean DEBUG_BYTECODE_OVERFLOW = true;
 	
 	public static final boolean CUSTOM_INDICATORS = false;
 	public static final String INDICATOR0 = "GGGGGGGGGGGGGGGGGGG"; // -____-;;   -JVen
