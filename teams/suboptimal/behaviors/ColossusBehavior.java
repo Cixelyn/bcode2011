@@ -177,7 +177,10 @@ public class ColossusBehavior extends Behavior
 		        	}
 	        	}
 				
+	        	
 				
+				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
+				jumpInDir(Direction.values()[rally]);	
 				
 				
 	        	//RUN SUPER SPECIAL CUSTOM SENSOR CODE
@@ -213,7 +216,7 @@ public class ColossusBehavior extends Behavior
 	        	if(nearestEnemyRobot!=null) {	
 	        		
 	        		//HOW FAR AWAY IS THE ENEMY
-	        		if(nearestEnemyRobotDistance<=16) {	// checks range: [0,16]
+	        		if(nearestEnemyRobotDistance<=36) {	// checks range: [0,25]
 							for(WeaponController w:myPlayer.myWeapons) { 
 								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
 									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
@@ -223,21 +226,17 @@ public class ColossusBehavior extends Behavior
 					
 					
 	        		//if I'm too closet to enemy units, move back
-					if(nearestEnemyRobotDistance<=16 && nearestEnemyRobotDistance > 9) {
-						return;  //I'm good					
-					} else if(nearestEnemyRobotDistance<=9) {					//I'm too close!
+					if(nearestEnemyRobotDistance<=26 && nearestEnemyRobotDistance > 16) {
+						if (!myPlayer.myMotor.isActive() && !myPlayer.myRC.getDirection().equals(nearestEnemyRobotDirection)) {//I'm good				
+							myPlayer.myMotor.setDirection(nearestEnemyRobotDirection);
+						}
+					} else if(nearestEnemyRobotDistance<=16) {					//I'm too close!
 						myPlayer.myActions.backUpInDir(nearestEnemyRobotDirection.opposite());
 					} else { //I'm too far
 						myPlayer.myActions.moveInDir(myNav.bugTo(nearestEnemyRobotInfo.location));
 					}
 					return;
 					
-					
-				//I AM NOT ENGAGED IN COMBAT, SO RUN NAVIGATION
-				} else{
-					Utility.setIndicator(myPlayer, 1, "Jump Navigation");
-					jumpInDir(Direction.values()[rally]);	
-		        	return;
 				}
 	        	     
 		}
