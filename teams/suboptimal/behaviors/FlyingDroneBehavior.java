@@ -224,7 +224,7 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		
     		case RUN_AWAY: {
-    			Utility.setIndicator(myPlayer, 0, "run away!");
+    			Utility.setIndicator(myPlayer, 0, "run away counter : " + runAwayTime);
     			int totalX=0;
     			int totalY=0;
     			int totalEnemyRobots=0;
