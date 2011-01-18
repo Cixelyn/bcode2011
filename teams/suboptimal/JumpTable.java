@@ -106,12 +106,29 @@ public final class JumpTable {
 					return new MapLocation(myLoc.x - 2,  myLoc.y+3*dy);
 				case 5:
 					return new MapLocation(myLoc.x    ,  myLoc.y+3*dy);
+					
+				//End of the range 3 squares
 				case 6:
 					return new MapLocation(myLoc.x + 1,  myLoc.y+2*dy);
 				case 7:
 					return new MapLocation(myLoc.x - 1,  myLoc.y+2*dy);
 				case 8:
 					return new MapLocation(myLoc.x    ,  myLoc.y+2*dy);
+				
+				
+				//SKIPPING QUITE A FEW
+				case 9:
+					return new MapLocation(myLoc.x + 4, myLoc.y      );
+				case 10:
+					return new MapLocation(myLoc.x - 4, myLoc.y      );
+				case 11:
+					return new MapLocation(myLoc.x + 3, myLoc.y      );
+				case 12:
+					return new MapLocation(myLoc.x - 3, myLoc.y      );
+					
+					
+				
+				
 				default:
 					return null;
 				}
@@ -135,6 +152,21 @@ public final class JumpTable {
 					return new MapLocation(myLoc.x+2*dx, myLoc.y - 1);
 				case 8:
 					return new MapLocation(myLoc.x+2*dx, myLoc.y    );
+
+				
+				//SKIPPING QUITE A FEW
+				case 9:
+					return new MapLocation(myLoc.x    , myLoc.y + 4 );
+				case 10:
+					return new MapLocation(myLoc.x    , myLoc.y - 4 );
+				case 11:
+					return new MapLocation(myLoc.x    , myLoc.y + 3 );
+				case 12:
+					return new MapLocation(myLoc.x    , myLoc.y - 3 );
+					
+				
+				
+				
 				default: 
 					return null;
 				}	
