@@ -16,6 +16,8 @@ public class ColossusBehavior extends Behavior
 	int rally = -1;
 	int numBounces;
 	
+	boolean inBattle = false;
+	
 	private enum ColossusBuildOrder
 	{
 		EQUIPPING,
@@ -48,12 +50,10 @@ public class ColossusBehavior extends Behavior
 		{
 			
 			case EQUIPPING:	
-				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				
+				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				if (Utility.compareComponents(myPlayer, componentLoadOut))
-				{
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				}
 				return;
 	        	
 			case DETERMINE_SPAWN:
@@ -109,7 +109,7 @@ public class ColossusBehavior extends Behavior
 				
 			case ADVANCE:	
         		
-				
+				myPlayer.myRC.setIndicatorString(1, "ADVANCE");
 				// Rerally code
 	        	if ( spawn != -1 )
 	        	{
@@ -178,9 +178,8 @@ public class ColossusBehavior extends Behavior
 	        	}
 				
 	        	
-				
-				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
-				jumpInDir(Direction.values()[rally]);	
+				if ( !inBattle )
+					jumpInDir(Direction.values()[rally]);	
 				
 				
 	        	//RUN SUPER SPECIAL CUSTOM SENSOR CODE
@@ -215,6 +214,8 @@ public class ColossusBehavior extends Behavior
 	        	//I AM ENGAGED IN BLOODY COMBAT	
 	        	if(nearestEnemyRobot!=null) {	
 	        		
+	        		inBattle = true;
+	        		
 	        		//HOW FAR AWAY IS THE ENEMY
 	        		if(nearestEnemyRobotDistance<=36) {	// checks range: [0,25]
 							for(WeaponController w:myPlayer.myWeapons) { 
@@ -238,6 +239,8 @@ public class ColossusBehavior extends Behavior
 					return;
 					
 				}
+	        	else
+		        	inBattle = false;
 	        	     
 		}
 	}
