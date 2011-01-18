@@ -180,7 +180,15 @@ public class ColossusBehavior extends Behavior
 	        	
 				
 				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
-				jumpInDir(Direction.values()[rally]);	
+				int jump=jumpInDir(Direction.values()[rally]);	
+				if (jump==JMP_NOT_POSSIBLE && !myPlayer.myMotor.isActive()) {
+					if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+						myPlayer.myMotor.moveForward();
+					}
+					else {
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+					}
+				}
 				
 				
 	        	//RUN SUPER SPECIAL CUSTOM SENSOR CODE
