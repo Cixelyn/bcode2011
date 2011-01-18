@@ -262,7 +262,7 @@ public class ColossusBehavior extends Behavior
 	 * @throws GameActionException
 	 */
 	public boolean canJump(MapLocation loc) throws GameActionException {
-		if(myPlayer.myRC.senseTerrainTile(loc) != TerrainTile.LAND) return false;
+		if(!myPlayer.myRC.senseTerrainTile(loc).equals(TerrainTile.LAND)) return false;
 		if(!myPlayer.mySensor.canSenseSquare(loc)) return false;
 		if(myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND)!=null) return false;
 		return true;
@@ -374,7 +374,7 @@ public class ColossusBehavior extends Behavior
 			JumpTable jmp = new JumpTable(myPlayer.myRC.getLocation(),dir);
 
 			for(int i=jmp.NUM_CHOICES; --i>0;) {
-				MapLocation jmpLoc = jmp.nextLoc(i);
+				MapLocation jmpLoc = jmp.nextLoc(jmp.NUM_CHOICES-i);
 				
 				if(canJump(jmpLoc)) {
 					myPlayer.myJump.jump(jmpLoc);
