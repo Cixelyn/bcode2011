@@ -285,7 +285,7 @@ public class ColossusBehavior extends Behavior
 		private boolean isVertical;
 		private MapLocation myLoc;
 		
-		public int NUM_CHOICES = 5;
+		public int NUM_CHOICES = 4;
 		
 		
 		public JumpTable(MapLocation loc, Direction dir) {
@@ -355,16 +355,22 @@ public class ColossusBehavior extends Behavior
 	 * @param dir
 	 * @return
 	 */
-	public boolean jumpInDir(Direction dir) throws GameActionException{
+	
+	
+	public static int JMP_SUCCESS = 0;
+	public static int JMP_NOT_YET = 1;
+	public static int JMP_NOT_POSSIBLE = 2;
+	
+	public int jumpInDir(Direction dir) throws GameActionException{
 		//Make sure direction is valid (can be removed at a later point)
-		if(dir.ordinal()>=8) return false;
+		if(dir.ordinal()>=8) return JMP_NOT_POSSIBLE;
 		
 		//First, lets make sure we are pointed in the correct direction
 		if(!myPlayer.myRC.getDirection().equals(dir)) {
 			if(!myPlayer.myMotor.isActive()) {
 				myPlayer.myMotor.setDirection(dir);
 			}
-			return false;
+			return JMP_NOT_YET;
 			
 		}
 		
@@ -378,12 +384,12 @@ public class ColossusBehavior extends Behavior
 				
 				if(canJump(jmpLoc)) {
 					myPlayer.myJump.jump(jmpLoc);
-					return true;
+					return JMP_SUCCESS;
 				}
 			}
-			return false;
+			return JMP_NOT_POSSIBLE;
 		}else {
-			return false;
+			return JMP_NOT_YET;
 		}
 
 		
