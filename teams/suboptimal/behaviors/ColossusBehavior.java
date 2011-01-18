@@ -285,7 +285,7 @@ public class ColossusBehavior extends Behavior
 		private boolean isVertical;
 		private MapLocation myLoc;
 		
-		public int NUM_CHOICES = 4;
+		public int NUM_CHOICES = 5;
 		
 		
 		public JumpTable(MapLocation loc, Direction dir) {
