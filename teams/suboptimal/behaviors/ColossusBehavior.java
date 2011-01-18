@@ -246,6 +246,11 @@ public class ColossusBehavior extends Behavior
 					return;
 					
 				}
+	        	if (myPlayer.hasTakenDamage) {
+	        		if (!myPlayer.myMotor.isActive()) {
+	        			myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
+	        		}
+	        	}
 	        	     
 		}
 	}
