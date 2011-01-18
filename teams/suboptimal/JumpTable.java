@@ -4,7 +4,6 @@ import battlecode.common.*;
 
 
 
-
 /**
  * This class does the calculations necessary to figure out a good jump location
  * Table is fully self sufficient and can be used in doing calculations.
@@ -12,14 +11,13 @@ import battlecode.common.*;
  *
  */
 public final class JumpTable {
-
+	
 	private final int dx; private final int dy;
 	private final boolean isDiagonal;
 	private final boolean isVertical;
 	private final MapLocation myLoc;
-	
-	
-	private int idx;	//This is the current index we're checking
+
+	private int idx; //This is the current index we're checking
 	
 	/**
 	 * Instantiates a new JumpTable that calculates based on directions
@@ -53,6 +51,8 @@ public final class JumpTable {
 		//add a modulus operation that allows for the jump tables to changed based on modulus operations
 		
 		
+		/////////////////////////////////////////////////////////////////////
+		///////////////////////DIAGONALS/////////////////////////////////////
 		if(isDiagonal) {
 			switch(idx) {
 			case 0:
@@ -90,13 +90,17 @@ public final class JumpTable {
 			default:
 				return null;
 			}
-		} else { //We need special code to deal with the orthogonals
 			
 			
-			int dirVec;
-			int zeroVec;
+		/////////////////////////////////////////////////////////////////////
+		//////////////////////////ORTHOGONALS////////////////////////////////
+		} else {
+			
+			int dirVec; int zeroVec;
 			
 			switch(idx) {
+			
+			//LETS DEAL WITH THE FAR ONES FIRST
 			case 0:
 				dirVec=4; zeroVec=0; break;
 			case 1:
@@ -115,8 +119,6 @@ public final class JumpTable {
 				dirVec=2; zeroVec=-1; break;
 			case 8:
 				dirVec=2; zeroVec=0; break;
-				
-			//SKIPPING QUITE A FEW
 			case 9:
 				dirVec=0; zeroVec=+4; break;
 			case 10:
@@ -129,14 +131,12 @@ public final class JumpTable {
 				return null;
 			}
 			
-			
 			if(isVertical) {
 				return new MapLocation(myLoc.x+zeroVec, myLoc.y+dirVec*dy);
 			} else{
 				return new MapLocation(myLoc.x+dirVec*dx, myLoc.y+zeroVec);
 			}
 		}
-		
 		
 	}
 	
