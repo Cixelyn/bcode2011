@@ -236,16 +236,10 @@ public class ColossusBehavior extends Behavior
 				//I AM NOT ENGAGED IN COMBAT, SO RUN NAVIGATION
 				} else{
 					Utility.setIndicator(myPlayer, 1, "Jump Navigation");
-					jumpInDir(Direction.values()[rally]);
-					
-					
-					
-					
-					
-		        		
+					jumpInDir(Direction.values()[rally]);	
 		        	return;
 				}
-	        	
+	        	     
 		}
 	}
 	
@@ -295,6 +289,7 @@ public class ColossusBehavior extends Behavior
 		
 		
 		public JumpTable(MapLocation loc, Direction dir) {
+			myLoc=loc;
 			dx = dir.dx;
 			dy = dir.dy;
 			isDiagonal = dir.isDiagonal();
@@ -361,10 +356,8 @@ public class ColossusBehavior extends Behavior
 	 * @return
 	 */
 	public boolean jumpInDir(Direction dir) throws GameActionException{
-
 		//Make sure direction is valid (can be removed at a later point)
-		if(dir.ordinal()<8) return false;
-		
+		if(dir.ordinal()>=8) return false;
 		
 		//First, lets make sure we are pointed in the correct direction
 		if(!myPlayer.myRC.getDirection().equals(dir)) {
@@ -374,7 +367,6 @@ public class ColossusBehavior extends Behavior
 			return false;
 			
 		}
-	
 		
 		//Now lets jump in the direction
 		if(!myPlayer.myJump.isActive()) {
