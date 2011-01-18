@@ -374,7 +374,7 @@ public class ColossusBehavior extends Behavior
 			JumpTable jmp = new JumpTable(myPlayer.myRC.getLocation(),dir);
 
 			for(int i=jmp.NUM_CHOICES; --i>0;) {
-				MapLocation jmpLoc = jmp.nextLoc(i);
+				MapLocation jmpLoc = jmp.nextLoc(jmp.NUM_CHOICES-i);
 				
 				if(canJump(jmpLoc)) {
 					myPlayer.myJump.jump(jmpLoc);
