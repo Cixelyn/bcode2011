@@ -29,6 +29,7 @@ public class RefineryBehavior extends Behavior
 	int currWraith;
 	int currHeavy;
 	double lastIncome;
+	boolean remakeFlyers = false;
 	
 	boolean rHasConstructor;
 	boolean rHasSight;
@@ -141,6 +142,12 @@ public class RefineryBehavior extends Behavior
     		case EQUIP_UNIT:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_UNIT");
+    			
+    			if ( !remakeFlyers && Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    			{
+    				remakeFlyers = true;
+    				currDrone = 0;
+    			}
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
     			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
