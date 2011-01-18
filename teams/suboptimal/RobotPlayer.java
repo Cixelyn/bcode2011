@@ -62,6 +62,8 @@ public class RobotPlayer implements Runnable {
 	private double lastRoundHP;
 	private int bytecodeLimit;
 	public double myLastRes;
+	public boolean hasTakenDamage;
+	
 	
 	public final Team myOpponent;
 	
@@ -175,6 +177,7 @@ public class RobotPlayer implements Runnable {
 		//Check if we've sustained damage.
 		double damage = lastRoundHP - myRC.getHitpoints();
 		if(damage>0.1) {
+			hasTakenDamage = true;
 			myBehavior.onDamageCallback(damage);
 		}
 		
@@ -254,8 +257,9 @@ public class RobotPlayer implements Runnable {
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		
 		//////////////////////////////////////////////////////////////
-		// Remember the number of resources at the end of the round
+		// Set some variables and reset some flags.
 		myLastRes = myRC.getTeamResources();
+		hasTakenDamage = false;
 		
 		//////////////////////////////////////////////////////////////
 		

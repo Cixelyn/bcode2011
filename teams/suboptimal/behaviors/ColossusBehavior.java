@@ -394,19 +394,6 @@ public class ColossusBehavior extends Behavior
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public String toString()
 	{
 		return "ColossusBehavior";
