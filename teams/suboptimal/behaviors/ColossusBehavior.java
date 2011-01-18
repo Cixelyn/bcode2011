@@ -96,7 +96,23 @@ public class ColossusBehavior extends Behavior
 				spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 				if ( spawn != -1 )
 				{
-					rally = (spawn + 4) % 8;
+					if ( num < 3 || num > 6 )
+						rally = (spawn + 4) % 8;
+					else if ( num % 2 == 0 )
+					{
+						numBounces = 3; // automatically patrol the edge of map
+						if ( spawn % 2 == 1 )
+							rally = (spawn + 3) % 8;
+						else
+							rally = (spawn + 2) % 8;
+					}
+					else if ( num % 2 == 1 )
+					{
+						if ( spawn % 2 == 1 )
+							rally = (spawn + 5) % 8;
+						else
+							rally = (spawn + 6) % 8;
+					}
 					Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
 				else
