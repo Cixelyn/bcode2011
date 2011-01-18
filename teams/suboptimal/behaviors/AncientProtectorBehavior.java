@@ -57,7 +57,7 @@ public class AncientProtectorBehavior extends Behavior
 			case DEFENSE:
 				
 				Utility.setIndicator(myPlayer, 1, "DEFENSE");
-				enemyLoc = Utility.attackEnemies(myPlayer);
+				//enemyLoc = Utility.attackEnemies(myPlayer);
 				if ( enemyLoc == null || myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) > ComponentType.BLASTER.range )
 				{
 					Utility.setIndicator(myPlayer, 2, "No enemies nearby.");
