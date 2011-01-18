@@ -156,7 +156,7 @@ public class RefineryBehavior extends Behavior
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( currWraith < Constants.MAX_WRAITHS )
     					obj = RefineryBuildOrder.EQUIP_WRAITH;
-    				else if ( currDrone < Constants.MAX_DRONES )
+    				else
     					obj = RefineryBuildOrder.EQUIP_DRONE;
     				return;
     			}
