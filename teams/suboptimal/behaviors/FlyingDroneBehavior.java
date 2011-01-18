@@ -147,12 +147,12 @@ public class FlyingDroneBehavior extends Behavior {
         						myPlayer.sleep();
         					}
     						myPlayer.myMotor.setDirection(initialDirection);
-    						if (steps>Constants.STEPS) {
+    					/*	if (steps>Constants.STEPS) {
     							obj =  FlyingDroneActions.BUILD_TOWER;
-    						}
-    						else {
+    						}*/
+/*    						else {*/
     							obj = FlyingDroneActions.EXPAND;
-    						}
+/*    						}*/
     					}
     			}
     			else {

@@ -15,10 +15,14 @@ public class Utility {
 	
 	public static final Random rand = new Random();
 	
-	public static void println(String s)
+	public static void printMsg(RobotPlayer player, String s)
 	{
 		if ( Constants.DEBUG )
-			System.out.println(s);
+			if (Constants.DEBUG_TO_FILE) {
+				player.myRC.addMatchObservation(s);
+			} else{
+				System.out.println(s);
+			}
 	}
 	
 	public static void setIndicator(RobotPlayer player, int index, String s)

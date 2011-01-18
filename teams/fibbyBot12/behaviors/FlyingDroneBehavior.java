@@ -139,7 +139,7 @@ public class FlyingDroneBehavior extends Behavior {
     							obj =  FlyingDroneActions.BUILD_TOWER;
     						}
     						else {*/
-    							obj = FlyingDroneActions.EXPAND;
+    						obj = FlyingDroneActions.EXPAND;
     						/*}*/
     					}
     			}
