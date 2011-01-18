@@ -143,7 +143,7 @@ public class ArmoryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 4 == 0 || currHeavy % 4 == 1 )
+    			if ( currHeavy % 3 == 0 )
     			{
 					rHasJump = false;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -161,7 +161,7 @@ public class ArmoryBehavior extends Behavior
 						}
 					}
     			}
-    			else if ( currHeavy % 4 == 2 || currHeavy % 4 == 3 )
+    			else if ( currHeavy % 3 == 1 )
     			{
     				rNumPlasma = 0;
     				rHasJump = false;
@@ -176,6 +176,24 @@ public class ArmoryBehavior extends Behavior
 					if ( rNumPlasma < 2 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
 					else if ( !rHasJump )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
+						{
+							currHeavy++;
+							obj = ArmoryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
+    			else if ( currHeavy % 3 == 2 )
+    			{
+    				rHasJump = false;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.JUMP )
+							rHasJump = true;
+					}
+					if ( !rHasJump )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{

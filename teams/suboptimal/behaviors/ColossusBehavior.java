@@ -42,6 +42,12 @@ public class ColossusBehavior extends Behavior
 								ComponentType.PLASMA,ComponentType.PLASMA
 								});
 	
+	private static final int[] componentLoadOut3 = Utility.countComponents(new ComponentType[]    
+					           {ComponentType.RAILGUN,ComponentType.SMG,
+								ComponentType.RADAR,ComponentType.JUMP,
+								ComponentType.HARDENED,ComponentType.PLASMA,ComponentType.BLASTER
+								});
+	
 	public ColossusBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -56,7 +62,7 @@ public class ColossusBehavior extends Behavior
 			case EQUIPPING:	
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				
-				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2))
+				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2) || Utility.compareComponents(myPlayer, componentLoadOut3))
 				{
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
@@ -102,7 +108,7 @@ public class ColossusBehavior extends Behavior
 				spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 				if ( spawn != -1 )
 				{
-					if ( num < 3 || num > 6 )
+					if ( num < 3 || num > 8 )
 						rally = (spawn + 4) % 8;
 					else if ( num % 2 == 0 )
 					{
@@ -114,6 +120,7 @@ public class ColossusBehavior extends Behavior
 					}
 					else if ( num % 2 == 1 )
 					{
+						numBounces = 3; // automatically patrol the edge of map
 						if ( spawn % 2 == 1 )
 							rally = (spawn + 5) % 8;
 						else

@@ -200,7 +200,7 @@ public class RefineryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 4 == 0 || currHeavy % 4 == 1 )
+    			if ( currHeavy % 3 == 0 )
     			{
 					rHasRadar = false;
 					rNumSMGs = 0;
@@ -230,7 +230,7 @@ public class RefineryBehavior extends Behavior
 						}
 					}
     			}
-    			else if ( currHeavy % 4 == 2 || currHeavy % 4 == 3 )
+    			else if ( currHeavy % 3 == 1 )
     			{
     				rHasRadar = false;
 					rNumSMGs = 0;
@@ -244,6 +244,41 @@ public class RefineryBehavior extends Behavior
 					}
 					if ( rNumSMGs < 1 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+					else if ( !rHasRadar )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
+						{
+							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							currHeavy++;
+							obj = RefineryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
+    			else if ( currHeavy % 3 == 2 )
+    			{
+    				rHasRadar = false;
+    				rHasBlaster = false;
+					rNumSMGs = 0;
+					rNumShields = 0;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.RADAR )
+							rHasRadar = true;
+						if ( c == ComponentType.BLASTER )
+							rHasBlaster = true;
+						if ( c == ComponentType.SMG )
+							rNumSMGs++;
+						if ( c == ComponentType.SHIELD )
+							rNumShields++;
+					}
+					if ( !rHasBlaster )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+					else if ( rNumSMGs < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+					else if ( rNumShields < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
 					else if ( !rHasRadar )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
