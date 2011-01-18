@@ -224,11 +224,12 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		
     		case RUN_AWAY: {
-    			Utility.setIndicator(myPlayer, 0, "run away!");
+    			Utility.setIndicator(myPlayer, 0, "run away counter : " + runAwayTime);
     			int totalX=0;
     			int totalY=0;
     			int totalEnemyRobots=0;
     			boolean enemyInFront=false;
+    			RobotInfo rInfo;
     			runAwayTime=runAwayTime+1;
     			if (runAwayTime>Constants.RUN_AWAY_TIME) {
     				runAwayTime=0;
@@ -239,8 +240,8 @@ public class FlyingDroneBehavior extends Behavior {
     			}
     			Robot[] detectedRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
     			for (Robot robot : detectedRobots) {
-    				if (robot.getTeam().equals(myPlayer.myRC.getTeam().opponent())) {
-    					RobotInfo rInfo= myPlayer.mySensor.senseRobotInfo(robot);
+    				rInfo=myPlayer.mySensor.senseRobotInfo(robot);
+    				if (robot.getTeam().equals(myPlayer.myRC.getTeam().opponent()) && rInfo.on) {
     					totalX=totalX+rInfo.location.x;
     					totalY=totalY+rInfo.location.y;
     					totalEnemyRobots=totalEnemyRobots+1;
