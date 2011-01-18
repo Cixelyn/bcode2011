@@ -1,6 +1,6 @@
 package suboptimal;
 
-import masterytwo.Constants;
+import suboptimal.Constants;
 
 
 /**
