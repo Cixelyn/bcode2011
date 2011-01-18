@@ -23,6 +23,7 @@ public class ArmoryBehavior extends Behavior
 	
 	int currFlyer = 0;
 	int currHeavy = 0;
+	boolean remakeFlyers = false;
 	
 	RobotInfo rInfo;
 	Robot r;
@@ -62,6 +63,20 @@ public class ArmoryBehavior extends Behavior
     		case EQUIP_UNIT:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_UNIT");
+    			
+    			if ( !remakeFlyers && Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    			{
+    				remakeFlyers = true;
+    				currFlyer = 0;
+    			}
+    			
+    			if ( (!remakeFlyers && currFlyer < Constants.MAX_WRAITHS + Constants.MAX_DRONES) || (remakeFlyers && currFlyer < Constants.MAX_DRONES) )
+    			{
+	    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
+	    			if ( r == null )
+		    			obj = ArmoryBuildOrder.MAKE_FLYER;
+	    			return;
+    			}
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
     			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
@@ -109,7 +124,7 @@ public class ArmoryBehavior extends Behavior
 					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.FLYING);
 	    			currFlyer++;
 				}
-
+				return;
     			
     		case EQUIP_HEAVY:
     			

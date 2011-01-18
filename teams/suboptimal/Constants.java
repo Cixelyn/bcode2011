@@ -34,6 +34,7 @@ public class Constants
 	public static final int MAX_DRONES = 6; // the maximum number of drones the armory should make
 	public static final int FACTORY_TIME = 500; // minimum time factory can be built (may not be built immediately)
 	public static final int DEBRIS_TIME = 1500; // when marines should start killing debris
+	public static final int REMAKE_FLYER_TIME = 1300;
 	public static final int SCOUTING_DISTANCE = 7; // how far out the SCV should scout
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
 	public static final int RALLY_WAIT = 50; // how long refinery should wait to determine rally
