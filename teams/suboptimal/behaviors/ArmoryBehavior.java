@@ -29,7 +29,10 @@ public class ArmoryBehavior extends Behavior
 	Robot r;
 	ComponentType c;
 	
+	int babyHeavy;
+	
 	boolean rHasJump;
+	int rNumPlasma;
 	
 	double minFluxToBuild;
 	
@@ -79,12 +82,13 @@ public class ArmoryBehavior extends Behavior
     			}
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
+    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyHeavy )
     			{
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.HEAVY )
     				{
     					Utility.setIndicator(myPlayer, 2, "Heavy found.");
+    					babyHeavy = r.getID();
 	    				obj = ArmoryBuildOrder.EQUIP_HEAVY;
     				}
 	    			return;
@@ -139,22 +143,48 @@ public class ArmoryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-				rHasJump = false;
-				for ( int j = rInfo.components.length ; --j >= 0 ; )
-				{
-					c = rInfo.components[j];
-					if ( c == ComponentType.JUMP )
-						rHasJump = true;
-				}
-				if ( !rHasJump )
-				{
-					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
+    			if ( currHeavy % 4 == 0 || currHeavy % 4 == 1 )
+    			{
+					rHasJump = false;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
-						currHeavy++;
-						obj = ArmoryBuildOrder.EQUIP_UNIT;
+						c = rInfo.components[j];
+						if ( c == ComponentType.JUMP )
+							rHasJump = true;
 					}
-				}
-				return;
+					if ( !rHasJump )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
+						{
+							currHeavy++;
+							obj = ArmoryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
+    			else if ( currHeavy % 4 == 2 || currHeavy % 4 == 3 )
+    			{
+    				rNumPlasma = 0;
+    				rHasJump = false;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.PLASMA )
+							rNumPlasma++;
+						if ( c == ComponentType.JUMP )
+							rHasJump = true;
+					}
+					if ( rNumPlasma < 2 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+					else if ( !rHasJump )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
+						{
+							currHeavy++;
+							obj = ArmoryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
+    			return;
 				
     		case SLEEP:
 				

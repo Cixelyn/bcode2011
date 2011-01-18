@@ -30,10 +30,16 @@ public class ColossusBehavior extends Behavior
 	
 	
 	
-	private static final int[] componentLoadOut = Utility.countComponents(new ComponentType[]    
+	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    
                                {ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,
 								ComponentType.RADAR,ComponentType.JUMP,
 								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,
+								});
+	
+	private static final int[] componentLoadOut2 = Utility.countComponents(new ComponentType[]    
+					           {ComponentType.RAILGUN,ComponentType.SMG,
+								ComponentType.RADAR,ComponentType.JUMP,
+								ComponentType.PLASMA,ComponentType.PLASMA
 								});
 	
 	public ColossusBehavior(RobotPlayer player)
@@ -50,7 +56,7 @@ public class ColossusBehavior extends Behavior
 			case EQUIPPING:	
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				
-				if (Utility.compareComponents(myPlayer, componentLoadOut))
+				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2))
 				{
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}

@@ -41,6 +41,9 @@ public class RefineryBehavior extends Behavior
 	RobotInfo rInfo;
 	Robot r;
 	ComponentType c;
+	int babyDrone;
+	int babyWraith;
+	int babyHeavy;
 
 	int rNumSMGs;
 	int rNumShields;
@@ -150,24 +153,32 @@ public class RefineryBehavior extends Behavior
     			}
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
+    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyWraith && r.getID() != babyDrone )
     			{
-    				Utility.setIndicator(myPlayer, 2, "Flyer found.");
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( currWraith < Constants.MAX_WRAITHS )
+    				{
+    					Utility.setIndicator(myPlayer, 2, "Wraith found.");
+    					babyWraith = r.getID();
     					obj = RefineryBuildOrder.EQUIP_WRAITH;
+    				}
     				else
+    				{
+    					Utility.setIndicator(myPlayer, 2, "Drone found.");
+    					babyDrone = r.getID();
     					obj = RefineryBuildOrder.EQUIP_DRONE;
+    				}
     				return;
     			}
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
+    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyHeavy )
     			{
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
     				if ( rInfo.chassis == Chassis.HEAVY )
     				{
     					Utility.setIndicator(myPlayer, 2, "Heavy found.");
+    					babyHeavy = r.getID();
 	    				obj = RefineryBuildOrder.EQUIP_HEAVY;
     				}
 	    			return;
@@ -189,33 +200,61 @@ public class RefineryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-				rHasRadar = false;
-				rNumSMGs = 0;
-				rNumShields = 0;
-				for ( int j = rInfo.components.length ; --j >= 0 ; )
-				{
-					c = rInfo.components[j];
-					if ( c == ComponentType.RADAR )
-						rHasRadar = true;
-					if ( c == ComponentType.SMG )
-						rNumSMGs++;
-					if ( c == ComponentType.SHIELD )
-						rNumShields++;
-				}
-				if ( rNumSMGs < 2 )
-					Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-				else if ( rNumShields < 5 )
-					Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-				else if ( !rHasRadar )
-				{
-					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
+    			if ( currHeavy % 4 == 0 || currHeavy % 4 == 1 )
+    			{
+					rHasRadar = false;
+					rNumSMGs = 0;
+					rNumShields = 0;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
-						myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
-						currHeavy++;
-						obj = RefineryBuildOrder.EQUIP_UNIT;
+						c = rInfo.components[j];
+						if ( c == ComponentType.RADAR )
+							rHasRadar = true;
+						if ( c == ComponentType.SMG )
+							rNumSMGs++;
+						if ( c == ComponentType.SHIELD )
+							rNumShields++;
 					}
-				}
+					if ( rNumSMGs < 2 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+					else if ( rNumShields < 5 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+					else if ( !rHasRadar )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
+						{
+							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							currHeavy++;
+							obj = RefineryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
+    			else if ( currHeavy % 4 == 2 || currHeavy % 4 == 3 )
+    			{
+    				rHasRadar = false;
+					rNumSMGs = 0;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.RADAR )
+							rHasRadar = true;
+						if ( c == ComponentType.SMG )
+							rNumSMGs++;
+					}
+					if ( rNumSMGs < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+					else if ( !rHasRadar )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
+						{
+							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							currHeavy++;
+							obj = RefineryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
 				return;
     			
     		case EQUIP_WRAITH:
