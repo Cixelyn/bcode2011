@@ -42,6 +42,12 @@ public class ColossusBehavior extends Behavior
 								ComponentType.PLASMA,ComponentType.PLASMA
 								});
 	
+	private static final int[] componentLoadOut3 = Utility.countComponents(new ComponentType[]    
+					           {ComponentType.RAILGUN,ComponentType.SMG,
+								ComponentType.RADAR,ComponentType.JUMP,
+								ComponentType.HARDENED,ComponentType.PLASMA,ComponentType.BLASTER
+								});
+	
 	public ColossusBehavior(RobotPlayer player)
 	{
 		super(player);

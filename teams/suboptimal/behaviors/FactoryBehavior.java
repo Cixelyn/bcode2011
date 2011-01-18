@@ -22,6 +22,8 @@ public class FactoryBehavior extends Behavior
 	
 	int currHeavy;
 	
+	double minFluxToBuild;
+	
 	public FactoryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -60,13 +62,21 @@ public class FactoryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "Building heavy " + Integer.toString(currHeavy) + ".");
     			
 				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-    			while ( r != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < Chassis.HEAVY.cost + ComponentType.JUMP.cost + ComponentType.RAILGUN.cost + ComponentType.RADAR.cost + 2*ComponentType.SMG.cost + 5*ComponentType.SHIELD.cost || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.HEAVY.upkeep * (currHeavy + 1) )
+				if ( currHeavy % 3 == 0 )
+					minFluxToBuild = Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.RAILGUN.cost + 5*ComponentType.SHIELD.cost + 2*ComponentType.SMG.cost + Constants.RESERVE;
+				else if ( currHeavy % 3 == 1 )
+					minFluxToBuild = Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.RAILGUN.cost + 2*ComponentType.PLASMA.cost + ComponentType.SMG.cost + Constants.RESERVE;
+				else if ( currHeavy % 3 == 2 )
+					minFluxToBuild = Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.RAILGUN.cost + ComponentType.HARDENED.cost + ComponentType.SHIELD.cost + ComponentType.BLASTER.cost + ComponentType.SMG.cost + Constants.RESERVE;
+    			while ( r != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < minFluxToBuild || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.HEAVY.upkeep * (currHeavy + 1) )
     			{
     				myPlayer.sleep();
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
     			}
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.HEAVY);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+    			if ( currHeavy % 3 == 2 )
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HARDENED, RobotLevel.ON_GROUND);
     			currHeavy++;
     			return;
     			

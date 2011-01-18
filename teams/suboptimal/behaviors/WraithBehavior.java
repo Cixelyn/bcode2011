@@ -198,14 +198,14 @@ public class WraithBehavior extends Behavior
 	        	//Found an enemy
 	        	if ( enemyInfo != null )
 	        	{
-	        		if ( enemyInfo.chassis == Chassis.MEDIUM || enemyInfo.chassis == Chassis.HEAVY )
+	        		if ( enemyInfo.on && enemyInfo.chassis == Chassis.MEDIUM || enemyInfo.chassis == Chassis.HEAVY )
 	        		{
 	        			Utility.setIndicator(myPlayer, 2, "Aw damn, those are some big guns! AHHHHH!");
 	        			rally = (rally + 4)%8;
         				if ( !myPlayer.myMotor.isActive() )
 	        				myPlayer.myMotor.setDirection(Direction.values()[rally]);
 	        		}
-	        		else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 16 )
+	        		else if ( enemyInfo.on && myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 16 )
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
@@ -216,7 +216,7 @@ public class WraithBehavior extends Behavior
 	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
         				}
         			}
-        			else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 26 )
+        			else if ( enemyInfo.on && myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 26 )
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, halting.");
         				if ( !myPlayer.myMotor.isActive() )
