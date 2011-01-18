@@ -202,8 +202,14 @@ public class ColossusBehavior extends Behavior
 	        	
 				
 				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
-				int jump=jumpInDir(Direction.values()[rally]);	
-				if (jump==JMP_NOT_POSSIBLE && !myPlayer.myMotor.isActive()) {
+				boolean shouldJump = true;
+				for (WeaponController w:myPlayer.myWeapons) {
+					if (w.isActive()) {
+						shouldJump=false;
+					}
+				}
+				int jump=jumpInDir(Direction.values()[rally]);
+				if (jump==JMP_NOT_POSSIBLE && !myPlayer.myMotor.isActive() && shouldJump) {
 					rally=(rally+2)%8;
 				}
 				
@@ -263,7 +269,7 @@ public class ColossusBehavior extends Behavior
 					return;
 					
 				}
-	        	if (myPlayer.hasTakenDamage) {
+	        	else if (myPlayer.hasTakenDamage) {
 	        		if (!myPlayer.myMotor.isActive()) {
 	        			myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 	        		}
