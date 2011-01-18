@@ -10,7 +10,8 @@ public class ArmoryBehavior extends Behavior
 	private enum ArmoryBuildOrder 
 	{
 		WAIT_FOR_DOCK,
-		BUILD_FLYERS
+		BUILD_FLYERS,
+		SLEEP
 	}
 	
 	
@@ -56,6 +57,7 @@ public class ArmoryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "BUILD_FLYERS");
 				Utility.setIndicator(myPlayer, 2, "Building flyer " + Integer.toString(currFlyer) + ".");
+				
 				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.IN_AIR);
 				if ( currFlyer >= Constants.FLYERS_TO_BUILD_FAST )
 					minFluxToBuild = Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2*Constants.RESERVE;

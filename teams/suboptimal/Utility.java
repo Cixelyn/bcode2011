@@ -352,7 +352,7 @@ public class Utility {
 	 * @return The location of a sensed enemy, or null if none are found
 	 */
 	
-	public static MapLocation attackEnemies(RobotPlayer myPlayer) throws Exception
+	public static RobotInfo attackEnemies(RobotPlayer myPlayer) throws Exception
 	{
 		WeaponController gun;
 		RobotInfo rInfo;
@@ -403,7 +403,7 @@ public class Utility {
 				if ( gun.type() != ComponentType.MEDIC && !gun.isActive() && gun.withinRange(enemyMin1.location))
 					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
 			}
-			return enemyMin1.location;
+			return enemyMin1;
 		}
 		return null;
 			

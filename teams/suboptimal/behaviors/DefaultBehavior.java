@@ -35,13 +35,12 @@ public class DefaultBehavior extends Behavior
 				myPlayer.swapBehavior(new FlyingDroneBehavior(myPlayer));
 				Utility.setIndicator(myPlayer, 1, ""); // >:[ Clear out your "WHO AM I" indicator string Max!!! -Jven
 			}
-			else if ( c.type() == ComponentType.BLASTER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+			else if ( c.type() == ComponentType.BLASTER && myPlayer.myRC.getChassis() == Chassis.FLYING )
 			{
-				myPlayer.swapBehavior(new AncientProtectorBehavior(myPlayer));
+				myPlayer.swapBehavior(new WraithBehavior(myPlayer));
 			}
 			else if ( c.type() == ComponentType.RAILGUN && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 			{
-				//myPlayer.swapBehavior(new TestHeavyBehavior(myPlayer));
 				myPlayer.swapBehavior(new ColossusBehavior(myPlayer));
 			}
 			else if ( c.type() == ComponentType.RECYCLER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
@@ -55,10 +54,6 @@ public class DefaultBehavior extends Behavior
 			else if ( c.type() == ComponentType.FACTORY && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
 				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
-			}
-			else if ( c.type() == ComponentType.SATELLITE && myPlayer.myRC.getChassis() == Chassis.BUILDING )
-			{
-				myPlayer.swapBehavior(new MissileTurretBehavior(myPlayer));
 			}
 		}
 	}
