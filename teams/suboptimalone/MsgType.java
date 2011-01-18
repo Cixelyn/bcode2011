@@ -1,6 +1,6 @@
-package suboptimal;
+package suboptimalone;
 
-import suboptimal.Constants;
+import suboptimalone.Constants;
 
 
 /**
