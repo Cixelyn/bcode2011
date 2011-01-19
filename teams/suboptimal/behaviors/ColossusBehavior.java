@@ -7,7 +7,20 @@ import java.util.*;
 
 public class ColossusBehavior extends Behavior
 {
-		
+	
+	private enum ColossusBuildOrder
+	{
+		EQUIPPING,
+		DETERMINE_SPAWN,
+		ADVANCE,
+		RETREAT
+	}
+	
+	
+	private final OldNavigation myNav = new OldNavigation(myPlayer);
+	
+	ColossusBuildOrder obj = ColossusBuildOrder.EQUIPPING;
+	
 	int num = -1;
 	int northEdge = -1;
 	int eastEdge = -1;
@@ -18,19 +31,6 @@ public class ColossusBehavior extends Behavior
 	int permRally = -1;
 	int numBounces;
 	ArrayDeque<MapLocation> prevFiveLocs = new ArrayDeque<MapLocation>();
-	
-	private enum ColossusBuildOrder
-	{
-		EQUIPPING,
-		DETERMINE_SPAWN,
-		ADVANCE,
-		RETREAT
-	}
-	
-	ColossusBuildOrder obj = ColossusBuildOrder.EQUIPPING;
-	private final OldNavigation myNav = new OldNavigation(myPlayer);
-	
-	
 	
 	
 	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    

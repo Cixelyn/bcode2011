@@ -138,7 +138,7 @@ public class RefineryBehavior extends Behavior
     				else
     					obj = RefineryBuildOrder.SLEEP;             // I am one of the first two capped but not near armory
     			}
-    			else if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
+    			else if ( Clock.getRoundNum() > 200 )
 	    			obj = RefineryBuildOrder.SLEEP;                 // I am not one of the first two capped
     			return;
     			

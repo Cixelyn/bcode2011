@@ -43,6 +43,10 @@ public class DefaultBehavior extends Behavior
 			{
 				myPlayer.swapBehavior(new ColossusBehavior(myPlayer));
 			}
+			else if ( c.type() == ComponentType.RAILGUN && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+			{
+				myPlayer.swapBehavior(new MissileTurretBehavior(myPlayer));
+			}
 			else if ( c.type() == ComponentType.RECYCLER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
 				myPlayer.swapBehavior(new RefineryBehavior(myPlayer));

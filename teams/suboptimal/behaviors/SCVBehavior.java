@@ -18,7 +18,6 @@ public class SCVBehavior extends Behavior
 		BUILD_ARMORY,
 		VACATE_HOME,
 		VACATE_FACTORY,
-		WAIT_FOR_FACTORY,
 		BUILD_FACTORY,
 		COMPUTE_TOWER,
 		BUILD_TOWER,
@@ -409,7 +408,7 @@ public class SCVBehavior extends Behavior
 							myPlayer.myMotor.setDirection(d.opposite());
 							myPlayer.sleep();
 							myPlayer.myMotor.moveBackward();
-							obj = SCVBuildOrder.WAIT_FOR_FACTORY;
+							obj = SCVBuildOrder.BUILD_FACTORY;
 							return;
 						}
 						dizziness++;
@@ -420,29 +419,79 @@ public class SCVBehavior extends Behavior
 						}
 					}
 				 return;
-    			
-			case WAIT_FOR_FACTORY:
-				
-				Utility.setIndicator(myPlayer, 1, "WAITING");
-				if ( Clock.getRoundNum() > Constants.FACTORY_TIME )
-					obj = SCVBuildOrder.BUILD_FACTORY;
-				return;
 				
 			case BUILD_FACTORY:
 				
 				Utility.setIndicator(myPlayer, 1, "BUILD_FACTORY");
 				factoryLoc = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
-				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.FACTORY.cost )
+				while ( myPlayer.myRC.getTeamResources() < 2 * Chassis.BUILDING.cost + ComponentType.FACTORY.cost + ComponentType.SATELLITE.cost + ComponentType.RAILGUN.cost + Constants.RESERVE )
 					myPlayer.sleep();
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.FACTORY, RobotLevel.ON_GROUND);
     			myPlayer.sleep();
     			myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
     			myPlayer.sleep();
-    			myPlayer.myRC.suicide(); // uncomment me and above line to scout or build tower
-    			//obj = SCVBuildOrder.COMPUTE_TOWER;
+    			obj = SCVBuildOrder.COMPUTE_TOWER;
     			return;
 				
+			case COMPUTE_TOWER:
+				
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_TOWER");
+				for ( int i = Math.min(armoryLoc.x, factoryLoc.x) - 1 ; i <= Math.max(armoryLoc.x, factoryLoc.x) + 1 ; i++ )
+					for ( int j = Math.min(armoryLoc.y, factoryLoc.y) - 1 ; j <= Math.max(armoryLoc.y, factoryLoc.y) + 1 ; j++)
+					{
+						towerLoc = new MapLocation(i,j);
+						if ( myPlayer.myRC.senseTerrainTile(towerLoc) != TerrainTile.LAND )
+							continue;
+						if ( towerLoc.distanceSquaredTo(armoryLoc) > ComponentType.ARMORY.range )
+							continue;
+						if ( towerLoc.distanceSquaredTo(factoryLoc) > ComponentType.FACTORY.range )
+							continue;
+						if ( towerLoc.equals(unitDock) )
+							continue;
+						if ( towerLoc.equals(mineLocs[0]) )
+							continue;
+						if ( towerLoc.equals(mineLocs[1]) )
+							continue;
+						if ( mineLocs[2] != null && towerLoc.equals(mineLocs[2]) )
+							continue;
+						if ( mineLocs[3] != null && towerLoc.equals(mineLocs[3]) )
+							continue;
+						obj = SCVBuildOrder.BUILD_TOWER;
+						tiredness = 0;
+						return;
+					}
+				myPlayer.myRC.suicide(); // no suitable location for tower
+				return;
+				
+			case BUILD_TOWER:
+			
+				Utility.setIndicator(myPlayer, 1, "BUILD_TOWER");
+				Utility.setIndicator(myPlayer, 2, "Giving up in " + Integer.toString(Constants.MINE_AFFINITY - tiredness) + "...");
+				if ( tiredness < Constants.MINE_AFFINITY )
+	    		{
+					if (myPlayer.myRC.getLocation().distanceSquaredTo(towerLoc) > myPlayer.myBuilder.type().range)
+	    			{
+	    				Utility.navStep(myPlayer, nav, towerLoc);
+	    				tiredness++;
+	    			}
+	    			else
+	    			{
+	    				Utility.setIndicator(myPlayer, 2, "Building!");
+	    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.SATELLITE.cost + ComponentType.RAILGUN.cost + Constants.RESERVE )
+							myPlayer.sleep();
+	    				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(towerLoc), Chassis.BUILDING);
+	    				myPlayer.sleep();
+	    				myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_TOWER, towerLoc);
+	    				myPlayer.sleep();
+	    				myPlayer.myRC.suicide();
+	    			}
+	    		}
+				else
+					myPlayer.myRC.suicide();
+				return;
+
+    			
 			case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 1, "SLEEP");

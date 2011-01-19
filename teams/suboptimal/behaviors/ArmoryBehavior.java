@@ -10,6 +10,7 @@ public class ArmoryBehavior extends Behavior
 	private enum ArmoryBuildOrder 
 	{
 		WAIT_FOR_DOCK,
+		EQUIP_TOWER,
 		EQUIP_UNIT,
 		MAKE_FLYER,
 		EQUIP_HEAVY,
@@ -20,6 +21,7 @@ public class ArmoryBehavior extends Behavior
 	ArmoryBuildOrder obj = ArmoryBuildOrder.WAIT_FOR_DOCK;
 	
 	MapLocation unitDock;
+	MapLocation towerLoc;
 	
 	int currFlyer = 0;
 	int currHeavy = 0;
@@ -35,6 +37,8 @@ public class ArmoryBehavior extends Behavior
 	int rNumPlasma;
 	
 	double minFluxToBuild;
+	
+	boolean towerEquipped;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -63,6 +67,35 @@ public class ArmoryBehavior extends Behavior
     			}
     			return;
     			
+    		case EQUIP_TOWER:
+    			
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_TOWER");
+				if ( !towerEquipped && towerLoc != null )
+				{
+					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND);
+					if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
+					{
+						rInfo = myPlayer.mySensor.senseRobotInfo(r);
+						if ( rInfo.chassis == Chassis.BUILDING )
+						{
+							Utility.setIndicator(myPlayer, 2, "Equipping turret.");
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(towerLoc));
+							myPlayer.sleep();
+							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SATELLITE, RobotLevel.ON_GROUND);
+							towerEquipped = true;
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+							obj = ArmoryBuildOrder.EQUIP_UNIT;
+							return;
+						}
+					}
+				}
+				Utility.setIndicator(myPlayer, 2, "Waiting for turret.");
+    			return;
+    			
     		case EQUIP_UNIT:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_UNIT");
@@ -77,8 +110,17 @@ public class ArmoryBehavior extends Behavior
     			{
 	    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
 	    			if ( r == null )
+	    			{
+	    				Utility.setIndicator(myPlayer, 2, "Making flyer.");
 		    			obj = ArmoryBuildOrder.MAKE_FLYER;
+	    			}
 	    			return;
+    			}
+    			
+    			if ( !towerEquipped && currFlyer == Constants.MAX_WRAITHS + Constants.MAX_DRONES )
+    			{
+    				obj = ArmoryBuildOrder.EQUIP_TOWER;
+    				return;
     			}
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
@@ -221,6 +263,8 @@ public class ArmoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
+		if ( t == MsgType.MSG_SEND_TOWER )
+			towerLoc = msg.locations[Messenger.firstData];
 	}
 	
 	public void onWakeupCallback(int lastActiveRound)

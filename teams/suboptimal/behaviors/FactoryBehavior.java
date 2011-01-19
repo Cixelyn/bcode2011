@@ -9,6 +9,7 @@ public class FactoryBehavior extends Behavior
 	private enum FactoryBuildOrder 
 	{
 		WAIT_FOR_DOCK,
+		EQUIP_TOWER,
 		BUILD_HEAVY,
 		SLEEP
 	}
@@ -17,12 +18,16 @@ public class FactoryBehavior extends Behavior
 	FactoryBuildOrder obj = FactoryBuildOrder.WAIT_FOR_DOCK;
 	
 	MapLocation unitDock;
+	MapLocation towerLoc;
 	
 	Robot r;
+	RobotInfo rInfo;
 	
 	int currHeavy;
 	
 	double minFluxToBuild;
+	
+	boolean towerEquipped = false;
 	
 	public FactoryBehavior(RobotPlayer player)
 	{
@@ -46,7 +51,7 @@ public class FactoryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.FACTORY.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-        				obj = FactoryBuildOrder.BUILD_HEAVY;
+        				obj = FactoryBuildOrder.EQUIP_TOWER;
     				}
     				else
     				{
@@ -55,6 +60,36 @@ public class FactoryBehavior extends Behavior
     				}
     			}
     			return;
+    			
+			case EQUIP_TOWER:
+				
+				Utility.setIndicator(myPlayer, 1, "EQUIP_TOWER");
+				if ( !towerEquipped && towerLoc != null )
+				{
+					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND);
+					if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
+					{
+						rInfo = myPlayer.mySensor.senseRobotInfo(r);
+						if ( rInfo.chassis == Chassis.BUILDING )
+						{
+							Utility.setIndicator(myPlayer, 2, "Equipping turret.");
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(towerLoc));
+							myPlayer.sleep();
+							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+							towerEquipped = true;
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+							obj = FactoryBuildOrder.BUILD_HEAVY;
+							return;
+						}
+					}
+				}
+				Utility.setIndicator(myPlayer, 2, "Waiting for turret.");
+				return;
     			
 			case BUILD_HEAVY:
 				
@@ -104,6 +139,9 @@ public class FactoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
+		if ( t == MsgType.MSG_SEND_TOWER )
+			towerLoc = msg.locations[Messenger.firstData];
+
 	}
 	
 	public void onWakeupCallback(int lastActiveRound)
