@@ -211,7 +211,7 @@ public class ColossusBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
 				boolean shouldJump = true;
 				for (WeaponController w:myPlayer.myWeapons) {
-					if (w.isActive()) {
+					if (w.isActive() && w.type().equals(ComponentType.RAILGUN)) {
 						shouldJump=false;
 					}
 				}
