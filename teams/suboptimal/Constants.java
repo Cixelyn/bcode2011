@@ -1,5 +1,6 @@
  package suboptimal;
 
+import battlecode.common.ComponentType;
 import battlecode.common.GameConstants;
 
 
@@ -39,6 +40,7 @@ public class Constants
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
 	public static final int RALLY_WAIT = 50; // how long refinery should wait to determine rally
 	public static final int RERALLY_TTL = 5; // if off_map is encountered and marine sends msg saying to change spawn, the rebroadcast will die after this # of rounds
+	public static final int RALLY_TIMEOUT = 5*ComponentType.JUMP.delay; // how long heavy should wait before changing rally upon stuckness
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;

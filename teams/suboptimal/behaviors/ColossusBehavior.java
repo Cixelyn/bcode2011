@@ -2,6 +2,7 @@ package suboptimal.behaviors;
 
 import suboptimal.*;
 import battlecode.common.*;
+import java.util.*;
 
 
 public class ColossusBehavior extends Behavior
@@ -16,6 +17,7 @@ public class ColossusBehavior extends Behavior
 	int rally = -1;
 	int permRally = -1;
 	int numBounces;
+	ArrayDeque<MapLocation> prevFiveLocs = new ArrayDeque<MapLocation>();
 	
 	private enum ColossusBuildOrder
 	{
@@ -140,7 +142,6 @@ public class ColossusBehavior extends Behavior
 				return;
 				
 			case ADVANCE:	
-        		
 				
 				// Rerally code
 	        	if ( spawn != -1 )
@@ -229,8 +230,15 @@ public class ColossusBehavior extends Behavior
 					if ( spawn != -1 )
 						Utility.setIndicator(myPlayer, 2, "Current rally: " + Direction.values()[rally] + ".");
 					int jump=jumpInDir(Direction.values()[rally]);
-					if (jump==JMP_NOT_POSSIBLE)
+					if ( jump == JMP_SUCCESS )
 					{
+						prevFiveLocs.add(myPlayer.myRC.getLocation());
+						if ( prevFiveLocs.size() > 5 )
+							prevFiveLocs.pollFirst();
+					}
+					if ( jump == JMP_NOT_POSSIBLE || (prevFiveLocs.size() >= 5 && prevFiveLocs.peekFirst().distanceSquaredTo(myPlayer.myRC.getLocation()) < ComponentType.JUMP.range) )
+					{
+						prevFiveLocs.clear();
 						if ( spawn % 2 == 0 )
 							rally = (rally + 3) % 8;
 						else if ( spawn % 2 == 1 )
