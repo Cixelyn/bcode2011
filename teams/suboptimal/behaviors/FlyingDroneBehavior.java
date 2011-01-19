@@ -53,10 +53,11 @@ public class FlyingDroneBehavior extends Behavior {
 	Direction currentDirection;
 	Direction towerDirection;
 
-	int runAwayTime=0;
+	int runAwayTime;
 
 	public FlyingDroneBehavior(RobotPlayer player) {
 		super(player);
+		runAwayTime=0;
 	}
 	
 	@Override
