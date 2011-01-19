@@ -19,7 +19,9 @@ public class MissileTurretBehavior extends Behavior
 	
 	RobotInfo enemyInfo;
 	
-	boolean hasSatellite;
+	int towerType = -1;
+	
+	boolean hasSensor;
 	boolean hasRailgun;
 	
 	public MissileTurretBehavior(RobotPlayer player)
@@ -36,18 +38,29 @@ public class MissileTurretBehavior extends Behavior
 			case EQUIPPING:
 				
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
-				hasSatellite = false;
+				hasSensor = false;
 				hasRailgun = false;
 				for ( int i = myPlayer.myRC.components().length ; --i >= 0 ; )
 				{
 					ComponentController c = myPlayer.myRC.components()[i];
+					if ( c.type() == ComponentType.RADAR )
+					{
+						hasSensor = true;
+						towerType = 1;
+					}
 					if ( c.type() == ComponentType.SATELLITE )
-						hasSatellite = true;
+					{
+						hasSensor = true;
+						towerType = 2;
+					}
 					if ( c.type() == ComponentType.RAILGUN )
 						hasRailgun = true;
 				}
-				if ( hasSatellite && hasRailgun )
+				if ( hasSensor && hasRailgun )
+				{
+					Utility.setIndicator(myPlayer, 2, "I am tower type " + Integer.toString(towerType) + "!");
 					obj = MissileTurretBuildOrder.DEFENSE;
+				}
 				return;
 			
 			case DEFENSE:
@@ -57,19 +70,19 @@ public class MissileTurretBehavior extends Behavior
 				if ( enemyInfo == null )
 				{
 					Utility.setIndicator(myPlayer, 2, "No enemies nearby.");
-					if (!myPlayer.myMotor.isActive())
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+					if ( !myPlayer.myMotor.isActive() && towerType == 1 )
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 				}
-				else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) > ComponentType.BLASTER.range )
+				else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) > ComponentType.SMG.range )
 				{
 					Utility.setIndicator(myPlayer, 2, "Enemy detected.");
-					if (!myPlayer.myMotor.isActive())
+					if ( !myPlayer.myMotor.isActive() )
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
 				}
 				else
 				{
 					Utility.setIndicator(myPlayer, 2, "Enemy in range!");
-					if (!myPlayer.myMotor.isActive())
+					if ( !myPlayer.myMotor.isActive() )
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
 				}
 				return;

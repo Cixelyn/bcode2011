@@ -19,7 +19,8 @@ public class SCVBehavior extends Behavior
 		VACATE_HOME,
 		VACATE_FACTORY,
 		BUILD_FACTORY,
-		COMPUTE_TOWER,
+		COMPUTE_TOWER_1,
+		COMPUTE_TOWER_2,
 		VACATE_TOWER,
 		BUILD_TOWER,
 		SLEEP,
@@ -49,6 +50,7 @@ public class SCVBehavior extends Behavior
 	int dizziness = 0;
 	int tiredness = 0;
 	int minesCapped = 0;
+	int towerType = -1;
 	
 	boolean hasAntenna = false;
 	boolean mineFound;
@@ -149,6 +151,7 @@ public class SCVBehavior extends Behavior
 		    				while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.moveBackward();
+		    				myPlayer.sleep();
 		    				mineLocs[3] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
 		    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
 								myPlayer.sleep();
@@ -189,6 +192,7 @@ public class SCVBehavior extends Behavior
 		    				while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.moveBackward();
+		    				myPlayer.sleep();
 		    				mineLocs[3] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
 		    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
 								myPlayer.sleep();
@@ -440,12 +444,52 @@ public class SCVBehavior extends Behavior
     			myPlayer.sleep();
     			myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
     			myPlayer.sleep();
-    			obj = SCVBuildOrder.COMPUTE_TOWER;
+    			obj = SCVBuildOrder.COMPUTE_TOWER_1;
     			return;
 				
-			case COMPUTE_TOWER:
+			case COMPUTE_TOWER_1:
 				
-				Utility.setIndicator(myPlayer, 1, "COMPUTE_TOWER");
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_TOWER_1");
+				for ( int i = Math.min(mineLocs[3].x, factoryLoc.x) - 1 ; i <= Math.max(mineLocs[3].x, factoryLoc.x) + 1 ; i++ )
+					for ( int j = Math.min(mineLocs[3].y, factoryLoc.y) - 1 ; j <= Math.max(mineLocs[3].y, factoryLoc.y) + 1 ; j++)
+					{
+						towerLoc = new MapLocation(i,j);
+						if ( myPlayer.myRC.senseTerrainTile(towerLoc) != TerrainTile.LAND )
+							continue;
+						if ( towerLoc.distanceSquaredTo(mineLocs[3]) > ComponentType.RECYCLER.range )
+							continue;
+						if ( towerLoc.distanceSquaredTo(factoryLoc) > ComponentType.FACTORY.range )
+							continue;
+						if ( towerLoc.equals(unitDock) )
+							continue;
+						if ( towerLoc.equals(factoryLoc) )
+							continue;
+						if ( towerLoc.equals(armoryLoc) )
+							continue;
+						if ( towerLoc.equals(mineLocs[0]) )
+							continue;
+						if ( towerLoc.equals(mineLocs[1]) )
+							continue;
+						if ( towerLoc.equals(mineLocs[2]) )
+							continue;
+						if ( towerLoc.equals(mineLocs[3]) )
+							continue;
+						if ( towerLoc.equals(myPlayer.myRC.getLocation()) )
+							obj = SCVBuildOrder.VACATE_TOWER;
+						else
+							obj = SCVBuildOrder.BUILD_TOWER;
+						tiredness = 0;
+						towerType = 1;
+						Utility.setIndicator(myPlayer, 2, "Location found for tower 1.");
+						return;
+					}
+				Utility.setIndicator(myPlayer, 2, "No suitable location for tower 1.");
+				obj = SCVBuildOrder.COMPUTE_TOWER_2;
+				return;
+				
+			case COMPUTE_TOWER_2:
+				
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_TOWER_2");
 				for ( int i = Math.min(armoryLoc.x, factoryLoc.x) - 1 ; i <= Math.max(armoryLoc.x, factoryLoc.x) + 1 ; i++ )
 					for ( int j = Math.min(armoryLoc.y, factoryLoc.y) - 1 ; j <= Math.max(armoryLoc.y, factoryLoc.y) + 1 ; j++)
 					{
@@ -475,9 +519,11 @@ public class SCVBehavior extends Behavior
 						else
 							obj = SCVBuildOrder.BUILD_TOWER;
 						tiredness = 0;
+						towerType = 2;
+						Utility.setIndicator(myPlayer, 2, "Location found for tower 2.");
 						return;
 					}
-				Utility.setIndicator(myPlayer, 2, "No suitable location for tower.");
+				Utility.setIndicator(myPlayer, 2, "No suitable location for tower 2.");
 				myPlayer.sleep();
 				myPlayer.myRC.suicide();
 				return;
@@ -511,7 +557,6 @@ public class SCVBehavior extends Behavior
 				
 			case BUILD_TOWER:
 			
-				Utility.setIndicator(myPlayer, 0, "My location: " + myPlayer.myRC.getLocation().toString() + " | Tower location: " + towerLoc.toString());
 				Utility.setIndicator(myPlayer, 1, "BUILD_TOWER");
 				Utility.setIndicator(myPlayer, 2, "Giving up in " + Integer.toString(Constants.MINE_AFFINITY - tiredness) + "...");
 				if ( tiredness < Constants.MINE_AFFINITY )
@@ -528,7 +573,7 @@ public class SCVBehavior extends Behavior
 							myPlayer.sleep();
 	    				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(towerLoc), Chassis.BUILDING);
 	    				myPlayer.sleep();
-	    				myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_TOWER, towerLoc);
+	    				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_SEND_TOWER, towerType, towerLoc);
 	    				myPlayer.sleep();
 	    				myPlayer.myRC.suicide();
 	    			}
