@@ -293,10 +293,10 @@ public class SCVBehavior extends Behavior
 			case WEIRD_VACATE:
 				
 				Utility.setIndicator(myPlayer, 1, "WEIRD_VACATE");
-				for ( int i = Direction.values().length ; --i >= 0 ; )
+				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
-					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					if ( myPlayer.myMotor.canMove(d) )
 					{
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
@@ -355,11 +355,12 @@ public class SCVBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 2, "");
 				unitDock = myPlayer.myRC.getLocation();
 				dizziness = 0;
-				for ( int i = Direction.values().length ; --i >= 0 ; )
+				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
-					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					if ( myPlayer.myMotor.canMove(d) )
 					{
+						Utility.setIndicator(myPlayer, 2, "Armory location found!");
 						armoryLoc = myPlayer.myRC.getLocation().add(d);
 						while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.ARMORY.cost )
 							myPlayer.sleep();
@@ -375,6 +376,7 @@ public class SCVBehavior extends Behavior
 					dizziness++;
 					if ( dizziness >= 8 )
 					{
+						Utility.setIndicator(myPlayer, 2, "It's a trap!");
 						myPlayer.myRC.suicide(); // SCV is trapped... but then how did you get there?
 						return;
 					}
@@ -385,10 +387,10 @@ public class SCVBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "VACATE_HOME");
 				dizziness = 0;
-				for ( int i = Direction.values().length ; --i >= 0 ; )
+				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
-					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					if ( myPlayer.myMotor.canMove(d) )
 					{
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
@@ -411,10 +413,10 @@ public class SCVBehavior extends Behavior
 				 
 				Utility.setIndicator(myPlayer, 1, "VACATE_FACTORY");
 				dizziness = 0;
-				for ( int i = Direction.values().length ; --i >= 0 ; )
+				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
-					if ( d != Direction.OMNI && d != Direction.NONE && !myPlayer.myRC.getLocation().add(d).equals(unitDock) && myPlayer.myMotor.canMove(d) )
+					if ( !myPlayer.myRC.getLocation().add(d).equals(unitDock) && myPlayer.myMotor.canMove(d) )
 					{
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
@@ -525,6 +527,8 @@ public class SCVBehavior extends Behavior
 					}
 				Utility.setIndicator(myPlayer, 2, "No suitable location for tower 2.");
 				myPlayer.sleep();
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_SEND_TOWER, -1, myPlayer.myRC.getLocation().add(100,100)); // make sure no one think a tower will be made
+				myPlayer.sleep();
 				myPlayer.myRC.suicide();
 				return;
 				
@@ -533,10 +537,10 @@ public class SCVBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "VACATE_TOWER");
 				Utility.setIndicator(myPlayer, 2, "");
 				dizziness = 0;
-				for ( int i = Direction.values().length ; --i >= 0 ; )
+				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
-					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					if ( myPlayer.myMotor.canMove(d) )
 					{
 						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
