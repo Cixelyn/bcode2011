@@ -527,6 +527,8 @@ public class SCVBehavior extends Behavior
 					}
 				Utility.setIndicator(myPlayer, 2, "No suitable location for tower 2.");
 				myPlayer.sleep();
+				myPlayer.myMessenger.sendIntLoc(MsgType.MSG_SEND_TOWER, -1, myPlayer.myRC.getLocation().add(100,100)); // make sure no one think a tower will be made
+				myPlayer.sleep();
 				myPlayer.myRC.suicide();
 				return;
 				
