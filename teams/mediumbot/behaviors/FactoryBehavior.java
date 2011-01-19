@@ -70,6 +70,7 @@ public class FactoryBehavior extends Behavior
     			}
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.MEDIUM);
     			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.REGEN, RobotLevel.ON_GROUND);
     			currMedium++;
     			return;
     			

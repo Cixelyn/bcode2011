@@ -273,7 +273,7 @@ public class WraithBehavior extends Behavior
 			        				stepsOffDir = 0;
 		        				}
 		        				else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) )
-			        			{
+		        				{
 			        				myPlayer.myMotor.moveForward();
 			        				stepsOffDir++;
 			        			}

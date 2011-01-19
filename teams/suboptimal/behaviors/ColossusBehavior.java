@@ -160,7 +160,7 @@ public class ColossusBehavior extends Behavior
 			        			rally = (rally + 6) % 8;
 		        		}
 		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
@@ -168,7 +168,7 @@ public class ColossusBehavior extends Behavior
 		        	{
 		        		rally = (rally + 1) % 8;
 		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
@@ -176,7 +176,7 @@ public class ColossusBehavior extends Behavior
 		        	{
 		        		rally = (rally + 7) % 8;
 		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -195,19 +195,19 @@ public class ColossusBehavior extends Behavior
 			        		else
 			        			rally = (rally + 6) % 8;
 		        		}
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        		if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 3) % 8;
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 5) % 8;
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -221,9 +221,15 @@ public class ColossusBehavior extends Behavior
 						shouldJump=false;
 					}
 				}
-				int jump=jumpInDir(Direction.values()[rally]);
-				if (jump==JMP_NOT_POSSIBLE && !myPlayer.myMotor.isActive() && shouldJump) {
-					rally=(rally+2)%8;
+				if (shouldJump)
+				{
+					int jump=jumpInDir(Direction.values()[rally]);
+					if (jump==JMP_NOT_POSSIBLE)
+					{
+						rally=(rally+2)%8;
+						permRally = rally;
+						Utility.setIndicator(myPlayer, 0, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+					}
 				}
 				
 				
