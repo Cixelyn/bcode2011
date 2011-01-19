@@ -565,7 +565,7 @@ public class Utility {
 	//Max's Go here
 	
 	
-	public static void bounceNavForFlyers(RobotPlayer myPlayer) throws GameActionException {
+	public static void bounceNavForFlyers(RobotPlayer myPlayer, int zigzag) throws GameActionException {
 		int random = rand.nextInt(10);
 		if (!myPlayer.myMotor.isActive()) {
 			boolean bounce=false;
@@ -689,11 +689,20 @@ public class Utility {
 							return;
 					}
 				}
-			else if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
-				myPlayer.myMotor.moveForward();
+			if (zigzag==0) { //don't zig or zag, just keep on moving forward
+				
+				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+					myPlayer.myMotor.moveForward();
+				}
+				else {
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+				}
 			}
-			else {
-				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
+			else if (zigzag==1) { //turn 90 degrees left 
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+			}
+			else if (zigzag==2) { //turn 90 degrees right
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 			}
 		}
 	}

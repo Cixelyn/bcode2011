@@ -48,7 +48,8 @@ public class FlyingDroneBehavior extends Behavior {
 	int waiting=0;
 	ArrayList<MapLocation> broadcastedMines= new ArrayList<MapLocation>();
 	int triedDirections=0;
-	
+	int zigzagCounter=0;
+	int zigzag=1;
 	Direction initialDirection;
 	Direction currentDirection;
 	Direction towerDirection;
@@ -111,7 +112,6 @@ public class FlyingDroneBehavior extends Behavior {
     			Utility.setIndicator(myPlayer, 0, "found mine");
 				if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) { //someone is on our mine, gonna just look for other ones
 					if (!myPlayer.myMotor.isActive()) {
-						myPlayer.myMotor.setDirection(initialDirection);
 						obj=FlyingDroneActions.EXPAND;
 						return;
 					}
@@ -161,7 +161,6 @@ public class FlyingDroneBehavior extends Behavior {
         					while (myPlayer.myMotor.isActive()) {
         						myPlayer.sleep();
         					}
-    						myPlayer.myMotor.setDirection(initialDirection);
     					/*	if (steps>Constants.STEPS) {
     							obj =  FlyingDroneActions.BUILD_TOWER;
     						}*/
@@ -343,7 +342,21 @@ public class FlyingDroneBehavior extends Behavior {
 	public void droneGeneralNav(int ID) throws GameActionException {
 		Utility.setIndicator(myPlayer, 2, initialDirection.toString());
 		try {
-			Utility.bounceNavForFlyers(myPlayer);
+			if (zigzagCounter==Constants.ZIGZAG_STEPS) {
+				zigzagCounter=0;
+				if (zigzag==1) {
+					Utility.bounceNavForFlyers(myPlayer,zigzag);
+					zigzag=2;
+				}
+				else if (zigzag==2) {
+					Utility.bounceNavForFlyers(myPlayer,zigzag);
+					zigzag=1;
+				}
+			}
+			else {
+				Utility.bounceNavForFlyers(myPlayer, 0);
+				zigzagCounter=zigzagCounter+1;
+			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
