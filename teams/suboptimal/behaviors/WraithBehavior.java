@@ -121,7 +121,7 @@ public class WraithBehavior extends Behavior
 	        	myPlayer.myRC.setIndicatorString(1, "ADVANCE");
 	        	
 	        	// Rerally code
-	        	if ( spawn != -1 )
+	        	if ( spawn == -1 )
 	        	{
 		        	// off_map found in orthogonal direction, try a different ORTHOGONAL direction!
 		        	if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
