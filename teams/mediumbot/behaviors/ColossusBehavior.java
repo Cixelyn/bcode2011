@@ -17,6 +17,8 @@ public class ColossusBehavior extends Behavior
 	int permRally = -1;
 	int numBounces;
 	
+	OldNavigation navigation = new OldNavigation(myPlayer);
+	
 	private enum ColossusBuildOrder
 	{
 		EQUIPPING,
@@ -32,22 +34,9 @@ public class ColossusBehavior extends Behavior
 	
 	
 	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    
-                               {ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,
+                               {ComponentType.RAILGUN,ComponentType.RADAR,ComponentType.REGEN,
 								});
 	
-	private static final int[] componentLoadOut2 = Utility.countComponents(new ComponentType[]    
-					           {ComponentType.RAILGUN,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.PLASMA,ComponentType.PLASMA
-								});
-	
-	private static final int[] componentLoadOut3 = Utility.countComponents(new ComponentType[]    
-					           {ComponentType.RAILGUN,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.HARDENED,ComponentType.SHIELD,ComponentType.BLASTER
-								});
 	
 	public ColossusBehavior(RobotPlayer player)
 	{
@@ -63,7 +52,7 @@ public class ColossusBehavior extends Behavior
 			case EQUIPPING:	
 				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
 				
-				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2) || Utility.compareComponents(myPlayer, componentLoadOut3))
+				if (Utility.compareComponents(myPlayer, componentLoadOut1))
 				{
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
@@ -210,20 +199,18 @@ public class ColossusBehavior extends Behavior
 		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
-	        	}
-				
+	        	}			
 	        	
 				
 				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
-				boolean shouldJump = true;
-				for (WeaponController w:myPlayer.myWeapons) {
-					if (w.isActive()) {
-						shouldJump=false;
+				if (!myPlayer.myMotor.isActive()) {
+					Direction bugNav = navigation.bugTo(Utility.spawnOpposite(myPlayer.myRC.getLocation(),(rally+4)%8));
+					if (myPlayer.myRC.getDirection().equals(bugNav)) {
+						myPlayer.myMotor.moveForward();
 					}
-				}
-				int jump=jumpInDir(Direction.values()[rally]);
-				if (jump==JMP_NOT_POSSIBLE && !myPlayer.myMotor.isActive() && shouldJump) {
-					rally=(rally+2)%8;
+					else {
+						myPlayer.myMotor.setDirection(bugNav);
+					}
 				}
 				
 				
