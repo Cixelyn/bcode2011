@@ -207,7 +207,7 @@ public class ArmoryBehavior extends Behavior
 						if ( c == ComponentType.JUMP )
 							rHasJump = true;
 					}
-					if ( rNumPlasma < 2 )
+					if ( rNumPlasma < 3 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
 					else if ( !rHasJump )
 					{
