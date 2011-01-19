@@ -66,6 +66,7 @@ public class FactoryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "EQUIP_TOWER");
 				towerEquipped = true;
+				
 				if ( towerLoc != null )
 				{
 					if ( myPlayer.myRC.getLocation().distanceSquaredTo(towerLoc) > ComponentType.FACTORY.range )

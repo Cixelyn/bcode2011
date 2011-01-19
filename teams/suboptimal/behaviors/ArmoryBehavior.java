@@ -214,6 +214,19 @@ public class ArmoryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_TOWER");
     			towerEquipped = true;
+    			
+    			r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+    			if ( r != null )
+    			{
+    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    				if ( rInfo.chassis == Chassis.HEAVY )
+					{
+						Utility.setIndicator(myPlayer, 2, "Heavy found before turret constructed, abandoning turret.");
+						obj = ArmoryBuildOrder.EQUIP_UNIT;
+						return;
+					}
+    			}
+    			
 				if ( towerLoc != null )
 				{
 					if ( myPlayer.myRC.getLocation().distanceSquaredTo(towerLoc) > ComponentType.ARMORY.range || towerType == 1 )
