@@ -7,7 +7,20 @@ import java.util.*;
 
 public class ColossusBehavior extends Behavior
 {
-		
+	
+	private enum ColossusBuildOrder
+	{
+		EQUIPPING,
+		DETERMINE_SPAWN,
+		ADVANCE,
+		RETREAT
+	}
+	
+	
+	private final OldNavigation myNav = new OldNavigation(myPlayer);
+	
+	ColossusBuildOrder obj = ColossusBuildOrder.EQUIPPING;
+	
 	int num = -1;
 	int northEdge = -1;
 	int eastEdge = -1;
@@ -19,19 +32,6 @@ public class ColossusBehavior extends Behavior
 	int numBounces;
 	ArrayDeque<MapLocation> prevFiveLocs = new ArrayDeque<MapLocation>();
 	
-	private enum ColossusBuildOrder
-	{
-		EQUIPPING,
-		DETERMINE_SPAWN,
-		ADVANCE,
-		RETREAT
-	}
-	
-	ColossusBuildOrder obj = ColossusBuildOrder.EQUIPPING;
-	private final OldNavigation myNav = new OldNavigation(myPlayer);
-	
-	
-	
 	
 	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    
                                {ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,
@@ -42,7 +42,7 @@ public class ColossusBehavior extends Behavior
 	private static final int[] componentLoadOut2 = Utility.countComponents(new ComponentType[]    
 					           {ComponentType.RAILGUN,ComponentType.SMG,
 								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.PLASMA,ComponentType.PLASMA
+								ComponentType.PLASMA,ComponentType.PLASMA,ComponentType.PLASMA
 								});
 	
 	private static final int[] componentLoadOut3 = Utility.countComponents(new ComponentType[]    
@@ -64,7 +64,8 @@ public class ColossusBehavior extends Behavior
 		{
 			
 			case EQUIPPING:	
-				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
+
+				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				
 				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2) || Utility.compareComponents(myPlayer, componentLoadOut3))
 				{
@@ -143,6 +144,8 @@ public class ColossusBehavior extends Behavior
 				
 			case ADVANCE:	
 				
+				Utility.setIndicator(myPlayer, 1, "ADVANCE");
+				
 				// Rerally code
 	        	if ( spawn != -1 )
 	        	{
@@ -217,8 +220,6 @@ public class ColossusBehavior extends Behavior
 	        	}
 				
 	        	
-				
-				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
 				boolean shouldJump = true;
 				for (WeaponController w:myPlayer.myWeapons) {
 					if (w.type() == ComponentType.RAILGUN && w.isActive()) {
