@@ -14,6 +14,7 @@ public class ColossusBehavior extends Behavior
 	int westEdge = -1;
 	int spawn = -1;
 	int rally = -1;
+	int permRally = -1;
 	int numBounces;
 	
 	private enum ColossusBuildOrder
@@ -126,11 +127,13 @@ public class ColossusBehavior extends Behavior
 						else
 							rally = (spawn + 6) % 8;
 					}
+					permRally = rally;
 					Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
 				else
 				{
 					rally = (2 * num + 1) % 8;
+					permRally = rally;
 					Utility.setIndicator(myPlayer, 0, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
 				obj = ColossusBuildOrder.ADVANCE;
@@ -156,6 +159,7 @@ public class ColossusBehavior extends Behavior
 			        		else
 			        			rally = (rally + 6) % 8;
 		        		}
+		        		permRally = rally;
 		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
@@ -163,6 +167,7 @@ public class ColossusBehavior extends Behavior
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 1) % 8;
+		        		permRally = rally;
 		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
@@ -170,6 +175,7 @@ public class ColossusBehavior extends Behavior
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 7) % 8;
+		        		permRally = rally;
 		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
@@ -253,6 +259,7 @@ public class ColossusBehavior extends Behavior
 	        	//I AM ENGAGED IN BLOODY COMBAT	
 	        	if(nearestEnemyRobot!=null) {	
 	        		
+	        		rally = nearestEnemyRobotDirection.ordinal();
 	        		//HOW FAR AWAY IS THE ENEMY
 	        		if(nearestEnemyRobotDistance<=36) {	// checks range: [0,25]
 							for(WeaponController w:myPlayer.myWeapons) { 
@@ -280,6 +287,9 @@ public class ColossusBehavior extends Behavior
 	        		if (!myPlayer.myMotor.isActive()) {
 	        			myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
 	        		}
+	        	}
+	        	else {
+	        		rally = permRally;
 	        	}
 	        	     
 		}

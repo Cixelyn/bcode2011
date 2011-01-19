@@ -259,6 +259,7 @@ public class RobotPlayer implements Runnable {
 		//////////////////////////////////////////////////////////////
 		// Set some variables and reset some flags.
 		myLastRes = myRC.getTeamResources();
+		lastRoundHP = myRC.getHitpoints(); 
 		hasTakenDamage = false;
 		
 		//////////////////////////////////////////////////////////////
