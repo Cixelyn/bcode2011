@@ -202,18 +202,18 @@ public class Utility {
 	 * @param chassis The chassis type to build
 	 */
 	
-	public static void buildChassis(RobotPlayer player, Direction dir, Chassis chassis) throws Exception
+	public static void buildChassis(RobotPlayer player, BuilderController builder, Direction dir, Chassis chassis) throws Exception
 	{
 		MapLocation loc = player.myRC.getLocation().add(dir);
 		if ( dir != Direction.OMNI && dir != Direction.NONE )
 			loc = player.myRC.getLocation().add(dir);
 		else
 			loc = player.myRC.getLocation();
-		while ( player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || player.myBuilder.isActive() )
+		while ( player.myRC.getTeamResources() < chassis.cost + Constants.RESERVE || builder.isActive() )
 			player.sleep();
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) && player.mySensor.senseObjectAtLocation(loc, chassis.level) != null )
 			return;
-		player.myBuilder.build(chassis, loc);
+		builder.build(chassis, loc);
 		return;
 	}
 
@@ -226,7 +226,7 @@ public class Utility {
 	 * @param level The robot level of the robot on which to build
 	 */
 	
-	public static void buildComponent(RobotPlayer player, Direction dir, ComponentType component, RobotLevel level) throws Exception
+	public static void buildComponent(RobotPlayer player, BuilderController builder, Direction dir, ComponentType component, RobotLevel level) throws Exception
 	{
 		MapLocation loc;
 		if ( dir != Direction.OMNI && dir != Direction.NONE )
@@ -241,7 +241,7 @@ public class Utility {
 		}
 		else
 			loc = player.myRC.getLocation();
-		while ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive() )
+		while ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || builder.isActive() )
 			player.sleep();
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
 		{
@@ -255,7 +255,7 @@ public class Utility {
 					return;
 			}
 		}
-		player.myBuilder.build(component, loc, level);
+		builder.build(component, loc, level);
 		return;
 	}
 	
@@ -269,7 +269,7 @@ public class Utility {
 	 * @return boolean True if component is built, false otherwise
 	 */
 	
-	public static boolean tryBuildComponent(RobotPlayer player, Direction dir, ComponentType component, RobotLevel level) throws Exception
+	public static boolean tryBuildComponent(RobotPlayer player, BuilderController builder, Direction dir, ComponentType component, RobotLevel level) throws Exception
 	{
 		MapLocation loc;
 		if ( dir != Direction.OMNI && dir != Direction.NONE )
@@ -285,7 +285,7 @@ public class Utility {
 		}
 		else
 			loc = player.myRC.getLocation();
-		if ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || player.myBuilder.isActive() )
+		if ( player.myRC.getTeamResources() < component.cost + Constants.RESERVE || builder.isActive() )
 			return false;
 		if ( player.mySensor != null && player.mySensor.withinRange(loc) )
 		{
@@ -299,7 +299,7 @@ public class Utility {
 					return false;
 			}
 		}
-		player.myBuilder.build(component, loc, level);
+		builder.build(component, loc, level);
 		return true;
 	}
 	

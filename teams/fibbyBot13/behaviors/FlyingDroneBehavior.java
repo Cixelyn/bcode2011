@@ -118,8 +118,8 @@ public class FlyingDroneBehavior extends Behavior {
 				}
 				else if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) || (myPlayer.myRC.getLocation().equals(currentMine.getLocation()))) { //i'm right by the mine, build recycler!
     					if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
-    						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+    						Utility.buildChassis(myPlayer, myPlayer.myConstructor, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
+    						Utility.buildComponent(myPlayer, myPlayer.myConstructor, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
     	        			
     	        			
         					for (int i=0;i<3;i++) { //spin and check all our other directions
@@ -135,8 +135,8 @@ public class FlyingDroneBehavior extends Behavior {
         	        						while (myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()) {
                         						myPlayer.sleep();
                         					}
-        	        						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
-        	        						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+        	        						Utility.buildChassis(myPlayer, myPlayer.myConstructor, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
+        	        						Utility.buildComponent(myPlayer, myPlayer.myConstructor, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
         	        						obj=FlyingDroneActions.FOUND_MINE;
         	        						return;
         	        					}
@@ -195,10 +195,10 @@ public class FlyingDroneBehavior extends Behavior {
     			}
     			else if (myPlayer.mySensor.withinRange(towerPlacement)) {
     				if (myPlayer.myRC.senseTerrainTile(towerPlacement).equals(TerrainTile.LAND) && myPlayer.mySensor.senseObjectAtLocation(towerPlacement, RobotLevel.ON_GROUND)==null) {
-    					if (myPlayer.myBuilder.withinRange(towerPlacement)) {
+    					if (myPlayer.myConstructor.withinRange(towerPlacement)) {
     						if (myPlayer.myRC.getTeamResources() >Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2 * Constants.RESERVE) {
         						triedDirections=0;
-        						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(towerPlacement), Chassis.BUILDING);
+        						Utility.buildChassis(myPlayer, myPlayer.myConstructor, myPlayer.myRC.getLocation().directionTo(towerPlacement), Chassis.BUILDING);
         						triedDirections=0;
         						obj =  FlyingDroneActions.EXPAND;
     						}

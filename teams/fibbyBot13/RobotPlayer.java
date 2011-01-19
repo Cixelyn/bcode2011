@@ -39,7 +39,10 @@ public class RobotPlayer implements Runnable {
 	public final RobotController myRC;
 	
 	public SensorController mySensor;
-	public BuilderController myBuilder;
+	public BuilderController myConstructor;
+	public BuilderController myRecycler;
+	public BuilderController myFactory;
+	public BuilderController myArmory;
 	public MovementController myMotor;
 	public BroadcastController myBroadcaster;
 	public JumpController myJump;
@@ -101,7 +104,10 @@ public class RobotPlayer implements Runnable {
     	
     	
     	//initialize base controllers
-    	myBuilder = null;
+    	myConstructor = null;
+    	myRecycler = null;
+    	myFactory = null;
+    	myArmory = null;
     	myMotor = null;
     	mySensor = null;
     	myBroadcaster = null;
@@ -325,7 +331,14 @@ public class RobotPlayer implements Runnable {
 					mySensor = (SensorController)c;
 					break;
 				case BUILDER:
-					myBuilder = (BuilderController)c;
+					if ( c.type() == ComponentType.CONSTRUCTOR )
+						myConstructor = (BuilderController)c;
+					else if ( c.type() == ComponentType.RECYCLER )
+						myRecycler = (BuilderController)c;
+					else if ( c.type() == ComponentType.FACTORY )
+						myFactory = (BuilderController)c;
+					else if ( c.type() == ComponentType.ARMORY )
+						myArmory = (BuilderController)c;
 					break;
 				case MOTOR:
 					myMotor = (MovementController)c;
