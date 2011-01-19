@@ -15,7 +15,7 @@ public class RefineryBehavior extends Behavior
 		DETERMINE_LEADER,
 		WAIT_FOR_DOCK,
 		EQUIP_UNIT,
-		EQUIP_HEAVY,
+		EQUIP_MEDIUM,
 		EQUIP_DRONE,
 		EQUIP_WRAITH,
 		SLEEP
@@ -27,7 +27,7 @@ public class RefineryBehavior extends Behavior
 	
 	int currDrone;
 	int currWraith;
-	int currHeavy;
+	int currMedium;
 	double lastIncome;
 	boolean remakeFlyers = false;
 	
@@ -43,7 +43,7 @@ public class RefineryBehavior extends Behavior
 	ComponentType c;
 	int babyDrone;
 	int babyWraith;
-	int babyHeavy;
+	int babyMedium;
 
 	int rNumSMGs;
 	int rNumShields;
@@ -172,14 +172,14 @@ public class RefineryBehavior extends Behavior
     			}
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyHeavy )
+    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyMedium )
     			{
     				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if ( rInfo.chassis == Chassis.HEAVY )
+    				if ( rInfo.chassis == Chassis.MEDIUM )
     				{
-    					Utility.setIndicator(myPlayer, 2, "Heavy found.");
-    					babyHeavy = r.getID();
-	    				obj = RefineryBuildOrder.EQUIP_HEAVY;
+    					Utility.setIndicator(myPlayer, 2, "Medium found.");
+    					babyMedium = r.getID();
+	    				obj = RefineryBuildOrder.EQUIP_MEDIUM;
     				}
 	    			return;
     			}
@@ -187,10 +187,10 @@ public class RefineryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "No units to equip.");
     			return;
     			
-    		case EQUIP_HEAVY:
+    		case EQUIP_MEDIUM:
     			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_HEAVY");
-				Utility.setIndicator(myPlayer, 2, "Equipping heavy " + Integer.toString(currHeavy) + ".");
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_MEDIUM");
+				Utility.setIndicator(myPlayer, 2, "Equipping medium " + Integer.toString(currMedium) + ".");
     			
 				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
     			if ( r == null )
@@ -200,96 +200,23 @@ public class RefineryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 3 == 0 )
-    			{
-					rHasRadar = false;
-					rNumSMGs = 0;
-					rNumShields = 0;
-					for ( int j = rInfo.components.length ; --j >= 0 ; )
+				rHasRadar = false;
+				for ( int j = rInfo.components.length ; --j >= 0 ; )
+				{
+					c = rInfo.components[j];
+					if ( c == ComponentType.RADAR )
+						rHasRadar = true;
+				}
+				if ( !rHasRadar )
+				{
+					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 					{
-						c = rInfo.components[j];
-						if ( c == ComponentType.RADAR )
-							rHasRadar = true;
-						if ( c == ComponentType.SMG )
-							rNumSMGs++;
-						if ( c == ComponentType.SHIELD )
-							rNumShields++;
+						myPlayer.sleep(); // NECESSARY TO GIVE MEDIUM TIME TO REALIZE WHO HE IS
+						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currMedium, null);
+						currMedium++;
+						obj = RefineryBuildOrder.EQUIP_UNIT;
 					}
-					if ( rNumSMGs < 2 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-					else if ( rNumShields < 5 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-					else if ( !rHasRadar )
-					{
-						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
-						{
-							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
-							currHeavy++;
-							obj = RefineryBuildOrder.EQUIP_UNIT;
-						}
-					}
-    			}
-    			else if ( currHeavy % 3 == 1 )
-    			{
-    				rHasRadar = false;
-					rNumSMGs = 0;
-					for ( int j = rInfo.components.length ; --j >= 0 ; )
-					{
-						c = rInfo.components[j];
-						if ( c == ComponentType.RADAR )
-							rHasRadar = true;
-						if ( c == ComponentType.SMG )
-							rNumSMGs++;
-					}
-					if ( rNumSMGs < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-					else if ( !rHasRadar )
-					{
-						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
-						{
-							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
-							currHeavy++;
-							obj = RefineryBuildOrder.EQUIP_UNIT;
-						}
-					}
-    			}
-    			else if ( currHeavy % 3 == 2 )
-    			{
-    				rHasRadar = false;
-    				rHasBlaster = false;
-					rNumSMGs = 0;
-					rNumShields = 0;
-					for ( int j = rInfo.components.length ; --j >= 0 ; )
-					{
-						c = rInfo.components[j];
-						if ( c == ComponentType.RADAR )
-							rHasRadar = true;
-						if ( c == ComponentType.BLASTER )
-							rHasBlaster = true;
-						if ( c == ComponentType.SMG )
-							rNumSMGs++;
-						if ( c == ComponentType.SHIELD )
-							rNumShields++;
-					}
-					if ( !rHasBlaster )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-					else if ( rNumSMGs < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-					else if ( rNumShields < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-					else if ( !rHasRadar )
-					{
-						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
-						{
-							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
-							currHeavy++;
-							obj = RefineryBuildOrder.EQUIP_UNIT;
-						}
-					}
-    			}
+				}
 				return;
     			
     		case EQUIP_WRAITH:

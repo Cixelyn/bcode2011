@@ -94,14 +94,6 @@ public class ArmoryBehavior extends Behavior
 	    			return;
     			}
     			
-    			if ( currFlyer < Constants.MAX_WRAITHS + Constants.MAX_DRONES )
-    			{
-	    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-	    			if ( r == null )
-		    			obj = ArmoryBuildOrder.MAKE_FLYER;
-	    			return;
-    			}
-    			
     			Utility.setIndicator(myPlayer, 2, "No heavy to equip, no more flyers to make.");
     			return;
     			

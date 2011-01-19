@@ -12,7 +12,6 @@ public class ArmoryBehavior extends Behavior
 		WAIT_FOR_DOCK,
 		EQUIP_UNIT,
 		MAKE_FLYER,
-		EQUIP_HEAVY,
 		SLEEP
 	}
 	
@@ -22,7 +21,7 @@ public class ArmoryBehavior extends Behavior
 	MapLocation unitDock;
 	
 	int currFlyer = 0;
-	int currHeavy = 0;
+	int currMedium = 0;
 	boolean remakeFlyers = false;
 	
 	RobotInfo rInfo;
@@ -81,28 +80,7 @@ public class ArmoryBehavior extends Behavior
 	    			return;
     			}
     			
-    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyHeavy )
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if ( rInfo.chassis == Chassis.HEAVY )
-    				{
-    					Utility.setIndicator(myPlayer, 2, "Heavy found.");
-    					babyHeavy = r.getID();
-	    				obj = ArmoryBuildOrder.EQUIP_HEAVY;
-    				}
-	    			return;
-    			}
-    			
-    			if ( currFlyer < Constants.MAX_WRAITHS + Constants.MAX_DRONES )
-    			{
-	    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-	    			if ( r == null )
-		    			obj = ArmoryBuildOrder.MAKE_FLYER;
-	    			return;
-    			}
-    			
-    			Utility.setIndicator(myPlayer, 2, "No heavy to equip, no more flyers to make.");
+    			Utility.setIndicator(myPlayer, 2, "No more flyers to make.");
     			return;
     			
     		case MAKE_FLYER:
@@ -129,80 +107,6 @@ public class ArmoryBehavior extends Behavior
 	    			currFlyer++;
 				}
 				return;
-    			
-    		case EQUIP_HEAVY:
-    			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_HEAVY");
-				Utility.setIndicator(myPlayer, 2, "Equipping heavy " + Integer.toString(currHeavy) + ".");
-    			
-				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r == null )
-    			{
-    				obj = ArmoryBuildOrder.EQUIP_UNIT;
-    				return;
-    			}
-				
-    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 3 == 0 )
-    			{
-					rHasJump = false;
-					for ( int j = rInfo.components.length ; --j >= 0 ; )
-					{
-						c = rInfo.components[j];
-						if ( c == ComponentType.JUMP )
-							rHasJump = true;
-					}
-					if ( !rHasJump )
-					{
-						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
-						{
-							currHeavy++;
-							obj = ArmoryBuildOrder.EQUIP_UNIT;
-						}
-					}
-    			}
-    			else if ( currHeavy % 3 == 1 )
-    			{
-    				rNumPlasma = 0;
-    				rHasJump = false;
-					for ( int j = rInfo.components.length ; --j >= 0 ; )
-					{
-						c = rInfo.components[j];
-						if ( c == ComponentType.PLASMA )
-							rNumPlasma++;
-						if ( c == ComponentType.JUMP )
-							rHasJump = true;
-					}
-					if ( rNumPlasma < 2 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
-					else if ( !rHasJump )
-					{
-						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
-						{
-							currHeavy++;
-							obj = ArmoryBuildOrder.EQUIP_UNIT;
-						}
-					}
-    			}
-    			else if ( currHeavy % 3 == 2 )
-    			{
-    				rHasJump = false;
-					for ( int j = rInfo.components.length ; --j >= 0 ; )
-					{
-						c = rInfo.components[j];
-						if ( c == ComponentType.JUMP )
-							rHasJump = true;
-					}
-					if ( !rHasJump )
-					{
-						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
-						{
-							currHeavy++;
-							obj = ArmoryBuildOrder.EQUIP_UNIT;
-						}
-					}
-    			}
-    			return;
 				
     		case SLEEP:
 				
