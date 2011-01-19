@@ -64,7 +64,8 @@ public class ColossusBehavior extends Behavior
 		{
 			
 			case EQUIPPING:	
-				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
+
+				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				
 				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2) || Utility.compareComponents(myPlayer, componentLoadOut3))
 				{
@@ -143,6 +144,8 @@ public class ColossusBehavior extends Behavior
 				
 			case ADVANCE:	
 				
+				Utility.setIndicator(myPlayer, 1, "ADVANCE");
+				
 				// Rerally code
 	        	if ( spawn != -1 )
 	        	{
@@ -217,8 +220,6 @@ public class ColossusBehavior extends Behavior
 	        	}
 				
 	        	
-				
-				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
 				boolean shouldJump = true;
 				for (WeaponController w:myPlayer.myWeapons) {
 					if (w.type() == ComponentType.RAILGUN && w.isActive()) {
