@@ -129,6 +129,20 @@ public class FlyingDroneBehavior extends Behavior {
         	        					while (myPlayer.myMotor.isActive()) {
         	        						myPlayer.sleep();
         	        					}
+        	        					
+        	        					
+        	        					if (mine.getLocation().equals(myPlayer.myRC.getLocation())) {
+        	        						while (myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()) {
+                        						myPlayer.sleep();
+                        					}
+        	        						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
+        	        						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+        	        						obj=FlyingDroneActions.FOUND_MINE;
+        	        						return;
+        	        					}
+        	        					
+        	        					
+        	        					
         	            				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
                     					currentMine=mine;
                     					towerDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
