@@ -34,21 +34,21 @@ public class ColossusBehavior extends Behavior
 	
 	
 	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    
-                               {ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,
+                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
+								ComponentType.HARDENED
 								});
 	
 	private static final int[] componentLoadOut2 = Utility.countComponents(new ComponentType[]    
-					           {ComponentType.RAILGUN,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.PLASMA,ComponentType.PLASMA,ComponentType.PLASMA
+                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.RAILGUN,ComponentType.BLASTER,
+								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD
 								});
 	
 	private static final int[] componentLoadOut3 = Utility.countComponents(new ComponentType[]    
-					           {ComponentType.RAILGUN,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.HARDENED,ComponentType.SHIELD,ComponentType.BLASTER
+	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.SMG,
+								ComponentType.PLASMA,ComponentType.PLASMA
 								});
 	
 	public ColossusBehavior(RobotPlayer player)

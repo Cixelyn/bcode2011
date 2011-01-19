@@ -35,12 +35,6 @@ public class RefineryBehavior extends Behavior
 	boolean remakeFlyers = false;
 	boolean towerEquipped = false;
 	
-	boolean rHasConstructor;
-	boolean rHasSight;
-	
-	boolean rHasBlaster;
-	boolean rHasRadar;
-	
 	Robot[] nearbyRobots;
 	RobotInfo rInfo;
 	Robot r;
@@ -49,8 +43,13 @@ public class RefineryBehavior extends Behavior
 	int babyWraith;
 	int babyHeavy;
 
+	boolean rHasConstructor;
+	boolean rHasSight;
+	
 	int rNumSMGs;
 	int rNumShields;
+	int rNumBlasters;
+	boolean rHasRadar;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -263,9 +262,9 @@ public class RefineryBehavior extends Behavior
 						if ( c == ComponentType.SHIELD )
 							rNumShields++;
 					}
-					if ( rNumSMGs < 2 )
+					if ( rNumSMGs < 3 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-					else if ( rNumShields < 5 )
+					else if ( rNumShields < 1 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
 					else if ( !rHasRadar )
 					{
@@ -281,17 +280,22 @@ public class RefineryBehavior extends Behavior
     			else if ( currHeavy % 3 == 1 )
     			{
     				rHasRadar = false;
-					rNumSMGs = 0;
+					rNumShields = 0;
+					rNumBlasters = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
 						if ( c == ComponentType.RADAR )
 							rHasRadar = true;
-						if ( c == ComponentType.SMG )
-							rNumSMGs++;
+						if ( c == ComponentType.SHIELD )
+							rNumShields++;
+						if ( c == ComponentType.BLASTER )
+							rNumBlasters++;
 					}
-					if ( rNumSMGs < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+					if ( rNumBlasters < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
+					else if ( rNumShields < 5 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
 					else if ( !rHasRadar )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
@@ -306,7 +310,7 @@ public class RefineryBehavior extends Behavior
     			else if ( currHeavy % 3 == 2 )
     			{
     				rHasRadar = false;
-    				rHasBlaster = false;
+    				rNumBlasters = 0;
 					rNumSMGs = 0;
 					rNumShields = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -315,13 +319,13 @@ public class RefineryBehavior extends Behavior
 						if ( c == ComponentType.RADAR )
 							rHasRadar = true;
 						if ( c == ComponentType.BLASTER )
-							rHasBlaster = true;
+							rNumBlasters++;
 						if ( c == ComponentType.SMG )
 							rNumSMGs++;
 						if ( c == ComponentType.SHIELD )
 							rNumShields++;
 					}
-					if ( !rHasBlaster )
+					if ( rNumBlasters < 3 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
 					else if ( rNumSMGs < 1 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
@@ -353,17 +357,17 @@ public class RefineryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-				rHasBlaster = false;
+				rNumBlasters = 0;
 				rHasRadar = false;
 				for ( int j = rInfo.components.length ; --j >= 0 ; )
 				{
 					c = rInfo.components[j];
 					if ( c == ComponentType.BLASTER )
-						rHasBlaster = true;
+						rNumBlasters++;
 					if ( c == ComponentType.RADAR )
 						rHasRadar = true;
 				}
-				if ( !rHasBlaster )
+				if ( rNumBlasters < 1 )
 					Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.IN_AIR);
 				else if ( !rHasRadar )
 				{

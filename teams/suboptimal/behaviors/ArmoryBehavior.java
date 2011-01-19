@@ -169,19 +169,14 @@ public class ArmoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 1 )
     			{
-    				rNumPlasma = 0;
     				rHasJump = false;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
-						if ( c == ComponentType.PLASMA )
-							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
 							rHasJump = true;
 					}
-					if ( rNumPlasma < 3 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
-					else if ( !rHasJump )
+					if ( !rHasJump )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -192,14 +187,19 @@ public class ArmoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 2 )
     			{
+    				rNumPlasma = 0;
     				rHasJump = false;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
+						if ( c == ComponentType.PLASMA )
+							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
 							rHasJump = true;
 					}
-					if ( !rHasJump )
+					if ( rNumPlasma < 2 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+					else if ( !rHasJump )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
