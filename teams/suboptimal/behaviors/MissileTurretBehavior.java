@@ -17,7 +17,7 @@ public class MissileTurretBehavior extends Behavior
 	
 	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
 	
-	MapLocation enemyLoc;
+	RobotInfo enemyInfo;
 	
 	boolean hasSatellite;
 	boolean hasRailgun;
@@ -53,24 +53,24 @@ public class MissileTurretBehavior extends Behavior
 			case DEFENSE:
 				
 				Utility.setIndicator(myPlayer, 1, "DEFENSE");
-				//enemyLoc = Utility.attackEnemies(myPlayer);
-				if ( enemyLoc == null )
+				enemyInfo = Utility.attackEnemies(myPlayer);
+				if ( enemyInfo == null )
 				{
 					Utility.setIndicator(myPlayer, 2, "No enemies nearby.");
 					if (!myPlayer.myMotor.isActive())
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
 				}
-				else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) > ComponentType.BLASTER.range )
+				else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) > ComponentType.BLASTER.range )
 				{
 					Utility.setIndicator(myPlayer, 2, "Enemy detected.");
 					if (!myPlayer.myMotor.isActive())
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
 				}
 				else
 				{
 					Utility.setIndicator(myPlayer, 2, "Enemy in range!");
 					if (!myPlayer.myMotor.isActive())
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
 				}
 				return;
 				

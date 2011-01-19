@@ -20,6 +20,7 @@ public class SCVBehavior extends Behavior
 		VACATE_FACTORY,
 		BUILD_FACTORY,
 		COMPUTE_TOWER,
+		VACATE_TOWER,
 		BUILD_TOWER,
 		SLEEP,
 		GIVE_UP
@@ -36,7 +37,7 @@ public class SCVBehavior extends Behavior
 	MapLocation factoryLoc;
 	MapLocation towerLoc;
 	MapLocation loc;
-	Direction dir;
+	Direction d;
 	
 	Robot[] nearbyRobots;
 	Mine[] nearbyMines;
@@ -118,6 +119,8 @@ public class SCVBehavior extends Behavior
 						// path found to the left
 						if ( rightRefinery == 1 && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()) )
 						{
+							mineLocs[0] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
+							mineLocs[1] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight());
 							while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
@@ -156,6 +159,8 @@ public class SCVBehavior extends Behavior
 						// path found to the right
 						else if ( leftRefinery == 1 && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()) )
 						{
+							mineLocs[0] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
+							mineLocs[1] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft());
 							while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
@@ -284,8 +289,9 @@ public class SCVBehavior extends Behavior
 			case WEIRD_VACATE:
 				
 				Utility.setIndicator(myPlayer, 1, "WEIRD_VACATE");
-				for ( Direction d : Direction.values() )
+				for ( int i = Direction.values().length ; --i >= 0 ; )
 				{
+					d = Direction.values()[i];
 					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
 					{
 						while ( myPlayer.myMotor.isActive() )
@@ -345,8 +351,9 @@ public class SCVBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 2, "");
 				unitDock = myPlayer.myRC.getLocation();
 				dizziness = 0;
-				for ( Direction d : Direction.values() )
+				for ( int i = Direction.values().length ; --i >= 0 ; )
 				{
+					d = Direction.values()[i];
 					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
 					{
 						armoryLoc = myPlayer.myRC.getLocation().add(d);
@@ -374,8 +381,9 @@ public class SCVBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "VACATE_HOME");
 				dizziness = 0;
-				for ( Direction d : Direction.values() )
+				for ( int i = Direction.values().length ; --i >= 0 ; )
 				{
+					d = Direction.values()[i];
 					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
 					{
 						while ( myPlayer.myMotor.isActive() )
@@ -399,26 +407,27 @@ public class SCVBehavior extends Behavior
 				 
 				Utility.setIndicator(myPlayer, 1, "VACATE_FACTORY");
 				dizziness = 0;
-				 for ( Direction d : Direction.values() )
+				for ( int i = Direction.values().length ; --i >= 0 ; )
+				{
+					d = Direction.values()[i];
+					if ( d != Direction.OMNI && d != Direction.NONE && !myPlayer.myRC.getLocation().add(d).equals(unitDock) && myPlayer.myMotor.canMove(d) )
 					{
-						if ( d != Direction.OMNI && d != Direction.NONE && !myPlayer.myRC.getLocation().add(d).equals(unitDock) && myPlayer.myMotor.canMove(d) )
-						{
-							while ( myPlayer.myMotor.isActive() )
-								myPlayer.sleep();
-							myPlayer.myMotor.setDirection(d.opposite());
+						while ( myPlayer.myMotor.isActive() )
 							myPlayer.sleep();
-							myPlayer.myMotor.moveBackward();
-							obj = SCVBuildOrder.BUILD_FACTORY;
-							return;
-						}
-						dizziness++;
-						if ( dizziness >= 8 )
-						{
-							obj = SCVBuildOrder.WEIRD_SPAWN;
-							return;
-						}
+						myPlayer.myMotor.setDirection(d.opposite());
+						myPlayer.sleep();
+						myPlayer.myMotor.moveBackward();
+						obj = SCVBuildOrder.BUILD_FACTORY;
+						return;
 					}
-				 return;
+					dizziness++;
+					if ( dizziness >= 8 )
+					{
+						obj = SCVBuildOrder.WEIRD_SPAWN;
+						return;
+					}
+				}
+				return;
 				
 			case BUILD_FACTORY:
 				
@@ -449,23 +458,60 @@ public class SCVBehavior extends Behavior
 							continue;
 						if ( towerLoc.equals(unitDock) )
 							continue;
+						if ( towerLoc.equals(factoryLoc) )
+							continue;
+						if ( towerLoc.equals(armoryLoc) )
+							continue;
 						if ( towerLoc.equals(mineLocs[0]) )
 							continue;
 						if ( towerLoc.equals(mineLocs[1]) )
 							continue;
-						if ( mineLocs[2] != null && towerLoc.equals(mineLocs[2]) )
+						if ( towerLoc.equals(mineLocs[2]) )
 							continue;
-						if ( mineLocs[3] != null && towerLoc.equals(mineLocs[3]) )
+						if ( towerLoc.equals(mineLocs[3]) )
 							continue;
-						obj = SCVBuildOrder.BUILD_TOWER;
+						if ( towerLoc.equals(myPlayer.myRC.getLocation()) )
+							obj = SCVBuildOrder.VACATE_TOWER;
+						else
+							obj = SCVBuildOrder.BUILD_TOWER;
 						tiredness = 0;
 						return;
 					}
-				myPlayer.myRC.suicide(); // no suitable location for tower
+				Utility.setIndicator(myPlayer, 2, "No suitable location for tower.");
+				myPlayer.sleep();
+				myPlayer.myRC.suicide();
+				return;
+				
+			case VACATE_TOWER:
+				
+				Utility.setIndicator(myPlayer, 1, "VACATE_TOWER");
+				Utility.setIndicator(myPlayer, 2, "");
+				dizziness = 0;
+				for ( int i = Direction.values().length ; --i >= 0 ; )
+				{
+					d = Direction.values()[i];
+					if ( d != Direction.OMNI && d != Direction.NONE && myPlayer.myMotor.canMove(d) )
+					{
+						while ( myPlayer.myMotor.isActive() )
+							myPlayer.sleep();
+						myPlayer.myMotor.setDirection(d.opposite());
+						myPlayer.sleep();
+						myPlayer.myMotor.moveBackward();
+						obj = SCVBuildOrder.BUILD_TOWER;
+						return;
+					}
+					dizziness++;
+					if ( dizziness >= 8 )
+					{
+						myPlayer.myRC.suicide(); // SCV is trapped... but then how did you get there?
+						return;
+					}
+				}
 				return;
 				
 			case BUILD_TOWER:
 			
+				Utility.setIndicator(myPlayer, 0, "My location: " + myPlayer.myRC.getLocation().toString() + " | Tower location: " + towerLoc.toString());
 				Utility.setIndicator(myPlayer, 1, "BUILD_TOWER");
 				Utility.setIndicator(myPlayer, 2, "Giving up in " + Integer.toString(Constants.MINE_AFFINITY - tiredness) + "...");
 				if ( tiredness < Constants.MINE_AFFINITY )
