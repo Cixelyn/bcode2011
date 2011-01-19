@@ -137,24 +137,27 @@ public class WraithBehavior extends Behavior
 			        		else
 			        			rally = (rally + 6) % 8;
 		        		}
+		        		spawn = (rally + 4) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 1) % 8;
+		        		spawn = (rally + 4) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 7) % 8;
+		        		spawn = (rally + 4) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -174,21 +177,21 @@ public class WraithBehavior extends Behavior
 			        			rally = (rally + 6) % 8;
 		        		}
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        		if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 3) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 5) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -196,7 +199,7 @@ public class WraithBehavior extends Behavior
 	        	
 	        	enemyInfo = Utility.attackEnemies(myPlayer);
 	        	//Found an enemy
-	        	if ( enemyInfo != null )
+	        	if ( enemyInfo != null && !myPlayer.myRC.getLocation().equals(enemyInfo.location) )
 	        	{
 	        		if ( enemyInfo.on && enemyInfo.chassis == Chassis.MEDIUM || enemyInfo.chassis == Chassis.HEAVY )
 	        		{
