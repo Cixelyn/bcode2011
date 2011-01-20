@@ -75,12 +75,13 @@ public class GuileNavigation {
 			else {
 				tracing=true;
 				Direction tracingDirection = myPlayer.myRC.getDirection();
-				if (memory[myPlayer.myRC.getLocation().x][myPlayer.myRC.getLocation().y]==0) {
-					memory[myPlayer.myRC.getLocation().x][myPlayer.myRC.getLocation().y]=1;
+				if (memory[myPlayer.myRC.getLocation().x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().y%GameConstants.MAP_MAX_HEIGHT]==0) {
+					memory[myPlayer.myRC.getLocation().x%GameConstants.MAP_MAX_WIDTH][myPlayer.myRC.getLocation().y%GameConstants.MAP_MAX_HEIGHT]=1;
 					for (int i=0;i<8;i++) {
 						if (myPlayer.myMotor.canMove(tracingDirection.rotateLeft())) {
 							tracingLeft=true;
 							tracingRight=false;
+							Utility.printMsg(myPlayer, tracingDirection.rotateLeft().toString());
 							return tracingDirection.rotateLeft();
 						}
 						tracingDirection=tracingDirection.rotateLeft();
