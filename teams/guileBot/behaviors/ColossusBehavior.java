@@ -33,6 +33,11 @@ public class ColossusBehavior extends Behavior
 	ArrayDeque<MapLocation> prevFiveLocs = new ArrayDeque<MapLocation>();
 	
 	
+	private static final int[] componentLoadOut0 = Utility.countComponents(new ComponentType[]    
+		                       {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.RAILGUN,ComponentType.RAILGUN,ComponentType.SMG
+								});
+	
 	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    
                                {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
 								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
@@ -67,10 +72,15 @@ public class ColossusBehavior extends Behavior
 
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				
-				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2) || Utility.compareComponents(myPlayer, componentLoadOut3))
-				{
+				// Decide what kind of heavy I am
+				if ( !Utility.compareComponents(myPlayer, componentLoadOut0) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				}
+				else if ( !Utility.compareComponents(myPlayer, componentLoadOut1) && num != -1 )
+					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				else if ( !Utility.compareComponents(myPlayer, componentLoadOut2) && num != -1 )
+					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				else if ( !Utility.compareComponents(myPlayer, componentLoadOut3) && num != -1 )
+					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				return;
 	        	
 			case DETERMINE_SPAWN:
@@ -130,12 +140,12 @@ public class ColossusBehavior extends Behavior
 						else
 							rally = (spawn + 6) % 8;
 					}
-					Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+					Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
 				else
 				{
 					rally = (2 * num + 1) % 8;
-					Utility.setIndicator(myPlayer, 0, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
+					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
 				permRally = rally;
 				obj = ColossusBuildOrder.ADVANCE;
@@ -163,7 +173,7 @@ public class ColossusBehavior extends Behavior
 		        		}
 		        		spawn = (rally + 4) % 8;
 		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
@@ -172,7 +182,7 @@ public class ColossusBehavior extends Behavior
 		        		rally = (rally + 1) % 8;
 		        		spawn = (rally + 4) % 8;
 		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
@@ -181,7 +191,7 @@ public class ColossusBehavior extends Behavior
 		        		rally = (rally + 7) % 8;
 		        		spawn = (rally + 4) % 8;
 		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -200,19 +210,19 @@ public class ColossusBehavior extends Behavior
 			        		else
 			        			rally = (rally + 6) % 8;
 		        		}
-		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 3) % 8;
-		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 5) % 8;
-		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -226,8 +236,8 @@ public class ColossusBehavior extends Behavior
 				}
 				if (shouldJump)
 				{
-					if ( spawn != -1 )
-						Utility.setIndicator(myPlayer, 2, "Current rally: " + Direction.values()[rally] + ".");
+					/*if ( spawn != -1 )
+						Utility.setIndicator(myPlayer, 0, "Current rally: " + Direction.values()[rally] + ".");*/
 					int jump=jumpInDir(Direction.values()[rally]);
 					if ( jump == JMP_SUCCESS )
 					{
@@ -243,7 +253,7 @@ public class ColossusBehavior extends Behavior
 						else if ( spawn % 2 == 1 )
 							rally = (rally + 5) % 8;
 						permRally = rally;
-						Utility.setIndicator(myPlayer, 0, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+						Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
 					}
 				}
 				
@@ -410,7 +420,7 @@ public class ColossusBehavior extends Behavior
 			if ( num == -1 )
 			{
 				num = msg.ints[Messenger.firstData+1];
-				Utility.setIndicator(myPlayer, 2, "I'm heavy " + Integer.toString(num) + "!");
+				Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + "!");
 			}
 		}
 	}

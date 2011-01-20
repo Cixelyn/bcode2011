@@ -17,19 +17,12 @@ public enum MsgType {
 	//ints   - number of ints in message
 	//locs   - number of locs in message
 	
-				   //	   ttl, cback,  rbcast,  ints, locs	
+				   //	           ttl, cback,  rbcast,  ints, locs	
 	MSG_HELLO(                      1 , true ,  false ,   0 ,   0	),
 	MSG_SEND_DOCK(                  0 , true ,  false ,   0 ,   1   ),
-	MSG_SEND_TOWER(                 0 , true ,  false ,   1 ,   1   ),
 	MSG_SEND_NUM_FLYER(             0 , true ,  false ,   2 ,   1   ),
 	MSG_SEND_NUM_HEAVY(             0 , true ,  false ,   2 ,   1   ),
-	MSG_MINES(                      0 , true ,  false ,   0 ,   5   ),
-	MSG_RALLY_SET(                  0 , true ,  false ,   1 ,   0   ),
-	MSG_ENEMY_LOC(                  0 , true ,  false ,   1 ,   1   ),
-	MSG_REAL_ENEMY_LOC(             0 , true ,  false ,   1 ,   1   ),
-	MSG_DET_LEADER(                 0 , true ,  false ,   2 ,   2   ),
-	MSG_REAL_DET_LEADER(            0 , true ,  false ,   2 ,   2   ),
-	MSG_RERALLY(Constants.RERALLY_TTL , true ,  true  ,   2 ,   1   );
+	MSG_MINES(                      0 , true ,  false ,   0 ,   5   );
 	
 	public int ttl;
 	public boolean shouldCallback;

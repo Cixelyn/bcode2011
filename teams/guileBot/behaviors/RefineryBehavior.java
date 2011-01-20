@@ -15,7 +15,6 @@ public class RefineryBehavior extends Behavior
 		DETERMINE_LEADER,
 		WAIT_FOR_DOCK,
 		EQUIP_UNIT,
-		EQUIP_TOWER,
 		EQUIP_HEAVY,
 		EQUIP_DRONE,
 		EQUIP_WRAITH,
@@ -25,22 +24,19 @@ public class RefineryBehavior extends Behavior
 	RefineryBuildOrder obj = RefineryBuildOrder.INITIALIZE;
 	
 	MapLocation unitDock;
-	MapLocation towerLoc;
 	
-	int currDrone;
 	int currWraith;
+	int currDrone;
 	int currHeavy;
-	int towerType = -1;
+	int currUnit;
 	double lastIncome;
-	boolean remakeFlyers = false;
-	boolean towerEquipped = false;
 	
 	Robot[] nearbyRobots;
 	RobotInfo rInfo;
 	Robot r;
 	ComponentType c;
-	int babyDrone;
 	int babyWraith;
+	int babyDrone;
 	int babyHeavy;
 
 	boolean rHasConstructor;
@@ -68,6 +64,7 @@ public class RefineryBehavior extends Behavior
     		case INITIALIZE:
     			
     			Utility.setIndicator(myPlayer, 1, "INITIALIZE");
+    			Utility.setIndicator(myPlayer, 2, "");
     			if ( Clock.getRoundNum() < 200 ) // I'm one of the first four refineries (change to 10 for first two, 80 for first 3)
     				obj = RefineryBuildOrder.DETERMINE_LEADER;
     			else
@@ -77,6 +74,7 @@ public class RefineryBehavior extends Behavior
     		case DETERMINE_LEADER:
     			
     			Utility.setIndicator(myPlayer, 1, "DETERMINE_LEADER");
+    			Utility.setIndicator(myPlayer, 2, "");
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
     			for ( int i = nearbyRobots.length ; --i >= 0 ; )
     			{
@@ -97,6 +95,7 @@ public class RefineryBehavior extends Behavior
     		case GIVE_ANTENNA:
     			
     			Utility.setIndicator(myPlayer, 1, "GIVE_ANTENNA");
+    			Utility.setIndicator(myPlayer, 2, "");
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
     			for ( int i = nearbyRobots.length ; --i >= 0 ; )
     			{
@@ -114,6 +113,7 @@ public class RefineryBehavior extends Behavior
     		case WAIT_FOR_DOCK:
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
+    			Utility.setIndicator(myPlayer, 2, "");
     			if ( unitDock != null )
     			{
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.CONSTRUCTOR.range )
@@ -148,103 +148,40 @@ public class RefineryBehavior extends Behavior
     		case EQUIP_UNIT:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_UNIT");
+    			Utility.setIndicator(myPlayer, 2, "Idle.");
     			
-    			if ( !remakeFlyers && Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    			// check what unit should be made
+    			currUnit = currWraith + currDrone + currHeavy;
+    			if ( currUnit == 1 )
     			{
-    				remakeFlyers = true;
-    				currDrone = 0;
-    			}
-    			
-    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyWraith && r.getID() != babyDrone )
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if ( currWraith < Constants.MAX_WRAITHS )
+    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
+    				if ( r != null && r.getID() != babyWraith )
     				{
-    					Utility.setIndicator(myPlayer, 2, "Wraith found.");
+    					Utility.setIndicator(myPlayer, 2, "Equipping wraith.");
     					babyWraith = r.getID();
     					obj = RefineryBuildOrder.EQUIP_WRAITH;
     				}
-    				else
+    			}
+    			else if ( currUnit % 3 == 2 )
+    			{
+    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
+    				if ( r != null && r.getID() != babyDrone )
     				{
-    					Utility.setIndicator(myPlayer, 2, "Drone found.");
+    					Utility.setIndicator(myPlayer, 2, "Equipping drone.");
     					babyDrone = r.getID();
     					obj = RefineryBuildOrder.EQUIP_DRONE;
     				}
-    				return;
     			}
-    			
-    			if ( !towerEquipped && currDrone >= Constants.MAX_DRONES )
-    				obj = RefineryBuildOrder.EQUIP_TOWER;
     			else
     			{
-	    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-	    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyHeavy )
-	    			{
-	    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-	    				if ( rInfo.chassis == Chassis.HEAVY )
-	    				{
-	    					Utility.setIndicator(myPlayer, 2, "Heavy found.");
-	    					babyHeavy = r.getID();
-		    				obj = RefineryBuildOrder.EQUIP_HEAVY;
-	    				}
-		    			return;
-	    			}
+    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+    				if ( r != null && r.getID() != babyHeavy )
+    				{
+    					Utility.setIndicator(myPlayer, 2, "Equipping heavy.");
+    					babyHeavy = r.getID();
+    					obj = RefineryBuildOrder.EQUIP_HEAVY;
+    				}
     			}
-    			
-    			Utility.setIndicator(myPlayer, 2, "No units to equip.");
-    			return;
-    			
-    		case EQUIP_TOWER:
-    			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_TOWER");
-    			towerEquipped = true;
-    			
-    			r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r != null )
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if ( rInfo.chassis == Chassis.HEAVY )
-					{
-						Utility.setIndicator(myPlayer, 2, "Heavy found before turret constructed, abandoning turret.");
-						obj = RefineryBuildOrder.EQUIP_UNIT;
-						return;
-					}
-    			}
-    			
-				if ( towerLoc != null )
-				{
-					if ( myPlayer.myRC.getLocation().distanceSquaredTo(towerLoc) > ComponentType.RECYCLER.range || towerType == 2 )
-					{
-						Utility.setIndicator(myPlayer, 2, "I am not responsible for turret type " + Integer.toString(towerType) + ".");
-						obj = RefineryBuildOrder.EQUIP_UNIT;
-						return;
-					}
-					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND);
-					if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
-					{
-						rInfo = myPlayer.mySensor.senseRobotInfo(r);
-						if ( rInfo.chassis == Chassis.BUILDING )
-						{
-							Utility.setIndicator(myPlayer, 2, "Equipping turret.");
-							while ( myPlayer.myMotor.isActive() )
-								myPlayer.sleep();
-							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(towerLoc));
-							myPlayer.sleep();
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND);
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-							while ( myPlayer.myMotor.isActive() )
-								myPlayer.sleep();
-							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-							obj = RefineryBuildOrder.EQUIP_UNIT;
-							return;
-						}
-					}
-				}
-				Utility.setIndicator(myPlayer, 2, "Waiting for turret.");
     			return;
     			
     		case EQUIP_HEAVY:
@@ -253,14 +190,44 @@ public class RefineryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 2, "Equipping heavy " + Integer.toString(currHeavy) + ".");
     			
 				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r == null )
+    			if ( r == null || r.getID() != babyHeavy )
     			{
     				obj = RefineryBuildOrder.EQUIP_UNIT;
     				return;
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 3 == 0 )
+    			if ( currHeavy == 0 )
+    			{
+					rHasRadar = false;
+					rNumSMGs = 0;
+					rNumShields = 0;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.RADAR )
+							rHasRadar = true;
+						if ( c == ComponentType.SMG )
+							rNumSMGs++;
+						if ( c == ComponentType.SHIELD )
+							rNumShields++;
+					}
+					if ( rNumSMGs < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+					else if ( rNumShields < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+					else if ( !rHasRadar )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
+						{
+							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							currHeavy++;
+							obj = RefineryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
+    			else if ( currHeavy % 3 == 0 )
     			{
 					rHasRadar = false;
 					rNumSMGs = 0;
@@ -444,7 +411,7 @@ public class RefineryBehavior extends Behavior
 
 	public String toString()
 	{
-		return "MainRefineryBehavior";
+		return "RefineryBehavior";
 	}
 	
 	public void newComponentCallback(ComponentController[] components)
@@ -456,11 +423,6 @@ public class RefineryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
-		if ( t == MsgType.MSG_SEND_TOWER )
-		{
-			towerType = msg.ints[Messenger.firstData];
-			towerLoc = msg.locations[Messenger.firstData];
-		}
 	}
 	public void onWakeupCallback(int lastActiveRound)
 	{

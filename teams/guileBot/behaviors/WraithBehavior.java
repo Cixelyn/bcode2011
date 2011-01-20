@@ -48,7 +48,7 @@ public class WraithBehavior extends Behavior
 			
 			case EQUIPPING:
 				
-				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
+				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				hasBlaster = false;
 				hasRadar = false;
 				for ( int i = myPlayer.myRC.components().length; --i >= 0;)
@@ -65,7 +65,7 @@ public class WraithBehavior extends Behavior
 				
 			case DETERMINE_SPAWN:
 				
-				myPlayer.myRC.setIndicatorString(1, "DETERMINE_SPAWN");
+				Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
 				while ( westEdge == -1 || northEdge == -1 || eastEdge == -1 || southEdge == -1 )
 				{
 					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myRC.getLocation().add(Direction.NORTH, 6)) )
@@ -110,13 +110,13 @@ public class WraithBehavior extends Behavior
 					else if ( num % 2 == 1 )
 						rally = (spawn + 5) % 8;
 					destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
-					Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+					Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
 				else
 				{
 					rally = (2 * num + 1) % 8;
 					destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
-					Utility.setIndicator(myPlayer, 0, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
+					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
 				obj = WraithBuildOrder.ADVANCE;
 				return;
@@ -144,7 +144,7 @@ public class WraithBehavior extends Behavior
 		        		}
 		        		spawn = (rally + 4) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
@@ -153,7 +153,7 @@ public class WraithBehavior extends Behavior
 		        		rally = (rally + 1) % 8;
 		        		spawn = (rally + 4) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
@@ -162,7 +162,7 @@ public class WraithBehavior extends Behavior
 		        		rally = (rally + 7) % 8;
 		        		spawn = (rally + 4) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -182,21 +182,21 @@ public class WraithBehavior extends Behavior
 			        			rally = (rally + 6) % 8;
 		        		}
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        		if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 3) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 		        	if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 		        	{
 		        		rally = (rally + 5) % 8;
 		        		destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally+4)%8);
-		        		Utility.setIndicator(myPlayer, 0, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        		numBounces++;
 		        	}
 	        	}
@@ -328,7 +328,7 @@ public class WraithBehavior extends Behavior
 			if ( num == -1 )
 			{
 				num = msg.ints[Messenger.firstData+1];
-				Utility.setIndicator(myPlayer, 2, "I'm wraith " + Integer.toString(num) + "!");
+				Utility.setIndicator(myPlayer, 0, "I'm wraith " + Integer.toString(num) + "!");
 			}
 		}
 	}

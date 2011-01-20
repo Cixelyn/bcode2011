@@ -569,8 +569,23 @@ public class Utility {
 	public static int totalWeight(ComponentType[] components)
 	{
 		int ans = 0;
-		for ( int i = components.length-1 ; i >= 0 ; i-- )
+		for ( int i = components.length ; --i >= 0 ; )
 			ans += components[i].weight;
+		return ans;
+	}
+	
+	/**
+	 * Returns total cost of a list of components
+	 * @author JVen
+	 * @param components An array of components
+	 * @return The total cost of components
+	 */
+	
+	public static int totalCost(ComponentType[] components)
+	{
+		int ans = 0;
+		for ( int i = components.length ; --i >= 0 ; )
+			ans += components[i].cost;
 		return ans;
 	}
 	
