@@ -218,7 +218,7 @@ public class WraithBehavior extends Behavior
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
         				{
-	        				if ( myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().opposite()).distanceSquaredTo(enemyInfo.location) < myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
+	        				if ( myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().opposite()).distanceSquaredTo(enemyInfo.location) > myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
 	        					myPlayer.myMotor.moveBackward();
 	        				else
 	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
