@@ -11,7 +11,7 @@ public class GuileNavigation {
 	double originalDistanceSquared=0;
 	boolean tracingRight;
 	boolean tracingLeft;
-	MapLocation[][] memory = new MapLocation[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
+	int[][] memory = new int[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
 	
 	
 	public GuileNavigation(RobotPlayer player) {
@@ -75,7 +75,8 @@ public class GuileNavigation {
 			else {
 				tracing=true;
 				Direction tracingDirection = myPlayer.myRC.getDirection();
-				if (memory[myPlayer.myRC.getLocation().x][myPlayer.myRC.getLocation().y]==null) {
+				if (memory[myPlayer.myRC.getLocation().x][myPlayer.myRC.getLocation().y]==0) {
+					memory[myPlayer.myRC.getLocation().x][myPlayer.myRC.getLocation().y]=1;
 					for (int i=0;i<8;i++) {
 						if (myPlayer.myMotor.canMove(tracingDirection.rotateLeft())) {
 							tracingLeft=true;
