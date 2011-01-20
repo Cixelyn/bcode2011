@@ -71,14 +71,14 @@ public class RobotPlayer implements Runnable {
 	public double myLastRes;
 	public boolean hasTakenDamage;
 	
+	public int numKills;
+	
 	
 	public final Team myOpponent;
 	
 	
 	//Useful Toolkits
 	public final Random myDice;
-	
-	
 	
 	//Higher level strategy
 	public Behavior myBehavior;
@@ -376,6 +376,9 @@ public class RobotPlayer implements Runnable {
 					Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			continue;
 			}
 		}	
+		
+		
+		
 		//We can afford this expensive call because allocation doesn't happen often.
 		//Also, because myWeapons only increases and never decreases, we shouldn't ever get nulls
 		mySMGs = mySMGsInternal.toArray(new WeaponController[mySMGsInternal.size()]);
