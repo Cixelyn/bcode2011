@@ -277,9 +277,9 @@ public class ColossusBehavior extends Behavior
 	        			}
 	        		}
 	        	}
+	        	RobotInfo robotInfo = Utility.attackEnemies(myPlayer);
 	        	
-	        	
-	        	//I AM ENGAGED IN BLOODY COMBAT	
+/*	        	//I AM ENGAGED IN BLOODY COMBAT	
 	        	if(nearestEnemyRobot!=null) {	
 	        		
 	        		rally = nearestEnemyRobotDirection.ordinal();
@@ -300,10 +300,10 @@ public class ColossusBehavior extends Behavior
 									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
 								}
 							}
-					}
+					}*/
 					
 					
-	        		//if I'm too closet to enemy units, move back
+	        	//if I'm too closet to enemy units, move back
 					if(nearestEnemyRobotDistance<=26 && nearestEnemyRobotDistance > 16) {
 						if (!myPlayer.myMotor.isActive() && !myPlayer.myRC.getDirection().equals(nearestEnemyRobotDirection)) {//I'm good				
 							myPlayer.myMotor.setDirection(nearestEnemyRobotDirection);
