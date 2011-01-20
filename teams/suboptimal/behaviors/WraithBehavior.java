@@ -103,7 +103,12 @@ public class WraithBehavior extends Behavior
 				spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 				if ( spawn != -1 )
 				{
-					rally = (spawn + 4) % 8;
+					if ( num < 2 )
+						rally = (spawn + 4) % 8;
+					else if ( num % 2 == 0 )
+						rally = (spawn + 3) % 8;
+					else if ( num % 2 == 1 )
+						rally = (spawn + 5) % 8;
 					destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
 					Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
