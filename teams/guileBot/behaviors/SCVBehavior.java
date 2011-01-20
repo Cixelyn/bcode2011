@@ -392,6 +392,8 @@ public class SCVBehavior extends Behavior
 				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryLoc), Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryLoc), ComponentType.FACTORY, RobotLevel.ON_GROUND);
 				myPlayer.sleep();
+				myPlayer.myRC.turnOn(mineLocs[3], RobotLevel.ON_GROUND);
+				myPlayer.sleep();
 				myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
 				myPlayer.sleep();
 				myPlayer.myRC.suicide();
