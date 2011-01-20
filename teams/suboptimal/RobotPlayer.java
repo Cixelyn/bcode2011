@@ -44,8 +44,14 @@ public class RobotPlayer implements Runnable {
 	public BroadcastController myBroadcaster;
 	public JumpController myJump;
 	
-	private final ArrayList<WeaponController> myWeaponsInternal;
-	public WeaponController[] myWeapons;
+	private final ArrayList<WeaponController> mySMGsInternal;
+	private final ArrayList<WeaponController> myBlastersInternal;
+	private final ArrayList<WeaponController> myRailgunsInternal;
+	private final ArrayList<WeaponController> myMedicsInternal;
+	public WeaponController[] mySMGs;
+	public WeaponController[] myBlasters;
+	public WeaponController[] myRailguns;
+	public WeaponController[] myMedics;
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
@@ -107,8 +113,13 @@ public class RobotPlayer implements Runnable {
     	mySensor = null;
     	myBroadcaster = null;
     	
-    	myWeaponsInternal = new ArrayList<WeaponController>();
-    	myWeapons = new WeaponController[0];
+    	mySMGsInternal = new ArrayList<WeaponController>();
+    	myBlastersInternal = new ArrayList<WeaponController>();
+    	myRailgunsInternal = new ArrayList<WeaponController>();
+    	myMedicsInternal = new ArrayList<WeaponController>();
+    	mySMGs = new WeaponController[0];
+    	myBlasters = new WeaponController[0];
+    	myRailguns = new WeaponController[0];
     	
     	
     	myMessenger = new Messenger(this);
@@ -321,7 +332,14 @@ public class RobotPlayer implements Runnable {
 		for(ComponentController c : components) {
 			switch(c.componentClass()) {
 				case WEAPON:
-					myWeaponsInternal.add((WeaponController)c);
+					if ( c.type() == ComponentType.SMG )
+						mySMGsInternal.add((WeaponController)c);
+					if ( c.type() == ComponentType.BLASTER )
+						myBlastersInternal.add((WeaponController)c);
+					if ( c.type() == ComponentType.RAILGUN )
+						myRailgunsInternal.add((WeaponController)c);
+					if ( c.type() == ComponentType.MEDIC )
+						myMedicsInternal.add((WeaponController)c);
 					break;
 				case SENSOR:
 					mySensor = (SensorController)c;
@@ -351,8 +369,10 @@ public class RobotPlayer implements Runnable {
 			
 			//We can afford this expensive call because allocation doesn't happen often.
 			//Also, because myWeapons only increases and never decreases, we shouldn't ever get nulls
-			myWeapons = myWeaponsInternal.toArray(new WeaponController[myWeaponsInternal.size()]);
-			
+			mySMGs = mySMGsInternal.toArray(new WeaponController[mySMGsInternal.size()]);
+			myBlasters = myBlastersInternal.toArray(new WeaponController[myBlastersInternal.size()]);
+			myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
+			myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
 			
 			
 			
