@@ -404,14 +404,13 @@ public class Utility {
 					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
 			}
 			
-			
 			for ( int j = myPlayer.myBlasters.length; --j>=0;)
 			{
 				if (myPlayer.mySensor.senseRobotInfo(enemyMin1.robot).hitpoints<0) {
 					if (enemyMin2!=null) {
 						gun =  myPlayer.myBlasters[j];
-						if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
-							gun.attackSquare(enemyMin1.location, enemyMin2.robot.getRobotLevel());
+						if ( !gun.isActive() && gun.withinRange(enemyMin2.location))
+							gun.attackSquare(enemyMin2.location, enemyMin2.robot.getRobotLevel());
 					}
 				}
 				else {
@@ -427,8 +426,8 @@ public class Utility {
 				if (myPlayer.mySensor.senseRobotInfo(enemyMin1.robot).hitpoints<0) {
 					if (enemyMin2!=null) {
 						gun =  myPlayer.myRailguns[j];
-						if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
-							gun.attackSquare(enemyMin1.location, enemyMin2.robot.getRobotLevel());
+						if ( !gun.isActive() && gun.withinRange(enemyMin2.location))
+							gun.attackSquare(enemyMin2.location, enemyMin2.robot.getRobotLevel());
 					}
 				}
 				else {
@@ -438,7 +437,7 @@ public class Utility {
 				}
 			}
 		}
-		return null;
+		return enemyMin1;
 			
 	}
 	
