@@ -224,7 +224,7 @@ public class WraithBehavior extends Behavior
 	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
         				}
         			}
-        			else if ( enemyInfo.on && myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 26 )
+        			else if ( enemyInfo.on && enemyInfo.chassis != Chassis.BUILDING && myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 26 )
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, halting.");
         				if ( !myPlayer.myMotor.isActive() )
