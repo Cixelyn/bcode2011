@@ -1,6 +1,6 @@
-package masterytwob.behaviors;
+package team068b.behaviors;
 
-import masterytwob.*;
+import team068b.*;
 import battlecode.common.*;
 
 public class MarineBehavior extends Behavior

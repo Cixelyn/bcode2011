@@ -1,7 +1,7 @@
-package masterytwo.strategies;
+package team068.strategies;
 
-import masterytwo.Behavior;
-import masterytwo.RobotPlayer;
+import team068.Behavior;
+import team068.RobotPlayer;
 
 /**
  * A strategy is a collection of behaviors that are instantiated upon robot default.

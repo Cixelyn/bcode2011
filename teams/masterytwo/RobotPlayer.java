@@ -1,9 +1,9 @@
-package masterytwo;
+package team068;
 
 import java.util.*;
 
-import masterytwo.strategies.*;
-import masterytwo.behaviors.*;
+import team068.strategies.*;
+import team068.behaviors.*;
 
 
 import battlecode.common.*;
