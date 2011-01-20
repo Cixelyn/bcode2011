@@ -331,52 +331,58 @@ public class RobotPlayer implements Runnable {
 		
 		for(ComponentController c : components) {
 			switch(c.componentClass()) {
+
+				//////////////////////////////////////////////////////////////////
+				//WEAPONS ALLOCATIONS
 				case WEAPON:
-					if ( c.type() == ComponentType.SMG )
-						mySMGsInternal.add((WeaponController)c);
-					if ( c.type() == ComponentType.BLASTER )
-						myBlastersInternal.add((WeaponController)c);
-					if ( c.type() == ComponentType.RAILGUN )
-						myRailgunsInternal.add((WeaponController)c);
-					if ( c.type() == ComponentType.MEDIC )
-						myMedicsInternal.add((WeaponController)c);
-					break;
+					switch(c.type()) {
+					case SMG:
+						mySMGsInternal.add((WeaponController)c);		continue;
+					case BLASTER:
+						myBlastersInternal.add((WeaponController)c);	continue;
+					case RAILGUN:
+						myRailgunsInternal.add((WeaponController)c);	continue;
+					case MEDIC:
+						myMedicsInternal.add((WeaponController)c);		continue;
+					default:
+						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); continue;
+					}
+					
+				/////////////////////////////////////////////////////////////////
+				//SENSOR ALLOCATIONS
 				case SENSOR:
-					mySensor = (SensorController)c;
-					break;
+					mySensor = (SensorController)c; 					continue;
 				case BUILDER:
-					myBuilder = (BuilderController)c;
-					break;
+					myBuilder = (BuilderController)c; 					continue;
 				case MOTOR:
-					myMotor = (MovementController)c;
-					break;
+					myMotor = (MovementController)c;					continue;
 				case COMM:
 					myBroadcaster = (BroadcastController)c;
 					myMessenger.enableSender();
-					break;
+					continue;
 				case ARMOR:
-					break;
+					continue;
+					
+				/////////////////////////////////////////////////////////////////
+				//MISC ALLOCATIONS
 				case MISC:
-					if ( c.type() == ComponentType.PROCESSOR )
-						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
-					if ( c.type() == ComponentType.JUMP )
-						myJump = (JumpController) c;
-					break;
+					switch(c.type()) {
+					case PROCESSOR:
+						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	continue;
+					case JUMP:
+						myJump = (JumpController) c;							continue;
+					}
 				default:
-					Utility.printMsg(this,"NotController");
+					Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			continue;
 			}
-			
-			
-			//We can afford this expensive call because allocation doesn't happen often.
-			//Also, because myWeapons only increases and never decreases, we shouldn't ever get nulls
-			mySMGs = mySMGsInternal.toArray(new WeaponController[mySMGsInternal.size()]);
-			myBlasters = myBlastersInternal.toArray(new WeaponController[myBlastersInternal.size()]);
-			myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
-			myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
-			
-			
-			
-		}		
+		}	
+		//We can afford this expensive call because allocation doesn't happen often.
+		//Also, because myWeapons only increases and never decreases, we shouldn't ever get nulls
+		mySMGs = mySMGsInternal.toArray(new WeaponController[mySMGsInternal.size()]);
+		myBlasters = myBlastersInternal.toArray(new WeaponController[myBlastersInternal.size()]);
+		myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
+		myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
+		
 	}
 	
 	
