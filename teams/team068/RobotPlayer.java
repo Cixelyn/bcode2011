@@ -42,43 +42,29 @@ public class RobotPlayer implements Runnable {
 	public BuilderController myBuilder;
 	public MovementController myMotor;
 	public BroadcastController myBroadcaster;
-	public JumpController myJump;
 	
-	private final ArrayList<WeaponController> mySMGsInternal;
-	private final ArrayList<WeaponController> myBlastersInternal;
-	private final ArrayList<WeaponController> myRailgunsInternal;
-	private final ArrayList<WeaponController> myMedicsInternal;
-	public WeaponController[] mySMGs;
-	public WeaponController[] myBlasters;
-	public WeaponController[] myRailguns;
-	public WeaponController[] myMedics;
+	private final ArrayList<WeaponController> myWeaponsInternal;
+	public WeaponController[] myWeapons;
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
 	public final Actions myActions;
-	public final Memory myMemory;
 	
 	
 	//Misc Stats
 	public final int myBirthday;
-	public final MapLocation myBirthplace;
-	
 	private int executeStartTime;
 	private int executeStartByte;
 	private int lastActiveRound;
 	private double lastRoundHP;
 	private int bytecodeLimit;
 	public double myLastRes;
-	public boolean hasTakenDamage;
-	
-	public int numKills;
-	
-	
-	public final Team myOpponent;
 	
 	
 	//Useful Toolkits
 	public final Random myDice;
+	
+	
 	
 	//Higher level strategy
 	public Behavior myBehavior;
@@ -96,12 +82,9 @@ public class RobotPlayer implements Runnable {
     	
     	//variables and utilities that other pieces depend on
     	myBirthday = Clock.getRoundNum();
-    	myBirthplace = myRC.getLocation();
     	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
     	bytecodeLimit = GameConstants.BYTECODE_LIMIT_BASE;
-    	
-    	myOpponent = myRC.getTeam().opponent();
     	
     	lastActiveRound = myBirthday;
     	lastRoundHP = rc.getHitpoints();
@@ -113,27 +96,12 @@ public class RobotPlayer implements Runnable {
     	mySensor = null;
     	myBroadcaster = null;
     	
-    	mySMGsInternal = new ArrayList<WeaponController>();
-    	myBlastersInternal = new ArrayList<WeaponController>();
-    	myRailgunsInternal = new ArrayList<WeaponController>();
-    	myMedicsInternal = new ArrayList<WeaponController>();
-    	mySMGs = new WeaponController[0];
-    	myBlasters = new WeaponController[0];
-    	myRailguns = new WeaponController[0];
+    	myWeaponsInternal = new ArrayList<WeaponController>();
+    	myWeapons = new WeaponController[0];
     	
     	
     	myMessenger = new Messenger(this);
     	myActions = new Actions(this);
-    	myMemory = new Memory(this);
-    	
-    	
-    	
-    	
-    	if(Constants.CUSTOM_INDICATORS) {
-    		myRC.setIndicatorString(0, Constants.INDICATOR0);
-    		myRC.setIndicatorString(1, Constants.INDICATOR1);
-    		myRC.setIndicatorString(2, Constants.INDICATOR2);
-    	}
     	
 
     	
@@ -190,7 +158,6 @@ public class RobotPlayer implements Runnable {
 		//Check if we've sustained damage.
 		double damage = lastRoundHP - myRC.getHitpoints();
 		if(damage>0.1) {
-			hasTakenDamage = true;
 			myBehavior.onDamageCallback(damage);
 		}
 		
@@ -270,10 +237,8 @@ public class RobotPlayer implements Runnable {
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		
 		//////////////////////////////////////////////////////////////
-		// Set some variables and reset some flags.
+		// Remember the number of resources at the end of the round
 		myLastRes = myRC.getTeamResources();
-		lastRoundHP = myRC.getHitpoints(); 
-		hasTakenDamage = false;
 		
 		//////////////////////////////////////////////////////////////
 		
@@ -331,61 +296,41 @@ public class RobotPlayer implements Runnable {
 		
 		for(ComponentController c : components) {
 			switch(c.componentClass()) {
-
-				//////////////////////////////////////////////////////////////////
-				//WEAPONS ALLOCATIONS
 				case WEAPON:
-					switch(c.type()) {
-					case SMG:
-						mySMGsInternal.add((WeaponController)c);		continue;
-					case BLASTER:
-						myBlastersInternal.add((WeaponController)c);	continue;
-					case RAILGUN:
-						myRailgunsInternal.add((WeaponController)c);	continue;
-					case MEDIC:
-						myMedicsInternal.add((WeaponController)c);		continue;
-					default:
-						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); continue;
-					}
-					
-				/////////////////////////////////////////////////////////////////
-				//SENSOR ALLOCATIONS
+					myWeaponsInternal.add((WeaponController)c);
+					break;
 				case SENSOR:
-					mySensor = (SensorController)c; 					continue;
+					mySensor = (SensorController)c;
+					break;
 				case BUILDER:
-					myBuilder = (BuilderController)c; 					continue;
+					myBuilder = (BuilderController)c;
+					break;
 				case MOTOR:
-					myMotor = (MovementController)c;					continue;
+					myMotor = (MovementController)c;
+					break;
 				case COMM:
 					myBroadcaster = (BroadcastController)c;
 					myMessenger.enableSender();
-					continue;
+					break;
 				case ARMOR:
-					continue;
-					
-				/////////////////////////////////////////////////////////////////
-				//MISC ALLOCATIONS
+					break;
 				case MISC:
-					switch(c.type()) {
-					case PROCESSOR:
-						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	continue;
-					case JUMP:
-						myJump = (JumpController) c;							continue;
+					if(c.type()==ComponentType.PROCESSOR) {
+						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;
 					}
 				default:
-					Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			continue;
+					Utility.println("NotController");
 			}
-		}	
-		
-		
-		
-		//We can afford this expensive call because allocation doesn't happen often.
-		//Also, because myWeapons only increases and never decreases, we shouldn't ever get nulls
-		mySMGs = mySMGsInternal.toArray(new WeaponController[mySMGsInternal.size()]);
-		myBlasters = myBlastersInternal.toArray(new WeaponController[myBlastersInternal.size()]);
-		myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
-		myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
-		
+			
+			
+			//We can afford this expensive call because allocation doesn't happen often.
+			//Also, because myWeapons only increases and never decreases, we shouldn't ever get nulls
+			myWeapons = myWeaponsInternal.toArray(new WeaponController[myWeaponsInternal.size()]);
+			
+			
+			
+			
+		}		
 	}
 	
 	
@@ -412,7 +357,7 @@ public class RobotPlayer implements Runnable {
 		if(executeStartTime!=Clock.getRoundNum()) {
 				int currRound = Clock.getRoundNum();
 				int byteCount = (bytecodeLimit-executeStartByte) + (currRound-executeStartTime-1) * bytecodeLimit + Clock.getBytecodeNum();
-				Utility.printMsg(this,"Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
+				System.out.println("Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
 		}	
 	}
 	
