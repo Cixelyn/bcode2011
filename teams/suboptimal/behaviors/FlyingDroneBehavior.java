@@ -122,7 +122,6 @@ public class FlyingDroneBehavior extends Behavior {
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
     	        			
     	        			
-        					for (int i=0;i<3;i++) { //spin and check all our other directions
         						Mine[] nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
         	        			for (Mine mine : nearbyMines) { //look for mines, if we find one, lets go get it
         	        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
@@ -152,11 +151,6 @@ public class FlyingDroneBehavior extends Behavior {
                     					return;
         	        				}
         	        			}
-	        					while (myPlayer.myMotor.isActive()) {
-	        						myPlayer.sleep();
-	        					}
-	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-        					}
         					
         					while (myPlayer.myMotor.isActive()) {
         						myPlayer.sleep();

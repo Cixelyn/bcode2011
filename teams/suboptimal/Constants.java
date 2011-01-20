@@ -47,7 +47,7 @@ public class Constants
 	public static final int TIMEOUT=100;
 	public static final int BLASTERS_PER_TOWER = 2; //   WE REQUIRE (2*numBlasters + numShields) <= 15
 	public static final int SHIELDS_PER_TOWER = 2;  //   WE REQUIRE (2*numBlasters + numShields) <= 15 
-	public static final int ZIGZAG_STEPS = 4;
+	public static final int ZIGZAG_STEPS = 5;
 	
 	
 	
