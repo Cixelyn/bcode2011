@@ -566,7 +566,6 @@ public class Utility {
 	
 	
 	public static void bounceNavForFlyers(RobotPlayer myPlayer, int zigzag) throws GameActionException {
-		int random = rand.nextInt(10);
 		if (!myPlayer.myMotor.isActive()) {
 			boolean bounce=false;
 			if (myPlayer.myRC.getDirection().isDiagonal()) {
@@ -582,7 +581,7 @@ public class Utility {
 			if (bounce) {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 				}
-			if (zigzag==0) { //don't zig or zag, just keep on moving forward
+			else if (zigzag==0) { //don't zig or zag, just keep on moving forward
 				
 				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 					myPlayer.myMotor.moveForward();
