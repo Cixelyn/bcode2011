@@ -251,32 +251,16 @@ public class ColossusBehavior extends Behavior
 				
 				
 	        	//RUN SUPER SPECIAL CUSTOM SENSOR CODE
-	        	Robot[] robots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
 	        	
 	        	
 	        	//QUICK CODE FOR JUST FINDING THE NEAREST ROBOT
 	        	//FIXME: I'll eventually get around to adding some extra thing;
 	        	//		TODO:add prioritization based on components, etc.	        	
-	        	Robot 		nearestEnemyRobot			= null;
-	        	RobotInfo	nearestEnemyRobotInfo		= null;
 	        	int			nearestEnemyRobotDistance	= 999;
 	        	Direction	nearestEnemyRobotDirection  = null;
 	        	
 	        	MapLocation myLoc = myPlayer.myRC.getLocation();
 	        	
-	        	for(int i=robots.length; --i>=0;) {
-	        		if(robots[i].getTeam()==myPlayer.myOpponent) {
-	        			RobotInfo rinfo = myPlayer.mySensor.senseRobotInfo(robots[i]);
-	        			
-	        			int robotDistance = myLoc.distanceSquaredTo(rinfo.location);
-	        			if(robotDistance < nearestEnemyRobotDistance) {
-	        				nearestEnemyRobot = robots[i];
-	        				nearestEnemyRobotInfo = rinfo;
-	        				nearestEnemyRobotDistance = robotDistance;
-	        				nearestEnemyRobotDirection = myLoc.directionTo(nearestEnemyRobotInfo.location);
-	        			}
-	        		}
-	        	}
 	        	RobotInfo robotInfo = Utility.attackEnemies(myPlayer);
 	        	
 /*	        	//I AM ENGAGED IN BLOODY COMBAT	
@@ -304,6 +288,9 @@ public class ColossusBehavior extends Behavior
 					
 					
 	        	//if I'm too closet to enemy units, move back
+	        	if (robotInfo!=null) {
+	        		nearestEnemyRobotDistance=myLoc.distanceSquaredTo(robotInfo.location);
+	        		nearestEnemyRobotDirection = myLoc.directionTo(robotInfo.location);
 					if(nearestEnemyRobotDistance<=26 && nearestEnemyRobotDistance > 16) {
 						if (!myPlayer.myMotor.isActive() && !myPlayer.myRC.getDirection().equals(nearestEnemyRobotDirection)) {//I'm good				
 							myPlayer.myMotor.setDirection(nearestEnemyRobotDirection);
@@ -311,7 +298,7 @@ public class ColossusBehavior extends Behavior
 					} else if(nearestEnemyRobotDistance<=16) {					//I'm too close!
 						myPlayer.myActions.backUpInDir(nearestEnemyRobotDirection.opposite());
 					} else { //I'm too far
-						myPlayer.myActions.moveInDir(myNav.bugTo(nearestEnemyRobotInfo.location));
+						myPlayer.myActions.moveInDir(myNav.bugTo(robotInfo.location));
 					}
 					return;
 					
