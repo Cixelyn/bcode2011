@@ -1,7 +1,7 @@
-package team068.behaviors;
+package masterytwo.behaviors;
 
 import battlecode.common.*;
-import team068.*;
+import masterytwo.*;
 
 public class DefaultBehavior extends Behavior
 {

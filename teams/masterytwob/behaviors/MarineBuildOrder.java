@@ -1,4 +1,4 @@
-package team068b.behaviors;
+package masterytwob.behaviors;
 
 public enum MarineBuildOrder
 {

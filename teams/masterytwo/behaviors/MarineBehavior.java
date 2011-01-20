@@ -1,6 +1,6 @@
-package team068.behaviors;
+package masterytwo.behaviors;
 
-import team068.*;
+import masterytwo.*;
 import battlecode.common.*;
 
 
