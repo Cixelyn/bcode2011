@@ -406,7 +406,7 @@ public class Utility {
 			
 			for ( int j = myPlayer.myBlasters.length; --j>=0;)
 			{
-				if (myPlayer.mySensor.senseRobotInfo(enemyMin1.robot).hitpoints<0) {
+				if (myPlayer.mySensor.canSenseObject(enemyMin1.robot)) {
 					if (enemyMin2!=null) {
 						gun =  myPlayer.myBlasters[j];
 						if ( !gun.isActive() && gun.withinRange(enemyMin2.location))
@@ -423,7 +423,7 @@ public class Utility {
 			
 			for ( int j = myPlayer.myRailguns.length; --j>=0;)
 			{
-				if (myPlayer.mySensor.senseRobotInfo(enemyMin1.robot).hitpoints<0) {
+				if (myPlayer.mySensor.canSenseObject(enemyMin1.robot)) {
 					if (enemyMin2!=null) {
 						gun =  myPlayer.myRailguns[j];
 						if ( !gun.isActive() && gun.withinRange(enemyMin2.location))

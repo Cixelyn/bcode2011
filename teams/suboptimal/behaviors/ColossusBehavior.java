@@ -75,7 +75,6 @@ public class ColossusBehavior extends Behavior
 	        	
 			case DETERMINE_SPAWN:
 				
-				myPlayer.myRC.setIndicatorString(1, "DETERMINE_SPAWN");
 				while ( westEdge == -1 || northEdge == -1 || eastEdge == -1 || southEdge == -1 )
 				{
 					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myRC.getLocation().add(Direction.NORTH, 6)) )
@@ -144,7 +143,6 @@ public class ColossusBehavior extends Behavior
 				
 			case ADVANCE:	
 				
-				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
 				// Rerally code
 	        	if ( spawn == -1 )
