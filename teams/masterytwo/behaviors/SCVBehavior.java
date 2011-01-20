@@ -1,8 +1,8 @@
-package team068.behaviors;
+package masterytwo.behaviors;
 
 import java.util.ArrayDeque;
 import battlecode.common.*;
-import team068.*;
+import masterytwo.*;
 
 public class SCVBehavior extends Behavior
 {

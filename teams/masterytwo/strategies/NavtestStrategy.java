@@ -1,10 +1,10 @@
-package team068.strategies;
+package masterytwo.strategies;
 
 import battlecode.common.*;
-import team068.Behavior;
-import team068.RobotPlayer;
-import team068.behaviors.DefaultBehavior;
-import team068.behaviors.NavtestBehavior;
+import masterytwo.Behavior;
+import masterytwo.RobotPlayer;
+import masterytwo.behaviors.DefaultBehavior;
+import masterytwo.behaviors.NavtestBehavior;
 
 public class NavtestStrategy extends Strategy {
 

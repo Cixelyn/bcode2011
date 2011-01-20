@@ -1,4 +1,4 @@
-package team068b;
+package masterytwob;
 
 import java.util.ArrayDeque;
 import battlecode.common.*;

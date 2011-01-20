@@ -1,8 +1,8 @@
-package team068b.behaviors;
+package masterytwob.behaviors;
 
 import java.util.*;
 
-import team068b.*;
+import masterytwob.*;
 import battlecode.common.*;
 
 public class FlyingDroneBehavior extends Behavior {

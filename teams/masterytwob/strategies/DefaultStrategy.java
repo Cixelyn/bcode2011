@@ -1,8 +1,8 @@
-package team068b.strategies;
+package masterytwob.strategies;
 
 
-import team068b.*;
-import team068b.behaviors.*;
+import masterytwob.*;
+import masterytwob.behaviors.*;
 
 
 /**

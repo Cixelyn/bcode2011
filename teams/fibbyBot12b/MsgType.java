@@ -1,6 +1,6 @@
 package fibbyBot12b;
 
-import team068.Constants;
+import masterytwo.Constants;
 
 
 /**

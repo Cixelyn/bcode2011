@@ -1,4 +1,4 @@
-package team068;
+package masterytwo;
 import battlecode.common.*;
 import java.util.*;
 

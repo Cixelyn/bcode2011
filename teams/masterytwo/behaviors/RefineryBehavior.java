@@ -1,7 +1,7 @@
-package team068.behaviors;
+package masterytwo.behaviors;
 
 import battlecode.common.*;
-import team068.*;
+import masterytwo.*;
 import java.util.*;
 
 public class RefineryBehavior extends Behavior

@@ -1,8 +1,8 @@
-package team068b;
+package masterytwob;
 
 import battlecode.common.*;
 
-import team068.*;
+import masterytwo.*;
 
 public abstract class Behavior {
 	
