@@ -47,9 +47,11 @@ public class RobotPlayer implements Runnable {
 	private final ArrayList<WeaponController> mySMGsInternal;
 	private final ArrayList<WeaponController> myBlastersInternal;
 	private final ArrayList<WeaponController> myRailgunsInternal;
+	private final ArrayList<WeaponController> myMedicsInternal;
 	public WeaponController[] mySMGs;
 	public WeaponController[] myBlasters;
 	public WeaponController[] myRailguns;
+	public WeaponController[] myMedics;
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
@@ -113,6 +115,7 @@ public class RobotPlayer implements Runnable {
     	mySMGsInternal = new ArrayList<WeaponController>();
     	myBlastersInternal = new ArrayList<WeaponController>();
     	myRailgunsInternal = new ArrayList<WeaponController>();
+    	myMedicsInternal = new ArrayList<WeaponController>();
     	mySMGs = new WeaponController[0];
     	myBlasters = new WeaponController[0];
     	myRailguns = new WeaponController[0];
@@ -333,6 +336,8 @@ public class RobotPlayer implements Runnable {
 						myBlastersInternal.add((WeaponController)c);
 					if ( c.type() == ComponentType.RAILGUN )
 						myRailgunsInternal.add((WeaponController)c);
+					if ( c.type() == ComponentType.MEDIC )
+						myMedicsInternal.add((WeaponController)c);
 					break;
 				case SENSOR:
 					mySensor = (SensorController)c;
@@ -365,7 +370,7 @@ public class RobotPlayer implements Runnable {
 			mySMGs = mySMGsInternal.toArray(new WeaponController[mySMGsInternal.size()]);
 			myBlasters = myBlastersInternal.toArray(new WeaponController[myBlastersInternal.size()]);
 			myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
-			
+			myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
 			
 			
 			

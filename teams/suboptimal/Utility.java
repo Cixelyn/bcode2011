@@ -323,10 +323,10 @@ public class Utility {
     	for ( int i = nearbyRobots.length; --i>=0;)
     	{
     		r = nearbyRobots[i];
-			for ( int j = myPlayer.myWeapons.length; --j>= 0;)
+			for ( int j = myPlayer.myMedics.length; --j>= 0;)
 			{
-				gun = myPlayer.myWeapons[j];
-				if ( gun.type() == ComponentType.MEDIC && r.getTeam() == myPlayer.myRC.getTeam() )
+				gun = myPlayer.myMedics[j];
+				if ( r.getTeam() == myPlayer.myRC.getTeam() )
 				{
 					rInfo = myPlayer.mySensor.senseRobotInfo(r);
 					if ( rInfo.chassis != Chassis.BUILDING )
@@ -397,13 +397,24 @@ public class Utility {
     	}
 		if ( enemyMin1 != null )
 		{
-			for ( int j = myPlayer.myWeapons.length; --j>=0;)
+			for ( int j = myPlayer.mySMGs.length; --j>=0;)
 			{
-				gun =  myPlayer.myWeapons[j];
-				if ( gun.type() != ComponentType.MEDIC && !gun.isActive() && gun.withinRange(enemyMin1.location))
+				gun =  myPlayer.mySMGs[j];
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
 					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
 			}
-			return enemyMin1;
+			for ( int j = myPlayer.myBlasters.length; --j>=0;)
+			{
+				gun =  myPlayer.myBlasters[j];
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+			}
+			for ( int j = myPlayer.myRailguns.length; --j>=0;)
+			{
+				gun =  myPlayer.myRailguns[j];
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+			}
 		}
 		return null;
 			
@@ -443,10 +454,16 @@ public class Utility {
     	}
 		if ( rockMin != null )
 		{
-			for ( int j = myPlayer.myWeapons.length; --j>=0;)
+			for ( int j = myPlayer.myBlasters.length; --j>=0;)
 			{
-				gun =  myPlayer.myWeapons[j];
-				if ( gun.type() != ComponentType.MEDIC && !gun.isActive() && gun.withinRange(rockMin.location))
+				gun =  myPlayer.myBlasters[j];
+				if ( !gun.isActive() && gun.withinRange(rockMin.location))
+					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
+			}
+			for ( int j = myPlayer.myRailguns.length; --j>=0;)
+			{
+				gun =  myPlayer.myRailguns[j];
+				if ( !gun.isActive() && gun.withinRange(rockMin.location))
 					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
 			}
 			return rockMin.location;
@@ -467,16 +484,11 @@ public class Utility {
 		
 		if ( myPlayer.myRC.getHitpoints() < myPlayer.myRC.getMaxHp() )
 		{
-			for ( int j = myPlayer.myWeapons.length; --j>=0;)
+			for ( int j = myPlayer.myMedics.length; --j>=0;)
 			{
-				gun = (WeaponController) myPlayer.myWeapons[j];
-				if ( gun.type() == ComponentType.MEDIC )
-				{
-					if(!gun.isActive())
-					{
-						gun.attackSquare(myPlayer.myRC.getLocation(), myPlayer.myRC.getRobot().getRobotLevel());
-					}
-				}
+				gun = (WeaponController) myPlayer.myMedics[j];
+				if(!gun.isActive())
+					gun.attackSquare(myPlayer.myRC.getLocation(), myPlayer.myRC.getRobot().getRobotLevel());
 			}
 		}
 	}
