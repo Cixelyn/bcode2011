@@ -11,9 +11,9 @@ public class ArmoryBehavior extends Behavior
 	{
 		WAIT_FOR_DOCK,
 		EQUIP_UNIT,
-		MAKE_FLYER,
+		MAKE_WRAITH,
+		MAKE_DRONE,
 		EQUIP_HEAVY,
-		EQUIP_TOWER,
 		SLEEP
 	}
 	
@@ -21,12 +21,11 @@ public class ArmoryBehavior extends Behavior
 	ArmoryBuildOrder obj = ArmoryBuildOrder.WAIT_FOR_DOCK;
 	
 	MapLocation unitDock;
-	MapLocation towerLoc;
 	
-	int currFlyer = 0;
-	int currHeavy = 0;
-	int towerType = -1;
-	boolean remakeFlyers = false;
+	int currWraith;
+	int currDrone;
+	int currHeavy;
+	int currUnit;
 	
 	RobotInfo rInfo;
 	Robot r;
@@ -38,8 +37,6 @@ public class ArmoryBehavior extends Behavior
 	int rNumPlasma;
 	
 	double minFluxToBuild;
-	
-	boolean towerEquipped;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -56,6 +53,7 @@ public class ArmoryBehavior extends Behavior
     		case WAIT_FOR_DOCK:
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
+    			Utility.setIndicator(myPlayer, 2, "");
     			if ( unitDock != null )
     			{
     				while ( myPlayer.myMotor.isActive() )
@@ -65,56 +63,47 @@ public class ArmoryBehavior extends Behavior
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
         				obj = ArmoryBuildOrder.EQUIP_UNIT;
     				}
+    				else
+    				{
+    					Utility.setIndicator(myPlayer, 2, "UNIT DOCK OUT OF RANGE!");
+    					obj = ArmoryBuildOrder.SLEEP;
+    				}
     			}
     			return;
     			
     		case EQUIP_UNIT:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_UNIT");
+    			Utility.setIndicator(myPlayer, 2, "Idle.");
     			
-    			if ( !remakeFlyers && Clock.getRoundNum() > Constants.REMAKE_FLYER_TIME )
+    			// check what unit should be made
+    			currUnit = currWraith + currDrone + currHeavy;
+    			if ( currUnit == 1 )
     			{
-    				remakeFlyers = true;
-    				currFlyer = 0;
+    				Utility.setIndicator(myPlayer, 2, "Making wraith.");
+    				obj = ArmoryBuildOrder.MAKE_WRAITH;
     			}
-    			
-    			if ( (!remakeFlyers && currFlyer < Constants.MAX_WRAITHS + Constants.MAX_DRONES) || (remakeFlyers && currFlyer < Constants.MAX_DRONES) )
+    			else if ( currUnit % 3 == 2 )
     			{
-	    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-	    			if ( r == null )
-	    			{
-	    				Utility.setIndicator(myPlayer, 2, "Making flyer.");
-		    			obj = ArmoryBuildOrder.MAKE_FLYER;
-	    			}
-	    			return;
+    				Utility.setIndicator(myPlayer, 2, "Making drone.");
+    				obj = ArmoryBuildOrder.MAKE_DRONE;
     			}
-    			
-    			if ( !towerEquipped && currFlyer == Constants.MAX_WRAITHS + Constants.MAX_DRONES )
+    			else
     			{
-    				obj = ArmoryBuildOrder.EQUIP_TOWER;
-    				return;
-    			}
-    			
-    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() != babyHeavy )
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if ( rInfo.chassis == Chassis.HEAVY )
+    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+    				if ( r != null && r.getID() != babyHeavy )
     				{
-    					Utility.setIndicator(myPlayer, 2, "Heavy found.");
+    					Utility.setIndicator(myPlayer, 2, "Equipping heavy.");
     					babyHeavy = r.getID();
-	    				obj = ArmoryBuildOrder.EQUIP_HEAVY;
+    					obj = ArmoryBuildOrder.EQUIP_HEAVY;
     				}
-	    			return;
     			}
-    			
-    			Utility.setIndicator(myPlayer, 2, "No heavy to equip, no more flyers to make.");
     			return;
     			
-    		case MAKE_FLYER:
+    		case MAKE_WRAITH:
     			
-    			Utility.setIndicator(myPlayer, 1, "MAKE_FLYER");
-    			Utility.setIndicator(myPlayer, 2, "Building flyer " + Integer.toString(currFlyer) + ".");
+    			Utility.setIndicator(myPlayer, 1, "MAKE_WRAITH");
+    			Utility.setIndicator(myPlayer, 2, "Building wraith " + Integer.toString(currWraith) + ".");
     			
     			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
     			if ( r != null )
@@ -123,33 +112,50 @@ public class ArmoryBehavior extends Behavior
     				return;
     			}
     			
-				if ( currFlyer < Constants.MAX_WRAITHS )
-					minFluxToBuild = Chassis.FLYING.cost + ComponentType.BLASTER.cost + ComponentType.RADAR.cost + Constants.RESERVE;
-				else if ( currFlyer < Constants.MAX_WRAITHS + 2 )
-					minFluxToBuild = Chassis.FLYING.cost + ComponentType.CONSTRUCTOR.cost + ComponentType.SIGHT.cost + Constants.RESERVE;
-				else
-					minFluxToBuild = Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2*Constants.RESERVE;
+    			minFluxToBuild = Chassis.FLYING.cost + ComponentType.BLASTER.cost + ComponentType.RADAR.cost + Constants.RESERVE;
 				if ( !myPlayer.myBuilder.isActive() && myPlayer.myRC.getTeamResources() > minFluxToBuild && myPlayer.myRC.getTeamResources() - myPlayer.myLastRes > Chassis.FLYING.upkeep + Chassis.BUILDING.upkeep )
 				{
 					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.FLYING);
-	    			currFlyer++;
+	    			currWraith++;
+	    			obj = ArmoryBuildOrder.EQUIP_UNIT;
 				}
 				return;
     			
+    		case MAKE_DRONE:
+    			
+    			Utility.setIndicator(myPlayer, 1, "MAKE_DRONE");
+    			Utility.setIndicator(myPlayer, 2, "Building drone " + Integer.toString(currDrone) + ".");
+    			
+    			r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
+    			if ( r != null )
+    			{
+    				obj = ArmoryBuildOrder.EQUIP_UNIT;
+    				return;
+    			}
+    			
+    			minFluxToBuild = Chassis.FLYING.cost + ComponentType.CONSTRUCTOR.cost + ComponentType.RADAR.cost + Constants.RESERVE;
+				if ( !myPlayer.myBuilder.isActive() && myPlayer.myRC.getTeamResources() > minFluxToBuild && myPlayer.myRC.getTeamResources() - myPlayer.myLastRes > Chassis.FLYING.upkeep + Chassis.BUILDING.upkeep )
+				{
+					Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.FLYING);
+	    			currDrone++;
+	    			obj = ArmoryBuildOrder.EQUIP_UNIT;
+				}
+				return;
+				
     		case EQUIP_HEAVY:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_HEAVY");
 				Utility.setIndicator(myPlayer, 2, "Equipping heavy " + Integer.toString(currHeavy) + ".");
     			
 				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r == null )
+    			if ( r == null || r.getID() != babyHeavy )
     			{
     				obj = ArmoryBuildOrder.EQUIP_UNIT;
     				return;
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 3 == 0 )
+    			if ( currHeavy % 3 == 0 ) // currHeavy == 0 case is identical
     			{
 					rHasJump = false;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -209,56 +215,6 @@ public class ArmoryBehavior extends Behavior
 					}
     			}
     			return;
-				
-    		case EQUIP_TOWER:
-    			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_TOWER");
-    			towerEquipped = true;
-    			
-    			r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r != null )
-    			{
-    				rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    				if ( rInfo.chassis == Chassis.HEAVY )
-					{
-						Utility.setIndicator(myPlayer, 2, "Heavy found before turret constructed, abandoning turret.");
-						obj = ArmoryBuildOrder.EQUIP_UNIT;
-						return;
-					}
-    			}
-    			
-				if ( towerLoc != null )
-				{
-					if ( myPlayer.myRC.getLocation().distanceSquaredTo(towerLoc) > ComponentType.ARMORY.range || towerType == 1 )
-					{
-						Utility.setIndicator(myPlayer, 2, "I am not responsible for turret type " + Integer.toString(towerType) + ".");
-						obj = ArmoryBuildOrder.EQUIP_UNIT;
-						return;
-					}
-					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND);
-					if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
-					{
-						rInfo = myPlayer.mySensor.senseRobotInfo(r);
-						if ( rInfo.chassis == Chassis.BUILDING )
-						{
-							Utility.setIndicator(myPlayer, 2, "Equipping turret.");
-							while ( myPlayer.myMotor.isActive() )
-								myPlayer.sleep();
-							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(towerLoc));
-							myPlayer.sleep();
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SATELLITE, RobotLevel.ON_GROUND);
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
-							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
-							while ( myPlayer.myMotor.isActive() )
-								myPlayer.sleep();
-							myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-							obj = ArmoryBuildOrder.EQUIP_UNIT;
-							return;
-						}
-					}
-				}
-				Utility.setIndicator(myPlayer, 2, "Waiting for turret.");
-    			return;
     			
     		case SLEEP:
 				
@@ -285,11 +241,6 @@ public class ArmoryBehavior extends Behavior
 	{
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
-		if ( t == MsgType.MSG_SEND_TOWER )
-		{
-			towerType = msg.ints[Messenger.firstData];
-			towerLoc = msg.locations[Messenger.firstData];
-		}
 	}
 	
 	public void onWakeupCallback(int lastActiveRound)
