@@ -50,6 +50,7 @@ public class RobotPlayer implements Runnable {
 	//Helper Subsystems
 	public final Messenger myMessenger;
 	public final Actions myActions;
+	public final Memory myMemory;
 	
 	
 	//Misc Stats
@@ -112,6 +113,7 @@ public class RobotPlayer implements Runnable {
     	
     	myMessenger = new Messenger(this);
     	myActions = new Actions(this);
+    	myMemory = new Memory(this);
     	
     	
     	
