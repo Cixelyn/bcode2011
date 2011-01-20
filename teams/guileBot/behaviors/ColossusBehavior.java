@@ -85,6 +85,8 @@ public class ColossusBehavior extends Behavior
 	        	
 			case DETERMINE_SPAWN:
 				
+				Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
+				
 				while ( westEdge == -1 || northEdge == -1 || eastEdge == -1 || southEdge == -1 )
 				{
 					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myRC.getLocation().add(Direction.NORTH, 6)) )
@@ -118,11 +120,12 @@ public class ColossusBehavior extends Behavior
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
 					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
+					myPlayer.sleep();
 				}
 				spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 				if ( spawn != -1 )
 				{
-					if ( num < 3 || num > 8 )
+					if ( num < 2 || num >= 6 )
 						rally = (spawn + 4) % 8;
 					else if ( num % 2 == 0 )
 					{
@@ -144,7 +147,8 @@ public class ColossusBehavior extends Behavior
 				}
 				else
 				{
-					rally = (2 * num + 1) % 8;
+					numBounces = 3; // automatically patrol the edge of map
+					rally = (2 * num) % 8;
 					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
 				permRally = rally;
@@ -153,78 +157,40 @@ public class ColossusBehavior extends Behavior
 				
 			case ADVANCE:	
 				
+				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
-				// Rerally code
-	        	if ( spawn == -1 )
+				// Off map rerally code
+        		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
 	        	{
-		        	// off_map found in orthogonal direction, try a different ORTHOGONAL direction!
-		        	if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
-		        	{
-		        		if ( numBounces == 0 )
+	        		if ( numBounces == 0 )
+	        			rally = (rally + 2) % 8; // we have reached the enemy side, everyone search together
+	        		else if ( numBounces == 1 )
+	        			rally = (rally + 4) % 8; // we have searched one part of the enemy side, everyone go back together
+	        		else
+	        		{
+	        			// we have cleared the enemy side, spread out and patrol the sides of the map
+	        			if ( num % 2 == 0 )
 		        			rally = (rally + 2) % 8;
-		        		else if ( numBounces == 1 )
-		        			rally = (rally + 4) % 8;
 		        		else
-		        		{
-		        			if ( num % 2 == 0 )
-			        			rally = (rally + 2) % 8;
-			        		else
-			        			rally = (rally + 6) % 8;
-		        		}
-		        		spawn = (rally + 4) % 8;
-		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
-		        		numBounces++;
-		        	}
-		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
-		        	else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
-		        	{
-		        		rally = (rally + 1) % 8;
-		        		spawn = (rally + 4) % 8;
-		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
-		        		numBounces++;
-		        	}
-		        	// off_map found in orthogonal direction with diagonal rally, try a different ORTHOGONAL direction!
-		        	else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
-		        	{
-		        		rally = (rally + 7) % 8;
-		        		spawn = (rally + 4) % 8;
-		        		permRally = rally;
-		        		Utility.setIndicator(myPlayer, 2, "I think we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
-		        		numBounces++;
-		        	}
+		        			rally = (rally + 6) % 8;
+	        		}
+	        		permRally = rally;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        		numBounces++;
 	        	}
-	        	else
+        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 	        	{
-	        		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
-		        	{
-		        		if ( numBounces == 0 )
-		        			rally = (rally + 2) % 8;
-		        		else if ( numBounces == 1 )
-		        			rally = (rally + 4) % 8;
-		        		else
-		        		{
-		        			if ( num % 2 == 0 )
-			        			rally = (rally + 2) % 8;
-			        		else
-			        			rally = (rally + 6) % 8;
-		        		}
-		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-		        		numBounces++;
-		        	}
-	        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
-		        	{
-		        		rally = (rally + 3) % 8;
-		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-		        		numBounces++;
-		        	}
-	        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
-		        	{
-		        		rally = (rally + 5) % 8;
-		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-		        		numBounces++;
-		        	}
+	        		rally = (rally + 1) % 8; // we have reached the closest side to the enemy corner, rerally to corner
+	        		permRally = rally;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        		numBounces++;
+	        	}
+        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
+	        	{
+	        		rally = (rally + 7) % 8; // we have reached the closest side to the enemy corner, rerally to corner
+	        		permRally = rally;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        		numBounces++;
 	        	}
 				
 	        	
