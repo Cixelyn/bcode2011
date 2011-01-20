@@ -103,7 +103,12 @@ public class WraithBehavior extends Behavior
 				spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
 				if ( spawn != -1 )
 				{
-					rally = (spawn + 4) % 8;
+					if ( num < 2 )
+						rally = (spawn + 4) % 8;
+					else if ( num % 2 == 0 )
+						rally = (spawn + 3) % 8;
+					else if ( num % 2 == 1 )
+						rally = (spawn + 5) % 8;
 					destination = Utility.spawnOpposite(myPlayer.myRC.getLocation(), (rally + 4) % 8);
 					Utility.setIndicator(myPlayer, 0, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
@@ -121,7 +126,7 @@ public class WraithBehavior extends Behavior
 	        	myPlayer.myRC.setIndicatorString(1, "ADVANCE");
 	        	
 	        	// Rerally code
-	        	if ( spawn != -1 )
+	        	if ( spawn == -1 )
 	        	{
 		        	// off_map found in orthogonal direction, try a different ORTHOGONAL direction!
 		        	if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
@@ -208,18 +213,18 @@ public class WraithBehavior extends Behavior
         				if ( !myPlayer.myMotor.isActive() )
 	        				myPlayer.myMotor.setDirection(Direction.values()[rally]);
 	        		}
-	        		else if ( enemyInfo.on && myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 16 )
+	        		else if ( myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 16 )
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
         				{
-	        				if ( myPlayer.myWeapons[0].withinRange(enemyInfo.location) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
+	        				if ( myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().opposite()).distanceSquaredTo(enemyInfo.location) < myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
 	        					myPlayer.myMotor.moveBackward();
 	        				else
 	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
         				}
         			}
-        			else if ( enemyInfo.on && myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 26 )
+        			else if ( enemyInfo.on && enemyInfo.chassis != Chassis.BUILDING && myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) <= 26 )
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, halting.");
         				if ( !myPlayer.myMotor.isActive() )
@@ -227,8 +232,6 @@ public class WraithBehavior extends Behavior
         					if ( myPlayer.myRC.getDirection() != myPlayer.myRC.getLocation().directionTo(enemyInfo.location) )
         						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
         					else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateLeft() && enemyInfo.location.directionTo(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) != enemyInfo.direction.rotateRight() )
-        						myPlayer.myMotor.moveForward();
-        					else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && enemyInfo.chassis != Chassis.FLYING && enemyInfo.chassis != Chassis.LIGHT )
         						myPlayer.myMotor.moveForward();
         				}
         			}

@@ -34,21 +34,21 @@ public class ColossusBehavior extends Behavior
 	
 	
 	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    
-                               {ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,
+                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
+								ComponentType.HARDENED
 								});
 	
 	private static final int[] componentLoadOut2 = Utility.countComponents(new ComponentType[]    
-					           {ComponentType.RAILGUN,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.PLASMA,ComponentType.PLASMA
+                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.RAILGUN,ComponentType.BLASTER,
+								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD
 								});
 	
 	private static final int[] componentLoadOut3 = Utility.countComponents(new ComponentType[]    
-					           {ComponentType.RAILGUN,ComponentType.SMG,
-								ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.HARDENED,ComponentType.SHIELD,ComponentType.BLASTER
+	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.SMG,
+								ComponentType.PLASMA,ComponentType.PLASMA
 								});
 	
 	public ColossusBehavior(RobotPlayer player)
@@ -64,7 +64,8 @@ public class ColossusBehavior extends Behavior
 		{
 			
 			case EQUIPPING:	
-				myPlayer.myRC.setIndicatorString(1,"EQUIPPING");
+
+				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				
 				if (Utility.compareComponents(myPlayer, componentLoadOut1) || Utility.compareComponents(myPlayer, componentLoadOut2) || Utility.compareComponents(myPlayer, componentLoadOut3))
 				{
@@ -143,8 +144,10 @@ public class ColossusBehavior extends Behavior
 				
 			case ADVANCE:	
 				
+				Utility.setIndicator(myPlayer, 1, "ADVANCE");
+				
 				// Rerally code
-	        	if ( spawn != -1 )
+	        	if ( spawn == -1 )
 	        	{
 		        	// off_map found in orthogonal direction, try a different ORTHOGONAL direction!
 		        	if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
@@ -217,11 +220,9 @@ public class ColossusBehavior extends Behavior
 	        	}
 				
 	        	
-				
-				Utility.setIndicator(myPlayer, 1, "Jump Navigation");
 				boolean shouldJump = true;
-				for (WeaponController w:myPlayer.myWeapons) {
-					if (w.type() == ComponentType.RAILGUN && w.isActive()) {
+				for (WeaponController w:myPlayer.myRailguns) {
+					if (w.isActive()) {
 						shouldJump=false;
 					}
 				}
@@ -284,7 +285,17 @@ public class ColossusBehavior extends Behavior
 	        		rally = nearestEnemyRobotDirection.ordinal();
 	        		//HOW FAR AWAY IS THE ENEMY
 	        		if(nearestEnemyRobotDistance<=36) {	// checks range: [0,25]
-							for(WeaponController w:myPlayer.myWeapons) { 
+							for(WeaponController w:myPlayer.mySMGs) { 
+								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
+									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
+								}
+							}
+							for(WeaponController w:myPlayer.myBlasters) { 
+								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
+									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
+								}
+							}
+							for(WeaponController w:myPlayer.myRailguns) { 
 								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
 									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
 								}

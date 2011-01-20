@@ -17,7 +17,7 @@ public class AncientProtectorBehavior extends Behavior
 	
 	APActions obj = APActions.EQUIPPING;
 	
-	MapLocation enemyLoc;
+	RobotInfo enemyInfo;
 	
 	int numBlasters;
 	int numShields;
@@ -57,8 +57,8 @@ public class AncientProtectorBehavior extends Behavior
 			case DEFENSE:
 				
 				Utility.setIndicator(myPlayer, 1, "DEFENSE");
-				//enemyLoc = Utility.attackEnemies(myPlayer);
-				if ( enemyLoc == null || myPlayer.myRC.getLocation().distanceSquaredTo(enemyLoc) > ComponentType.BLASTER.range )
+				enemyInfo = Utility.attackEnemies(myPlayer);
+				if ( enemyInfo == null || myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) > ComponentType.BLASTER.range )
 				{
 					Utility.setIndicator(myPlayer, 2, "No enemies nearby.");
 					if (!myPlayer.myMotor.isActive())
@@ -68,7 +68,7 @@ public class AncientProtectorBehavior extends Behavior
 				{
 					Utility.setIndicator(myPlayer, 2, "Enemy detected!");
 					if (!myPlayer.myMotor.isActive())
-						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyLoc));
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(enemyInfo.location));
 				}
 				return;
 				

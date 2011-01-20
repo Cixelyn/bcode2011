@@ -24,6 +24,7 @@ public class FactoryBehavior extends Behavior
 	RobotInfo rInfo;
 	
 	int currHeavy;
+	int towerType = -1;
 	
 	double minFluxToBuild;
 	
@@ -64,8 +65,15 @@ public class FactoryBehavior extends Behavior
 			case EQUIP_TOWER:
 				
 				Utility.setIndicator(myPlayer, 1, "EQUIP_TOWER");
-				if ( !towerEquipped && towerLoc != null )
+				towerEquipped = true;
+				
+				if ( towerLoc != null )
 				{
+					if ( myPlayer.myRC.getLocation().distanceSquaredTo(towerLoc) > ComponentType.FACTORY.range )
+					{
+						obj = FactoryBuildOrder.BUILD_HEAVY;
+						return;
+					}
 					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(towerLoc, RobotLevel.ON_GROUND);
 					if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
 					{
@@ -79,6 +87,8 @@ public class FactoryBehavior extends Behavior
 							myPlayer.sleep();
 							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
 							Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+							if ( towerType == 1 )
+								Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HARDENED, RobotLevel.ON_GROUND);
 							towerEquipped = true;
 							while ( myPlayer.myMotor.isActive() )
 								myPlayer.sleep();
@@ -109,8 +119,9 @@ public class FactoryBehavior extends Behavior
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
     			}
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.HEAVY);
-    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
-    			if ( currHeavy % 3 == 2 )
+    			if ( currHeavy % 3 == 0 || currHeavy % 3 == 1 )
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+    			if ( currHeavy % 3 == 0 )
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HARDENED, RobotLevel.ON_GROUND);
     			currHeavy++;
     			return;
@@ -140,7 +151,10 @@ public class FactoryBehavior extends Behavior
 		if ( t == MsgType.MSG_SEND_DOCK )
 			unitDock = msg.locations[Messenger.firstData];
 		if ( t == MsgType.MSG_SEND_TOWER )
+		{
+			towerType = msg.ints[Messenger.firstData];
 			towerLoc = msg.locations[Messenger.firstData];
+		}
 
 	}
 	
