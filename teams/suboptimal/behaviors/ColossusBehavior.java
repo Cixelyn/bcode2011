@@ -221,8 +221,8 @@ public class ColossusBehavior extends Behavior
 				
 	        	
 				boolean shouldJump = true;
-				for (WeaponController w:myPlayer.myWeapons) {
-					if (w.type() == ComponentType.RAILGUN && w.isActive()) {
+				for (WeaponController w:myPlayer.myRailguns) {
+					if (w.isActive()) {
 						shouldJump=false;
 					}
 				}
@@ -285,7 +285,17 @@ public class ColossusBehavior extends Behavior
 	        		rally = nearestEnemyRobotDirection.ordinal();
 	        		//HOW FAR AWAY IS THE ENEMY
 	        		if(nearestEnemyRobotDistance<=36) {	// checks range: [0,25]
-							for(WeaponController w:myPlayer.myWeapons) { 
+							for(WeaponController w:myPlayer.mySMGs) { 
+								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
+									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
+								}
+							}
+							for(WeaponController w:myPlayer.myBlasters) { 
+								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
+									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
+								}
+							}
+							for(WeaponController w:myPlayer.myRailguns) { 
 								if(!w.isActive() && w.withinRange(nearestEnemyRobotInfo.location)) {	//FIXME: Overkill if using more than one weapon
 									w.attackSquare(nearestEnemyRobotInfo.location, nearestEnemyRobot.getRobotLevel());
 								}
