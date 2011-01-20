@@ -155,6 +155,7 @@ public class FlyingDroneBehavior extends Behavior {
         					while (myPlayer.myMotor.isActive()) {
         						myPlayer.sleep();
         					}
+        					myPlayer.myMotor.setDirection(currentDirection);
     					/*	if (steps>Constants.STEPS) {
     							obj =  FlyingDroneActions.BUILD_TOWER;
     						}*/
