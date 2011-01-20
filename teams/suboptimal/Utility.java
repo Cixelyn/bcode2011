@@ -426,13 +426,13 @@ public class Utility {
 			{
 				if (myPlayer.mySensor.senseRobotInfo(enemyMin1.robot).hitpoints<0) {
 					if (enemyMin2!=null) {
-						gun =  myPlayer.myBlasters[j];
+						gun =  myPlayer.myRailguns[j];
 						if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
 							gun.attackSquare(enemyMin1.location, enemyMin2.robot.getRobotLevel());
 					}
 				}
 				else {
-					gun =  myPlayer.myBlasters[j];
+					gun =  myPlayer.myRailguns[j];
 					if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
 						gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
 				}
