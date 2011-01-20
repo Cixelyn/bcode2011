@@ -51,6 +51,8 @@ public class RefineryBehavior extends Behavior
 	int rNumBlasters;
 	boolean rHasRadar;
 	
+	boolean hasSlept = false;
+	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -66,10 +68,10 @@ public class RefineryBehavior extends Behavior
     		case INITIALIZE:
     			
     			Utility.setIndicator(myPlayer, 1, "INITIALIZE");
-    			if ( Clock.getRoundNum() < 80 ) // I'm one of the first three refineries (change to 10 for first two)
+    			if ( Clock.getRoundNum() < 200 ) // I'm one of the first four refineries (change to 10 for first two, 80 for first 3)
     				obj = RefineryBuildOrder.DETERMINE_LEADER;
     			else
-    				obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    				obj = RefineryBuildOrder.SLEEP;
     			return;
     			
     		case DETERMINE_LEADER:
@@ -141,8 +143,6 @@ public class RefineryBehavior extends Behavior
     				else
     					obj = RefineryBuildOrder.SLEEP;             // I am one of the first two capped but not near armory
     			}
-    			else if ( Clock.getRoundNum() > 200 )
-	    			obj = RefineryBuildOrder.SLEEP;                 // I am not one of the first two capped
     			return;
     			
     		case EQUIP_UNIT:
@@ -464,7 +464,8 @@ public class RefineryBehavior extends Behavior
 	}
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		
+		hasSlept = true;
+		obj = RefineryBuildOrder.WAIT_FOR_DOCK;
 	}
 	
 	public void onDamageCallback(double damageTaken)

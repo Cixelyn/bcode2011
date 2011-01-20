@@ -1,6 +1,5 @@
 package guileBot.behaviors;
 
-import java.util.ArrayDeque;
 import battlecode.common.*;
 import guileBot.*;
 
@@ -15,10 +14,8 @@ public class SCVBehavior extends Behavior
 		WEIRD_SPAWN,
 		WEIRD_VACATE,
 		WEIRD_REFINERY,
-		BUILD_ARMORY,
-		VACATE_HOME,
-		VACATE_FACTORY,
-		BUILD_FACTORY,
+		COMPUTE_BUILDINGS,
+		BUILD_BUILDINGS,
 		COMPUTE_TOWER_1,
 		COMPUTE_TOWER_2,
 		VACATE_TOWER,
@@ -34,6 +31,7 @@ public class SCVBehavior extends Behavior
 	MapLocation hometown = myPlayer.myRC.getLocation();
 	MapLocation unitDock;
 	MapLocation[] mineLocs = {null, null, null, null};
+	int[] mineIDs = {-1, -1, -1, -1};
 	MapLocation armoryLoc;
 	MapLocation factoryLoc;
 	MapLocation towerLoc;
@@ -57,15 +55,6 @@ public class SCVBehavior extends Behavior
 	
 	boolean steppedOff = false;
 	boolean triedOtherSide = false;
-	
-	ArrayDeque<MapLocation> breadcrumbs = new ArrayDeque<MapLocation>();
-	int westEdge = -1;
-	int northEdge = -1;
-	int eastEdge = -1;
-	int southEdge = -1;
-	int realSpawn = -1;
-	MapLocation realEnemyLocation;
-	boolean spawnReceived;
 	
 	Robot rFront;
 	Robot rLeft;
@@ -122,7 +111,9 @@ public class SCVBehavior extends Behavior
 						if ( rightRefinery == 1 && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()) )
 						{
 							mineLocs[0] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
+							mineIDs[0] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
 							mineLocs[1] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight());
+							mineIDs[1] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight()), RobotLevel.ON_GROUND).getID();
 							while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
@@ -141,10 +132,12 @@ public class SCVBehavior extends Behavior
 		    				myPlayer.sleep();
 		    				Utility.setIndicator(myPlayer, 2, "Building!");
 		    				mineLocs[2] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
-	        				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
+		    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
 								myPlayer.sleep();
 	        				Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
 	        				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+	        				myPlayer.sleep();
+	        				mineIDs[2] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
 	        				while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft());
@@ -157,13 +150,17 @@ public class SCVBehavior extends Behavior
 								myPlayer.sleep();
 	        				Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
 	        				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-	        				obj = SCVBuildOrder.BUILD_ARMORY;
+	        				myPlayer.sleep();
+	        				mineIDs[3] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
+	        				obj = SCVBuildOrder.COMPUTE_BUILDINGS;
 						}
 						// path found to the right
 						else if ( leftRefinery == 1 && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()) )
 						{
 							mineLocs[0] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
+							mineIDs[0] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
 							mineLocs[1] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft());
+							mineIDs[1] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft()), RobotLevel.ON_GROUND).getID();
 							while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
@@ -182,10 +179,12 @@ public class SCVBehavior extends Behavior
 		    				myPlayer.sleep();
 		    				Utility.setIndicator(myPlayer, 2, "Building!");
 		    				mineLocs[2] = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
-	        				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
+		    				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost )
 								myPlayer.sleep();
 	        				Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
 	        				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+	        				myPlayer.sleep();
+	        				mineIDs[2] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
 	        				while (myPlayer.myMotor.isActive())
 		    					myPlayer.sleep();
 		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
@@ -198,7 +197,9 @@ public class SCVBehavior extends Behavior
 								myPlayer.sleep();
 	        				Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
 	        				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-	        				obj = SCVBuildOrder.BUILD_ARMORY;
+	        				myPlayer.sleep();
+	        				mineIDs[3] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
+		    				obj = SCVBuildOrder.COMPUTE_BUILDINGS;
 						}
 						else if ( !triedOtherSide )
 						{
@@ -330,7 +331,7 @@ public class SCVBehavior extends Behavior
         				minesCapped++;
         				if (minesCapped == 2)
         				{
-        					obj = SCVBuildOrder.BUILD_ARMORY;
+        					obj = SCVBuildOrder.COMPUTE_BUILDINGS;
         					mineLocs[3] = loc;
         				}
         				else
@@ -349,28 +350,24 @@ public class SCVBehavior extends Behavior
     			}
     			return;
     		
-			case BUILD_ARMORY:
+			case COMPUTE_BUILDINGS:
 				
-				Utility.setIndicator(myPlayer, 1, "BUILD_ARMORY");
-				Utility.setIndicator(myPlayer, 2, "");
-				unitDock = myPlayer.myRC.getLocation();
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS");
+				Utility.setIndicator(myPlayer, 2, "Thinking... carry the one...");
 				dizziness = 0;
 				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
-					if ( myPlayer.myMotor.canMove(d) )
+					if ( myPlayer.myMotor.canMove(d) && armoryLoc == null )
 					{
 						Utility.setIndicator(myPlayer, 2, "Armory location found!");
 						armoryLoc = myPlayer.myRC.getLocation().add(d);
-						while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.ARMORY.cost )
-							myPlayer.sleep();
-						Utility.buildChassis(myPlayer, d, Chassis.BUILDING);
-						Utility.buildComponent(myPlayer, d, ComponentType.ARMORY, RobotLevel.ON_GROUND);
-						myPlayer.sleep();
-						myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-						//myPlayer.sleep();   // comment me for fac
-						//myPlayer.myRC.suicide(); // comment me for fac
-						obj = SCVBuildOrder.VACATE_HOME; // uncomment me for fac
+					}
+					else if ( myPlayer.myMotor.canMove(d) && factoryLoc == null )
+					{
+						Utility.setIndicator(myPlayer, 2, "Factory location found!");
+						factoryLoc = myPlayer.myRC.getLocation().add(d);
+						obj = SCVBuildOrder.BUILD_BUILDINGS;
 						return;
 					}
 					dizziness++;
@@ -382,72 +379,25 @@ public class SCVBehavior extends Behavior
 					}
 				}
 				return;
+    			
+			case BUILD_BUILDINGS:
 				
-			case VACATE_HOME:
-				
-				Utility.setIndicator(myPlayer, 1, "VACATE_HOME");
-				dizziness = 0;
-				for ( int i = 8 ; --i >= 0 ; )
-				{
-					d = Direction.values()[i];
-					if ( myPlayer.myMotor.canMove(d) )
-					{
-						while ( myPlayer.myMotor.isActive() )
-							myPlayer.sleep();
-						myPlayer.myMotor.setDirection(d);
-						myPlayer.sleep();
-						myPlayer.myMotor.moveForward();
-						obj = SCVBuildOrder.VACATE_FACTORY;
-						return;
-					}
-					dizziness++;
-					if ( dizziness >= 8 )
-					{
-						obj = SCVBuildOrder.WEIRD_SPAWN;
-						return;
-					}
-				}
-				return;
-				
-			case VACATE_FACTORY:
-				 
-				Utility.setIndicator(myPlayer, 1, "VACATE_FACTORY");
-				dizziness = 0;
-				for ( int i = 8 ; --i >= 0 ; )
-				{
-					d = Direction.values()[i];
-					if ( !myPlayer.myRC.getLocation().add(d).equals(unitDock) && myPlayer.myMotor.canMove(d) )
-					{
-						while ( myPlayer.myMotor.isActive() )
-							myPlayer.sleep();
-						myPlayer.myMotor.setDirection(d.opposite());
-						myPlayer.sleep();
-						myPlayer.myMotor.moveBackward();
-						obj = SCVBuildOrder.BUILD_FACTORY;
-						return;
-					}
-					dizziness++;
-					if ( dizziness >= 8 )
-					{
-						obj = SCVBuildOrder.WEIRD_SPAWN;
-						return;
-					}
-				}
-				return;
-				
-			case BUILD_FACTORY:
-				
-				Utility.setIndicator(myPlayer, 1, "BUILD_FACTORY");
-				factoryLoc = myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection());
-				while ( myPlayer.myRC.getTeamResources() < 2 * Chassis.BUILDING.cost + ComponentType.FACTORY.cost + ComponentType.SATELLITE.cost + ComponentType.RAILGUN.cost + Constants.RESERVE )
+				Utility.setIndicator(myPlayer, 1, "BUILD_BUILDINGS");
+				Utility.setIndicator(myPlayer, 2, "");
+				unitDock = myPlayer.myRC.getLocation();
+				while ( myPlayer.myRC.getTeamResources() < 2 * Chassis.BUILDING.cost + ComponentType.ARMORY.cost + ComponentType.FACTORY.cost + Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.SHIELD.cost + 2 * ComponentType.RAILGUN.cost + ComponentType.SMG.cost - 20 ) // -20 to give time for SCV to send stuff and suicide
 					myPlayer.sleep();
-    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.BUILDING);
-    			Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.FACTORY, RobotLevel.ON_GROUND);
-    			myPlayer.sleep();
-    			myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
-    			myPlayer.sleep();
-    			obj = SCVBuildOrder.COMPUTE_TOWER_1;
-    			return;
+				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(armoryLoc), Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(armoryLoc), ComponentType.ARMORY, RobotLevel.ON_GROUND);
+				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryLoc), Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryLoc), ComponentType.FACTORY, RobotLevel.ON_GROUND);
+				myPlayer.sleep();
+				myPlayer.myRC.turnOn(mineLocs[3], RobotLevel.ON_GROUND);
+				myPlayer.sleep();
+				myPlayer.myMessenger.sendLoc(MsgType.MSG_SEND_DOCK, unitDock);
+				myPlayer.sleep();
+				myPlayer.myRC.suicide();
+				return;
 				
 			case COMPUTE_TOWER_1:
 				
@@ -601,7 +551,7 @@ public class SCVBehavior extends Behavior
 				if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) > 0)
     				Utility.navStep(myPlayer, nav, hometown);
 				else
-					obj = SCVBuildOrder.BUILD_ARMORY;
+					obj = SCVBuildOrder.COMPUTE_BUILDINGS;
 				return;
 				
 		}
@@ -633,8 +583,7 @@ public class SCVBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_REAL_ENEMY_LOC )
-			spawnReceived = true;
+
 	}
 	
 	public void onWakeupCallback(int lastActiveRound)
