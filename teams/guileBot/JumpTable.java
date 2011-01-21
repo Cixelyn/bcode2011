@@ -126,7 +126,6 @@ public final class JumpTable {
 			switch(idx)
 			{
 			
-				//LETS DEAL WITH THE FAR ONES FIRST
 				case 0:
 					dirVec=4; zeroVec=0; break;
 				case 1:
@@ -187,6 +186,8 @@ public final class JumpTable {
 					return null;
 			}
 		}
+		
+		System.out.println("idx = " + Integer.toString(idx));
 		
 		if ( isDiagonal )
 			return new MapLocation(myLoc.x+xC*dx, myLoc.y+yC*dy);

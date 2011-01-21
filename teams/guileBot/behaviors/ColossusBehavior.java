@@ -265,7 +265,7 @@ public class ColossusBehavior extends Behavior
         			// Move forward if you can
         			else if ( myPlayer.myRC.getDirection() != Direction.values()[rally] )
         				myPlayer.myMotor.setDirection(Direction.values()[rally]);
-        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) )
+        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && jump != JMP_SUCCESS )
         				myPlayer.myMotor.moveForward();
         		}
 	        	return;	        	     
