@@ -158,13 +158,19 @@ public class WraithBehavior extends Behavior
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 1) % 8; // we have reached the closest side to the enemy corner, rerally to corner
-	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-	        		numBounces++;
+        			// we have reached the closest side to the enemy corner, rerally to corner
+	        		if ( num % 2 == 0 )
+	        			rally = (rally + 1) % 8;
+	        		else
+	        			rally = (rally + 7) % 8;
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 7) % 8; // we have reached the closest side to the enemy corner, rerally to corner
+        			// we have reached the closest side to the enemy corner, rerally to corner
+	        		if ( num % 2 == 0 )
+	        			rally = (rally + 7) % 8;
+	        		else
+	        			rally = (rally + 1) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        		numBounces++;
 	        	}
