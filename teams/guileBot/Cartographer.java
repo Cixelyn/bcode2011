@@ -121,7 +121,25 @@ public class Cartographer {
 		return new MapLocation(centerX,centerY);
 	}
 	
+	/**
+	 * This function returns the number of sides the robot has seen
+	 * @author JVen
+	 * @return The number of sides the robot has seen
+	 */
 	
+	public int getConfidence()
+	{
+		int ans = 0;
+		if ( seenNorth )
+			ans++;
+		if ( seenEast )
+			ans++;
+		if ( seenSouth )
+			ans++;
+		if ( seenWest )
+			ans++;
+		return ans;
+	}
 	
 	/**
 	 * This function will eventually return the best direction to explore in.

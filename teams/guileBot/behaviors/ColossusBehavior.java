@@ -1,4 +1,4 @@
-package guileBot.behaviors;
+ package guileBot.behaviors;
 
 import guileBot.*;
 import battlecode.common.*;
@@ -141,8 +141,8 @@ public class ColossusBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
-				// Rally to center
-				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
+				// Rally to center if we're confident enough in where it is
+				if ( Clock.getRoundNum() >= Constants.SCRAMBLE_TIME && Clock.getRoundNum() <= Constants.SCRAMBLE_TIME + 500 && myPlayer.myCartographer.getConfidence() >= 3 )
 				{
 					rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
 					Utility.setIndicator(myPlayer, 2, "Scrambling to center, rerallying " + Direction.values()[rally].toString() + ".");
