@@ -50,93 +50,150 @@ public final class JumpTable {
 		
 		//add a modulus operation that allows for the jump tables to changed based on modulus operations
 		
+		int xC = 0, yC = 0, dirVec = 0, zeroVec = 0;
 		
 		/////////////////////////////////////////////////////////////////////
 		///////////////////////DIAGONALS/////////////////////////////////////
-		if(isDiagonal) {
-			switch(idx) {
-			case 0:
-				return new MapLocation(myLoc.x + dx*3, myLoc.y + dy*2);
-			case 1:
-				return new MapLocation(myLoc.x + dx*2, myLoc.y + dy*3);
-			case 2:
-				return new MapLocation(myLoc.x + dx  , myLoc.y + dy*3);
-			case 3:
-				return new MapLocation(myLoc.x + dx*3, myLoc.y + dy  );
-			case 4:
-				return new MapLocation(myLoc.x + dx*2, myLoc.y + dx*2);
-			case 5:
-				return new MapLocation(myLoc.x + dx*4, myLoc.y        );
-			case 6:
-				return new MapLocation(myLoc.x       , myLoc.y + dy*4 );
-			case 7:
-				return new MapLocation(myLoc.x + dx*2, myLoc.y + dy*2 );
-			case 8:
-				return new MapLocation(myLoc.x + dx*2, myLoc.y + dy   );
-			case 9:
-				return new MapLocation(myLoc.x + dx  , myLoc.y + dy*2  );
-			case 10:
-				return new MapLocation(myLoc.x       , myLoc.y + dy*3 );
-			case 11:
-				return new MapLocation(myLoc.x + dx*3, myLoc.y        );
+		if(isDiagonal)
+		{
+			
+			switch(idx)
+			{
+				case 0:
+					xC = 3; yC = 2; break;
+				case 1:
+					xC = 2; yC = 3; break;
+				case 2:
+					xC = 1; yC = 3; break;
+				case 3:
+					xC = 3; yC = 1; break;
+				case 4:
+					xC = 2; yC = 2; break;
+				case 5:
+					xC = 4; yC = 0; break;
+				case 6:
+					xC = 0; yC = 4; break;
+				case 7:
+					xC = 2; yC = 1; break;
+				case 8:
+					xC = 1; yC = 2; break;
+				case 9:
+					xC = 0; yC = 3; break;
+				case 10:
+					xC = 3; yC = 0; break;
+				case 11:
+					xC = 0; yC = 2; break;
+				case 12:
+					xC = 2; yC = 0; break;
+				case 13:
+					xC = -1; yC = 3; break;
+				case 14:
+					xC = 3; yC = -1; break;
+				case 15:
+					xC = 1; yC = 1; break;
+				case 16:
+					xC = -1; yC = 2; break;
+				case 17:
+					xC = 2; yC = -1; break;
+				case 18:
+					xC = 0; yC = 1; break;
+				case 19:
+					xC = 1; yC = 0; break;
+				case 20:
+					xC = -2; yC = 3; break;
+				case 21:
+					xC = 3; yC = -2; break;
+				case 22:
+					xC = -2; yC = 2; break;
+				case 23:
+					xC = 2; yC = -2; break;
+				case 24:
+					xC = -1; yC = 1; break;
+				case 25:
+					xC = 1; yC = -1; break;
 				
-			//////// SKIPPING QUITE A FEW!!!
-			case 12:
-				return new MapLocation(myLoc.x + dx*-2, myLoc.y+dy*2 );
-			case 13:
-				return new MapLocation(myLoc.x + dx* 2, myLoc.y+dy*-2 );
 				
-				
-			default:
-				return null;
-			}
-			
-			
-		/////////////////////////////////////////////////////////////////////
-		//////////////////////////ORTHOGONALS////////////////////////////////
-		} else {
-			
-			int dirVec; int zeroVec;
-			
-			switch(idx) {
-			
-			//LETS DEAL WITH THE FAR ONES FIRST
-			case 0:
-				dirVec=4; zeroVec=0; break;
-			case 1:
-				dirVec=3; zeroVec=+1; break;
-			case 2:
-				dirVec=3; zeroVec=-1; break;
-			case 3:
-				dirVec=3; zeroVec=+2; break;
-			case 4:
-				dirVec=3; zeroVec=-2; break;
-			case 5:
-				dirVec=3; zeroVec=0; break;
-			case 6:
-				dirVec=2; zeroVec=+1; break;
-			case 7:
-				dirVec=2; zeroVec=-1; break;
-			case 8:
-				dirVec=2; zeroVec=0; break;
-			case 9:
-				dirVec=0; zeroVec=+4; break;
-			case 10:
-				dirVec=0; zeroVec=-4; break;
-			case 11:
-				dirVec=0; zeroVec=+3; break;
-			case 12:
-				dirVec=0; zeroVec=-3; break;
-			default:
-				return null;
-			}
-			
-			if(isVertical) {
-				return new MapLocation(myLoc.x+zeroVec, myLoc.y+dirVec*dy);
-			} else{
-				return new MapLocation(myLoc.x+dirVec*dx, myLoc.y+zeroVec);
+				default:
+					return null;
 			}
 		}
+		/////////////////////////////////////////////////////////////////////
+		//////////////////////////ORTHOGONALS////////////////////////////////
+		
+		else
+		{
+			
+			switch(idx)
+			{
+			
+				//LETS DEAL WITH THE FAR ONES FIRST
+				case 0:
+					dirVec=4; zeroVec=0; break;
+				case 1:
+					dirVec=3; zeroVec=-1; break;
+				case 2:
+					dirVec=3; zeroVec=1; break;
+				case 3:
+					dirVec=3; zeroVec=0; break;
+				case 4:
+					dirVec=3; zeroVec=-2; break;
+				case 5:
+					dirVec=3; zeroVec=2; break;
+				case 6:
+					dirVec=2; zeroVec=-1; break;
+				case 7:
+					dirVec=2; zeroVec=1; break;
+				case 8:
+					dirVec=2; zeroVec=-2; break;
+				case 9:
+					dirVec=2; zeroVec=2; break;
+				case 10:
+					dirVec=2; zeroVec=0; break;
+				case 11:
+					dirVec=2; zeroVec=-3; break;
+				case 12:
+					dirVec=2; zeroVec=3; break;
+				case 13:
+					dirVec=1; zeroVec=-1; break;
+				case 14:
+					dirVec=1; zeroVec=1; break;
+				case 15:
+					dirVec=1; zeroVec=0; break;
+				case 16:
+					dirVec=1; zeroVec=-2; break;
+				case 17:
+					dirVec=1; zeroVec=2; break;
+				case 18:
+					dirVec=1; zeroVec=-3; break;
+				case 19:
+					dirVec=1; zeroVec=3; break;
+				case 20:
+					dirVec=0; zeroVec=-3; break;
+				case 21:
+					dirVec=0; zeroVec=3; break;
+				case 22:
+					dirVec=0; zeroVec=-4; break;
+				case 23:
+					dirVec=0; zeroVec=4; break;
+				case 24:
+					dirVec=0; zeroVec=-2; break;
+				case 25:
+					dirVec=0; zeroVec=2; break;
+				case 26:
+					dirVec=0; zeroVec=1; break;
+				case 27:
+					dirVec=0; zeroVec=-1; break;
+				default:
+					return null;
+			}
+		}
+		
+		if ( isDiagonal )
+			return new MapLocation(myLoc.x+xC*dx, myLoc.y+yC*dy);
+		else if ( isVertical )
+			return new MapLocation(myLoc.x+zeroVec, myLoc.y+dirVec*dy);
+		else
+			return new MapLocation(myLoc.x+dirVec*dx, myLoc.y+zeroVec);
 		
 	}
 	
