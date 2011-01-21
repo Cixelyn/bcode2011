@@ -164,6 +164,10 @@ public class ColossusBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
+				// Rally to center
+				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
+					rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
+				
         		// Attacking code
         		myLoc = myPlayer.myRC.getLocation();
         		enemyInfo = Utility.attackEnemies(myPlayer);
