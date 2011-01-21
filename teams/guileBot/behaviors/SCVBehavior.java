@@ -14,7 +14,10 @@ public class SCVBehavior extends Behavior
 		WEIRD_SPAWN,
 		WEIRD_VACATE,
 		WEIRD_REFINERY,
-		COMPUTE_BUILDINGS,
+		COMPUTE_BUILDINGS_1,
+		COMPUTE_BUILDINGS_2,
+		COMPUTE_BUILDINGS_3,
+		COMPUTE_BUILDINGS_4,
 		BUILD_BUILDINGS,
 		SLEEP,
 		GIVE_UP
@@ -148,7 +151,7 @@ public class SCVBehavior extends Behavior
 	        				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 	        				myPlayer.sleep();
 	        				mineIDs[3] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
-	        				obj = SCVBuildOrder.COMPUTE_BUILDINGS;
+	        				obj = SCVBuildOrder.COMPUTE_BUILDINGS_1;
 						}
 						// path found to the right
 						else if ( leftRefinery == 1 && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()) )
@@ -195,7 +198,7 @@ public class SCVBehavior extends Behavior
 	        				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 	        				myPlayer.sleep();
 	        				mineIDs[3] = myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND).getID();
-		    				obj = SCVBuildOrder.COMPUTE_BUILDINGS;
+		    				obj = SCVBuildOrder.COMPUTE_BUILDINGS_1;
 						}
 						else if ( !triedOtherSide )
 						{
@@ -327,7 +330,7 @@ public class SCVBehavior extends Behavior
         				minesCapped++;
         				if (minesCapped == 2)
         				{
-        					obj = SCVBuildOrder.COMPUTE_BUILDINGS;
+        					obj = SCVBuildOrder.COMPUTE_BUILDINGS_1;
         					mineLocs[3] = loc;
         				}
         				else
@@ -346,11 +349,118 @@ public class SCVBehavior extends Behavior
     			}
     			return;
     		
-			case COMPUTE_BUILDINGS:
+			case COMPUTE_BUILDINGS_1:
 				
-				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS");
-				Utility.setIndicator(myPlayer, 2, "Thinking... carry the one...");
-				dizziness = 0;
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_1");
+				Utility.setIndicator(myPlayer, 2, "Trying to get factory and refinery next to armory...");
+				d = myPlayer.myRC.getLocation().directionTo(mineLocs[3]);
+				if ( myPlayer.myMotor.canMove(d.rotateLeft()) && myPlayer.myMotor.canMove(d.rotateLeft().rotateLeft()) )
+				{
+					armoryLoc = myPlayer.myRC.getLocation().add(d.rotateLeft());
+					factoryLoc = myPlayer.myRC.getLocation().add(d.rotateLeft().rotateLeft());
+					obj = SCVBuildOrder.BUILD_BUILDINGS;
+				}
+				else if ( myPlayer.myMotor.canMove(d.rotateRight()) && myPlayer.myMotor.canMove(d.rotateRight().rotateRight()) )
+				{
+					armoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight());
+					factoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight().rotateRight());
+					obj = SCVBuildOrder.BUILD_BUILDINGS;
+				}
+				else if ( !d.isDiagonal() )
+				{
+					if ( myPlayer.myMotor.canMove(d.rotateLeft().rotateLeft()) && myPlayer.myMotor.canMove(d.rotateLeft().rotateLeft().rotateLeft()) )
+					{
+						armoryLoc = myPlayer.myRC.getLocation().add(d.rotateLeft().rotateLeft());
+						factoryLoc = myPlayer.myRC.getLocation().add(d.rotateLeft().rotateLeft().rotateLeft());
+						obj = SCVBuildOrder.BUILD_BUILDINGS;
+					}
+					else if ( myPlayer.myMotor.canMove(d.rotateLeft().rotateLeft()) && myPlayer.myMotor.canMove(d.opposite()) )
+					{
+						armoryLoc = myPlayer.myRC.getLocation().add(d.rotateLeft().rotateLeft());
+						factoryLoc = myPlayer.myRC.getLocation().add(d.opposite());
+						obj = SCVBuildOrder.BUILD_BUILDINGS;
+					}
+					else if ( myPlayer.myMotor.canMove(d.rotateRight().rotateRight()) && myPlayer.myMotor.canMove(d.rotateRight().rotateRight().rotateRight()) )
+					{
+						armoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight().rotateRight());
+						factoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight().rotateRight().rotateRight());
+						obj = SCVBuildOrder.BUILD_BUILDINGS;
+					}
+					else if ( myPlayer.myMotor.canMove(d.rotateRight().rotateRight()) && myPlayer.myMotor.canMove(d.opposite()) )
+					{
+						armoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight().rotateRight());
+						factoryLoc = myPlayer.myRC.getLocation().add(d.opposite());
+						obj = SCVBuildOrder.BUILD_BUILDINGS;
+					}
+				}
+				else
+					obj = SCVBuildOrder.COMPUTE_BUILDINGS_2;
+				return;
+    			
+			case COMPUTE_BUILDINGS_2:
+				
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_2");
+				Utility.setIndicator(myPlayer, 2, "Trying to get factory next to armory...");
+				for ( int i = 8 ; --i >= 0 ; )
+				{
+					d = Direction.values()[i];
+					if ( myPlayer.myMotor.canMove(d) && myPlayer.myMotor.canMove(d.rotateRight()) )
+					{
+						armoryLoc = myPlayer.myRC.getLocation().add(d);
+						factoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight());
+						obj = SCVBuildOrder.BUILD_BUILDINGS;
+						return;
+					}
+					else if ( myPlayer.myMotor.canMove(d) && !d.isDiagonal() && myPlayer.myMotor.canMove(d.rotateRight().rotateRight()) )
+					{
+						armoryLoc = myPlayer.myRC.getLocation().add(d);
+						factoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight().rotateRight());
+						obj = SCVBuildOrder.BUILD_BUILDINGS;
+						return;
+					}
+				}
+				obj = SCVBuildOrder.COMPUTE_BUILDINGS_3;
+				return;
+    			
+			case COMPUTE_BUILDINGS_3:
+				
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_3");
+				Utility.setIndicator(myPlayer, 2, "Trying to get factory next to refinery...");
+				d = myPlayer.myRC.getLocation().directionTo(mineLocs[3]);
+				if ( myPlayer.myMotor.canMove(d.rotateLeft()) )
+					factoryLoc = myPlayer.myRC.getLocation().add(d.rotateLeft());
+				else if ( myPlayer.myMotor.canMove(d.rotateRight()) )
+					factoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight());
+				if ( !d.isDiagonal() )
+				{
+					if ( myPlayer.myMotor.canMove(d.rotateLeft().rotateLeft()) )
+						factoryLoc = myPlayer.myRC.getLocation().add(d.rotateLeft().rotateLeft());
+					else if ( myPlayer.myMotor.canMove(d.rotateRight().rotateRight()) )
+						factoryLoc = myPlayer.myRC.getLocation().add(d.rotateRight().rotateRight());
+				}
+				if ( factoryLoc == null )
+					obj = SCVBuildOrder.COMPUTE_BUILDINGS_4;
+				else
+				{
+					for ( int i = 8 ; --i >= 0 ; )
+					{
+						d = Direction.values()[i];
+						if ( myPlayer.myMotor.canMove(d) && !myPlayer.myRC.getLocation().add(d).equals(factoryLoc) )
+						{
+							armoryLoc = myPlayer.myRC.getLocation().add(d);
+							obj = SCVBuildOrder.BUILD_BUILDINGS;
+							return;
+						}
+					}
+					factoryLoc = null;
+					obj = SCVBuildOrder.COMPUTE_BUILDINGS_4;
+				}
+				return;
+    			
+			case COMPUTE_BUILDINGS_4:
+				
+				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_4");
+				Utility.setIndicator(myPlayer, 2, "This map blows! Going for anything I can get...");
 				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
@@ -366,16 +476,13 @@ public class SCVBehavior extends Behavior
 						obj = SCVBuildOrder.BUILD_BUILDINGS;
 						return;
 					}
-					dizziness++;
-					if ( dizziness >= 8 )
-					{
-						Utility.setIndicator(myPlayer, 2, "It's a trap!");
-						myPlayer.myRC.suicide(); // SCV is trapped... but then how did you get there?
-						return;
-					}
 				}
+				myPlayer.sleep();
+				Utility.setIndicator(myPlayer, 2, "No room for factory and armory. GG.");
+				myPlayer.sleep();
+				myPlayer.myRC.suicide();
 				return;
-    			
+				
 			case BUILD_BUILDINGS:
 				
 				Utility.setIndicator(myPlayer, 1, "BUILD_BUILDINGS");
@@ -409,7 +516,7 @@ public class SCVBehavior extends Behavior
 				if (myPlayer.myRC.getLocation().distanceSquaredTo(hometown) > 0)
     				Utility.navStep(myPlayer, nav, hometown);
 				else
-					obj = SCVBuildOrder.COMPUTE_BUILDINGS;
+					obj = SCVBuildOrder.COMPUTE_BUILDINGS_1;
 				return;
 				
 		}

@@ -11,6 +11,7 @@ public class FactoryBehavior extends Behavior
 		WAIT_FOR_DOCK,
 		EQUIP_UNIT,
 		MAKE_HEAVY,
+		EQUIP_ARMOR,
 		SLEEP
 	}
 	
@@ -19,8 +20,11 @@ public class FactoryBehavior extends Behavior
 	
 	MapLocation unitDock;
 	
+	Robot[] nearbyRobots;
 	Robot r;
 	RobotInfo rInfo;
+	RobotInfo armoryInfo;
+	RobotInfo refineryInfo;
 	
 	int currWraith;
 	int currDrone;
@@ -33,6 +37,7 @@ public class FactoryBehavior extends Behavior
 	double minFluxToBuild;
 	
 	boolean towerEquipped = false;
+	boolean armorEquipped = false;
 	
 	public FactoryBehavior(RobotPlayer player)
 	{
@@ -73,7 +78,11 @@ public class FactoryBehavior extends Behavior
     			
     			// check what unit should be made
     			currUnit = currWraith + currDrone + currHeavy;
-    			if ( currUnit == 1 )
+    			
+    			if ( !armorEquipped && currUnit == 2 )
+    				obj = FactoryBuildOrder.EQUIP_ARMOR;
+    			
+    			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
     				if ( r != null && r.getID() != babyWraith )
@@ -83,7 +92,8 @@ public class FactoryBehavior extends Behavior
     					currWraith++;
     				}
     			}
-    			else if ( currUnit % 3 == 2 )
+    			else if ( currUnit % 3 == 2 )*/
+    			else if ( currUnit == 1 || currUnit % 3 == 2 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
     				if ( r != null && r.getID() != babyDrone )
@@ -137,6 +147,18 @@ public class FactoryBehavior extends Behavior
     				
     			}
     			currHeavy++;
+    			obj = FactoryBuildOrder.EQUIP_UNIT;
+    			return;
+    			
+			case EQUIP_ARMOR:
+    			
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_ARMOR");
+    			Utility.setIndicator(myPlayer, 2, "Waiting for plasmas or shields.");
+    			armorEquipped = true;
+    			// get plasmas or shields
+    			while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
     			obj = FactoryBuildOrder.EQUIP_UNIT;
     			return;
     			

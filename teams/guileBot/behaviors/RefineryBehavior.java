@@ -18,6 +18,7 @@ public class RefineryBehavior extends Behavior
 		EQUIP_HEAVY,
 		EQUIP_DRONE,
 		EQUIP_WRAITH,
+		EQUIP_ARMOR,
 		SLEEP
 	}
 	
@@ -33,6 +34,8 @@ public class RefineryBehavior extends Behavior
 	
 	Robot[] nearbyRobots;
 	RobotInfo rInfo;
+	RobotInfo armoryInfo;
+	RobotInfo factoryInfo;
 	Robot r;
 	ComponentType c;
 	int babyWraith;
@@ -48,6 +51,7 @@ public class RefineryBehavior extends Behavior
 	boolean rHasRadar;
 	
 	boolean hasSlept = false;
+	boolean armorEquipped = false;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -152,7 +156,10 @@ public class RefineryBehavior extends Behavior
     			
     			// check what unit should be made
     			currUnit = currWraith + currDrone + currHeavy;
-    			if ( currUnit == 1 )
+    			
+    			if ( !armorEquipped && currUnit == 2 )
+    				obj = RefineryBuildOrder.EQUIP_ARMOR;
+    			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
     				if ( r != null && r.getID() != babyWraith )
@@ -162,7 +169,8 @@ public class RefineryBehavior extends Behavior
     					obj = RefineryBuildOrder.EQUIP_WRAITH;
     				}
     			}
-    			else if ( currUnit % 3 == 2 )
+    			else if ( currUnit % 3 == 2 )*/
+    			else if ( currUnit == 1 || currUnit % 3 == 2 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
     				if ( r != null && r.getID() != babyDrone )
@@ -397,6 +405,82 @@ public class RefineryBehavior extends Behavior
 					}
 				}
 				return;
+				
+    		case EQUIP_ARMOR:
+    			
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_ARMOR");
+    			Utility.setIndicator(myPlayer, 2, "");
+    			armorEquipped = true;
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for ( int i = nearbyRobots.length ; --i >= 0 ; )
+    			{
+    				r = nearbyRobots[i];
+    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getRobotLevel() == RobotLevel.ON_GROUND )
+    				{
+    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    					if ( rInfo.on && rInfo.chassis == Chassis.BUILDING )
+    					{
+    						for ( int j = rInfo.components.length ; --j >= 0 ; )
+    						{
+    							c = rInfo.components[j];
+    							if ( c == ComponentType.ARMORY )
+	    							armoryInfo = rInfo;
+    							if ( c == ComponentType.FACTORY )
+    								factoryInfo = rInfo;
+    						}
+    					}
+    				}
+    			}
+    			
+    			if ( armoryInfo != null )
+    			{
+    				// Armory gives plasma, I don't do anything
+    				Utility.setIndicator(myPlayer, 2, "Armory is giving me plasmas.");
+    			}
+    			else if ( factoryInfo != null )
+    			{
+    				// I give myself shields, check if factory has plasmas // FIXME is there a better way to see if fac next to armory? broadcast?
+    				Utility.setIndicator(myPlayer, 2, "Giving shields to myself.");
+    				while ( myPlayer.myRC.getTeamResources() < 4*ComponentType.SHIELD.cost + Constants.RESERVE )
+    					myPlayer.sleep();
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				for ( int i = factoryInfo.components.length ; --i >= 0 ; )
+    				{
+    					c = factoryInfo.components[i];
+    					if ( c == ComponentType.PLASMA )
+    					{
+    						obj = RefineryBuildOrder.EQUIP_UNIT;
+    						return;
+    					}
+    				}
+    				Utility.setIndicator(myPlayer, 2, "Giving shields to factory and myself.");
+    				while ( myPlayer.myRC.getTeamResources() < 5*ComponentType.SHIELD.cost + Constants.RESERVE )
+    					myPlayer.sleep();
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    			}
+    			else
+    			{
+    				// I give myself shields
+    				Utility.setIndicator(myPlayer, 2, "Giving shields to myself.");
+    				while ( myPlayer.myRC.getTeamResources() < 4*ComponentType.SHIELD.cost + Constants.RESERVE )
+    					myPlayer.sleep();
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
+    			}
+    			obj = RefineryBuildOrder.EQUIP_UNIT;
+    			while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+    			return;
 				
     		case SLEEP:
 				
