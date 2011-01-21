@@ -57,6 +57,7 @@ public class RobotPlayer implements Runnable {
 	public final Messenger myMessenger;
 	public final Actions myActions;
 	public final Memory myMemory;
+	public final Cartographer myCartographer;
 	
 	
 	//Misc Stats
@@ -125,6 +126,7 @@ public class RobotPlayer implements Runnable {
     	myMessenger = new Messenger(this);
     	myActions = new Actions(this);
     	myMemory = new Memory(this);
+    	myCartographer = new Cartographer(this);
     	
     	
     	
@@ -219,6 +221,12 @@ public class RobotPlayer implements Runnable {
 				myBehavior.newComponentCallback(components);
 			}
 		} catch(Exception e) {e.printStackTrace();}
+		
+		
+		
+		////////////////////////////////////////////////////////////////
+		//Run the map sensing code
+		myCartographer.runSensor();
 		
 		
 	}
@@ -351,7 +359,8 @@ public class RobotPlayer implements Runnable {
 				/////////////////////////////////////////////////////////////////
 				//SENSOR ALLOCATIONS
 				case SENSOR:
-					mySensor = (SensorController)c; 					continue;
+					mySensor = (SensorController)c; 					
+					myCartographer.setSensor(mySensor);					continue;					
 				case BUILDER:
 					myBuilder = (BuilderController)c; 					continue;
 				case MOTOR:

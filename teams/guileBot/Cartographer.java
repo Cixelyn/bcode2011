@@ -17,9 +17,9 @@ import battlecode.common.*;
 public class Cartographer {
 	
 	//Define constants here for fast access
-	public final RobotPlayer myPlayer;
-	public final RobotController myRC;
-	public ComponentType sensorType;
+	private final RobotPlayer myPlayer;
+	private final RobotController myRC;
+	private ComponentType sensorType;
 	
 	//Seen Flags
 	private boolean seenNorth;
@@ -79,7 +79,7 @@ public class Cartographer {
 	/** 
 	 * Function recalculates the map center any time new data has been found.
 	 */
-	public void updateMapCenter() {
+	private void updateMapCenter() {
 
 		if(seenEast && !seenWest) {
 			coordWest =  coordEast - GameConstants.MAP_MAX_WIDTH;
@@ -160,6 +160,13 @@ public class Cartographer {
 					}
 				}
 			}
+			return;
+		
+			
+		case SIGHT:
+		case SATELLITE:
+		case TELESCOPE:
+		case BUILDING_SENSOR:
 			return;
 				
 		default: 
