@@ -153,7 +153,7 @@ public class FactoryBehavior extends Behavior
 			case EQUIP_ARMOR:
     			
     			Utility.setIndicator(myPlayer, 1, "EQUIP_ARMOR");
-    			Utility.setIndicator(myPlayer, 2, "");
+    			Utility.setIndicator(myPlayer, 2, "Waiting for plasmas or shields.");
     			armorEquipped = true;
     			// get plasmas or shields
     			while ( myPlayer.myMotor.isActive() )

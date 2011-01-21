@@ -257,6 +257,7 @@ public class ArmoryBehavior extends Behavior
     			if ( factoryInfo != null )
     			{
     				// give factory plasmas
+    				Utility.setIndicator(myPlayer, 2, "Giving plasmas to factory.");
     				while ( myPlayer.myRC.getTeamResources() < 2*ComponentType.PLASMA.cost + Constants.RESERVE )
     					myPlayer.sleep();
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.PLASMA, RobotLevel.ON_GROUND);
@@ -265,12 +266,14 @@ public class ArmoryBehavior extends Behavior
     			if ( refineryInfo != null )
     			{
     				// give refinery plasmas
+    				Utility.setIndicator(myPlayer, 2, "Giving plasmas to refinery.");
     				while ( myPlayer.myRC.getTeamResources() < 2*ComponentType.PLASMA.cost + Constants.RESERVE )
     					myPlayer.sleep();
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(refineryInfo.location), ComponentType.PLASMA, RobotLevel.ON_GROUND);
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(refineryInfo.location), ComponentType.PLASMA, RobotLevel.ON_GROUND);
     			}
 				// give self plasmas
+    			Utility.setIndicator(myPlayer, 2, "Giving plasmas to myself.");
     			while ( myPlayer.myRC.getTeamResources() < 2*ComponentType.PLASMA.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.PLASMA, RobotLevel.ON_GROUND);

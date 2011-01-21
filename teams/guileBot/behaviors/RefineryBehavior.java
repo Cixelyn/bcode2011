@@ -435,10 +435,12 @@ public class RefineryBehavior extends Behavior
     			if ( armoryInfo != null )
     			{
     				// Armory gives plasma, I don't do anything
+    				Utility.setIndicator(myPlayer, 2, "Armory is giving me plasmas.");
     			}
     			else if ( factoryInfo != null )
     			{
-    				// I give myself shields, check if factory has plasmas
+    				// I give myself shields, check if factory has plasmas // FIXME is there a better way to see if fac next to armory? broadcast?
+    				Utility.setIndicator(myPlayer, 2, "Giving shields to myself.");
     				while ( myPlayer.myRC.getTeamResources() < 4*ComponentType.SHIELD.cost + Constants.RESERVE )
     					myPlayer.sleep();
     				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
@@ -454,6 +456,7 @@ public class RefineryBehavior extends Behavior
     						return;
     					}
     				}
+    				Utility.setIndicator(myPlayer, 2, "Giving shields to factory and myself.");
     				while ( myPlayer.myRC.getTeamResources() < 5*ComponentType.SHIELD.cost + Constants.RESERVE )
     					myPlayer.sleep();
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.SHIELD, RobotLevel.ON_GROUND);
@@ -465,14 +468,13 @@ public class RefineryBehavior extends Behavior
     			else
     			{
     				// I give myself shields
-    				while ( myPlayer.myRC.getTeamResources() < 5*ComponentType.SHIELD.cost + Constants.RESERVE )
+    				Utility.setIndicator(myPlayer, 2, "Giving shields to myself.");
+    				while ( myPlayer.myRC.getTeamResources() < 4*ComponentType.SHIELD.cost + Constants.RESERVE )
     					myPlayer.sleep();
     				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
     				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
     				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
     				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
-    				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.SHIELD, RobotLevel.ON_GROUND);
-    					
     			}
     			obj = RefineryBuildOrder.EQUIP_UNIT;
     			while ( myPlayer.myMotor.isActive() )
