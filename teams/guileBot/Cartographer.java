@@ -6,7 +6,10 @@ import battlecode.common.*;
 
 
 /**
- * The cartographer class charts map exploration and provides feedback on places to explore, etc.
+ * You start off by thinking the center of the map is you.
+ * Then, as you explore the world, you learn that it's not just about you.
+ * 
+ * Deep.....
  * 
  * @author Cory
  *
