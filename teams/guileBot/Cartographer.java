@@ -68,7 +68,6 @@ public class Cartographer {
 		centerY = y;
 		centerX = x;
 		
-		hasVisited[x][y] = true;
 	
 	}
 	
