@@ -164,48 +164,6 @@ public class ColossusBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
-				// Off map rerally code
-        		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
-	        	{
-	        		if ( numBounces == 0 )
-	        			rally = (rally + 2) % 8; // we have reached the enemy side, everyone search together
-	        		else if ( numBounces == 1 )
-	        			rally = (rally + 4) % 8; // we have searched one part of the enemy side, everyone go back together
-	        		else
-	        		{
-	        			// we have cleared the enemy side, spread out and patrol the sides of the map
-	        			if ( num % 2 == 0 )
-		        			rally = (rally + 2) % 8;
-		        		else
-		        			rally = (rally + 6) % 8;
-	        		}
-	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-	        		numBounces++;
-	        	}
-        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
-	        	{
-	        		// we have reached the closest side to the enemy corner, rerally to corner
-	        		if ( num % 2 == 0 )
-	        			rally = (rally + 1) % 8;
-	        		else
-	        			rally = (rally + 7) % 8;
-	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-	        		numBounces++;
-	        	}
-        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
-	        	{
-        			// we have reached the closest side to the enemy corner, rerally to corner
-	        		if ( num % 2 == 0 )
-	        			rally = (rally + 7) % 8;
-	        		else
-	        			rally = (rally + 1) % 8;
-	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-	        		numBounces++;
-	        	}
-				
-        		
-        		
-        		
         		// Attacking code
         		myLoc = myPlayer.myRC.getLocation();
         		enemyInfo = Utility.attackEnemies(myPlayer);
@@ -213,6 +171,46 @@ public class ColossusBehavior extends Behavior
         		// No enemy found
         		if ( enemyInfo == null )
         		{
+        			
+        			// Off map rerally code
+            		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
+    	        	{
+    	        		if ( numBounces == 0 )
+    	        			rally = (rally + 2) % 8; // we have reached the enemy side, everyone search together
+    	        		else if ( numBounces == 1 )
+    	        			rally = (rally + 4) % 8; // we have searched one part of the enemy side, everyone go back together
+    	        		else
+    	        		{
+    	        			// we have cleared the enemy side, spread out and patrol the sides of the map
+    	        			if ( num % 2 == 0 )
+    		        			rally = (rally + 2) % 8;
+    		        		else
+    		        			rally = (rally + 6) % 8;
+    	        		}
+    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+    	        		numBounces++;
+    	        	}
+            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
+    	        	{
+    	        		// we have reached the closest side to the enemy corner, rerally to corner
+    	        		if ( num % 2 == 0 )
+    	        			rally = (rally + 1) % 8;
+    	        		else
+    	        			rally = (rally + 7) % 8;
+    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+    	        		numBounces++;
+    	        	}
+            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
+    	        	{
+            			// we have reached the closest side to the enemy corner, rerally to corner
+    	        		if ( num % 2 == 0 )
+    	        			rally = (rally + 7) % 8;
+    	        		else
+    	        			rally = (rally + 1) % 8;
+    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+    	        		numBounces++;
+    	        	}
+            		
         			// Try to jump
         			jump = jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
 					if ( jump == JMP_SUCCESS )
