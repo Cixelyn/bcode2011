@@ -57,6 +57,7 @@ public class RobotPlayer implements Runnable {
 	public final Messenger myMessenger;
 	public final Actions myActions;
 	public final Memory myMemory;
+	public final Cartographer myCartographer;
 	
 	
 	//Misc Stats
@@ -70,6 +71,7 @@ public class RobotPlayer implements Runnable {
 	private int bytecodeLimit;
 	public double myLastRes;
 	public boolean hasTakenDamage;
+	public boolean hasSensor;
 	
 	public int numKills;
 	
@@ -125,6 +127,7 @@ public class RobotPlayer implements Runnable {
     	myMessenger = new Messenger(this);
     	myActions = new Actions(this);
     	myMemory = new Memory(this);
+    	myCartographer = new Cartographer(this);
     	
     	
     	
@@ -220,6 +223,11 @@ public class RobotPlayer implements Runnable {
 			}
 		} catch(Exception e) {e.printStackTrace();}
 		
+		
+		
+		////////////////////////////////////////////////////////////////
+		//Run the map sensing code
+		if(hasSensor) {myCartographer.runSensor();}
 		
 	}
 	
@@ -351,7 +359,9 @@ public class RobotPlayer implements Runnable {
 				/////////////////////////////////////////////////////////////////
 				//SENSOR ALLOCATIONS
 				case SENSOR:
-					mySensor = (SensorController)c; 					continue;
+					hasSensor = true;
+					mySensor = (SensorController)c; 					
+					myCartographer.setSensor(mySensor);					continue;					
 				case BUILDER:
 					myBuilder = (BuilderController)c; 					continue;
 				case MOTOR:

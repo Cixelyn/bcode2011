@@ -86,7 +86,7 @@ public class Actions {
 				}
 			}
 		} catch (GameActionException e) {
-			System.out.println("Action Exception: backUpInDir");
+			Utility.printMsg(myPlayer,"Action Exception: backUpInDir");
 			e.printStackTrace();
 		}
 		return false;

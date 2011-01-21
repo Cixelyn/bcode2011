@@ -6,7 +6,10 @@ import battlecode.common.*;
 
 
 /**
- * The cartographer class charts map exploration and provides feedback on places to explore, etc.
+ * You start off by thinking the center of the map is you.
+ * Then, as you explore the world, you learn that it's not just about you.
+ * 
+ * Deep.....
  * 
  * @author Cory
  *
@@ -14,18 +17,24 @@ import battlecode.common.*;
 public class Cartographer {
 	
 	//Define constants here for fast access
-	public final RobotPlayer myPlayer;
-	public static ComponentController mySensor;
+	private final RobotPlayer myPlayer;
+	private final RobotController myRC;
+	private ComponentType sensorType;
 	
-	boolean seenNorth;
-	boolean seenSouth;
-	boolean seenEast;
-	boolean seenWest;
+	//Seen Flags
+	private boolean seenNorth;
+	private boolean seenSouth;
+	private boolean seenEast;
+	private boolean seenWest;
 	
-	int coordNorth;
-	int coordSouth;
-	int coordWest;
-	int coordEast;
+	//Coordinates
+	private int coordNorth;
+	private int coordSouth;
+	private int coordWest;
+	private int coordEast;
+	
+	private int centerX;
+	private int centerY;
 	
 	
 	
@@ -36,13 +45,23 @@ public class Cartographer {
 	public Cartographer(RobotPlayer player) {
 		
 		//Initialize the main components
-		myPlayer = player;
-		mySensor = null;
+		myPlayer 	= player;
+		myRC 		= player.myRC;
 		
 		//Initialize the coordinates and whether things have been seen
 		seenNorth = seenSouth = seenEast = seenWest = false;
-		coordNorth = coordSouth = coordWest = coordEast = 0;
 		
+		int x = myRC.getLocation().x;
+		int y = myRC.getLocation().y;
+		coordNorth 	= y - GameConstants.MAP_MAX_HEIGHT;
+		coordSouth 	= y + GameConstants.MAP_MAX_HEIGHT;
+		coordWest 	= x - GameConstants.MAP_MAX_WIDTH;
+		coordEast 	= x + GameConstants.MAP_MAX_WIDTH;
+		
+
+		centerY = y;
+		centerX = x;
+	
 	}
 	
 	
@@ -53,7 +72,45 @@ public class Cartographer {
 	 * @param c
 	 */
 	public void setSensor(ComponentController c) {
-		mySensor = c;	
+		sensorType = c.type();
+	}
+	
+	
+	
+	/** 
+	 * Internal function recalculates the map center any time new data has been found.
+	 */
+	private void updateMapCenter() {
+
+		if(seenEast && !seenWest) {
+			coordWest =  coordEast - GameConstants.MAP_MAX_WIDTH;
+		}
+
+		if(seenNorth) {
+			coordSouth = coordNorth + GameConstants.MAP_MAX_HEIGHT;
+		}
+		
+		if(seenWest) {
+			coordEast = coordWest + GameConstants.MAP_MAX_WIDTH;
+		}
+		
+		if(seenSouth) {
+			coordNorth = coordSouth - GameConstants.MAP_MAX_HEIGHT;
+		}
+		
+		centerY = (coordSouth-coordNorth)/2;
+		centerX = (coordEast-coordWest)/2;
+	}
+	
+	
+	
+	
+	/**
+	 * This function returns the current estimated center of the map.
+	 * @return
+	 */
+	public MapLocation getMapCenter() {
+		return new MapLocation(centerX,centerY);
 	}
 	
 
@@ -62,38 +119,63 @@ public class Cartographer {
 	 * Sense the terrain and enter the information into the mapping engine.
 	 */
 	public void runSensor() {
-		MapLocation myLoc = myPlayer.myRC.getLocation();
-		
-		switch(mySensor.type()) {
-		
-		//Cases for the radar
-		case RADAR:
-			if(!seenNorth) {}
-			if(!seenSouth) {}
-			if(!seenEast) {}
-			if(!seenWest) {}
+			MapLocation myLoc = myRC.getLocation();
+			Direction myDir = myRC.getDirection();
+			int dx = myDir.dx;
+			int dy = myDir.dy;
 			
+			switch(sensorType) {
 			
+			//Cases for the radar
+			case RADAR:
+				if(dx>0) { //East
+					if(!seenEast){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.EAST, 6)) == TerrainTile.OFF_MAP) {
+							seenEast = true;
+							coordEast = myLoc.x+6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dx<0) { //West
+					if(!seenWest){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.WEST, 6)) == TerrainTile.OFF_MAP) {
+							seenWest = true;
+							coordWest = myLoc.x-6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dy<0) { //North
+					if(!seenNorth){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP) {
+							seenNorth = true;
+							coordNorth = myLoc.y-6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dy>0) { //South
+					if(!seenSouth){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.SOUTH, 6)) == TerrainTile.OFF_MAP) {
+							seenSouth = true;
+							coordSouth = myLoc.y+6;
+							updateMapCenter();
+						}
+					}
+				}
+				return;
 			
-			break;
-			
-		default: 
-			Utility.printMsg(myPlayer,"Cartographer Error: Wrong Sensor Type");
-		}
-		
+			case SIGHT:
+			case SATELLITE:
+			case TELESCOPE:
+			case BUILDING_SENSOR:
+				return;
+					
+			default: 
+				Utility.printMsg(myPlayer,"Cartographer Error: Wrong Sensor Type");
+				return;
+			}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

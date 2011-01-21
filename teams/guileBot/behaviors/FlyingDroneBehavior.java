@@ -144,9 +144,6 @@ public class FlyingDroneBehavior extends Behavior {
         	        					
         	            				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(mine.getLocation()));
                     					currentMine=mine;
-                    					towerDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
-                    					towerPlacement=currentMine.getLocation().add(towerDirection);
-                    					currentDirection=myPlayer.myRC.getDirection();
                     					obj=FlyingDroneActions.FOUND_MINE;
                     					return;
         	        				}
@@ -335,7 +332,6 @@ public class FlyingDroneBehavior extends Behavior {
 	/////////////////////////////
 	
 	public void droneGeneralNav(int ID) throws GameActionException {
-		Utility.setIndicator(myPlayer, 2, initialDirection.toString());
 		try {
 			if (zigzagCounter==Constants.ZIGZAG_STEPS) {
 				zigzagCounter=0;
@@ -349,8 +345,15 @@ public class FlyingDroneBehavior extends Behavior {
 				}
 			}
 			else {
-				Utility.bounceNavForFlyers(myPlayer, 0);
-				zigzagCounter=zigzagCounter+1;
+				int bounce = Utility.bounceNavForFlyers(myPlayer, 0);
+				if (bounce!=0) {
+					zigzagCounter=0;
+					zigzag=bounce;
+					Utility.setIndicator(myPlayer, 1, zigzag+"");
+				}
+				else {
+					zigzagCounter=zigzagCounter+1;
+				}
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();

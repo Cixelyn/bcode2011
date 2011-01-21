@@ -592,12 +592,19 @@ public class Utility {
 	//Max's Go here
 	
 	
-	public static void bounceNavForFlyers(RobotPlayer myPlayer, int zigzag) throws GameActionException {
+	public static int bounceNavForFlyers(RobotPlayer myPlayer, int zigzag) throws GameActionException {
 		if (!myPlayer.myMotor.isActive()) {
+			boolean turnRight=false;
+			boolean turnLeft=false;
 			boolean bounce=false;
 			if (myPlayer.myRC.getDirection().isDiagonal()) {
 				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.OFF_MAP)) {
-					bounce=true;
+					if (!myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),3)).equals(TerrainTile.OFF_MAP)) {
+						turnRight=true;
+					}
+					else {
+						turnLeft=true;
+					}
 				}
 			}
 			else if (!myPlayer.myRC.getDirection().isDiagonal()) {
@@ -605,9 +612,18 @@ public class Utility {
 					bounce=true;
 				}
 			}
-			if (bounce) {
+			if (turnRight) {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-				}
+				return 1;
+			}
+			else if (turnLeft) {
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+				return 2;
+			}
+			else if (bounce) {
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+				return 2;
+			}
 			else if (zigzag==0) { //don't zig or zag, just keep on moving forward
 				
 				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
@@ -623,7 +639,9 @@ public class Utility {
 			else if (zigzag==2) { //turn 90 degrees right
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 			}
+			return 0;
 		}
+		return 0;
 	}
 
  	//Cory's Go here
