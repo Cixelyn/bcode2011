@@ -106,8 +106,8 @@ public class Cartographer {
 			coordNorth = coordSouth - GameConstants.MAP_MAX_HEIGHT;
 		}
 		
-		centerY = (coordSouth-coordNorth)/2;
-		centerX = (coordEast-coordWest)/2;
+		centerY = (coordSouth+coordNorth)/2;
+		centerX = (coordEast+coordWest)/2;
 	}
 	
 	
@@ -121,8 +121,30 @@ public class Cartographer {
 		return new MapLocation(centerX,centerY);
 	}
 	
+	/**
+	 * This function returns the number of sides the robot has seen
+	 * @author JVen
+	 * @return The number of sides the robot has seen
+	 */
 	
+	public int getConfidence()
+	{
+		int ans = 0;
+		if ( seenNorth )
+			ans++;
+		if ( seenEast )
+			ans++;
+		if ( seenSouth )
+			ans++;
+		if ( seenWest )
+			ans++;
+		return ans;
+	}
 	
+	/**
+	 * This function will eventually return the best direction to explore in.
+	 * @return
+	 */
 	public Direction unexploredDirection() {
 		//TODO: Fill this in.
 		return null;
@@ -189,6 +211,43 @@ public class Cartographer {
 				return;
 			
 			case SIGHT:
+				if(dx>0) { //East
+					if(!seenEast){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.EAST, 3)) == TerrainTile.OFF_MAP) {
+							seenEast = true;
+							coordEast = myLoc.x+6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dx<0) { //West
+					if(!seenWest){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.WEST, 3)) == TerrainTile.OFF_MAP) {
+							seenWest = true;
+							coordWest = myLoc.x-6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dy<0) { //North
+					if(!seenNorth){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.NORTH, 3)) == TerrainTile.OFF_MAP) {
+							seenNorth = true;
+							coordNorth = myLoc.y-6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dy>0) { //South
+					if(!seenSouth){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.SOUTH, 3)) == TerrainTile.OFF_MAP) {
+							seenSouth = true;
+							coordSouth = myLoc.y+6;
+							updateMapCenter();
+						}
+					}
+				}
+				return;
 			case SATELLITE:
 			case TELESCOPE:
 			case BUILDING_SENSOR:
