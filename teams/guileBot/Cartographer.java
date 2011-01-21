@@ -106,8 +106,8 @@ public class Cartographer {
 			coordNorth = coordSouth - GameConstants.MAP_MAX_HEIGHT;
 		}
 		
-		centerY = (coordSouth-coordNorth)/2;
-		centerX = (coordEast-coordWest)/2;
+		centerY = (coordSouth+coordNorth)/2;
+		centerX = (coordEast+coordWest)/2;
 	}
 	
 	
