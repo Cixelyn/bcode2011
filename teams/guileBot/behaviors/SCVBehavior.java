@@ -488,7 +488,7 @@ public class SCVBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "BUILD_BUILDINGS");
 				Utility.setIndicator(myPlayer, 2, "");
 				unitDock = myPlayer.myRC.getLocation();
-				while ( myPlayer.myRC.getTeamResources() < 2 * Chassis.BUILDING.cost + ComponentType.ARMORY.cost + ComponentType.FACTORY.cost + Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.SHIELD.cost + 2 * ComponentType.RAILGUN.cost + ComponentType.SMG.cost - 20 ) // -20 to give time for SCV to send stuff and suicide
+				while ( myPlayer.myRC.getTeamResources() < 2 * Chassis.BUILDING.cost + ComponentType.ARMORY.cost + ComponentType.FACTORY.cost + Utility.totalCost(Constants.heavyLoadout0) - 2*Constants.RESERVE ) // subtract to give time for SCV to broadcast stuff and suicide
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(armoryLoc), Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(armoryLoc), ComponentType.ARMORY, RobotLevel.ON_GROUND);

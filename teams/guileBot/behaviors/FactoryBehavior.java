@@ -116,12 +116,23 @@ public class FactoryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 2, "Building heavy " + Integer.toString(currHeavy) + ".");
     			
 				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-				if ( currHeavy % 3 == 0 )
-					minFluxToBuild = Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.RAILGUN.cost + 5*ComponentType.SHIELD.cost + 2*ComponentType.SMG.cost + Constants.RESERVE;
+				if ( currHeavy == 0 )
+					minFluxToBuild = Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + 2*ComponentType.RAILGUN.cost + ComponentType.SHIELD.cost + ComponentType.SMG.cost + Constants.RESERVE;
+				else if ( currHeavy % 3 == 0 )
+				{
+					//minFluxToBuild = Utility.totalCost(Constants.heavyLoadout1) + Constants.RESERVE;
+					minFluxToBuild = Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2*Constants.RESERVE; // heavy cheaper than refinery, prioritize refinery
+				}
 				else if ( currHeavy % 3 == 1 )
-					minFluxToBuild = Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.RAILGUN.cost + 2*ComponentType.PLASMA.cost + ComponentType.SMG.cost + Constants.RESERVE;
+				{
+					//minFluxToBuild = Utility.totalCost(Constants.heavyLoadout2) + Constants.RESERVE;
+					minFluxToBuild = Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2*Constants.RESERVE; // heavy cheaper than refinery, prioritize refinery
+				}
 				else if ( currHeavy % 3 == 2 )
-					minFluxToBuild = Chassis.HEAVY.cost + ComponentType.RADAR.cost + ComponentType.JUMP.cost + ComponentType.RAILGUN.cost + ComponentType.HARDENED.cost + ComponentType.SHIELD.cost + ComponentType.BLASTER.cost + ComponentType.SMG.cost + Constants.RESERVE;
+				{
+					//minFluxToBuild = Utility.totalCost(Constants.heavyLoadout3) + Constants.RESERVE;
+					minFluxToBuild = Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + 2*Constants.RESERVE; // heavy cheaper than refinery, prioritize refinery
+				}
     			while ( r != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < minFluxToBuild || myPlayer.myRC.getTeamResources() - myPlayer.myLastRes < Chassis.BUILDING.upkeep + Chassis.HEAVY.upkeep * (currHeavy + 1) )
     			{
     				myPlayer.sleep();

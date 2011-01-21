@@ -51,9 +51,28 @@ public class Constants
 	//Cory's Go here
 	
 	
-	
-	
-	
+	public static final ComponentType[] heavyLoadout0 = new ComponentType[]    // currHeavy == 0
+  		                       {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+  								ComponentType.RAILGUN,ComponentType.RAILGUN,ComponentType.SMG
+  								};
+  	
+	public static final ComponentType[] heavyLoadout1 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
+                                 {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+  								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
+  								ComponentType.HARDENED
+  								};
+  	
+	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 1
+                                 {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+  								ComponentType.RAILGUN,ComponentType.BLASTER,
+  								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD
+  								};
+  	
+	public static final ComponentType[] heavyLoadout3 = new ComponentType[]    // currHeavy % 3 == 2  
+  	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+  								ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.SMG,
+  								ComponentType.PLASMA,ComponentType.PLASMA
+  								};
 	
 	
 	

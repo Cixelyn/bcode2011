@@ -39,29 +39,6 @@ public class ColossusBehavior extends Behavior
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
 	
-	private static final int[] componentLoadOut0 = Utility.countComponents(new ComponentType[]    
-		                       {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-								ComponentType.RAILGUN,ComponentType.RAILGUN,ComponentType.SMG
-								});
-	
-	private static final int[] componentLoadOut1 = Utility.countComponents(new ComponentType[]    
-                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.HARDENED
-								});
-	
-	private static final int[] componentLoadOut2 = Utility.countComponents(new ComponentType[]    
-                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-								ComponentType.RAILGUN,ComponentType.BLASTER,
-								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD
-								});
-	
-	private static final int[] componentLoadOut3 = Utility.countComponents(new ComponentType[]    
-	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-								ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.SMG,
-								ComponentType.PLASMA,ComponentType.PLASMA
-								});
-	
 	public ColossusBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -79,13 +56,13 @@ public class ColossusBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				
 				// Decide what kind of heavy I am
-				if ( !Utility.compareComponents(myPlayer, componentLoadOut0) && num != -1 )
+				if ( !Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout0) ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if ( !Utility.compareComponents(myPlayer, componentLoadOut1) && num != -1 )
+				else if ( !Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout1) ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if ( !Utility.compareComponents(myPlayer, componentLoadOut2) && num != -1 )
+				else if ( !Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout2) ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if ( !Utility.compareComponents(myPlayer, componentLoadOut3) && num != -1 )
+				else if ( !Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout3) ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				return;
 	        	
