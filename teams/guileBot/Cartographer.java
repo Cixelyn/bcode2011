@@ -16,6 +16,11 @@ import battlecode.common.*;
  */
 public class Cartographer {
 	
+	//Define locations I've visited
+	private boolean[][] hasVisited;
+	
+	
+	
 	//Define constants here for fast access
 	private final RobotPlayer myPlayer;
 	private final RobotController myRC;
@@ -43,6 +48,8 @@ public class Cartographer {
 	 * @param player
 	 */
 	public Cartographer(RobotPlayer player) {
+		//Initialize my visited squares
+		hasVisited = new boolean[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
 		
 		//Initialize the main components
 		myPlayer 	= player;
@@ -57,10 +64,11 @@ public class Cartographer {
 		coordSouth 	= y + GameConstants.MAP_MAX_HEIGHT;
 		coordWest 	= x - GameConstants.MAP_MAX_WIDTH;
 		coordEast 	= x + GameConstants.MAP_MAX_WIDTH;
-		
 
 		centerY = y;
 		centerX = x;
+		
+		hasVisited[x][y] = true;
 	
 	}
 	
@@ -82,19 +90,20 @@ public class Cartographer {
 	 */
 	private void updateMapCenter() {
 
+		//If we've seen one edge but not the other, then we can update our estimate of the other edge.
 		if(seenEast && !seenWest) {
 			coordWest =  coordEast - GameConstants.MAP_MAX_WIDTH;
 		}
 
-		if(seenNorth) {
+		if(seenNorth && !seenSouth) {
 			coordSouth = coordNorth + GameConstants.MAP_MAX_HEIGHT;
 		}
 		
-		if(seenWest) {
+		if(seenWest && !seenEast) {
 			coordEast = coordWest + GameConstants.MAP_MAX_WIDTH;
 		}
 		
-		if(seenSouth) {
+		if(seenSouth && !seenNorth) {
 			coordNorth = coordSouth - GameConstants.MAP_MAX_HEIGHT;
 		}
 		
@@ -113,6 +122,16 @@ public class Cartographer {
 		return new MapLocation(centerX,centerY);
 	}
 	
+	
+	
+	public Direction unexploredDirection() {
+		//TODO: Fill this in.
+		return null;
+	}
+	
+	
+	
+	
 
 	
 	/**
@@ -121,6 +140,9 @@ public class Cartographer {
 	public void runSensor() {
 			MapLocation myLoc = myRC.getLocation();
 			Direction myDir = myRC.getDirection();
+			
+			hasVisited[myLoc.x][myLoc.y] = true;
+			
 			int dx = myDir.dx;
 			int dy = myDir.dy;
 			
@@ -128,7 +150,7 @@ public class Cartographer {
 			
 			//Cases for the radar
 			case RADAR:
-				if(dx>0) { //East
+				if(dx>=0) { //East
 					if(!seenEast){
 						if(myRC.senseTerrainTile(myLoc.add(Direction.EAST, 6)) == TerrainTile.OFF_MAP) {
 							seenEast = true;
@@ -137,7 +159,7 @@ public class Cartographer {
 						}
 					}
 				}
-				if(dx<0) { //West
+				if(dx<=0) { //West
 					if(!seenWest){
 						if(myRC.senseTerrainTile(myLoc.add(Direction.WEST, 6)) == TerrainTile.OFF_MAP) {
 							seenWest = true;
@@ -146,7 +168,7 @@ public class Cartographer {
 						}
 					}
 				}
-				if(dy<0) { //North
+				if(dy<=0) { //North
 					if(!seenNorth){
 						if(myRC.senseTerrainTile(myLoc.add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP) {
 							seenNorth = true;
@@ -155,7 +177,7 @@ public class Cartographer {
 						}
 					}
 				}
-				if(dy>0) { //South
+				if(dy>=0) { //South
 					if(!seenSouth){
 						if(myRC.senseTerrainTile(myLoc.add(Direction.SOUTH, 6)) == TerrainTile.OFF_MAP) {
 							seenSouth = true;
