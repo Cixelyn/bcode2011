@@ -89,6 +89,7 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		}
     		case EXPAND: {
+    			Utility.setIndicator(myPlayer, 0, (Clock.getRoundNum()-myPlayer.myBirthday)+"");
     			if (Clock.getRoundNum()-myPlayer.myBirthday>Constants.SCRAMBLE_TIME && !hasBeenScrambled) {
     				Utility.setIndicator(myPlayer, 0, "BEEN SCRAMBLED!");
     				hasBeenScrambled=true;
@@ -100,7 +101,6 @@ public class FlyingDroneBehavior extends Behavior {
     			if (initialDirection==null) {
     				initialDirection=myPlayer.myRC.getDirection();
     			}
-    			Utility.setIndicator(myPlayer, 0, "expanding" + initialDirection);
     			if (!myPlayer.myMotor.isActive()) {
     				Mine[] detectedMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
         			for (Mine mine : detectedMines) { //look for mines, if we find one, lets go get it
