@@ -18,6 +18,7 @@ public class FlyingDroneBehavior extends Behavior {
 		FOUND_MINE,
 		RUN_AWAY,
 		BUILD_TOWER,
+		SCRAMBLE,
 		EXPAND;
 
 	}
@@ -33,6 +34,7 @@ public class FlyingDroneBehavior extends Behavior {
 	boolean builtRefineryChassis = false;
 	boolean setRunAwayDirection=false;
 	boolean foundVoids=false;
+	boolean hasBeenScrambled=false;
 	int ID=-1;
 	MapLocation towerPlacement;
 	MapLocation spawnLocation;
@@ -87,6 +89,14 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		}
     		case EXPAND: {
+    			if (Clock.getRoundNum()-myPlayer.myBirthday>Constants.SCRAMBLE_TIME && !hasBeenScrambled) {
+    				Utility.setIndicator(myPlayer, 0, "BEEN SCRAMBLED!");
+    				hasBeenScrambled=true;
+    				while (!myPlayer.myMotor.isActive()) {
+    					myPlayer.sleep();
+    				}
+    				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()));
+    			}
     			if (initialDirection==null) {
     				initialDirection=myPlayer.myRC.getDirection();
     			}
