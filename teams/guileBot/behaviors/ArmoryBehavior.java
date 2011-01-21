@@ -14,6 +14,7 @@ public class ArmoryBehavior extends Behavior
 		MAKE_WRAITH,
 		MAKE_DRONE,
 		EQUIP_HEAVY,
+		EQUIP_ARMOR,
 		SLEEP
 	}
 	
@@ -27,7 +28,10 @@ public class ArmoryBehavior extends Behavior
 	int currHeavy;
 	int currUnit;
 	
+	Robot[] nearbyRobots;
 	RobotInfo rInfo;
+	RobotInfo refineryInfo;
+	RobotInfo factoryInfo;
 	Robot r;
 	ComponentType c;
 	
@@ -37,6 +41,10 @@ public class ArmoryBehavior extends Behavior
 	int rNumPlasma;
 	
 	double minFluxToBuild;
+	
+	boolean armorEquipped = false;
+	boolean nearFactory;
+	boolean nearRefinery;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -78,12 +86,16 @@ public class ArmoryBehavior extends Behavior
     			
     			// check what unit should be made
     			currUnit = currWraith + currDrone + currHeavy;
-    			if ( currUnit == 1 )
+    			
+    			if ( !armorEquipped && currUnit == 2 )
+    				obj = ArmoryBuildOrder.EQUIP_ARMOR;
+    			/*if ( currUnit == 1 )
     			{
     				Utility.setIndicator(myPlayer, 2, "Making wraith.");
     				obj = ArmoryBuildOrder.MAKE_WRAITH;
     			}
-    			else if ( currUnit % 3 == 2 )
+    			else if ( currUnit % 3 == 2 )*/
+    			else if ( currUnit == 1 || currUnit % 3 == 2 )
     			{
     				Utility.setIndicator(myPlayer, 2, "Making drone.");
     				obj = ArmoryBuildOrder.MAKE_DRONE;
@@ -214,6 +226,59 @@ public class ArmoryBehavior extends Behavior
 						}
 					}
     			}
+    			return;
+    			
+    		case EQUIP_ARMOR:
+    			
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_ARMOR");
+    			Utility.setIndicator(myPlayer, 2, "");
+    			armorEquipped = true;
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for ( int i = nearbyRobots.length ; --i >= 0 ; )
+    			{
+    				r = nearbyRobots[i];
+    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getRobotLevel() == RobotLevel.ON_GROUND )
+    				{
+    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    					if ( rInfo.on && rInfo.chassis == Chassis.BUILDING )
+    					{
+    						for ( int j = rInfo.components.length ; --j >= 0 ; )
+    						{
+    							c = rInfo.components[j];
+    							if ( c == ComponentType.RECYCLER )
+	    							refineryInfo = rInfo;
+    							if ( c == ComponentType.FACTORY )
+    								factoryInfo = rInfo;
+    						}
+    					}
+    				}
+    			}
+    			
+    			if ( factoryInfo != null )
+    			{
+    				// give factory plasmas
+    				while ( myPlayer.myRC.getTeamResources() < 2*ComponentType.PLASMA.cost + Constants.RESERVE )
+    					myPlayer.sleep();
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(factoryInfo.location), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+    			}
+    			if ( refineryInfo != null )
+    			{
+    				// give refinery plasmas
+    				while ( myPlayer.myRC.getTeamResources() < 2*ComponentType.PLASMA.cost + Constants.RESERVE )
+    					myPlayer.sleep();
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(refineryInfo.location), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(refineryInfo.location), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+    			}
+				// give self plasmas
+    			while ( myPlayer.myRC.getTeamResources() < 2*ComponentType.PLASMA.cost + Constants.RESERVE )
+					myPlayer.sleep();
+				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+				obj = ArmoryBuildOrder.EQUIP_UNIT;
     			return;
     			
     		case SLEEP:
