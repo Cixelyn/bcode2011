@@ -142,11 +142,43 @@ public class ColossusBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
 				// Rally to center if we're confident enough in where it is
-				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME && myPlayer.myCartographer.getConfidence() >= 3 )
+				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
 				{
-					rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
-					Utility.setIndicator(myPlayer, 2, "Scrambling to center, rerallying " + Direction.values()[rally].toString() + ".");
-					rallyChanged = true;
+					
+					switch ( myPlayer.myCartographer.getConfidence() )
+					{
+						case 0:
+							
+							Utility.setIndicator(myPlayer, 2, "I've never seen a map edge before. Are they pretty?");
+							rallyChanged = true;
+							break;
+							
+						case 1:
+							
+							Utility.setIndicator(myPlayer, 2, "I've only seen one map edge, I'm not scrambling.");
+							rallyChanged = true;
+							break;
+							
+						case 2:
+							
+							Utility.setIndicator(myPlayer, 2, "I've seen two map edges, I'd rather not scramble.");
+							rallyChanged = true;
+							break;
+							
+						case 3:
+							
+							rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
+							Utility.setIndicator(myPlayer, 2, "I'm pretty sure the center is " + Direction.values()[rally].toString() + ", rerallying.");
+							rallyChanged = true;
+							break;
+							
+						case 4:
+							
+							rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
+							Utility.setIndicator(myPlayer, 2, "I KNOW the center is " + Direction.values()[rally].toString() + ", rerallying.");
+							rallyChanged = true;
+							break;
+					}
 				}
 				
         		// Attacking code
