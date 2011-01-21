@@ -141,7 +141,8 @@ public class Cartographer {
 			MapLocation myLoc = myRC.getLocation();
 			Direction myDir = myRC.getDirection();
 			
-			hasVisited[myLoc.x][myLoc.y] = true;
+			hasVisited[myLoc.x % GameConstants.MAP_MAX_WIDTH]
+			           [myLoc.y % GameConstants.MAP_MAX_HEIGHT] = true;
 			
 			int dx = myDir.dx;
 			int dy = myDir.dy;
