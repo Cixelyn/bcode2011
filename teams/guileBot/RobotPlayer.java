@@ -71,6 +71,7 @@ public class RobotPlayer implements Runnable {
 	private int bytecodeLimit;
 	public double myLastRes;
 	public boolean hasTakenDamage;
+	public boolean hasSensor;
 	
 	public int numKills;
 	
@@ -226,8 +227,7 @@ public class RobotPlayer implements Runnable {
 		
 		////////////////////////////////////////////////////////////////
 		//Run the map sensing code
-		myCartographer.runSensor();
-		
+		if(hasSensor) {myCartographer.runSensor();}
 		
 	}
 	
@@ -359,6 +359,7 @@ public class RobotPlayer implements Runnable {
 				/////////////////////////////////////////////////////////////////
 				//SENSOR ALLOCATIONS
 				case SENSOR:
+					hasSensor = true;
 					mySensor = (SensorController)c; 					
 					myCartographer.setSensor(mySensor);					continue;					
 				case BUILDER:

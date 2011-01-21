@@ -58,6 +58,7 @@ public class Cartographer {
 		coordWest 	= x - GameConstants.MAP_MAX_WIDTH;
 		coordEast 	= x + GameConstants.MAP_MAX_WIDTH;
 		
+
 		centerY = y;
 		centerX = x;
 	
@@ -71,13 +72,13 @@ public class Cartographer {
 	 * @param c
 	 */
 	public void setSensor(ComponentController c) {
-		sensorType = c.type();	
+		sensorType = c.type();
 	}
 	
 	
 	
 	/** 
-	 * Function recalculates the map center any time new data has been found.
+	 * Internal function recalculates the map center any time new data has been found.
 	 */
 	private void updateMapCenter() {
 
@@ -104,9 +105,12 @@ public class Cartographer {
 	
 	
 	
+	/**
+	 * This function returns the current estimated center of the map.
+	 * @return
+	 */
 	public MapLocation getMapCenter() {
 		return new MapLocation(centerX,centerY);
-		
 	}
 	
 
@@ -115,78 +119,63 @@ public class Cartographer {
 	 * Sense the terrain and enter the information into the mapping engine.
 	 */
 	public void runSensor() {
-		MapLocation myLoc = myRC.getLocation();
-		Direction myDir = myRC.getDirection();
-		int dx = myDir.dx;
-		int dy = myDir.dy;
-		
-		switch(sensorType) {
-		
-		//Cases for the radar
-		case RADAR:
-			if(dx>0) { //East
-				if(!seenEast){
-					if(myRC.senseTerrainTile(myLoc.add(Direction.EAST, 6)) == TerrainTile.OFF_MAP) {
-						seenEast = true;
-						coordEast = myLoc.x+6;
-						updateMapCenter();
-					}
-				}
-			}
-			if(dx<0) { //West
-				if(!seenWest){
-					if(myRC.senseTerrainTile(myLoc.add(Direction.WEST, 6)) == TerrainTile.OFF_MAP) {
-						seenWest = true;
-						coordWest = myLoc.x-6;
-						updateMapCenter();
-					}
-				}
-			}
-			if(dy<0) { //North
-				if(!seenNorth){
-					if(myRC.senseTerrainTile(myLoc.add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP) {
-						seenNorth = true;
-						coordNorth = myLoc.y-6;
-						updateMapCenter();
-					}
-				}
-			}
-			if(dy>0) { //South
-				if(!seenSouth){
-					if(myRC.senseTerrainTile(myLoc.add(Direction.SOUTH, 6)) == TerrainTile.OFF_MAP) {
-						seenSouth = true;
-						coordSouth = myLoc.y+6;
-						updateMapCenter();
-					}
-				}
-			}
-			return;
-		
+			MapLocation myLoc = myRC.getLocation();
+			Direction myDir = myRC.getDirection();
+			int dx = myDir.dx;
+			int dy = myDir.dy;
 			
-		case SIGHT:
-		case SATELLITE:
-		case TELESCOPE:
-		case BUILDING_SENSOR:
-			return;
-				
-		default: 
-			Utility.printMsg(myPlayer,"Cartographer Error: Wrong Sensor Type");
-			return;
-		}
-		
+			switch(sensorType) {
+			
+			//Cases for the radar
+			case RADAR:
+				if(dx>0) { //East
+					if(!seenEast){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.EAST, 6)) == TerrainTile.OFF_MAP) {
+							seenEast = true;
+							coordEast = myLoc.x+6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dx<0) { //West
+					if(!seenWest){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.WEST, 6)) == TerrainTile.OFF_MAP) {
+							seenWest = true;
+							coordWest = myLoc.x-6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dy<0) { //North
+					if(!seenNorth){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP) {
+							seenNorth = true;
+							coordNorth = myLoc.y-6;
+							updateMapCenter();
+						}
+					}
+				}
+				if(dy>0) { //South
+					if(!seenSouth){
+						if(myRC.senseTerrainTile(myLoc.add(Direction.SOUTH, 6)) == TerrainTile.OFF_MAP) {
+							seenSouth = true;
+							coordSouth = myLoc.y+6;
+							updateMapCenter();
+						}
+					}
+				}
+				return;
+			
+			case SIGHT:
+			case SATELLITE:
+			case TELESCOPE:
+			case BUILDING_SENSOR:
+				return;
+					
+			default: 
+				Utility.printMsg(myPlayer,"Cartographer Error: Wrong Sensor Type");
+				return;
+			}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }
