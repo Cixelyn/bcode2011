@@ -17,8 +17,6 @@ public class ColossusBehavior extends Behavior
 	}
 	
 	
-	private final OldNavigation myNav = new OldNavigation(myPlayer);
-	
 	ColossusBuildOrder obj = ColossusBuildOrder.EQUIPPING;
 	
 	MapLocation myLoc; // after trying to jump, set to jmpLoc if success and myLocation otherwise
@@ -35,6 +33,8 @@ public class ColossusBehavior extends Behavior
 	int jump;
 	
 	int numBounces;
+	
+	boolean rallyChanged = false;
 	
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
@@ -165,8 +165,12 @@ public class ColossusBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
 				// Rally to center
-				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
+				if ( Clock.getRoundNum() >= Constants.SCRAMBLE_TIME && Clock.getRoundNum() <= Constants.SCRAMBLE_TIME + 500 )
+				{
 					rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
+					Utility.setIndicator(myPlayer, 2, "Scrambling to center, rerallying " + Direction.values()[rally].toString() + ".");
+					rallyChanged = true;
+				}
 				
         		// Attacking code
         		myLoc = myPlayer.myRC.getLocation();
@@ -193,6 +197,7 @@ public class ColossusBehavior extends Behavior
     	        		}
     	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
     	        		numBounces++;
+    	        		rallyChanged = true;
     	        	}
             		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
     	        	{
@@ -203,6 +208,7 @@ public class ColossusBehavior extends Behavior
     	        			rally = (rally + 7) % 8;
     	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
     	        		numBounces++;
+    	        		rallyChanged = true;
     	        	}
             		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
     	        	{
@@ -213,6 +219,7 @@ public class ColossusBehavior extends Behavior
     	        			rally = (rally + 1) % 8;
     	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
     	        		numBounces++;
+    	        		rallyChanged = true;
     	        	}
             		
         			// Try to jump
@@ -236,6 +243,7 @@ public class ColossusBehavior extends Behavior
 						else if ( num % 2 == 1 )
 							rally = (rally + 5) % 8;
 						Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+						rallyChanged = true;
 					}
         		}
         		
@@ -247,22 +255,29 @@ public class ColossusBehavior extends Behavior
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
         				{
-	        				if ( myLoc.add(myPlayer.myRC.getDirection().opposite()).distanceSquaredTo(enemyInfo.location) > myLoc.distanceSquaredTo(enemyInfo.location) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
+	        				if ( (myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateRight()) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
 	        					myPlayer.myMotor.moveBackward();
-	        				else
+	        				else if ( myPlayer.myRC.getDirection() != myLoc.directionTo(enemyInfo.location) )
 	        					myPlayer.myMotor.setDirection(myLoc.directionTo(enemyInfo.location));
         				}
         			}
         			else
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
-        				Utility.navStep(myPlayer, myNav, enemyInfo.location);
+        				if ( !myPlayer.myMotor.isActive() )
+        				{
+	        				if ( (myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateRight()) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+	        					myPlayer.myMotor.moveForward();
+	        				else if ( myPlayer.myRC.getDirection() != myLoc.directionTo(enemyInfo.location) )
+	        					myPlayer.myMotor.setDirection(myLoc.directionTo(enemyInfo.location));
+        				}
         			}
         		}
         		// No enemy found before/after jumping
         		else if ( !myPlayer.myMotor.isActive() )
         		{
-        			Utility.setIndicator(myPlayer, 2, "Rallied " + Direction.values()[rally].toString() + ".");
+        			if ( !rallyChanged )
+        				Utility.setIndicator(myPlayer, 2, "No enemies detected, rallied " + Direction.values()[rally].toString() + "."	);
         			// Make sure I'm not getting flanked
         			if ( myPlayer.hasTakenDamage )
     	        		myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
@@ -272,6 +287,7 @@ public class ColossusBehavior extends Behavior
         			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && jump != JMP_SUCCESS )
         				myPlayer.myMotor.moveForward();
         		}
+        		rallyChanged = false;
 	        	return;	        	     
 		}
 	}
@@ -378,7 +394,14 @@ public class ColossusBehavior extends Behavior
 			if ( num == -1 )
 			{
 				num = msg.ints[Messenger.firstData+1];
-				Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + "!");
+				if ( num == 0 )
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railguns all the way!");
+				else if ( num % 3 == 0 )
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", smudge safeties off!");
+				else if ( num % 3 == 1 )
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ". Plasma costs so much gas!");
+				else if ( num % 3 == 2 )
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", tr-tr-triple blaster!");
 			}
 		}
 	}

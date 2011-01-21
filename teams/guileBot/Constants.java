@@ -31,10 +31,10 @@ public class Constants
 	public static final int MAP_MAX_SIZE = (int) Math.ceil(Math.sqrt(GameConstants.MAP_MAX_HEIGHT*GameConstants.MAP_MAX_HEIGHT + GameConstants.MAP_MAX_WIDTH * GameConstants.MAP_MAX_WIDTH));
 	public static final int MINE_AFFINITY = 20; // how long SCV should chase a mine before giving up
 	public static final int RESERVE = 4; // desired minimum flux after building
-	public static final int DEBRIS_TIME = 1100; // when units should start killing debris
+	public static final int DEBRIS_TIME = 1200; // when units should start killing debris
 	public static final int SCOUTING_DISTANCE = 7; // how far out the SCV should scout
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
-	public static final int SCRAMBLE_TIME = 1500; // when units should rally to a diametrically opposite location
+	public static final int SCRAMBLE_TIME = 2100; // when units should rally to a diametrically opposite location
 	public static final int STUCK_JUMPS = 5; // how many jumps a heavy takes in the same area before considering himself stuck
 	
 	//Max's Go here
