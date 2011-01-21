@@ -165,7 +165,7 @@ public class ColossusBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
 				// Rally to center
-				if ( Clock.getRoundNum() >= Constants.SCRAMBLE_TIME && Clock.getRoundNum() <= Constants.SCRAMBLE_TIME + 500 )
+				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
 				{
 					rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
 					Utility.setIndicator(myPlayer, 2, "Scrambling to center, rerallying " + Direction.values()[rally].toString() + ".");
@@ -399,7 +399,7 @@ public class ColossusBehavior extends Behavior
 				else if ( num % 3 == 0 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", smudge safeties off!");
 				else if ( num % 3 == 1 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ". Plasma costs so much gas!");
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", $MG$ R 4 N))B$!");
 				else if ( num % 3 == 2 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", tr-tr-triple blaster!");
 			}
