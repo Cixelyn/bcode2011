@@ -89,10 +89,11 @@ public class ArbiterBehavior extends Behavior{
 		
 		
 		case EQUIPPING:
+			
 			System.out.println(arbiterLoadout);
 			System.out.println(Utility.countComponents(myPlayer.myRC.components()));
 			Utility.setIndicator(myPlayer, 1, "EQUIPPING ARBITER");
-			if(Utility.compareComponents(myPlayer, arbiterLoadout)) {
+			if( Utility.compareComponents(myPlayer, arbiterLoadout) ) {
 				state = ArbiterBuildOrder.SEARCH_AND_DESTROY;
 			}
 			return;
