@@ -1,17 +1,57 @@
-package guileBot;
+package guileBot; import java.util.*; import guileBot.strategies.*; import guileBot.behaviors.*; import battlecode.common.*;
 
-import java.util.*;
-
-import guileBot.strategies.*;
-import guileBot.behaviors.*;
-
-
-import battlecode.common.*;
-
-/**
- * MASTeRY: BOT OF DEATH.
- * @author MAx, juSTin, coRY
- * @author Team 068, "In the Rear, With the Gear"
+/**  
+ *<pre>  
+ *
+ *  _____ __   _      _______ _     _ _______       ______ _______ _______  ______
+ *    |   | \  |         |    |_____| |______      |_____/ |______ |_____| |_____/
+ *  __|__ |  \_|         |    |     | |______      |    \_ |______ |     | |    \_
+ *  _  _  _ _____ _______ _     _      _______ _     _ _______        ______ _______ _______  ______
+ *  |  |  |   |      |    |_____|         |    |_____| |______       |  ____ |______ |_____| |_____/
+ *  |__|__| __|__    |    |     |         |    |     | |______       |_____| |______ |     | |    \_
+ *  
+ *                                            TEAM #068
+ *  __________________________       B A T T L E C O D E 2 0 1 1      ________________________________
+ *  _______________________   \______________________________________/   _____________________________
+ *                         \____________________________________________/
+ *
+ *   							
+ *   
+ *   __
+ *	/  \ NOTES ___________________________________________________________ 
+ *  \__/
+ * 
+ * Herein lies the source for team 068's bot.  We have labored  many hours over
+ * the course of IAP in order to produce this masterwork of art.  As you browse
+ * through our source, note the pains taken to make such a make the most beautiful,
+ * intelligent, and cunning bot possible.  Note that even our ASCII art is javadoc 
+ * compliant and renders beautifully in editor in which this warrior was forged.
+ * 
+ *   __
+ *	/  \ TABLE OF CONTENTS_________________________________________________ 
+ *  \__/
+ *
+ * [Main]
+ *    RobotPlayer.java
+ *    
+ * [Broadcasting]
+ *    Messenger.java
+ *    MsgType.java
+ *    
+ * [Navigation]
+ *    OldNavigation.java
+ *    Cartographer.Java  
+ *    
+ *  TODO: UPDATE THIS LATER BEFORE SUBMISSION
+ *
+ *
+ *
+ *
+ *</pre>
+ *         
+ * @author Max Nelson
+ * @author Cory Li
+ * @author Justin Venezuela
  * @version 1.0
  * @since Battlecode 2011
  * 

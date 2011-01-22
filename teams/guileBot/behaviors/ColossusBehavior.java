@@ -1,10 +1,42 @@
- package guileBot.behaviors;
+package guileBot.behaviors; import guileBot.*; import battlecode.common.*; import java.util.*;
 
-import guileBot.*;
-import battlecode.common.*;
-import java.util.*;
-
-
+/**
+ * <pre>
+ *                            _______________
+ *                           /               \ 
+ *  ========================[  C O L O S S I  ]===========================    
+ *                           \_______________/
+ *          
+ *      
+ *     "BEEP BEEP BEEP, KILL!!!!!" ~ A colossus.        
+ *      
+ *                           
+ *                             ,----.___________,-,               
+ *     ,__                    (________________|__|               
+ *  __/()(_________________________/o(____)o(__  ``            _  
+ * (__________________________(_(_(_(_(________Y_....-----====//  
+ *               ( , , , , , , (______________)--            ((   
+ *                \_____________|________|[ )) JW  ____   __  \\  
+ *                               |____|    "" \.__-'`". \(__) \\\ 
+ *                               |____|        `""      ```"""=,))
+ *                               |    |                           
+ *                               `====                                                           
+ * 
+ *   __
+ *	/  \ Notes ___________________________________________________________ 
+ *  \__/
+ *  
+ *    The colossus is the workhorse of our army.  Although each unit may 
+ *    vary slightly in weapon and armor loadout, all of them are deadly. 
+ *    It is the job of the colossi to destroy everything in their wake, 
+ *    and bring us victory through  complete elimination of the other team.
+ *  
+ *  
+ * </pre> 
+ * @author Cory
+ * @author Justin
+ *
+ */
 public class ColossusBehavior extends Behavior
 {
 	
