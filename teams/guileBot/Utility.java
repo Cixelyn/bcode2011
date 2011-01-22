@@ -747,10 +747,11 @@ public class Utility {
 			
 		int ans = 0;
 		ComponentType c;
-		int i = enemyInfo.components.length;
+		ComponentType[] components = enemyInfo.components;
+		int i = components.length;
 		while ( --i >= 0 )
 		{
-			c = enemyInfo.components[i];
+			c = components[i];
 			if ( c.componentClass == ComponentClass.WEAPON && c != ComponentType.MEDIC && ans < c.range )
 				ans = c.range;
 		}
