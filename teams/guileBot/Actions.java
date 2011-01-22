@@ -45,9 +45,9 @@ public class Actions {
 		int jumpEngine = availableJump();
 		
 		
-		// First, lets make sure we are pointed in the correct direction
+		// First, lets make sure we are pointed in the correct direction (if we don't have a satellite
 		// Also check that a jump is available -JVen
-		if ( !myPlayer.myRC.getDirection().equals(dir) || jumpEngine==-1 )
+		if ( (myPlayer.mySensor.type() != ComponentType.SATELLITE && !myPlayer.myRC.getDirection().equals(dir)) || jumpEngine == -1 )
 		{
 			/*if ( !myPlayer.myMotor.isActive() )
 				myPlayer.myMotor.setDirection(dir);*/  // Commented out by JVen. No set directions should be done here
@@ -74,9 +74,69 @@ public class Actions {
 	}
 	
 	/**
+	 * Same as above, except avoids enemies
+	 * @author JVen
+	 * @param dir The direction in which to jump
+	 * @param enemyInfos A list of enemy RobotInfos 
+	 * @return An int depending on whether the jump was successful or why it was not
+	 */
+	
+	public int jumpInDir(Direction dir, RobotInfo[] enemyInfos) throws GameActionException
+	{
+		
+		//Make sure direction is valid (can be removed at a later point)
+		if( dir.ordinal()>=8 )
+			return JMP_NOT_POSSIBLE;
+		
+		
+		//Grab an active jump
+		int jumpEngine = availableJump();
+		
+		
+		// First, lets make sure we are pointed in the correct direction (if we don't have a satellite
+		// Also check that a jump is available -JVen
+		if ( (myPlayer.mySensor.type() != ComponentType.SATELLITE && !myPlayer.myRC.getDirection().equals(dir)) || jumpEngine == -1 )
+		{
+			/*if ( !myPlayer.myMotor.isActive() )
+				myPlayer.myMotor.setDirection(dir);*/  // Commented out by JVen. No set directions should be done here
+			return JMP_NOT_YET;
+		}
+		
+		//Now lets jump in the direction
+		
+		JumpTable jmp = new JumpTable(myPlayer.myRC.getLocation(),dir);
+		MapLocation jmpLoc = jmp.nextLoc();
+		
+		boolean enemyNearby;
+		while (jmpLoc!=null)
+		{
+			enemyNearby = false;
+			// check if there is any enemy near jmpLoc
+			for ( int i = enemyInfos.length ; --i >= 0 ; )
+			{
+				if ( jmpLoc.distanceSquaredTo(enemyInfos[i].location) <= Utility.maxRange(enemyInfos[i]) )
+				{
+					enemyNearby = true;
+					break;
+				}
+			}
+			if ( !enemyNearby )
+			{
+				myPlayer.myJumps[jumpEngine].jump(jmpLoc);
+				//TODO change myLoc here
+				return JMP_SUCCESS;
+			}
+		}
+			
+		return JMP_NOT_POSSIBLE;
+		
+	}
+	
+	/**
 	 * Attempts to make a jump towards a mine while avoiding enemies
 	 * @author JVen
 	 * @param m The mine to jump towards
+	 * @param enemyInfos A list of enemy RobotInfos
 	 * @return An int depending on whether the jump was successful or why it was not
 	 */
 	
@@ -100,8 +160,9 @@ public class Actions {
 		boolean enemyNearby;
 		while ( jmpLoc != null )
 		{
-			// check that jmpLoc is closer to the mine and that we can jump there
-			if ( jmpLoc.distanceSquaredTo(m.getLocation()) < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) && canJump(jmpLoc) )
+			// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
+			int newDist = jmpLoc.distanceSquaredTo(m.getLocation());
+			if ( (newDist < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) || newDist <= 2) && jmpLoc.distanceSquaredTo(m.getLocation()) > 0 && canJump(jmpLoc) )
 			{
 				enemyNearby = false;
 				// check if there is any enemy near jmpLoc
@@ -116,6 +177,7 @@ public class Actions {
 				if ( !enemyNearby )
 				{
 					myPlayer.myJumps[jumpEngine].jump(jmpLoc);
+					//TODO change myLoc here
 					return JMP_SUCCESS;
 				}
 			}

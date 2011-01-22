@@ -1,4 +1,4 @@
-package guileBot.behaviors; import battlecode.common.*; import guileBot.*;
+package guileBot.behaviors; import battlecode.common.*; import guileBot.*; import java.util.*;
 
 
 
@@ -54,6 +54,10 @@ package guileBot.behaviors; import battlecode.common.*; import guileBot.*;
  * </pre>
  * The arbiter is a unit that runs around the map and attempts to destroy mines during the lategame.
  * @author Cory
+ * @author FiBsTeR (JVen)
+ *
+ *
+ * @see <a href="http://www.youtube.com/watch?v=muitsly5t6M">Arbiterssss</a>
  *
  */
 public class ArbiterBehavior extends Behavior{
@@ -61,7 +65,7 @@ public class ArbiterBehavior extends Behavior{
 	
 	private ArbiterBuildOrder state;
 	private int[] arbiterLoadout;
-	
+	private ArrayList<Integer> badMines = new ArrayList<Integer>(GameConstants.MINES_MAX);
 	
 
 	public ArbiterBehavior(RobotPlayer player) {
@@ -106,47 +110,59 @@ public class ArbiterBehavior extends Behavior{
 			//////////////////////////////////////////////////////////////////////////////////
 			// SENSING
 			//	 this custom sensing code is designed to be as compact and fast as possible.
+			//   NOTE: everything is filled in and accessed backwards,
+			//   so we can break when a null is detected :D
 			//
 			GameObject[] objects = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
 			
 			Mine[] mines = new Mine[64]; int mineIndex = 0;
 			Robot[] enemies = new Robot[64]; int enemyIndex = 0;
-			RobotInfo[] enemyInfos = new RobotInfo[64]; // added by JVen
 			
-			for(int i=objects.length; --i>=0;) {
+			for ( int i = objects.length ; --i >= 0 ; )
+			{
 				
 				GameObject obj = objects[i];
 				
-				
-				
-				if(obj.getTeam()==myPlayer.myOpponent) { 		//Enemy Robot Detected
+				if(obj.getTeam()==myPlayer.myOpponent)
+				{ 
+					// Enemy Robot Detected
 					enemies[i] = (Robot)obj; //cast it correctly
-					enemyInfos[i] = myPlayer.mySensor.senseRobotInfo((Robot)obj); // added by JVen
 					enemyIndex++;					
 				}
-				else {					
-					if(obj.getRobotLevel()==RobotLevel.MINE) {	//Mine Detected
+				else if(obj.getRobotLevel()==RobotLevel.MINE)
+				{
+					// Mine Detected
+					if ( !badMines.contains(obj.getID()) && myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND) == null )
+					{
 						mines[i] = (Mine)obj;
 						mineIndex++;
-					} else {									//Debris Detected
-						
 					}
-				}				
+				}
+				else
+				{
+					// Debris Detected, ignore
+				}
+				
 			}
 			
 			Utility.setIndicator(myPlayer, 2, "E:"+enemyIndex+" M:"+mineIndex);
 			
-			
+			// fill in enemyInfos
+			RobotInfo[] enemyInfos = new RobotInfo[enemyIndex]; // added by JVen
+			for ( int i = enemyIndex ; --i >= 0 ; )
+				enemyInfos[i] = myPlayer.mySensor.senseRobotInfo(enemies[i]); // added by JVen
 			
 			// get closest mine
 			
 			int minMineDist = 9999; // sentinel value
-			Mine minMine;
+			Mine minMine = null;
 			Mine m;
 			
 			for ( int i = mines.length ; --i >= 0 ; )
 			{
 				m = mines[i];
+				if ( m == null )
+					break;
 				if ( myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) < minMineDist )
 				{
 					minMine = m;
@@ -154,7 +170,21 @@ public class ArbiterBehavior extends Behavior{
 				}
 			}
 			
-			
+			if ( minMine != null )
+			{
+				// there is a mine
+				int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
+				if ( jump == Actions.JMP_NOT_POSSIBLE )
+				{
+					badMines.add(minMine.getID());
+					myPlayer.myActions.jumpInDir(Direction.NORTH, enemyInfos); // TODO add rallies
+				}
+			}
+			else
+			{
+				// no mines
+				myPlayer.myActions.jumpInDir(Direction.NORTH, enemyInfos);
+			}
 			
 			
 			
@@ -176,7 +206,7 @@ public class ArbiterBehavior extends Behavior{
 	}
 
 	public void onDamageCallback(double damageTaken) {
-		Utility.printMsg(myPlayer, "I GOT HIT!  I shouldn't have been hit :(");
+		Utility.printMsg(myPlayer, "I GOT HIT!  I shouldn't have been hit. :(");
 	}
 
 	public void onWakeupCallback(int lastActiveRound) {		
