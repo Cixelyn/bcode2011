@@ -23,7 +23,7 @@ package guileBot; import java.util.*; import guileBot.strategies.*; import guile
  * 
  * Herein lies the source for team 068's bot.  We have labored  many hours over
  * the course of IAP in order to produce this masterwork of art.  As you browse
- * through our source, note the pains taken to make such a make the most beautiful,
+ * through our source, note the pains taken to make the most beautiful,
  * intelligent, and cunning bot possible.  Note that even our ASCII art is javadoc 
  * compliant and renders beautifully in editor in which this warrior was forged.
  * 
