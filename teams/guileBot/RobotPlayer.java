@@ -345,15 +345,20 @@ public class RobotPlayer implements Runnable {
 				case WEAPON:
 					switch(c.type()) {
 					case SMG:
-						mySMGsInternal.add((WeaponController)c);		continue;
+						mySMGsInternal.add((WeaponController)c);		
+						continue;
 					case BLASTER:
-						myBlastersInternal.add((WeaponController)c);	continue;
+						myBlastersInternal.add((WeaponController)c);	
+						continue;
 					case RAILGUN:
-						myRailgunsInternal.add((WeaponController)c);	continue;
+						myRailgunsInternal.add((WeaponController)c);	
+						continue;
 					case MEDIC:
-						myMedicsInternal.add((WeaponController)c);		continue;
+						myMedicsInternal.add((WeaponController)c);		
+						continue;
 					default:
-						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); continue;
+						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
+						continue;
 					}
 					
 				/////////////////////////////////////////////////////////////////
