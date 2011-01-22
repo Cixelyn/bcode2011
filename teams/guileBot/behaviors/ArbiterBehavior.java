@@ -1,4 +1,5 @@
-package guileBot.behaviors; import battlecode.common.*; import guileBot.*; import java.util.*;
+package guileBot.behaviors; import battlecode.common.*; import guileBot.*;
+import java.util.*;
 
 
 
@@ -67,8 +68,15 @@ public class ArbiterBehavior extends Behavior{
 	private int[] arbiterLoadout;
 	private ArrayList<Integer> badMines = new ArrayList<Integer>(GameConstants.MINES_MAX);
 	
+	int northEdge = -1;
+	int eastEdge = -1;
+	int southEdge = -1;
+	int westEdge = -1;
+	int spawn = -1;
+	int rally = -1;
 
-	public ArbiterBehavior(RobotPlayer player) {
+	public ArbiterBehavior(RobotPlayer player)
+	{
 		super(player);
 		
 		state = ArbiterBuildOrder.EQUIPPING;									//set our current state
@@ -79,6 +87,7 @@ public class ArbiterBehavior extends Behavior{
 	private enum ArbiterBuildOrder
 	{
 		EQUIPPING,
+		DETERMINE_SPAWN,
 		SEARCH_AND_DESTROY
 	}
 	
@@ -96,15 +105,65 @@ public class ArbiterBehavior extends Behavior{
 			//System.out.println(Utility.countComponents(myPlayer.myRC.components()));
 			Utility.setIndicator(myPlayer, 1, "EQUIPPING ARBITER");
 			if( Utility.compareComponents(myPlayer, arbiterLoadout) ) {
-				state = ArbiterBuildOrder.SEARCH_AND_DESTROY;
+				state = ArbiterBuildOrder.DETERMINE_SPAWN;
 			}
 			return;
 		
+		case DETERMINE_SPAWN:
+			
+			Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
+			
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.NORTH, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.NORTH, 10)) == TerrainTile.OFF_MAP )
+					northEdge = 1;
+				else
+					northEdge = 0;
+			}
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.EAST, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.EAST, 10)) == TerrainTile.OFF_MAP )
+					eastEdge = 1;
+				else
+					eastEdge = 0;
+			}
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.SOUTH, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.SOUTH, 10)) == TerrainTile.OFF_MAP )
+					southEdge = 1;
+				else
+					southEdge = 0;
+			}
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.WEST, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.WEST, 10)) == TerrainTile.OFF_MAP )
+					westEdge = 1;
+				else
+					westEdge = 0;
+			}
+			spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
+			if ( spawn != -1 )
+			{
+				if ( spawn % 2 == 1 )
+					rally = (spawn + 1) % 8;
+				else
+					rally = (spawn + 2) % 8;
+				Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+			}
+			else
+			{
+				rally = Direction.NORTH.ordinal();
+				Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
+			}
+			state = ArbiterBuildOrder.SEARCH_AND_DESTROY;
+			return;
 			
 		case SEARCH_AND_DESTROY:
 			Utility.setIndicator(myPlayer, 1, "SEARCH_AND_DESTROY");
 			
-			
+			//////// SPIN!!!!!!!
+			if ( !myPlayer.myMotor.isActive() )
+				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
 			
 			
 			//////////////////////////////////////////////////////////////////////////////////
@@ -126,7 +185,7 @@ public class ArbiterBehavior extends Behavior{
 				if(obj.getTeam()==myPlayer.myOpponent)
 				{ 
 					// Enemy Robot Detected
-					enemies[i] = (Robot)obj; //cast it correctly
+					enemies[enemyIndex] = (Robot)obj; //cast it correctly
 					enemyIndex++;					
 				}
 				else if(obj.getRobotLevel()==RobotLevel.MINE)
@@ -134,7 +193,7 @@ public class ArbiterBehavior extends Behavior{
 					// Mine Detected
 					if ( !badMines.contains(obj.getID()) && myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND) == null )
 					{
-						mines[i] = (Mine)obj;
+						mines[mineIndex] = (Mine)obj;
 						mineIndex++;
 					}
 				}
@@ -148,9 +207,10 @@ public class ArbiterBehavior extends Behavior{
 			Utility.setIndicator(myPlayer, 0, "E:"+enemyIndex+" M:"+mineIndex);
 			
 			// fill in enemyInfos
-			RobotInfo[] enemyInfos = new RobotInfo[enemyIndex]; // added by JVen
-			for ( int i = enemyIndex ; --i >= 0 ; )
-				enemyInfos[i] = myPlayer.mySensor.senseRobotInfo(enemies[i]); // added by JVen
+			
+			RobotInfo[] enemyInfos = new RobotInfo[enemyIndex];
+			for ( int i = -1 ; ++i < enemyIndex ; )
+				enemyInfos[i] = myPlayer.mySensor.senseRobotInfo(enemies[i]);
 			
 			// get closest mine
 			
@@ -158,11 +218,9 @@ public class ArbiterBehavior extends Behavior{
 			Mine minMine = null;
 			Mine m;
 			
-			for ( int i = mines.length ; --i >= 0 ; )
+			for ( int i = -1 ; ++i < mineIndex ; )
 			{
 				m = mines[i];
-				if ( m == null )
-					break;
 				if ( myPlayer.myLoc.distanceSquaredTo(m.getLocation()) < minMineDist )
 				{
 					minMine = m;
@@ -170,7 +228,14 @@ public class ArbiterBehavior extends Behavior{
 				}
 			}
 			
-			if ( minMine != null )
+			if ( minMineDist <= 2 && minMineDist > 0 )
+			{
+				while ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+					myPlayer.sleep();
+				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+			}
+			else if ( minMine != null )
 			{
 				Utility.setIndicator(myPlayer, 2, "Free mine detected!");
 				// there is a mine
@@ -178,14 +243,36 @@ public class ArbiterBehavior extends Behavior{
 				if ( jump == Actions.JMP_NOT_POSSIBLE )
 				{
 					badMines.add(minMine.getID());
-					myPlayer.myActions.jumpInDir(Direction.NORTH, enemyInfos); // TODO add rallies
+					myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
 				}
 			}
 			else
 			{
-				Utility.setIndicator(myPlayer, 2, "No mines detected.");
+				
 				// no mines
-				myPlayer.myActions.jumpInDir(Direction.NORTH, enemyInfos);
+				
+				
+				// Off map rerally code
+        		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],10)) == TerrainTile.OFF_MAP )
+	        	{
+	        		rally = (rally + 6) % 8;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        	}
+        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],10)) == TerrainTile.OFF_MAP )
+	        	{
+	        		rally = (rally + 1) % 8;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        	}
+        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],10)) == TerrainTile.OFF_MAP )
+	        	{
+	        		rally = (rally + 7) % 8;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        	}
+        		else
+        			Utility.setIndicator(myPlayer, 2, "No mines detected, rallied " + Direction.values()[rally].toString() + ".");
+				
+				myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
+				
 			}
 			
 			

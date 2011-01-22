@@ -111,22 +111,26 @@ public class Actions {
 		boolean enemyNearby;
 		while (jmpLoc!=null)
 		{
-			enemyNearby = false;
-			// check if there is any enemy near jmpLoc
-			for ( int i = enemyInfos.length ; --i >= 0 ; )
+			if ( canJump(jmpLoc) )
 			{
-				if ( jmpLoc.distanceSquaredTo(enemyInfos[i].location) <= Utility.maxRange(enemyInfos[i]) )
+				enemyNearby = false;
+				// check if there is any enemy near jmpLoc
+				for ( int i = enemyInfos.length ; --i >= 0 ; )
 				{
-					enemyNearby = true;
-					break;
+					if ( jmpLoc.distanceSquaredTo(enemyInfos[i].location) <= Utility.maxRange(enemyInfos[i]) )
+					{
+						enemyNearby = true;
+						break;
+					}
+				}
+				if ( !enemyNearby )
+				{
+					myPlayer.myJumps[jumpEngine].jump(jmpLoc);
+					myPlayer.myLoc = jmpLoc;			//  Reset the Robot Location upon jump.
+					return JMP_SUCCESS;
 				}
 			}
-			if ( !enemyNearby )
-			{
-				myPlayer.myJumps[jumpEngine].jump(jmpLoc);
-				myPlayer.myLoc = jmpLoc;			//  Reset the Robot Location upon jump.
-				return JMP_SUCCESS;
-			}
+			jmpLoc = jmp.nextLoc();
 		}
 			
 		return JMP_NOT_POSSIBLE;
@@ -161,25 +165,28 @@ public class Actions {
 		boolean enemyNearby;
 		while ( jmpLoc != null )
 		{
-			// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
-			int newDist = jmpLoc.distanceSquaredTo(m.getLocation());
-			if ( (newDist < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) || newDist <= 2) && jmpLoc.distanceSquaredTo(m.getLocation()) > 0 && canJump(jmpLoc) )
+			if ( canJump(jmpLoc) )
 			{
-				enemyNearby = false;
-				// check if there is any enemy near jmpLoc
-				for ( int i = enemyInfos.length ; --i >= 0 ; )
+				// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
+				int newDist = jmpLoc.distanceSquaredTo(m.getLocation());
+				if ( (newDist < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) || newDist <= 2) && jmpLoc.distanceSquaredTo(m.getLocation()) > 0 && canJump(jmpLoc) )
 				{
-					if ( jmpLoc.distanceSquaredTo(enemyInfos[i].location) <= Utility.maxRange(enemyInfos[i]) )
+					enemyNearby = false;
+					// check if there is any enemy near jmpLoc
+					for ( int i = enemyInfos.length ; --i >= 0 ; )
 					{
-						enemyNearby = true;
-						break;
+						if ( jmpLoc.distanceSquaredTo(enemyInfos[i].location) <= Utility.maxRange(enemyInfos[i]) )
+						{
+							enemyNearby = true;
+							break;
+						}
 					}
-				}
-				if ( !enemyNearby )
-				{
-					myPlayer.myJumps[jumpEngine].jump(jmpLoc);
-					myPlayer.myLoc = jmpLoc;			//  Reset the Robot Location upon jump.
-				return JMP_SUCCESS;
+					if ( !enemyNearby )
+					{
+						myPlayer.myJumps[jumpEngine].jump(jmpLoc);
+						myPlayer.myLoc = jmpLoc;			//  Reset the Robot Location upon jump.
+					return JMP_SUCCESS;
+					}
 				}
 			}
 			jmpLoc = jmp.nextLoc();
