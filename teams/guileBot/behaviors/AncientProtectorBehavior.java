@@ -4,6 +4,19 @@ package guileBot.behaviors;
 import guileBot.*;
 import battlecode.common.*;;
 
+
+/**
+ * 
+ * 
+ * 
+ * WC3 is the best, how's thats for ASCII art?
+ * 
+ *                                           .                                    
+ *
+ */
+
+
+
 public class AncientProtectorBehavior extends Behavior
 {
 	
@@ -33,7 +46,6 @@ public class AncientProtectorBehavior extends Behavior
 		
 		switch (obj)
 		{
-			
 			case EQUIPPING:
 				
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
