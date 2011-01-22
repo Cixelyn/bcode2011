@@ -64,6 +64,7 @@ public class Actions {
 			if ( canJump(jmpLoc) )
 			{
 				myPlayer.myJumps[jumpEngine].jump(jmpLoc);
+				myPlayer.myLoc = jmpLoc;			//  Reset the Robot Location upon jump.
 				return JMP_SUCCESS;
 			}
 			jmpLoc = jmp.nextLoc();
@@ -123,7 +124,7 @@ public class Actions {
 			if ( !enemyNearby )
 			{
 				myPlayer.myJumps[jumpEngine].jump(jmpLoc);
-				//TODO change myLoc here
+				myPlayer.myLoc = jmpLoc;			//  Reset the Robot Location upon jump.
 				return JMP_SUCCESS;
 			}
 		}
@@ -177,8 +178,8 @@ public class Actions {
 				if ( !enemyNearby )
 				{
 					myPlayer.myJumps[jumpEngine].jump(jmpLoc);
-					//TODO change myLoc here
-					return JMP_SUCCESS;
+					myPlayer.myLoc = jmpLoc;			//  Reset the Robot Location upon jump.
+				return JMP_SUCCESS;
 				}
 			}
 			jmpLoc = jmp.nextLoc();

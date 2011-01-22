@@ -93,11 +93,13 @@ public class RobotPlayer implements Runnable {
 	private final ArrayList<WeaponController> myBlastersInternal;
 	private final ArrayList<WeaponController> myRailgunsInternal;
 	private final ArrayList<WeaponController> myMedicsInternal;
+	private final ArrayList<WeaponController> myHammersInternal;
 	
 	public WeaponController[] mySMGs;
 	public WeaponController[] myBlasters;
 	public WeaponController[] myRailguns;
 	public WeaponController[] myMedics;
+	public WeaponController[] myHammers;
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
@@ -118,6 +120,8 @@ public class RobotPlayer implements Runnable {
 	public double myLastRes;
 	public boolean hasTakenDamage;
 	public boolean hasSensor;
+	
+	public MapLocation myLoc;
 	
 	public int numKills;
 	
@@ -166,9 +170,12 @@ public class RobotPlayer implements Runnable {
     	myBlastersInternal = new ArrayList<WeaponController>();
     	myRailgunsInternal = new ArrayList<WeaponController>();
     	myMedicsInternal = new ArrayList<WeaponController>();
+    	myHammersInternal = new ArrayList<WeaponController>();
+    	
     	mySMGs = new WeaponController[0];
     	myBlasters = new WeaponController[0];
     	myRailguns = new WeaponController[0];
+    	myHammers = new WeaponController[0];
     	
     	
     	myMessenger = new Messenger(this);
@@ -224,6 +231,11 @@ public class RobotPlayer implements Runnable {
 		///////////////////////////////////////////////////////////////
 		//Begin Debug Routines		
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		
+		
+		///////////////////////////////////////////////////////////////
+		//Set some global information
+		myLoc = myRC.getLocation();
 		
 		
 		
@@ -403,6 +415,9 @@ public class RobotPlayer implements Runnable {
 					case MEDIC:
 						myMedicsInternal.add((WeaponController)c);		
 						continue;
+					case HAMMER:
+						myHammersInternal.add((WeaponController)c);
+						continue;
 					default:
 						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
 						continue;
@@ -448,7 +463,7 @@ public class RobotPlayer implements Runnable {
 		myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
 		myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
 		myJumps = myJumpsInternal.toArray(new JumpController[myJumpsInternal.size()]);
-		
+		myHammers = myHammersInternal.toArray(new WeaponController[myHammersInternal.size()]);
 	}
 	
 	
