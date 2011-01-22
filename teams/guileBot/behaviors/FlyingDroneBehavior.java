@@ -8,7 +8,67 @@ import battlecode.common.*;
 
 
 public class FlyingDroneBehavior extends Behavior {
-	
+	/**
+	 * <pre>
+	 * 
+	 * 
+	 *                                           
+	 *                                           
+	 *                                           
+	 *                                           
+	 *                                           .                                     
+                                                                                
+                                                                                
+                                     ..                                         
+                                 .MMM .MN                                       
+                      .  MMMM ..    ,..,.M.                      ......         
+                    .MMM .   M M.N..DMM,  MM                    MM.M..M.        
+                    .M.MNM.   MN  .M  MMMM  N                  M.   M  M        
+                    .MM...    .M    M   ..   M                M..   .M  M       
+                    .M M .NMN.  MN.. MN  .....M             M        M  ,M      
+                    .M .M.     ..MM.. . M......M.          M          M .M.     
+                    .M   M   MM . N.M  ...   ..M..       .M.           M..N.    
+                    .M   .MD..  ..M .MM.N.    .M. MM     . .           M  M.    
+                    .M   ..M. . .NM..MMM.  MM..M    .MMN.M           .M  M      
+     .              .M  .MMM. M...M..     ,,.M..M       .MMMMM.      MM.M.      
+  .MM.M..           .M.M . MM.   . MM...MMM  MM  M.          ,M.    .N .M.      
+   M. .MMM          .M,      M.  .   M.      MMMNMDMM         M.   .M, M,       
+   M   M  M         M          M  MM M... , NMNM ,    MMM.   M    .M. M         
+    M, .M  .N    .M.             M.MMMMMMM     . M        NMM.    M   M         
+   ..   .M   N...M               M..  .. M.       .M.       MM .  M  M          
+     M...NM.  .M .             M.         M         M         ..MM  M           
+      MN.. M   M              MM.         .M.       M        .M..M  M.          
+       M.. .M,.,M            N.M           .M.      .M:       M..M.M            
+        M.  .M   N          MM. ,          ..M       .M      M   .N.M.          
+         M.   M   M.      D..M.,M            MM        M .NM     .M.M.          
+        . M  . M   M     M.   M. M.           M        .M .      .M.M.          
+           M    M   M  .M...M  M...MMM..  ...MNN.       .M       .D.M,          
+           .M    M    .M   N    .MM,....  ... .M.        .MM  ..,MMM            
+             M    M      M.NM      NM           M       .MMNM...M.M:.           
+              M, ..M.     MN.MM    .M           MM  MMM. .. . ..N. M            
+               N.   M    ..M . MMMNMM    ..   MMM ..          ..N. M.           
+               ,M    M ..NMM  .M.  .M M MMM.M.                ..N.  N           
+                 M.. .M..   .M.M. M M...     M                ..M..M            
+                  MM, M      .MMNM  .,M.      M               ..MMM M.          
+                    N         .M .M  ...M      M     .. .  MMMM.. .M            
+                              .M    MMMMMM     M  ..MMMMM     .....N M          
+                                MM .M....M     .MNM.        MM..  M.M.          
+                                . MM ...MMMM,  .N.   MM.M  M,    .MMM.          
+                                    M   N.. M  M.MM,..  .M.M.M MM M.M.          
+                                     .MMM    ,MMMMM....MMM.M M    M.M.          
+                                      ..MN.  M.  M DM.., M.M M    M M.          
+                                          M.M.  .M MM    N.M M    MM..          
+                                            MM. .M MM    M.M M    M             
+                                               ,MN MN .  MMN.M.MMM              
+                                                ..MMM. .MM  ..                  
+     *                                              . . .    ..                                           
+	 *                                                                               
+	 * 
+	 * </pre>
+	 * Basic flying constructor, attempts to take mines and run away from enemies (and yes, I'm aware that the above picture is actually a Valkyrie). 
+	 * @author Max
+	 *  
+	 **/
 	
 	private enum FlyingDroneActions
 	{
