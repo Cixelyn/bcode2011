@@ -104,14 +104,43 @@ public class ArbiterBehavior extends Behavior{
 			
 			
 			
+			
+			//////////////////////////////////////////////////////////////////////////////////
+			// SENSING
+			//	 this custom sensing code is designed to be as compact and fast as possible.
+			//
+			GameObject[] objects = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
+			for(int i=objects.length; --i>=0;) {
+				
+				GameObject obj = objects[i];
+				
+				
+				
+				if(obj.getTeam()==myPlayer.myOpponent) { 		//Enemy Robot Detected
+					Robot r = (Robot)obj; //cast it correctly
+
+					
+				}
+				else {					
+					if(obj.getRobotLevel()==RobotLevel.MINE) {	//Mine Detected
 						
-			
-			
-			
-			
-			
-			
-			
+						
+						
+						
+						
+						
+						
+						
+						
+						
+					} else {									//Debris Detected
+						
+						
+						
+						
+					}
+				}				
+			}
 			
 			
 			return;
