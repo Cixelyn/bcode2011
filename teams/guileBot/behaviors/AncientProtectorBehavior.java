@@ -46,7 +46,6 @@ public class AncientProtectorBehavior extends Behavior
 		
 		switch (obj)
 		{
-			
 			case EQUIPPING:
 				
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
