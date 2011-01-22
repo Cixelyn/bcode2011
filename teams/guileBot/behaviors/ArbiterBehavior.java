@@ -6,6 +6,55 @@ import guileBot.*;
 
 
 /**
+ * <pre>
+ * 
+ *                                           .                                     
+ *                                       . M..M,                                 
+ *                                          M.  M                                
+ *                                           MM   M.                             
+ *                                             M. ,.M                            
+ *     .MNM                                     N M. M.                          
+ *     M . M.                                   .N MM  M                         
+ *    .M.  .MM                                   .N .MMMM                        
+ *    .M     MM                                  .MM.DM..M.                      
+ *     M      M                                    NM  M, M                      
+ *     MM   .  M .                                  M   M. M.                    
+ *     .M.  N  MM.                                   M. ..M M                    
+ *     .M. M    MM                                   MM .M  M.M                  
+ *     .M.M     .M.                                   MM M.   M.                 
+ *     .M M       M                                    M. .  MDM                 
+ *       M        MMM                                 .M  M. M...M               
+ *       M.   ..M.. M.                                 M .,  M.   M              
+ *      .MM   MN    .MM                     ..         .N  MMM    M,             
+ *        M. .M       MM                 . MNMN MMM..  .M..M M   .M              
+ *        MM M.        MM                M     M    .  .MMMM. M.   M             
+ *         MM.          .M.              N.      M  M   M.  M..M   M             
+ *         M.     .MMM    M...NMM.       N.   MM  MMN .M  .NM. .MNMM             
+ *          M.    M  .MM..MMM   . MM     M    M .M..N.M .M.N M     M.MMM         
+ *          MM  .M      .MM M.     .N    .M.   M M   .M .M  M. ....MM .M         
+ *          .M.  M.       .M M.. . M.M  MMMMM.     MMM M M..MMM.   M .M.         
+ *           M.   M,       ,M. M.  ...MM.MM. MM  .M  .M.M.M .M.N   M MM          
+ *           ,M    M.        M .M. .. .N . . M.MM .M  M ...MMM  MM M.M           
+ *             M   .M..       M  M M,M.M M M .M .M. M M  M M.M..  M.M            
+ *            ..M  M..MMMM,  MM   .M.. MM M .  N:..  MM  .M  M..  MMM            
+ *              .MM        ,..    .NN  M N.M MMM.MM,       M M.    .N            
+ *                M              ,M, NMMM.M.       .M.     .MN..   MM            
+ *                 M.           MN.   M..NM.        .MMM M. MM.. MM.M            
+ *       .MMMMM    .M          M       M   M. ,M..DMMNM.  M MMMMM   .            
+ *      .M   M ,MMMMMM        M         M  M..M.M..   .M . M .M.,M M.            
+ *      .MM .M     MM MM    ,M.           .M.M. MM  M M.M.MM  ...MM              
+ *          .MMMM   M. .M .DMMM          M M  M     MM .MM.N. MM                 
+ *             .  MMMM  ..M M...M      .MMM. .MMMMM.MMMM.M.M N..                 
+ *                    MMM  M  M.M    MM  .M.M M      M .M  M M                   
+ *                       .MM.M.     M    .MM M.       M  .M.M.                   
+ *                         ..MMMMM..M  MM. .          MMMMMM.                    
+ *                             M  M.N,.MM..                                      
+ *                              MN.  .MM. MM                                     
+ *                                MM .. M.MM                                     
+ *                                                                               
+ *                                                                               
+ * 
+ * </pre>
  * The arbiter is a unit that runs around the map and attempts to destroy mines during the lategame.
  * @author Cory
  *
