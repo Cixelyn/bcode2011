@@ -440,10 +440,10 @@ public class FlyingDroneBehavior extends Behavior {
 			//get number of voids to the right of me
 			
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),1)).equals(TerrainTile.VOID)) {
-				rightCount=rightCount+1;
+				rightCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),2)).equals(TerrainTile.VOID)) {
-				rightCount=rightCount+1;
+				rightCount++;
 			}
 			int maximum= Math.max(Math.max(leftCount, frontCount), rightCount);
 			if (maximum==leftCount) {
