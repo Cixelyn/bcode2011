@@ -31,7 +31,7 @@ public class Utility {
 			player.myRC.setIndicatorString(index, s);
 	}
 	
-	//Justin's Go Here
+//Justin's Go Here
 	
 	
 	/**
@@ -747,11 +747,10 @@ public class Utility {
 			
 		int ans = 0;
 		ComponentType c;
-		ComponentType[] components = enemyInfo.components;
-		int i = components.length;
+		int i = enemyInfo.components.length;
 		while ( --i >= 0 )
 		{
-			c = components[i];
+			c = enemyInfo.components[i];
 			if ( c.componentClass == ComponentClass.WEAPON && c != ComponentType.MEDIC && ans < c.range )
 				ans = c.range;
 		}
