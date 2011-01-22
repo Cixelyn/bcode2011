@@ -229,7 +229,7 @@ public class ColossusBehavior extends Behavior
         		{
         			
         			// Off map rerally code
-            		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
+            		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myLoc.add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
     	        	{
     	        		if ( numBounces == 0 )
     	        			rally = (rally + 2) % 8; // we have reached the enemy side, everyone search together
@@ -247,7 +247,7 @@ public class ColossusBehavior extends Behavior
     	        		numBounces++;
     	        		rallyChanged = true;
     	        	}
-            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
+            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myLoc.add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
     	        	{
     	        		// we have reached the closest side to the enemy corner, rerally to corner
     	        		if ( num % 2 == 0 )
@@ -258,7 +258,7 @@ public class ColossusBehavior extends Behavior
     	        		numBounces++;
     	        		rallyChanged = true;
     	        	}
-            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
+            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myLoc.add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
     	        	{
             			// we have reached the closest side to the enemy corner, rerally to corner
     	        		if ( num % 2 == 0 )
