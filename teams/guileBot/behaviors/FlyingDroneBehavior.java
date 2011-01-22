@@ -380,32 +380,32 @@ public class FlyingDroneBehavior extends Behavior {
 			
 			//get number of voids to the left of me
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),1)).equals(TerrainTile.VOID)) {
-				leftCount=leftCount+1;
+				leftCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),2)).equals(TerrainTile.VOID)) {
-				leftCount=leftCount+1;
+				leftCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),3)).equals(TerrainTile.VOID)) {
-				leftCount=leftCount+1;
+				leftCount++;
 			}
 			
 			//get number of voids in front of me
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),1)).equals(TerrainTile.VOID)) {
-				frontCount=frontCount+1;
+				frontCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.VOID)) {
-				frontCount=frontCount+1;
+				frontCount++;
 			}
 			//get number of voids to the right of me
 			
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),1)).equals(TerrainTile.VOID)) {
-				rightCount=rightCount+1;
+				rightCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),2)).equals(TerrainTile.VOID)) {
-				rightCount=rightCount+1;
+				rightCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight(),3)).equals(TerrainTile.VOID)) {
-				rightCount=rightCount+1;
+				rightCount++;
 			}
 			int maximum= Math.max(Math.max(leftCount, frontCount), rightCount);
 			if (maximum==leftCount) {
@@ -421,21 +421,21 @@ public class FlyingDroneBehavior extends Behavior {
 		else {
 			//get number of voids to the left of me
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),1)).equals(TerrainTile.VOID)) {
-				leftCount=leftCount+1;
+				leftCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft(),2)).equals(TerrainTile.VOID)) {
-				leftCount=leftCount+1;
+				leftCount++;
 			}
 			
 			//get number of voids in front of me
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),1)).equals(TerrainTile.VOID)) {
-				frontCount=frontCount+1;
+				frontCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),2)).equals(TerrainTile.VOID)) {
-				frontCount=frontCount+1;
+				frontCount++;
 			}
 			if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.VOID)) {
-				frontCount=frontCount+1;
+				frontCount++;
 			}
 			//get number of voids to the right of me
 			
