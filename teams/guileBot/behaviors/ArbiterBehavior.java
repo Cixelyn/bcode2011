@@ -163,10 +163,10 @@ public class ArbiterBehavior extends Behavior{
 				m = mines[i];
 				if ( m == null )
 					break;
-				if ( myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) < minMineDist )
+				if ( myPlayer.myLoc.distanceSquaredTo(m.getLocation()) < minMineDist )
 				{
 					minMine = m;
-					minMineDist = myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation());
+					minMineDist = myPlayer.myLoc.distanceSquaredTo(m.getLocation());
 				}
 			}
 			
