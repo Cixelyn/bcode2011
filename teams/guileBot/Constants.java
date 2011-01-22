@@ -48,7 +48,8 @@ public class Constants
 	
 	
 	
-	//Cory's Go here
+	////////////////////////////////////////////////////////////////////////////////////////
+	////// HEAVY LOADOUTS ///////////////////////////////////////////////////////////////////
 	
 	
 	public static final ComponentType[] heavyLoadout0 = new ComponentType[]    // currHeavy == 0
@@ -74,8 +75,10 @@ public class Constants
   								ComponentType.PLASMA,ComponentType.PLASMA
   								};
 	
-	
-	
+	public static final ComponentType[] arbiterLoadout = new ComponentType[]
+	                               {ComponentType.SATELLITE,ComponentType.CONSTRUCTOR,
+									ComponentType.JUMP,ComponentType.JUMP,
+									ComponentType.HAMMER};
 	
 	
 }

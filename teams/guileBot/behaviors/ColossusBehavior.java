@@ -236,9 +236,11 @@ public class ColossusBehavior extends Behavior
     	        	}
             		
         			// Try to jump
-        			jump = jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
-					if ( jump == JMP_SUCCESS )
+        			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
+					if ( jump == Actions.JMP_SUCCESS )
 					{
+						myLoc = myPlayer.myRC.getLocation(); // added by JVen, moved here by cory for modularization
+						
 						// Jumped successfully
 						prevLocs.add(myLoc);
 						if ( prevLocs.size() > Constants.STUCK_JUMPS )
@@ -247,7 +249,7 @@ public class ColossusBehavior extends Behavior
 						// No enemy found before jumping, check again after
 						enemyInfo = Utility.attackEnemies(myPlayer);
 					}
-					else if ( jump == JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myLoc) < ComponentType.JUMP.range) )
+					else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myLoc) < ComponentType.JUMP.range) )
 					{
 						// "Can't jump there, somethins in the way"
 						prevLocs.clear();
@@ -297,7 +299,7 @@ public class ColossusBehavior extends Behavior
         			// Move forward if you can
         			else if ( myPlayer.myRC.getDirection() != Direction.values()[rally] )
         				myPlayer.myMotor.setDirection(Direction.values()[rally]);
-        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && jump != JMP_SUCCESS )
+        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && jump != Actions.JMP_SUCCESS )
         				myPlayer.myMotor.moveForward();
         		}
         		rallyChanged = false;
@@ -314,81 +316,9 @@ public class ColossusBehavior extends Behavior
 	
 	
 	
+
 	
-	
-	
-	/**
-	 * Quick function to do all the checks necessary to ensure that a square is jumpable.
-	 * @param loc
-	 * @return
-	 * @throws GameActionException
-	 */
-	
-	public boolean canJump(MapLocation loc) throws GameActionException
-	{
-		if ( myPlayer.myRC.senseTerrainTile(loc) != TerrainTile.LAND )
-			return false;
-		if ( !myPlayer.mySensor.canSenseSquare(loc) )
-			return false;
-		if ( myPlayer.mySensor.senseObjectAtLocation(loc, RobotLevel.ON_GROUND) != null )
-			return false;
-		return true;
-	}
-	
-	
-	
-	
-	
-	
-	/**
-	 * Attempts to make a jump in a particular direction.  If the jump fails
-	 * or cannot be executed on that turn, this function returns false
-	 * @param dir
-	 * @return
-	 */
-	
-	public static int JMP_SUCCESS = 0;
-	public static int JMP_NOT_YET = 1;
-	public static int JMP_NOT_POSSIBLE = 2;
-	
-	public int jumpInDir(Direction dir) throws GameActionException
-	{
-		
-		//Make sure direction is valid (can be removed at a later point)
-		if( dir.ordinal()>=8 )
-			return JMP_NOT_POSSIBLE;
-		
-		// First, lets make sure we are pointed in the correct direction
-		if ( !myPlayer.myRC.getDirection().equals(dir) || myPlayer.myJump.isActive() )
-		{
-			/*if ( !myPlayer.myMotor.isActive() )
-				myPlayer.myMotor.setDirection(dir);*/  // Commented out by JVen. No set directions should be done here
-			return JMP_NOT_YET;
-		}
-		
-		//Now lets jump in the direction
-		
-		JumpTable jmp = new JumpTable(myPlayer.myRC.getLocation(),dir);
-		MapLocation jmpLoc = jmp.nextLoc();
-		
-		while (jmpLoc!=null)
-		{
-			if ( canJump(jmpLoc) )
-			{
-				myPlayer.myJump.jump(jmpLoc);
-				myLoc = jmpLoc; // added by JVen
-				return JMP_SUCCESS;
-			}
-			jmpLoc = jmp.nextLoc();
-		}
-			
-		return JMP_NOT_POSSIBLE;
-		
-	}
-	
-	
-	
-	
+
 	
 	
 	public String toString()

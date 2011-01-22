@@ -160,7 +160,7 @@ public class RobotPlayer implements Runnable {
     	}
     	
     	//Now based on the strategy, get what our behavior should be
-    	myBehavior = myStrategy.selectBehavior(this, Clock.getBytecodeNum());
+    	myBehavior = myStrategy.selectBehavior(this, Clock.getRoundNum());
     	////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     }
