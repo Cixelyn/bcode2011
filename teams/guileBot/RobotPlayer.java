@@ -119,6 +119,8 @@ public class RobotPlayer implements Runnable {
 	public boolean hasTakenDamage;
 	public boolean hasSensor;
 	
+	public MapLocation myLoc;
+	
 	public int numKills;
 	
 	
@@ -224,6 +226,11 @@ public class RobotPlayer implements Runnable {
 		///////////////////////////////////////////////////////////////
 		//Begin Debug Routines		
 		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		
+		
+		///////////////////////////////////////////////////////////////
+		//Set some global information
+		myLoc = myRC.getLocation();
 		
 		
 		

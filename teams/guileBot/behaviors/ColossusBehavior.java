@@ -51,8 +51,6 @@ public class ColossusBehavior extends Behavior
 	
 	ColossusBuildOrder obj = ColossusBuildOrder.EQUIPPING;
 	
-	MapLocation myLoc; // after trying to jump, set to jmpLoc if success and myLocation otherwise
-	
 	RobotInfo enemyInfo;
 	
 	int num = -1;
@@ -218,7 +216,7 @@ public class ColossusBehavior extends Behavior
 				}
 				
         		// Attacking code
-        		myLoc = myPlayer.myRC.getLocation();
+        		MapLocation myLoc = myPlayer.myLoc;
         		enemyInfo = Utility.attackEnemies(myPlayer);
         		
         		// No enemy found
@@ -271,7 +269,7 @@ public class ColossusBehavior extends Behavior
         			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
 					if ( jump == Actions.JMP_SUCCESS )
 					{
-						myLoc = myPlayer.myRC.getLocation(); // added by JVen, moved here by cory for modularization
+						myLoc = myPlayer.myLoc; // added by JVen, moved by cory.  myLoc should be reset upon successful jump
 						
 						// Jumped successfully
 						prevLocs.add(myLoc);
