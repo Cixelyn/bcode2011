@@ -39,9 +39,13 @@ public class DefaultBehavior extends Behavior
 			{
 				myPlayer.swapBehavior(new WraithBehavior(myPlayer));
 			}
-			else if ( c.type() == ComponentType.JUMP && myPlayer.myRC.getChassis() == Chassis.HEAVY )
+			else if ( c.type() == ComponentType.SHIELD && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 			{
 				myPlayer.swapBehavior(new ColossusBehavior(myPlayer));
+			}
+			else if ( c.type() == ComponentType.CONSTRUCTOR && myPlayer.myRC.getChassis() == Chassis.HEAVY )
+			{
+				myPlayer.swapBehavior(new ArbiterBehavior(myPlayer));
 			}
 			else if ( c.type() == ComponentType.RAILGUN && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{

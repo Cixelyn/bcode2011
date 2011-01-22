@@ -363,34 +363,38 @@ public class Utility {
 		int minDist1 = 9998; // sentinel value
 		int minDist2 = 9999; // sentinel value
 		
+		MapLocation myLoc = myPlayer.myRC.getLocation();
+		
 		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
 		
 		for ( int i = nearbyRobots.length; --i>=0;)
     	{
     		r = nearbyRobots[i];
-    		if ( r.getTeam() == myPlayer.myRC.getTeam().opponent() )
+    		if ( r.getTeam() == myPlayer.myOpponent )
     		{
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location) < minDist1 )
+    			int dist = myLoc.distanceSquaredTo(rInfo.location);
+    			
+    			if ( dist < minDist1 )
     			{
     				if ( enemyMin2 == null )
     				{
-    					minDist1 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
-    					minDist2 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    					minDist1 = dist;
+    					minDist2 = dist;
     					enemyMin1 = rInfo;
     					enemyMin2 = rInfo;
     				}
     				else
     				{
     					minDist2 = minDist1;
-    					minDist1 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    					minDist1 = dist;
     					enemyMin2 = enemyMin1;
     					enemyMin1 = rInfo;
     				}
     			}
-    			else if ( myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location) < minDist2 )
+    			else if ( dist < minDist2 )
     			{
-    				minDist2 = myPlayer.myRC.getLocation().distanceSquaredTo(rInfo.location);
+    				minDist2 = myLoc.distanceSquaredTo(rInfo.location);
 					enemyMin2 = rInfo;
     			}
     		}

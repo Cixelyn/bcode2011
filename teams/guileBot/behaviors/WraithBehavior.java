@@ -3,6 +3,52 @@ package guileBot.behaviors;
 import guileBot.*;
 import battlecode.common.*;
 
+/**
+ * 
+ * <pre>
+ * 
+ *                                                                                 
+ *                        MMM..                                                  
+ *            ..         M    M.                                                 
+ *            M..MM       M,  .MM.                                               
+ *           M     M      .NM    M..MM                 MM MM                     
+ *        . .M M..   M,      M    MM, M            ...M,.   .MM..                
+ *        . NM  M.    MM      MM    M...M,.      MMM.   MM.   ..M.               
+ *          M  M. N     M       N    .M  M    .MN   MM  . .MN    DM              
+ *         M    M.M.     M       MM     M..  M  .      MM   .MM, MM              
+ *         M,     M M    .M       .M,.  MMNN     .MMNM.   M ,  MM   M            
+ *        .M       MM      M     MM. M. . M.    .M    M..  .,M . .MM  MM         
+ *        .MN          M    .MMMM.. ..MN  .  MM ..      .M.  ..M  .  .M MM.      
+ *           M.      MM  M .   M      M  MMM. M .     M ..MM MMMMMNMMMM   MM     
+ *             M.   M.    N .  .M . .. M    MN.MM  .MM. MM M    MM. M,..MM M     
+ *              MMNMM      NM     NM M. ,M ,M.    MMMM   .M       MM..MMMN M     
+ *               .M..M,      M    MM.  M... . .   M .  M:.        .  M M  M.     
+ *     ,.. .    M  .M .MM.    .M..M  M..,.  .MNM . .MM   M            MM M.      
+ *   . M   .M   .    .M  NM.   MNMN   .M    M         N .             . .        
+ *  .MMM  . NMNM.       M  M  M ..M      MMN           M.                        
+ *  M. .M . .N..M       .MM  M M    M.    M             M                        
+ *  M    M    M . M M      M  M.MN ..MM  .M     .M     N                         
+ *  M      M   M.  M NM    MNMMMM     .MMMM,.   M       M                        
+ *  M      .MM. M    M.N ,M     MM     . M.,M,  MN.      M                       
+ *   M      .N.  M    MM M       MM.  ..M.M  MM M  M . .  M                      
+ *   MN.    M.    M    ,         M,MN  MM MMM. M.M. MM,MMMM.                     
+ *    .M . M..M..  M.. M          M. M.    M,M   M  ..M  .,.                     
+ *      ..M   ..M, ,M.N,          .M .M    M  M. M .  N    M                     
+ *         M     M..  M            . .MM   M   M.M   M . . MM                    
+ *          .M .M..M   M           .M    MMNMM .. M:  .. M. N                    
+ *            MM.M  M.MMM           .MM   M . .M   ,MM.  .,M.                    
+ *             M..MMMM ..M            .M   .M ..MM  .  M                         
+ *             .M.. M .  M             MM.   M  .MM                              
+ *               .M .NMMM                M .  .N   M .                           
+ *                 MM.N                  .MN, M..MMMM.                           
+ *                                          M   M...M                            
+ *                                           .M .MMN                             
+ *                                                                              
+ *                                                                               
+ * 
+ * </pre>
+ * 
+ */
 
 public class WraithBehavior extends Behavior
 {

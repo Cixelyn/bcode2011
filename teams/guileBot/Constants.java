@@ -36,6 +36,7 @@ public class Constants
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
 	public static final int SCRAMBLE_TIME = 2100; // when units should rally to a diametrically opposite location
 	public static final int STUCK_JUMPS = 5; // how many jumps a heavy takes in the same area before considering himself stuck
+	public static final int ARBITER_TIME = 8; // how many units come out before the arbiter (NOT A ROUND NUMBER, SILLY!)
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;
@@ -48,7 +49,8 @@ public class Constants
 	
 	
 	
-	//Cory's Go here
+	////////////////////////////////////////////////////////////////////////////////////////
+	////// HEAVY LOADOUTS ///////////////////////////////////////////////////////////////////
 	
 	
 	public static final ComponentType[] heavyLoadout0 = new ComponentType[]    // currHeavy == 0
@@ -74,8 +76,10 @@ public class Constants
   								ComponentType.PLASMA,ComponentType.PLASMA
   								};
 	
-	
-	
+	public static final ComponentType[] arbiterLoadout = new ComponentType[]
+	                               {ComponentType.SATELLITE,ComponentType.CONSTRUCTOR,
+									ComponentType.JUMP,ComponentType.JUMP,
+									ComponentType.HAMMER};
 	
 	
 }

@@ -15,6 +15,7 @@ public class ArmoryBehavior extends Behavior
 		MAKE_DRONE,
 		EQUIP_HEAVY,
 		EQUIP_ARMOR,
+		EQUIP_ARBITER,
 		SLEEP
 	}
 	
@@ -37,7 +38,8 @@ public class ArmoryBehavior extends Behavior
 	
 	int babyHeavy;
 	
-	boolean rHasJump;
+	boolean rHasSatellite;
+	int rNumJumps;
 	int rNumPlasma;
 	
 	double minFluxToBuild;
@@ -89,6 +91,17 @@ public class ArmoryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = ArmoryBuildOrder.EQUIP_ARMOR;
+    			else if ( currUnit == Constants.ARBITER_TIME )
+    			{
+    				// does not count towards currUnit
+    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+    				if ( r != null && r.getID() != babyHeavy )
+    				{
+    					Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
+    					babyHeavy = r.getID();
+    					obj = ArmoryBuildOrder.EQUIP_ARBITER;
+    				}
+    			}
     			/*if ( currUnit == 1 )
     			{
     				Utility.setIndicator(myPlayer, 2, "Making wraith.");
@@ -169,14 +182,14 @@ public class ArmoryBehavior extends Behavior
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
     			if ( currHeavy % 3 == 0 ) // currHeavy == 0 case is identical
     			{
-					rHasJump = false;
+					rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
 						if ( c == ComponentType.JUMP )
-							rHasJump = true;
+							rNumJumps++;
 					}
-					if ( !rHasJump )
+					if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -187,14 +200,14 @@ public class ArmoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 1 )
     			{
-    				rHasJump = false;
+    				rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
 						if ( c == ComponentType.JUMP )
-							rHasJump = true;
+							rNumJumps++;
 					}
-					if ( !rHasJump )
+					if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -206,18 +219,18 @@ public class ArmoryBehavior extends Behavior
     			else if ( currHeavy % 3 == 2 )
     			{
     				rNumPlasma = 0;
-    				rHasJump = false;
+    				rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
 						if ( c == ComponentType.PLASMA )
 							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
-							rHasJump = true;
+							rNumJumps++;
 					}
 					if ( rNumPlasma < 2 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
-					else if ( !rHasJump )
+					else if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -282,6 +295,38 @@ public class ArmoryBehavior extends Behavior
 					myPlayer.sleep();
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
 				obj = ArmoryBuildOrder.EQUIP_UNIT;
+    			return;
+    			
+    		case EQUIP_ARBITER:
+    			
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_ARBITER");
+				Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
+    			
+				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+    			if ( r == null || r.getID() != babyHeavy )
+    			{
+    				obj = ArmoryBuildOrder.EQUIP_UNIT;
+    				return;
+    			}
+				
+    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
+				rNumJumps = 0;
+				rHasSatellite = false;
+				for ( int j = rInfo.components.length ; --j >= 0 ; )
+				{
+					c = rInfo.components[j];
+					if ( c == ComponentType.JUMP )
+						rNumJumps++;
+					if ( c == ComponentType.SATELLITE )
+						rHasSatellite = true;
+				}
+				if ( rNumJumps < 2 )
+					Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND);
+				else if ( !rHasSatellite )
+				{
+					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SATELLITE, RobotLevel.ON_GROUND) )
+						obj = ArmoryBuildOrder.EQUIP_UNIT;
+				}
     			return;
     			
     		case SLEEP:

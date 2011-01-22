@@ -1,17 +1,57 @@
-package guileBot;
+package guileBot; import java.util.*; import guileBot.strategies.*; import guileBot.behaviors.*; import battlecode.common.*;
 
-import java.util.*;
-
-import guileBot.strategies.*;
-import guileBot.behaviors.*;
-
-
-import battlecode.common.*;
-
-/**
- * MASTeRY: BOT OF DEATH.
- * @author MAx, juSTin, coRY
- * @author Team 068, "In the Rear, With the Gear"
+/**  
+ *<pre>  
+ *
+ *  _____ __   _      _______ _     _ _______       ______ _______ _______  ______
+ *    |   | \  |         |    |_____| |______      |_____/ |______ |_____| |_____/
+ *  __|__ |  \_|         |    |     | |______      |    \_ |______ |     | |    \_
+ *  _  _  _ _____ _______ _     _      _______ _     _ _______        ______ _______ _______  ______
+ *  |  |  |   |      |    |_____|         |    |_____| |______       |  ____ |______ |_____| |_____/
+ *  |__|__| __|__    |    |     |         |    |     | |______       |_____| |______ |     | |    \_
+ *  
+ *                                            TEAM #068
+ *  __________________________       B A T T L E C O D E 2 0 1 1      ________________________________
+ *  _______________________   \______________________________________/   _____________________________
+ *                         \____________________________________________/
+ *
+ *   							
+ *   
+ *   __
+ *	/  \ NOTES ___________________________________________________________ 
+ *  \__/
+ * 
+ * Herein lies the source for team 068's bot.  We have labored  many hours over
+ * the course of IAP in order to produce this masterwork of art.  As you browse
+ * through our source, note the pains taken to make the most beautiful,
+ * intelligent, and cunning bot possible.  Note that even our ASCII art is javadoc 
+ * compliant and renders beautifully in editor in which this warrior was forged.
+ * 
+ *   __
+ *	/  \ TABLE OF CONTENTS_________________________________________________ 
+ *  \__/
+ *
+ * [Main]
+ *    RobotPlayer.java
+ *    
+ * [Broadcasting]
+ *    Messenger.java
+ *    MsgType.java
+ *    
+ * [Navigation]
+ *    OldNavigation.java
+ *    Cartographer.Java  
+ *    
+ *  TODO: UPDATE THIS LATER BEFORE SUBMISSION
+ *
+ *
+ *
+ *
+ *</pre>
+ *         
+ * @author Max Nelson
+ * @author Cory Li
+ * @author Justin Venezuela
  * @version 1.0
  * @since Battlecode 2011
  * 
@@ -42,12 +82,16 @@ public class RobotPlayer implements Runnable {
 	public BuilderController myBuilder;
 	public MovementController myMotor;
 	public BroadcastController myBroadcaster;
-	public JumpController myJump;
+	
+	
+	private final ArrayList <JumpController> myJumpsInternal;
+	public JumpController[] myJumps;
 	
 	private final ArrayList<WeaponController> mySMGsInternal;
 	private final ArrayList<WeaponController> myBlastersInternal;
 	private final ArrayList<WeaponController> myRailgunsInternal;
 	private final ArrayList<WeaponController> myMedicsInternal;
+	
 	public WeaponController[] mySMGs;
 	public WeaponController[] myBlasters;
 	public WeaponController[] myRailguns;
@@ -115,6 +159,7 @@ public class RobotPlayer implements Runnable {
     	mySensor = null;
     	myBroadcaster = null;
     	
+    	myJumpsInternal = new ArrayList<JumpController>();
     	mySMGsInternal = new ArrayList<WeaponController>();
     	myBlastersInternal = new ArrayList<WeaponController>();
     	myRailgunsInternal = new ArrayList<WeaponController>();
@@ -160,7 +205,7 @@ public class RobotPlayer implements Runnable {
     	}
     	
     	//Now based on the strategy, get what our behavior should be
-    	myBehavior = myStrategy.selectBehavior(this, Clock.getBytecodeNum());
+    	myBehavior = myStrategy.selectBehavior(this, Clock.getRoundNum());
     	////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     }
@@ -345,15 +390,20 @@ public class RobotPlayer implements Runnable {
 				case WEAPON:
 					switch(c.type()) {
 					case SMG:
-						mySMGsInternal.add((WeaponController)c);		continue;
+						mySMGsInternal.add((WeaponController)c);		
+						continue;
 					case BLASTER:
-						myBlastersInternal.add((WeaponController)c);	continue;
+						myBlastersInternal.add((WeaponController)c);	
+						continue;
 					case RAILGUN:
-						myRailgunsInternal.add((WeaponController)c);	continue;
+						myRailgunsInternal.add((WeaponController)c);	
+						continue;
 					case MEDIC:
-						myMedicsInternal.add((WeaponController)c);		continue;
+						myMedicsInternal.add((WeaponController)c);		
+						continue;
 					default:
-						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); continue;
+						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
+						continue;
 					}
 					
 				/////////////////////////////////////////////////////////////////
@@ -380,7 +430,7 @@ public class RobotPlayer implements Runnable {
 					case PROCESSOR:
 						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	continue;
 					case JUMP:
-						myJump = (JumpController) c;							continue;
+						myJumpsInternal.add((JumpController)c);					continue;
 					}
 				default:
 					Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			continue;
@@ -395,6 +445,7 @@ public class RobotPlayer implements Runnable {
 		myBlasters = myBlastersInternal.toArray(new WeaponController[myBlastersInternal.size()]);
 		myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
 		myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
+		myJumps = myJumpsInternal.toArray(new JumpController[myJumpsInternal.size()]);
 		
 	}
 	

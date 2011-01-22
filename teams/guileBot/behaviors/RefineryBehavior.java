@@ -19,6 +19,7 @@ public class RefineryBehavior extends Behavior
 		EQUIP_DRONE,
 		EQUIP_WRAITH,
 		EQUIP_ARMOR,
+		EQUIP_ARBITER,
 		SLEEP
 	}
 	
@@ -48,6 +49,7 @@ public class RefineryBehavior extends Behavior
 	int rNumSMGs;
 	int rNumShields;
 	int rNumBlasters;
+	int rNumHammers;
 	boolean rHasRadar;
 	
 	boolean hasSlept = false;
@@ -159,6 +161,17 @@ public class RefineryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = RefineryBuildOrder.EQUIP_ARMOR;
+    			else if ( currUnit == Constants.ARBITER_TIME )
+    			{
+    				// does not count towards currUnit
+    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+    				if ( r != null && r.getID() != babyHeavy )
+    				{
+    					Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
+    					babyHeavy = r.getID();
+    					obj = RefineryBuildOrder.EQUIP_ARBITER;
+    				}
+    			}
     			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
@@ -482,6 +495,38 @@ public class RefineryBehavior extends Behavior
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
     			return;
 				
+    		case EQUIP_ARBITER:
+    			
+    			Utility.setIndicator(myPlayer, 1, "EQUIP_ARBITER");
+				Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
+    			
+				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+    			if ( r == null || r.getID() != babyHeavy )
+    			{
+    				obj = RefineryBuildOrder.EQUIP_UNIT;
+    				return;
+    			}
+				
+    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
+				rNumHammers = 0;
+				rHasConstructor = false;
+				for ( int j = rInfo.components.length ; --j >= 0 ; )
+				{
+					c = rInfo.components[j];
+					if ( c == ComponentType.HAMMER )
+						rNumHammers++;
+					if ( c == ComponentType.SATELLITE )
+						rHasConstructor = true;
+				}
+				if ( rNumHammers < 1 )
+					Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HAMMER, RobotLevel.ON_GROUND);
+				else if ( !rHasConstructor )
+				{
+					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.CONSTRUCTOR, RobotLevel.ON_GROUND) )
+						obj = RefineryBuildOrder.EQUIP_UNIT;
+				}
+    			return;
+    			
     		case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 1, "SLEEP");

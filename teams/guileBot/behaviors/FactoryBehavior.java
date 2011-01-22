@@ -12,6 +12,7 @@ public class FactoryBehavior extends Behavior
 		EQUIP_UNIT,
 		MAKE_HEAVY,
 		EQUIP_ARMOR,
+		MAKE_ARBITER,
 		SLEEP
 	}
 	
@@ -81,7 +82,12 @@ public class FactoryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = FactoryBuildOrder.EQUIP_ARMOR;
-    			
+    			else if ( currUnit == Constants.ARBITER_TIME )
+    			{
+    				// does not count towards currUnit
+    				Utility.setIndicator(myPlayer, 2, "Making arbiter.");
+    				obj = FactoryBuildOrder.MAKE_ARBITER;
+    			}
     			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
@@ -170,6 +176,22 @@ public class FactoryBehavior extends Behavior
     			while ( myPlayer.myMotor.isActive() )
 					myPlayer.sleep();
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+    			obj = FactoryBuildOrder.EQUIP_UNIT;
+    			return;
+    			
+			case MAKE_ARBITER:
+				
+				Utility.setIndicator(myPlayer, 1, "MAKE_ARBITER");
+    			Utility.setIndicator(myPlayer, 2, "Building arbiter.");
+    			
+				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+				minFluxToBuild = Chassis.HEAVY.cost + Utility.totalCost(Constants.arbiterLoadout) + Constants.RESERVE;
+    			while ( r != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < minFluxToBuild )
+    			{
+    				myPlayer.sleep();
+    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+    			}
+    			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.HEAVY);
     			obj = FactoryBuildOrder.EQUIP_UNIT;
     			return;
     			
