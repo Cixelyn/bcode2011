@@ -16,6 +16,13 @@ import battlecode.common.*;;
  *     for ASCII art. We have therefore taken the liberty of replacing said "tower"
  *     with art of the awesomer and more WELL KNOWN photon cannon.
  *     
+ *     
+ *     How can WC3 be a dead game with a new patch that was just released, a vibrant
+ *     Chinese pro scene, and Battle.net where it is still insanely easy to find games?
+ *     Contrast this to ICCUP, where there is probably about 6 games going on at any
+ *     given time, half of which you will be cheesed on, and the other half you will
+ *     get owned by a Korean smurf.
+ *     
  *                                                                       
  *                                                                               
  *                                          ..M  .                               
