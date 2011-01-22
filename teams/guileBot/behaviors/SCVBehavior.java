@@ -10,15 +10,6 @@ public class SCVBehavior extends Behavior
 	{
 		GET_INITIAL_IDS,
 		WAIT_FOR_ANTENNA,
-		
-		DETERMINE_SPAWN,
-		NORMAL_SPAWN_UL_UR,
-		NORMAL_SPAWN_UL_BL,
-		NORMAL_SPAWN_UL_BR,
-		NORMAL_SPAWN_UR_BL,
-		NORMAL_SPAWN_UR_BR,
-		NORMAL_SPAWN_BL_BR,
-		
 		NORMAL_SPAWN,
 		WEIRD_SPAWN,
 		WEIRD_VACATE,
@@ -70,10 +61,6 @@ public class SCVBehavior extends Behavior
 	int frontRefinery;
 	int leftRefinery;
 	int rightRefinery;
-	int mUL;
-	int mUR;
-	int mBL;
-	int mBR;
 	
 	public SCVBehavior(RobotPlayer player)
 	{
@@ -94,175 +81,6 @@ public class SCVBehavior extends Behavior
 				if ( hasAntenna )
 					obj = SCVBuildOrder.NORMAL_SPAWN;
 				return;
-				
-			case DETERMINE_SPAWN:
-				
-				Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
-				Utility.setIndicator(myPlayer, 2, "Let's see what trickery the devs have cooked up for us today!");
-				mUL = 0;
-				mUR = 0;
-				mBL = 0;
-				mBR = 0;
-				frontRefinery = 0;
-				leftRefinery = 0;
-				rightRefinery = 0;
-				rFront = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-				rLeft = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateLeft()), RobotLevel.ON_GROUND);
-				rRight = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection().rotateRight()), RobotLevel.ON_GROUND);
-				if ( rFront != null && rFront.getTeam() == myPlayer.myRC.getTeam() )
-					frontRefinery = 1;
-				if ( rLeft != null && rLeft.getTeam() == myPlayer.myRC.getTeam() )
-					leftRefinery = 1;
-				if ( rRight != null && rRight.getTeam() == myPlayer.myRC.getTeam() )
-					rightRefinery = 1;
-				
-				// we are facing our 2 starting refineries
-				if ( !myPlayer.myRC.getDirection().isDiagonal() && frontRefinery + leftRefinery + rightRefinery >= 2 )
-				{
-					// I'm on the left side
-					if ( rightRefinery == 1 )
-					{
-						
-						// check if there is a mine UL
-						if ( myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(), 2), RobotLevel.MINE) != null )
-							mUL = 1;
-						// check if there is a mine UR
-						if ( myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(), 2).add(myPlayer.myRC.getDirection().rotateRight().rotateRight(), 1), RobotLevel.MINE) != null )
-							mUR = 1;
-						// check if there is a mine BL
-						if ( myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation(), RobotLevel.MINE) != null )
-							mBL = 1;
-						// compute whether there is a mine BR
-						if ( mUL + mUR + mBL < 2 )
-							mBR = 1;
-						
-						// check if spawn is UL and UR
-						if ( mUL + mUR == 2 )
-						{
-							// there is a path to the left
-							if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()) )
-								obj = SCVBuildOrder.NORMAL_SPAWN_UL_UR;
-							else if ( !triedOtherSide )
-							{
-								triedOtherSide = true;
-								// move to the right
-								while (myPlayer.myMotor.isActive())
-			    					myPlayer.sleep();
-			    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-			    				while (myPlayer.myMotor.isActive())
-			    					myPlayer.sleep();
-			    				myPlayer.myMotor.moveForward();
-			    				while (myPlayer.myMotor.isActive())
-			    					myPlayer.sleep();
-			    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
-							}
-							else
-								obj = SCVBuildOrder.WEIRD_SPAWN;
-							return;
-						}
-						// check if spawn is UL and BL
-						if ( mUL + mBL == 2 )
-						{
-							
-						}
-						// check if spawn is UL and BR
-						if ( mUL + mBR == 2 )
-						{
-							
-						}
-						// check if spawn is UR and BL
-						if ( mUR + mBL == 2 )
-						{
-							
-						}
-						// check if spawn is UR and BR
-						if ( mUR + mBR == 2 )
-						{
-							
-						}
-						// check if spawn is BL and BR
-						if ( mBL + mBR == 2 )
-						{
-							
-						}
-						
-					}
-					// I'm on the right side
-					else if ( leftRefinery == 1 )
-					{
-						// check if there is a mine UR
-						if ( myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(), 2), RobotLevel.MINE) != null )
-							mUR = 1;
-						// check if there is a mine UL
-						if ( myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(), 2).add(myPlayer.myRC.getDirection().rotateLeft().rotateLeft(), 1), RobotLevel.MINE) != null )
-							mUL = 1;
-						// check if there is a mine BR
-						if ( myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation(), RobotLevel.MINE) != null )
-							mBR = 1;
-						// compute whether there is a mine BL
-						if ( mUR + mUL + mBR < 2 )
-							mBL = 1;
-					}
-					
-					
-					
-					// there is a path to the left
-					if ( rightRefinery == 1 && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateLeft()) )
-					{
-						
-					}
-					// there is a path to the right
-					else if ( leftRefinery == 1 && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().rotateRight()) )
-					{
-						
-					}
-					// 
-					else if ( !triedOtherSide )
-					{
-						triedOtherSide = true;
-						if ( rightRefinery == 1 )
-						{
-							while (myPlayer.myMotor.isActive())
-		    					myPlayer.sleep();
-		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-		    				while (myPlayer.myMotor.isActive())
-		    					myPlayer.sleep();
-		    				myPlayer.myMotor.moveForward();
-		    				while (myPlayer.myMotor.isActive())
-		    					myPlayer.sleep();
-		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
-						}
-						else if ( leftRefinery == 1 )
-						{
-							while (myPlayer.myMotor.isActive())
-		    					myPlayer.sleep();
-		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
-		    				while (myPlayer.myMotor.isActive())
-		    					myPlayer.sleep();
-		    				myPlayer.myMotor.moveForward();
-		    				while (myPlayer.myMotor.isActive())
-		    					myPlayer.sleep();
-		    				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-						}
-					}
-					else
-					{
-						// there is no path to the other side
-					}
-				}
-				else
-				{
-					dizziness++;
-    				while (myPlayer.myMotor.isActive())
-    					myPlayer.sleep();
-    				if ( myPlayer.myRC.getDirection().isDiagonal() )
-    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight());
-    				else
-    					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
-    				if ( dizziness >= 8 )
-    					obj = SCVBuildOrder.WEIRD_SPAWN;
-				}
-				break;
 				
 			case NORMAL_SPAWN:
 				
