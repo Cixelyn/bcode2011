@@ -47,6 +47,7 @@ public class ArmoryBehavior extends Behavior
 	boolean armorEquipped = false;
 	boolean nearFactory;
 	boolean nearRefinery;
+	boolean arbiterEquipped = false;
 	
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -91,7 +92,7 @@ public class ArmoryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = ArmoryBuildOrder.EQUIP_ARMOR;
-    			else if ( currUnit == Constants.ARBITER_TIME )
+    			else if ( !arbiterEquipped && currUnit == Constants.ARBITER_TIME )
     			{
     				// does not count towards currUnit
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
@@ -302,6 +303,7 @@ public class ArmoryBehavior extends Behavior
     			Utility.setIndicator(myPlayer, 1, "EQUIP_ARBITER");
 				Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
     			
+				arbiterEquipped = true;
 				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
     			if ( r == null || r.getID() != babyHeavy )
     			{

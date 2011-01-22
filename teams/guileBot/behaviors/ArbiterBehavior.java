@@ -145,7 +145,7 @@ public class ArbiterBehavior extends Behavior{
 				
 			}
 			
-			Utility.setIndicator(myPlayer, 2, "E:"+enemyIndex+" M:"+mineIndex);
+			Utility.setIndicator(myPlayer, 0, "E:"+enemyIndex+" M:"+mineIndex);
 			
 			// fill in enemyInfos
 			RobotInfo[] enemyInfos = new RobotInfo[enemyIndex]; // added by JVen
@@ -172,6 +172,7 @@ public class ArbiterBehavior extends Behavior{
 			
 			if ( minMine != null )
 			{
+				Utility.setIndicator(myPlayer, 2, "Free mine detected!");
 				// there is a mine
 				int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
 				if ( jump == Actions.JMP_NOT_POSSIBLE )
@@ -182,6 +183,7 @@ public class ArbiterBehavior extends Behavior{
 			}
 			else
 			{
+				Utility.setIndicator(myPlayer, 2, "No mines detected.");
 				// no mines
 				myPlayer.myActions.jumpInDir(Direction.NORTH, enemyInfos);
 			}

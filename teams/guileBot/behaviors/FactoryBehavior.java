@@ -39,6 +39,7 @@ public class FactoryBehavior extends Behavior
 	
 	boolean towerEquipped = false;
 	boolean armorEquipped = false;
+	boolean arbiterMade = false;
 	
 	public FactoryBehavior(RobotPlayer player)
 	{
@@ -82,7 +83,7 @@ public class FactoryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = FactoryBuildOrder.EQUIP_ARMOR;
-    			else if ( currUnit == Constants.ARBITER_TIME )
+    			else if ( !arbiterMade && currUnit == Constants.ARBITER_TIME )
     			{
     				// does not count towards currUnit
     				Utility.setIndicator(myPlayer, 2, "Making arbiter.");
@@ -184,6 +185,7 @@ public class FactoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "MAKE_ARBITER");
     			Utility.setIndicator(myPlayer, 2, "Building arbiter.");
     			
+    			arbiterMade = true;
 				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				minFluxToBuild = Chassis.HEAVY.cost + Utility.totalCost(Constants.arbiterLoadout) + Constants.RESERVE;
     			while ( r != null || myPlayer.myBuilder.isActive() || myPlayer.myRC.getTeamResources() < minFluxToBuild )
