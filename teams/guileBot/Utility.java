@@ -651,51 +651,51 @@ public class Utility {
  	//Cory's Go here
  	
 		
-		public static int NUM_COMPONENT_TYPES = ComponentType.values().length;
-		/**
-		 * Counts the number of component types given an array of component types.
-		 * Useful in determining the loadout of a robot.
-		 * @param components
-		 * @return int array filled with counts of each ComponentType
-		 */
-		public static int[] countComponents(ComponentType[] components) {
-			int[] list = new int[NUM_COMPONENT_TYPES];
-			for(int i=components.length; --i>=0;) {
-				list[components[i].ordinal()]++;
-			}
-			return list;
+	public static int NUM_COMPONENT_TYPES = ComponentType.values().length;
+	/**
+	 * Counts the number of component types given an array of component types.
+	 * Useful in determining the loadout of a robot.
+	 * @param components
+	 * @return int array filled with counts of each ComponentType
+	 */
+	public static int[] countComponents(ComponentType[] components) {
+		int[] list = new int[NUM_COMPONENT_TYPES];
+		for(int i=components.length; --i>=0;) {
+			list[components[i].ordinal()]++;
 		}
-		
-		/**
-		 * Alternate version of {@link #countComponents(ComponentType[])} which counts an array of ComponentController instead
-		 * allowing the output of <code>myRC.components()</code> to be counted.
-		 * @see #countComponents(ComponentType[])
-		 * @param components
-		 * @return int array filled with counts of each ComponentType
-		 */
-		public static int[] countComponents(ComponentController[] components) {
-			int[] list = new int[NUM_COMPONENT_TYPES];
-			for(int i=components.length; --i>=0;) {
-				list[components[i].type().ordinal()]++;
-			}
-			return list;
+		return list;
+	}
+	
+	/**
+	 * Alternate version of {@link #countComponents(ComponentType[])} which counts an array of ComponentController instead
+	 * allowing the output of <code>myRC.components()</code> to be counted.
+	 * @see #countComponents(ComponentType[])
+	 * @param components
+	 * @return int array filled with counts of each ComponentType
+	 */
+	public static int[] countComponents(ComponentController[] components) {
+		int[] list = new int[NUM_COMPONENT_TYPES];
+		for(int i=components.length; --i>=0;) {
+			list[components[i].type().ordinal()]++;
 		}
+		return list;
+	}
+	
+	
+	/**
+	 * Fast method to compare two components and ensure that they're equal  
+	 * 
+	 * @return
+	 */
+	public static boolean compareComponents(RobotPlayer player, int[] requestedLoadOut ) {
 		
+		int[] currentLoadOut = countComponents(player.myRC.components()); 
 		
-		/**
-		 * Fast method to compare two components and ensure that they're equal  
-		 * 
-		 * @return
-		 */
-		public static boolean compareComponents(RobotPlayer player, int[] requestedLoadOut ) {
-			
-			int[] currentLoadOut = countComponents(player.myRC.components()); 
-			
-			for(int i=NUM_COMPONENT_TYPES; --i>=0;) {
-				if(currentLoadOut[i]<requestedLoadOut[i]) return false;
-			}
-			return true;
+		for(int i=NUM_COMPONENT_TYPES; --i>=0;) {
+			if(currentLoadOut[i]<requestedLoadOut[i]) return false;
 		}
+		return true;
+	}
 	
 	
 	
@@ -732,6 +732,31 @@ public class Utility {
 	}
 	
 	
+	/**
+	 * Returns the maximum range of an enemy robot. Ignored deactivated robots and medic weapons
+	 * @author JVen
+	 * @param enemyInfo The robotInfo of the enemy robot
+	 * @return The maximum distance squared of the enemy robot's weapons
+	 */
+	
+	public static int maxRange(RobotInfo enemyInfo)
+	{
+
+		if ( !enemyInfo.on )
+			return 0;
+			
+		int ans = 0;
+		ComponentType c;
+		int i = enemyInfo.components.length;
+		while ( --i >= 0 )
+		{
+			c = enemyInfo.components[i];
+			if ( c.componentClass == ComponentClass.WEAPON && c != ComponentType.MEDIC && ans < c.range )
+				ans = c.range;
+		}
+		return ans;
+
+	}
 	
 }
 

@@ -69,6 +69,8 @@ package guileBot; import java.util.*; import guileBot.strategies.*; import guile
  * </pre>
  * 
  * 
+ * @thanks Thanks to glassgiant.com for their ASCII art JPG-TXT converter -JVen
+ * 
  * @see <a href="http://www.youtube.com/watch?v=8zwP9ErgIWs">SCV Love Song</a>
  *
  */
