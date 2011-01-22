@@ -69,9 +69,14 @@ public class ColossusBehavior extends Behavior
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
 	
+	private final MovementController myMotor;
+	
+	
+	
 	public ColossusBehavior(RobotPlayer player)
 	{
 		super(player);
+		myMotor = myPlayer.myMotor; 
 	}
 
 
@@ -102,30 +107,30 @@ public class ColossusBehavior extends Behavior
 				
 				while ( westEdge == -1 || northEdge == -1 || eastEdge == -1 || southEdge == -1 )
 				{
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myRC.getLocation().add(Direction.NORTH, 6)) )
+					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.NORTH, 6)) )
 					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP )
+						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP )
 							northEdge = 1;
 						else
 							northEdge = 0;
 					}
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myRC.getLocation().add(Direction.EAST, 6)) )
+					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.EAST, 6)) )
 					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.EAST, 6)) == TerrainTile.OFF_MAP )
+						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.EAST, 6)) == TerrainTile.OFF_MAP )
 							eastEdge = 1;
 						else
 							eastEdge = 0;
 					}
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myRC.getLocation().add(Direction.SOUTH, 6)) )
+					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.SOUTH, 6)) )
 					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.SOUTH, 6)) == TerrainTile.OFF_MAP )
+						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.SOUTH, 6)) == TerrainTile.OFF_MAP )
 							southEdge = 1;
 						else
 							southEdge = 0;
 					}
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myRC.getLocation().add(Direction.WEST, 6)) )
+					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.WEST, 6)) )
 					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.WEST, 6)) == TerrainTile.OFF_MAP )
+						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.WEST, 6)) == TerrainTile.OFF_MAP )
 							westEdge = 1;
 						else
 							westEdge = 0;
@@ -174,7 +179,7 @@ public class ColossusBehavior extends Behavior
 				// Rally to center if we're confident enough in where it is
 				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
 				{
-					if ( myPlayer.myRC.getLocation().distanceSquaredTo(myPlayer.myCartographer.getMapCenter()) < ComponentType.JUMP.range )
+					if ( myPlayer.myLoc.distanceSquaredTo(myPlayer.myCartographer.getMapCenter()) < ComponentType.JUMP.range )
 						Utility.setIndicator(myPlayer, 2, "I'm at the center of the map already!!");
 					else
 					{
@@ -200,14 +205,14 @@ public class ColossusBehavior extends Behavior
 								
 							case 3:
 								
-								rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
+								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
 								Utility.setIndicator(myPlayer, 2, "I'm pretty sure the center is " + Direction.values()[rally].toString() + ", rerallying.");
 								rallyChanged = true;
 								break;
 								
 							case 4:
 								
-								rally = myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
+								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
 								Utility.setIndicator(myPlayer, 2, "I KNOW the center is " + Direction.values()[rally].toString() + ", rerallying.");
 								rallyChanged = true;
 								break;
@@ -224,7 +229,7 @@ public class ColossusBehavior extends Behavior
         		{
         			
         			// Off map rerally code
-            		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
+            		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
     	        	{
     	        		if ( numBounces == 0 )
     	        			rally = (rally + 2) % 8; // we have reached the enemy side, everyone search together
@@ -242,7 +247,7 @@ public class ColossusBehavior extends Behavior
     	        		numBounces++;
     	        		rallyChanged = true;
     	        	}
-            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
+            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
     	        	{
     	        		// we have reached the closest side to the enemy corner, rerally to corner
     	        		if ( num % 2 == 0 )
@@ -253,7 +258,7 @@ public class ColossusBehavior extends Behavior
     	        		numBounces++;
     	        		rallyChanged = true;
     	        	}
-            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
+            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
     	        	{
             			// we have reached the closest side to the enemy corner, rerally to corner
     	        		if ( num % 2 == 0 )
@@ -298,9 +303,9 @@ public class ColossusBehavior extends Behavior
         			if ( myLoc.distanceSquaredTo(enemyInfo.location) <= 16 )
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
-        				if ( !myPlayer.myMotor.isActive() )
+        				if ( !myMotor.isActive() )
         				{
-	        				if ( (myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateRight()) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
+	        				if ( (myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateRight()) && myMotor.canMove(myPlayer.myRC.getDirection().opposite()))
 	        					myPlayer.myMotor.moveBackward();
 	        				else if ( myPlayer.myRC.getDirection() != myLoc.directionTo(enemyInfo.location) )
 	        					myPlayer.myMotor.setDirection(myLoc.directionTo(enemyInfo.location));
@@ -309,28 +314,28 @@ public class ColossusBehavior extends Behavior
         			else
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
-        				if ( !myPlayer.myMotor.isActive() )
+        				if ( !myMotor.isActive() )
         				{
-	        				if ( (myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateRight()) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
-	        					myPlayer.myMotor.moveForward();
+	        				if ( (myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myLoc.directionTo(enemyInfo.location).rotateRight()) && myMotor.canMove(myPlayer.myRC.getDirection()))
+	        					myMotor.moveForward();
 	        				else if ( myPlayer.myRC.getDirection() != myLoc.directionTo(enemyInfo.location) )
-	        					myPlayer.myMotor.setDirection(myLoc.directionTo(enemyInfo.location));
+	        					myMotor.setDirection(myLoc.directionTo(enemyInfo.location));
         				}
         			}
         		}
         		// No enemy found before/after jumping
-        		else if ( !myPlayer.myMotor.isActive() )
+        		else if ( !myMotor.isActive() )
         		{
         			if ( !rallyChanged )
         				Utility.setIndicator(myPlayer, 2, "No enemies detected, rallied " + Direction.values()[rally].toString() + "."	);
         			// Make sure I'm not getting flanked
         			if ( myPlayer.hasTakenDamage )
-    	        		myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
+    	        		myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
         			// Move forward if you can
         			else if ( myPlayer.myRC.getDirection() != Direction.values()[rally] )
-        				myPlayer.myMotor.setDirection(Direction.values()[rally]);
+        				myMotor.setDirection(Direction.values()[rally]);
         			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && jump != Actions.JMP_SUCCESS )
-        				myPlayer.myMotor.moveForward();
+        				myMotor.moveForward();
         		}
         		rallyChanged = false;
 	        	return;	        	     
@@ -340,15 +345,6 @@ public class ColossusBehavior extends Behavior
 	
 	
 	
-	
-	
-	
-	
-	
-	
-
-	
-
 	
 	
 	public String toString()
