@@ -1,7 +1,4 @@
-package guileBot.behaviors;
-
-import battlecode.common.*;
-import guileBot.*;
+package guileBot.behaviors; import battlecode.common.*; import guileBot.*;
 
 
 
@@ -110,6 +107,10 @@ public class ArbiterBehavior extends Behavior{
 			//	 this custom sensing code is designed to be as compact and fast as possible.
 			//
 			GameObject[] objects = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
+			
+			Mine[] mines = new Mine[64]; int mineIndex = 0;
+			Robot[] enemies = new Robot[64]; int enemyIndex = 0;
+			
 			for(int i=objects.length; --i>=0;) {
 				
 				GameObject obj = objects[i];
@@ -117,30 +118,22 @@ public class ArbiterBehavior extends Behavior{
 				
 				
 				if(obj.getTeam()==myPlayer.myOpponent) { 		//Enemy Robot Detected
-					Robot r = (Robot)obj; //cast it correctly
-
-					
+					enemies[i] = (Robot)obj; //cast it correctly
+					enemyIndex++;					
 				}
 				else {					
 					if(obj.getRobotLevel()==RobotLevel.MINE) {	//Mine Detected
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
+						mines[i] = (Mine)obj;
+						mineIndex++;
 					} else {									//Debris Detected
-						
-						
-						
 						
 					}
 				}				
 			}
+			
+			
+			Utility.setIndicator(myPlayer, 2, "E:"+enemyIndex+" M:"+mineIndex);
+			
 			
 			
 			return;
