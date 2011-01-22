@@ -40,8 +40,13 @@ public class Actions {
 		if( dir.ordinal()>=8 )
 			return JMP_NOT_POSSIBLE;
 		
+		
+		//Grab an active jump
+		int jumpEngine = availableJump();
+		
+		
 		// First, lets make sure we are pointed in the correct direction
-		if ( !myPlayer.myRC.getDirection().equals(dir) || myPlayer.myJump.isActive() )
+		if ( !myPlayer.myRC.getDirection().equals(dir) || jumpEngine==-1 )
 		{
 			/*if ( !myPlayer.myMotor.isActive() )
 				myPlayer.myMotor.setDirection(dir);*/  // Commented out by JVen. No set directions should be done here
@@ -57,7 +62,7 @@ public class Actions {
 		{
 			if ( canJump(jmpLoc) )
 			{
-				myPlayer.myJump.jump(jmpLoc);
+				myPlayer.myJumps[jumpEngine].jump(jmpLoc);
 				return JMP_SUCCESS;
 			}
 			jmpLoc = jmp.nextLoc();
@@ -66,10 +71,6 @@ public class Actions {
 		return JMP_NOT_POSSIBLE;
 		
 	}
-	
-	
-	
-	
 	
 	
 	/**
@@ -90,6 +91,20 @@ public class Actions {
 		return true;
 	}
 	
+	
+	
+	/**
+	 * Quick function to determine if we have an active jump
+	 * @return position in myJumps array with a usable jump. No usable jumps returns -1.
+	 */
+	public int availableJump() {
+		for(int i=myPlayer.myJumps.length; --i>=0;) {
+			if(!myPlayer.myJumps[i].isActive()) {
+				return i;
+			}
+		}
+		return -1;
+	}
 	
 	
 	

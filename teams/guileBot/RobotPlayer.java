@@ -42,12 +42,16 @@ public class RobotPlayer implements Runnable {
 	public BuilderController myBuilder;
 	public MovementController myMotor;
 	public BroadcastController myBroadcaster;
-	public JumpController myJump;
+	
+	
+	private final ArrayList <JumpController> myJumpsInternal;
+	public JumpController[] myJumps;
 	
 	private final ArrayList<WeaponController> mySMGsInternal;
 	private final ArrayList<WeaponController> myBlastersInternal;
 	private final ArrayList<WeaponController> myRailgunsInternal;
 	private final ArrayList<WeaponController> myMedicsInternal;
+	
 	public WeaponController[] mySMGs;
 	public WeaponController[] myBlasters;
 	public WeaponController[] myRailguns;
@@ -115,6 +119,7 @@ public class RobotPlayer implements Runnable {
     	mySensor = null;
     	myBroadcaster = null;
     	
+    	myJumpsInternal = new ArrayList<JumpController>();
     	mySMGsInternal = new ArrayList<WeaponController>();
     	myBlastersInternal = new ArrayList<WeaponController>();
     	myRailgunsInternal = new ArrayList<WeaponController>();
@@ -385,7 +390,7 @@ public class RobotPlayer implements Runnable {
 					case PROCESSOR:
 						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	continue;
 					case JUMP:
-						myJump = (JumpController) c;							continue;
+						myJumpsInternal.add((JumpController)c);					continue;
 					}
 				default:
 					Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			continue;
@@ -400,6 +405,7 @@ public class RobotPlayer implements Runnable {
 		myBlasters = myBlastersInternal.toArray(new WeaponController[myBlastersInternal.size()]);
 		myRailguns = myRailgunsInternal.toArray(new WeaponController[myRailgunsInternal.size()]);
 		myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
+		myJumps = myJumpsInternal.toArray(new JumpController[myJumpsInternal.size()]);
 		
 	}
 	

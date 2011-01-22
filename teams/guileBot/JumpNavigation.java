@@ -137,7 +137,7 @@ public class JumpNavigation
 		
 		// make sure we have jump and satellite
 		
-		if ( myPlayer.myJump == null || myPlayer.mySensor == null || myPlayer.mySensor.type() != ComponentType.SATELLITE )
+		if ( myPlayer.myJumps.length != 0 || myPlayer.mySensor == null || myPlayer.mySensor.type() != ComponentType.SATELLITE )
 			return null;
 		
 		// initialize possible jump locations with score 0
