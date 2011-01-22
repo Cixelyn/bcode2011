@@ -31,7 +31,7 @@ public class Utility {
 			player.myRC.setIndicatorString(index, s);
 	}
 	
-//Justin's Go Here
+	//Justin's Go Here
 	
 	
 	/**

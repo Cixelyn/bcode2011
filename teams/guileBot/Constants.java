@@ -6,8 +6,11 @@ import battlecode.common.GameConstants;
 
 
 /**
+ * 
  * Constants, tweak me!
- * @author Max (and maybe a little JVen)
+ * @author Max
+ * @author JVen
+ * @author Cory
  *
  */
 

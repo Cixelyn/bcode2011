@@ -87,8 +87,9 @@ public class ArbiterBehavior extends Behavior{
 		
 		case EQUIPPING:
 			
-			System.out.println(arbiterLoadout);
-			System.out.println(Utility.countComponents(myPlayer.myRC.components()));
+			// System.out ???? -JVen
+			//System.out.println(arbiterLoadout);
+			//System.out.println(Utility.countComponents(myPlayer.myRC.components()));
 			Utility.setIndicator(myPlayer, 1, "EQUIPPING ARBITER");
 			if( Utility.compareComponents(myPlayer, arbiterLoadout) ) {
 				state = ArbiterBuildOrder.SEARCH_AND_DESTROY;
@@ -110,6 +111,7 @@ public class ArbiterBehavior extends Behavior{
 			
 			Mine[] mines = new Mine[64]; int mineIndex = 0;
 			Robot[] enemies = new Robot[64]; int enemyIndex = 0;
+			RobotInfo[] enemyInfos = new RobotInfo[64]; // added by JVen
 			
 			for(int i=objects.length; --i>=0;) {
 				
@@ -119,6 +121,7 @@ public class ArbiterBehavior extends Behavior{
 				
 				if(obj.getTeam()==myPlayer.myOpponent) { 		//Enemy Robot Detected
 					enemies[i] = (Robot)obj; //cast it correctly
+					enemyInfos[i] = myPlayer.mySensor.senseRobotInfo((Robot)obj); // added by JVen
 					enemyIndex++;					
 				}
 				else {					
@@ -131,8 +134,30 @@ public class ArbiterBehavior extends Behavior{
 				}				
 			}
 			
-			
 			Utility.setIndicator(myPlayer, 2, "E:"+enemyIndex+" M:"+mineIndex);
+			
+			
+			
+			// get closest mine
+			
+			int minMineDist = 9999; // sentinel value
+			Mine minMine;
+			Mine m;
+			
+			for ( int i = mines.length ; --i >= 0 ; )
+			{
+				m = mines[i];
+				if ( myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) < minMineDist )
+				{
+					minMine = m;
+					minMineDist = myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation());
+				}
+			}
+			
+			
+			
+			
+			
 			
 			
 			
@@ -163,7 +188,7 @@ public class ArbiterBehavior extends Behavior{
 	
 	
 	public String toString() {
-		return "Arbiter	Behavior";
+		return "ArbiterBehavior";
 	}
 
 }

@@ -46,6 +46,7 @@ public class Actions {
 		
 		
 		// First, lets make sure we are pointed in the correct direction
+		// Also check that a jump is available -JVen
 		if ( !myPlayer.myRC.getDirection().equals(dir) || jumpEngine==-1 )
 		{
 			/*if ( !myPlayer.myMotor.isActive() )
@@ -72,6 +73,58 @@ public class Actions {
 		
 	}
 	
+	/**
+	 * Attempts to make a jump towards a mine while avoiding enemies
+	 * @author JVen
+	 * @param m The mine to jump towards
+	 * @return An int depending on whether the jump was successful or why it was not
+	 */
+	
+	public int jumpToMine(Mine m, RobotInfo[] enemyInfos) throws GameActionException
+	{
+		//TODO is passing RobotInfo[]s expensive?
+		
+		// Get a non-active JumpController, if available
+		int jumpEngine = availableJump();
+		
+		
+		// If we're already near the mine or no jumps are available, return
+		if ( myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) <= 2 || jumpEngine == -1 )
+			return JMP_NOT_YET;
+		
+		// Otherwise, jump towards the mine
+		JumpTable jmp = new JumpTable(myPlayer.myRC.getLocation(),myPlayer.myRC.getLocation().directionTo(m.getLocation()));
+		MapLocation jmpLoc = jmp.nextLoc();
+		
+		
+		boolean enemyNearby;
+		while ( jmpLoc != null )
+		{
+			// check that jmpLoc is closer to the mine and that we can jump there
+			if ( jmpLoc.distanceSquaredTo(m.getLocation()) < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) && canJump(jmpLoc) )
+			{
+				enemyNearby = false;
+				// check if there is any enemy near jmpLoc
+				for ( int i = enemyInfos.length ; --i >= 0 ; )
+				{
+					if ( jmpLoc.distanceSquaredTo(enemyInfos[i].location) <= Utility.maxRange(enemyInfos[i]) )
+					{
+						enemyNearby = true;
+						break;
+					}
+				}
+				if ( !enemyNearby )
+				{
+					myPlayer.myJumps[jumpEngine].jump(jmpLoc);
+					return JMP_SUCCESS;
+				}
+			}
+			jmpLoc = jmp.nextLoc();
+		}
+			
+		return JMP_NOT_POSSIBLE;
+		
+	}
 	
 	/**
 	 * Quick function to do all the checks necessary to ensure that a square is jumpable.
