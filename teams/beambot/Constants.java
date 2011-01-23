@@ -63,28 +63,28 @@ public class Constants
   								ComponentType.RAILGUN,ComponentType.RAILGUN,ComponentType.SMG
   								};
   	
-	public static final ComponentType[] heavyLoadout1 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
-                                 {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-  								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
-  								ComponentType.HARDENED
+	public static final ComponentType[] heavyLoadout1 = new ComponentType[]    // currHeavy % 3 == 1
+	                           {ComponentType.RADAR,ComponentType.JUMP,
+								ComponentType.BEAM,ComponentType.BEAM,
+								ComponentType.PLASMA,ComponentType.PLASMA
+								};
+  	
+	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 2
+                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.JUMP,
+  								ComponentType.SHIELD,
+  								ComponentType.HAMMER,ComponentType.HAMMER,ComponentType.HAMMER,ComponentType.HAMMER
   								};
   	
-	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 1
-                                 {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-  								ComponentType.RAILGUN,ComponentType.BLASTER,
-  								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD
-  								};
-  	
-	public static final ComponentType[] heavyLoadout3 = new ComponentType[]    // currHeavy % 3 == 2  
-  	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-  								ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.SMG,
-  								ComponentType.PLASMA,ComponentType.PLASMA
-  								};
+	public static final ComponentType[] heavyLoadout3 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
+	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
+								ComponentType.HARDENED
+								};
 	
 	public static final ComponentType[] arbiterLoadout = new ComponentType[]
-	                               {ComponentType.SATELLITE,ComponentType.CONSTRUCTOR,
-									ComponentType.JUMP,ComponentType.JUMP,
-									ComponentType.HAMMER};
+                               {ComponentType.SATELLITE,ComponentType.CONSTRUCTOR,
+								ComponentType.JUMP,ComponentType.JUMP,
+								ComponentType.HAMMER};
 	
 	
 }
