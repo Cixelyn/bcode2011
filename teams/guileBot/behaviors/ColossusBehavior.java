@@ -67,6 +67,8 @@ public class ColossusBehavior extends Behavior
 	int numBounces;
 	int numStuck;
 	
+	int maxRange;
+	
 	boolean rallyChanged = false;
 	
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
@@ -91,6 +93,7 @@ public class ColossusBehavior extends Behavior
 				// Decide what kind of heavy I am
 				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
 				
+				maxRange = ComponentType.RAILGUN.range;
 				if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout0 ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout1 ) && num != -1 )
@@ -98,7 +101,10 @@ public class ColossusBehavior extends Behavior
 				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout3 ) && num != -1 )
+				{
+					maxRange = ComponentType.BLASTER.range; // no railguns on this bad boy
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				}
 				return;
 	        	
 			case DETERMINE_SPAWN:
@@ -228,7 +234,7 @@ public class ColossusBehavior extends Behavior
         		enemyInfo = Utility.attackEnemies(myPlayer);
         		
         		// No enemy found
-        		if ( enemyInfo == null || myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) > 25 )
+        		if ( enemyInfo == null || myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) > maxRange )
         		{
         			// enemy is sensed but is far
         			if ( enemyInfo != null )
@@ -317,9 +323,9 @@ public class ColossusBehavior extends Behavior
         		}
         		
         		// Enemy in range, either before or after jump. Enable the micros
-        		if ( enemyInfo != null && myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) <= 25 )
+        		if ( enemyInfo != null && myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) <= maxRange )
         		{
-        			if ( myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) <= 16 )
+        			if ( myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) < maxRange )
         			{
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
