@@ -268,25 +268,25 @@ public class ArbiterBehavior extends Behavior{
         		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],10)) == TerrainTile.OFF_MAP )
 	        	{
         			if ( num % 2 == 0 )
-						rally = (spawn + 6) % 8;
+						rally = (rally + 6) % 8;
 					else
-						rally = (spawn + 2) % 8;
+						rally = (rally + 2) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
         			if ( num % 2 == 0 )
-						rally = (spawn + 1) % 8;
+						rally = (rally + 1) % 8;
 					else
-						rally = (spawn + 7) % 8;
+						rally = (rally + 7) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
         			if ( num % 2 == 0 )
-						rally = (spawn + 7) % 8;
+						rally = (rally + 7) % 8;
 					else
-						rally = (spawn + 1) % 8;
+						rally = (rally + 1) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else
