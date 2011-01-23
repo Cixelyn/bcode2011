@@ -553,7 +553,7 @@ public class RefineryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 1, "SLEEP");
 				Utility.setIndicator(myPlayer, 2, "zzzzzzz");
-				myPlayer.myRC.turnOff();
+				myPlayer.shutdown();
 				return;
     			
     	}

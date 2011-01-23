@@ -377,6 +377,18 @@ public class RobotPlayer implements Runnable {
 	
 	
 	
+	/**
+	 * This functions turns off a robot, while still allowing for proper byte-code counting.
+	 */
+	public void shutdown() {
+		myRC.turnOff();
+		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock(); 	//we need to reset our clock.
+	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * This function swaps the current running behavior of the bot.
