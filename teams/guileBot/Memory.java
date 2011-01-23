@@ -18,7 +18,22 @@ public class Memory {
 	}
 		
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// GAME ROUND MEMORY ///////////////////////////////////////////
+	public static int idxCurrRound = 2;
 	
+	/**
+	 * this function should only ever be called once per game.
+	 * it will get currend round. 
+	 * @return
+	 */
+	public long getCurrRound() {
+		return memory[idxCurrRound];
+	}
+	
+	public void setNextRound(long num) {
+		myRC.setTeamMemory(idxCurrRound, num);
+	}
 	
 	
 	
