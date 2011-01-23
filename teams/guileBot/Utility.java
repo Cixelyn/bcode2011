@@ -683,18 +683,34 @@ public class Utility {
 	
 	
 	/**
-	 * Fast method to compare two components and ensure that they're equal  
-	 * 
+	 * Fast method to compare a robotplayer's component load out and check if it's
+	 * equal to a requested loadout.
+	 * @param player
+	 * @param requestedLoadOut
 	 * @return
 	 */
 	public static boolean compareComponents(RobotPlayer player, int[] requestedLoadOut ) {
-		
-		int[] currentLoadOut = countComponents(player.myRC.components()); 
-		
+		return compareComponents(countComponents(player.myRC.components()),requestedLoadOut);
+	}
+	
+	public static boolean compareComponents(int[] currentLoadOut, ComponentType[] requestedLoadOut) {
+		return compareComponents(currentLoadOut,countComponents(requestedLoadOut));
+	}
+	
+
+	/**
+	 * Overloaded variant of compareComponents that takes in a pre-computed currentLoadOut rather
+	 * than computing it from player.myRC.components().
+	 * @param currentLoadOut
+	 * @param requestedLoadOut
+	 * @return
+	 */
+	public static boolean compareComponents(int[] currentLoadOut, int[] requestedLoadOut ) {
 		for(int i=NUM_COMPONENT_TYPES; --i>=0;) {
 			if(currentLoadOut[i]<requestedLoadOut[i]) return false;
 		}
 		return true;
+		
 	}
 	
 	

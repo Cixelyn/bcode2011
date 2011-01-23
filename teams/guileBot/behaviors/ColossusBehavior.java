@@ -91,13 +91,15 @@ public class ColossusBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				
 				// Decide what kind of heavy I am
-				if (Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout0) ) && num != -1 )
+				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
+				
+				if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout0 ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if (Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout1) ) && num != -1 )
+				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout1 ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if (Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout2) ) && num != -1 )
+				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if (Utility.compareComponents(myPlayer, Utility.countComponents(Constants.heavyLoadout3) ) && num != -1 )
+				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout3 ) && num != -1 )
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				return;
 	        	
