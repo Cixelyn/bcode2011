@@ -165,11 +165,12 @@ public class Actions {
 		boolean enemyNearby;
 		while ( jmpLoc != null )
 		{
-			if ( canJump(jmpLoc) )
+			// also check that we don't jump on a mine
+			if ( canJump(jmpLoc) && myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null )
 			{
 				// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
 				int newDist = jmpLoc.distanceSquaredTo(m.getLocation());
-				if ( (newDist < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) || newDist <= 2) && jmpLoc.distanceSquaredTo(m.getLocation()) > 0 && canJump(jmpLoc) )
+				if ( (newDist < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) || newDist <= 2) && canJump(jmpLoc) )
 				{
 					enemyNearby = false;
 					// check if there is any enemy near jmpLoc
