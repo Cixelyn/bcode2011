@@ -624,11 +624,11 @@ public class Utility {
 					}
 				}
 			}
-			else if (!myPlayer.myRC.getDirection().isDiagonal()) {
+			/*else if (!myPlayer.myRC.getDirection().isDiagonal()) {
 				if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
 					bounce=true;
 				}
-			}
+			}*/
 			if (turnRight) {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 				return 1;
@@ -637,10 +637,10 @@ public class Utility {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
 				return 2;
 			}
-			else if (bounce) {
+/*			else if (bounce) {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
 				return 2;
-			}
+			}*/
 			else if (zigzag==0) { //don't zig or zag, just keep on moving forward
 				
 				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
@@ -652,9 +652,26 @@ public class Utility {
 			}
 			else if (zigzag==1) { //turn 90 degrees left 
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
+				if (!myPlayer.myRC.getDirection().isDiagonal()) {
+					if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
+						while (!myPlayer.myMotor.isActive()) {
+							myPlayer.sleep();
+						}
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+					}
+				}
 			}
 			else if (zigzag==2) { //turn 90 degrees right
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+				if (!myPlayer.myRC.getDirection().isDiagonal()) {
+					if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
+						while (!myPlayer.myMotor.isActive()) {
+							myPlayer.sleep();
+						}
+						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
+					}
+				}
+				
 			}
 			return 0;
 		}
