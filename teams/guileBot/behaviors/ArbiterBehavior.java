@@ -184,7 +184,7 @@ public class ArbiterBehavior extends Behavior{
 			Mine[] mines = new Mine[64]; int mineIndex = 0;
 			Robot[] enemies = new Robot[64]; int enemyIndex = 0;
 			
-			GameObject onTop;
+			Robot onTop;
 			
 			for ( int i = objects.length ; --i >= 0 ; )
 			{
@@ -200,8 +200,8 @@ public class ArbiterBehavior extends Behavior{
 				else if(obj.getRobotLevel()==RobotLevel.MINE)
 				{
 					// Mine Detected
-					onTop = myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND);
-					if ( !badMines.contains(obj.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent()) )
+					onTop = (Robot)myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND);
+					if ( !badMines.contains(obj.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
 					{
 						mines[mineIndex] = (Mine)obj;
 						mineIndex++;
@@ -268,25 +268,25 @@ public class ArbiterBehavior extends Behavior{
         		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],10)) == TerrainTile.OFF_MAP )
 	        	{
         			if ( num % 2 == 0 )
-						rally = (spawn + 6) % 8;
+						rally = (rally + 6) % 8;
 					else
-						rally = (spawn + 2) % 8;
+						rally = (rally + 2) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
         			if ( num % 2 == 0 )
-						rally = (spawn + 1) % 8;
+						rally = (rally + 1) % 8;
 					else
-						rally = (spawn + 7) % 8;
+						rally = (rally + 7) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
         			if ( num % 2 == 0 )
-						rally = (spawn + 7) % 8;
+						rally = (rally + 7) % 8;
 					else
-						rally = (spawn + 1) % 8;
+						rally = (rally + 1) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else
