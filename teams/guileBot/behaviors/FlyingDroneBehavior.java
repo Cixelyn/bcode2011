@@ -181,12 +181,28 @@ public class FlyingDroneBehavior extends Behavior {
     		case FOUND_MINE: {
     			Utility.setIndicator(myPlayer, 0, "found mine");
 				if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) { //someone is on our mine, gonna just look for other ones
-					if (!myPlayer.myMotor.isActive()) {
-						obj=FlyingDroneActions.EXPAND;
-						return;
+					obj=FlyingDroneActions.EXPAND;
+					return;
+				}
+				Robot[] nearbyRobots= myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+				RobotInfo rInfo;
+				for (Robot robot : nearbyRobots) {
+					rInfo=myPlayer.mySensor.senseRobotInfo(robot);
+					if (robot.getTeam().equals(myPlayer.myRC.getTeam()) && rInfo.chassis.equals(Chassis.FLYING)) {
+						currentDirection=Direction.NORTH;
+						for (int i=0;i<8;i++) {
+							if (rInfo.location.equals(currentMine.getLocation().add(currentDirection))) {
+	        					while (myPlayer.myMotor.isActive()) {
+	        						myPlayer.sleep();
+	        					}
+	        					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
+	        					obj=FlyingDroneActions.EXPAND;
+	        					return;
+							}
+						}
 					}
 				}
-				else if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) || (myPlayer.myRC.getLocation().equals(currentMine.getLocation()))) { //i'm right by the mine, build recycler!
+				if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) || (myPlayer.myRC.getLocation().equals(currentMine.getLocation()))) { //i'm right by the mine, build recycler!
     					if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
     						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
     						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
