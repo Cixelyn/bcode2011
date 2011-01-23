@@ -23,6 +23,15 @@ import battlecode.common.*;;
  *     given time, half of which you will be cheesed on, and the other half you will
  *     get owned by a Korean smurf.
  *     
+ *     
+ *     
+ *     Why would you bring up the "Chinese pro scene" and compare it to ICCUP, while completely
+ *     ignoring the Korean pro scene, which makes the "WC3 ""pro"" scene" (yes nested quotes on
+ *     """pro""") look like a bunch of ppl in the middle of nowhere that just happen to be playing
+ *     some old game at the same time. And ICCUP is not the only server to find games.
+ *     The original BNET servers are still active (probably more so than WC3), not to mention
+ *     other ladders like brain clan, etc.. 
+ *     
  *                                                                       
  *                                                                               
  *                                          ..M  .                               
