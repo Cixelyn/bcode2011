@@ -93,16 +93,24 @@ public class ColossusBehavior extends Behavior
 				// Decide what kind of heavy I am
 				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
 				
-				maxRange = ComponentType.RAILGUN.range;
 				if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout0 ) && num != -1 )
+				{
+					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				}
 				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout1 ) && num != -1 )
+				{
+					maxRange = ComponentType.BEAM.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				}
 				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
+				{
+					maxRange = ComponentType.HAMMER.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				}
 				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout3 ) && num != -1 )
 				{
-					maxRange = ComponentType.BLASTER.range; // no railguns on this bad boy
+					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
 				return;
@@ -399,12 +407,12 @@ public class ColossusBehavior extends Behavior
 				num = msg.ints[Messenger.firstData+1];
 				if ( num == 0 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railguns all the way!");
-				else if ( num % 3 == 0 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", smudge safeties off!");
 				else if ( num % 3 == 1 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", $MG$ R 4 N))B$!");
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", prismatic core online!");
 				else if ( num % 3 == 2 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", tr-tr-triple blaster!");
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", rawrrrrrrrr!");
+				else if ( num % 3 == 0 )
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");
 			}
 		}
 	}
