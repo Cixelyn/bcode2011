@@ -65,6 +65,7 @@ public class ColossusBehavior extends Behavior
 	int jump;
 	
 	int numBounces;
+	int numStuck;
 	
 	boolean rallyChanged = false;
 	
@@ -305,10 +306,8 @@ public class ColossusBehavior extends Behavior
 					{
 						// "Can't jump there, somethins in the way"
 						prevLocs.clear();
-						if ( num % 2 == 0 )
-							rally = (rally + 3) % 8;
-						else if ( num % 2 == 1 )
-							rally = (rally + 5) % 8;
+						rally = (3*numStuck) % 8;
+						numStuck++;
 						Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
 						permRally = rally;
 						rallyChanged = true;

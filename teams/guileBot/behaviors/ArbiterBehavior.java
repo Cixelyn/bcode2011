@@ -75,7 +75,10 @@ public class ArbiterBehavior extends Behavior{
 	int spawn = -1;
 	int rally = -1;
 	int num = -1;
+	int numStuck = 0;
 
+	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
+	
 	public ArbiterBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -292,7 +295,25 @@ public class ArbiterBehavior extends Behavior{
         		else
         			Utility.setIndicator(myPlayer, 2, "No mines detected, rallied " + Direction.values()[rally].toString() + ".");
 				
-				myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
+				int jump = myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
+				if ( jump == Actions.JMP_SUCCESS )
+				{
+					// Jumped successfully
+					prevLocs.add(myPlayer.myLoc);
+					if ( prevLocs.size() > Constants.STUCK_JUMPS )
+						prevLocs.pollFirst();
+					
+					// No enemy found before jumping, check again after
+					Utility.attackEnemies(myPlayer);
+				}
+				else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myPlayer.myLoc) < ComponentType.JUMP.range) )
+				{
+					// "Can't jump there, somethins in the way"
+					prevLocs.clear();
+					rally = (3*numStuck) % 8;
+					numStuck++;
+					Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+				}
 				
 			}
 			
