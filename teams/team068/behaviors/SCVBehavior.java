@@ -69,6 +69,7 @@ public class SCVBehavior extends Behavior
 	
 	private enum SCVBuildOrder 
 	{
+		CALCULATE_MEMORY,
 		GET_INITIAL_IDS,
 		WAIT_FOR_ANTENNA,
 		NORMAL_SPAWN,
@@ -86,7 +87,7 @@ public class SCVBehavior extends Behavior
 	
 	final OldNavigation nav = new OldNavigation(myPlayer);
 	
-	SCVBuildOrder obj = SCVBuildOrder.WAIT_FOR_ANTENNA;
+	SCVBuildOrder obj = SCVBuildOrder.CALCULATE_MEMORY;
 	
 	MapLocation hometown = myPlayer.myRC.getLocation();
 	MapLocation unitDock;
@@ -135,6 +136,18 @@ public class SCVBehavior extends Behavior
 		
 		switch (obj)
 		{
+			case CALCULATE_MEMORY:
+				
+				///////////////////////////////////////
+				//Round number calculations
+					long currRound = myPlayer.myMemory.getCurrRound();
+					Utility.printMsg(myPlayer, "Round: "+currRound);
+					myPlayer.myMemory.setNextRound(currRound+1);
+				
+				obj = SCVBuildOrder.WAIT_FOR_ANTENNA;
+				return;
+		
+		
 			
 			case WAIT_FOR_ANTENNA:
 				
