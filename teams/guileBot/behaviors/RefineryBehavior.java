@@ -162,7 +162,8 @@ public class RefineryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = RefineryBuildOrder.EQUIP_ARMOR;
-    			else if ( !arbiterEquipped && currUnit == Constants.ARBITER_TIME )
+    			// uncomment to make ONLY ONE arbiter
+    			/*else if ( !arbiterEquipped && currUnit == Constants.ARBITER_TIME )
     			{
     				// does not count towards currUnit
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
@@ -172,7 +173,8 @@ public class RefineryBehavior extends Behavior
     					babyHeavy = r.getID();
     					obj = RefineryBuildOrder.EQUIP_ARBITER;
     				}
-    			}
+    			}*/
+    			// uncomment to make wraith
     			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
@@ -186,12 +188,25 @@ public class RefineryBehavior extends Behavior
     			else if ( currUnit % 3 == 2 )*/
     			else if ( currUnit == 1 || currUnit % 3 == 2 )
     			{
-    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-    				if ( r != null && r.getID() != babyDrone )
+    				if ( currDrone < Constants.MAX_DRONES )
     				{
-    					Utility.setIndicator(myPlayer, 2, "Equipping drone.");
-    					babyDrone = r.getID();
-    					obj = RefineryBuildOrder.EQUIP_DRONE;
+	    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
+	    				if ( r != null && r.getID() != babyDrone )
+	    				{
+	    					Utility.setIndicator(myPlayer, 2, "Equipping drone.");
+	    					babyDrone = r.getID();
+	    					obj = RefineryBuildOrder.EQUIP_DRONE;
+	    				}
+    				}
+    				else
+    				{
+    					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+        				if ( r != null && r.getID() != babyHeavy )
+        				{
+        					Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
+        					babyHeavy = r.getID();
+        					obj = RefineryBuildOrder.EQUIP_ARBITER;
+        				}
     				}
     			}
     			else
@@ -243,7 +258,7 @@ public class RefineryBehavior extends Behavior
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 						{
 							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currHeavy, null);
 							currHeavy++;
 							obj = RefineryBuildOrder.EQUIP_UNIT;
 						}
@@ -273,7 +288,7 @@ public class RefineryBehavior extends Behavior
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 						{
 							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currHeavy, null);
 							currHeavy++;
 							obj = RefineryBuildOrder.EQUIP_UNIT;
 						}
@@ -303,7 +318,7 @@ public class RefineryBehavior extends Behavior
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 						{
 							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currHeavy, null);
 							currHeavy++;
 							obj = RefineryBuildOrder.EQUIP_UNIT;
 						}
@@ -338,7 +353,7 @@ public class RefineryBehavior extends Behavior
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 						{
 							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_HEAVY, -1, currHeavy, null);
+							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currHeavy, null);
 							currHeavy++;
 							obj = RefineryBuildOrder.EQUIP_UNIT;
 						}
@@ -376,7 +391,7 @@ public class RefineryBehavior extends Behavior
 					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.IN_AIR) )
 					{
 						myPlayer.sleep(); // NECESSARY TO GIVE FLYER TIME TO REALIZE WHO HE IS
-						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, -1, currWraith, null);
+						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currWraith, null);
 						currWraith++;
 						obj = RefineryBuildOrder.EQUIP_UNIT;
 					}
@@ -413,7 +428,7 @@ public class RefineryBehavior extends Behavior
 					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SIGHT, RobotLevel.IN_AIR) )
 					{
 						myPlayer.sleep(); // NECESSARY TO GIVE FLYER TIME TO REALIZE WHO HE IS
-						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM_FLYER, -1, currDrone, null);
+						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currDrone, null);
 						currDrone++;
 						obj = RefineryBuildOrder.EQUIP_UNIT;
 					}
@@ -525,7 +540,12 @@ public class RefineryBehavior extends Behavior
 				else if ( !rHasConstructor )
 				{
 					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.CONSTRUCTOR, RobotLevel.ON_GROUND) )
+					{
+						myPlayer.sleep(); // NECESSARY TO GIVE ARBITER TIME TO REALIZE WHO HE IS
+						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currDrone, null);
+						currDrone++;
 						obj = RefineryBuildOrder.EQUIP_UNIT;
+					}
 				}
     			return;
     			

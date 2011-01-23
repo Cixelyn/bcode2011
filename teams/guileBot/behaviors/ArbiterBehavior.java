@@ -74,6 +74,7 @@ public class ArbiterBehavior extends Behavior{
 	int westEdge = -1;
 	int spawn = -1;
 	int rally = -1;
+	int num = -1;
 
 	public ArbiterBehavior(RobotPlayer player)
 	{
@@ -145,9 +146,19 @@ public class ArbiterBehavior extends Behavior{
 			if ( spawn != -1 )
 			{
 				if ( spawn % 2 == 1 )
-					rally = (spawn + 1) % 8;
+				{
+					if ( num % 2 == 0 )
+						rally = (spawn + 1) % 8;
+					else
+						rally = (spawn + 7) % 8;
+				}
 				else
-					rally = (spawn + 2) % 8;
+				{
+					if ( num % 2 == 0 )
+						rally = (spawn + 2) % 8;
+					else
+						rally = (spawn + 6) % 8;
+				}
 				Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 			}
 			else
@@ -161,10 +172,6 @@ public class ArbiterBehavior extends Behavior{
 		case SEARCH_AND_DESTROY:
 			Utility.setIndicator(myPlayer, 1, "SEARCH_AND_DESTROY");
 			
-			//////// SPIN!!!!!!!
-			if ( !myPlayer.myMotor.isActive() )
-				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
-			
 			
 			//////////////////////////////////////////////////////////////////////////////////
 			// SENSING
@@ -176,6 +183,8 @@ public class ArbiterBehavior extends Behavior{
 			
 			Mine[] mines = new Mine[64]; int mineIndex = 0;
 			Robot[] enemies = new Robot[64]; int enemyIndex = 0;
+			
+			GameObject onTop;
 			
 			for ( int i = objects.length ; --i >= 0 ; )
 			{
@@ -191,7 +200,8 @@ public class ArbiterBehavior extends Behavior{
 				else if(obj.getRobotLevel()==RobotLevel.MINE)
 				{
 					// Mine Detected
-					if ( !badMines.contains(obj.getID()) && myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND) == null )
+					onTop = myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND);
+					if ( !badMines.contains(obj.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent()) )
 					{
 						mines[mineIndex] = (Mine)obj;
 						mineIndex++;
@@ -230,15 +240,17 @@ public class ArbiterBehavior extends Behavior{
 			
 			if ( minMineDist <= 2 && minMineDist > 0 )
 			{
-				while ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				// there is a mine, and it's within building range
+				if ( myPlayer.mySensor.senseObjectAtLocation(minMine.getLocation(), RobotLevel.ON_GROUND) == null && myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+				{
+					Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				}
 			}
 			else if ( minMine != null )
 			{
 				Utility.setIndicator(myPlayer, 2, "Free mine detected!");
-				// there is a mine
+				// there is a mine, but it's away from building range
 				int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
 				if ( jump == Actions.JMP_NOT_POSSIBLE )
 				{
@@ -255,17 +267,26 @@ public class ArbiterBehavior extends Behavior{
 				// Off map rerally code
         		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],10)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 6) % 8;
+        			if ( num % 2 == 0 )
+						rally = (spawn + 6) % 8;
+					else
+						rally = (spawn + 2) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 1) % 8;
+        			if ( num % 2 == 0 )
+						rally = (spawn + 1) % 8;
+					else
+						rally = (spawn + 7) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 7) % 8;
+        			if ( num % 2 == 0 )
+						rally = (spawn + 7) % 8;
+					else
+						rally = (spawn + 1) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else
@@ -276,7 +297,15 @@ public class ArbiterBehavior extends Behavior{
 			}
 			
 			
-			
+			//////// SPIN AND ATTACK
+			RobotInfo enemyInfo = Utility.attackEnemies(myPlayer);
+			if ( !myPlayer.myMotor.isActive() )
+			{
+				if ( enemyInfo != null )
+					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
+				else
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+			}
 			
 			
 			
@@ -288,17 +317,28 @@ public class ArbiterBehavior extends Behavior{
 	}
 
 	
-	public void newComponentCallback(ComponentController[] components) {
+	public void newComponentCallback(ComponentController[] components)
+	{
+		
 	}
 
-	public void newMessageCallback(MsgType type, Message msg) {
+	public void newMessageCallback(MsgType t, Message msg)
+	{
+		if ( t == MsgType.MSG_SEND_NUM )
+		{
+			if ( num == -1 )
+				num = msg.ints[Messenger.firstData+1] - Constants.MAX_DRONES;
+		}
 	}
 
-	public void onDamageCallback(double damageTaken) {
+	public void onDamageCallback(double damageTaken)
+	{
 		Utility.printMsg(myPlayer, "I GOT HIT!  I shouldn't have been hit. :(");
 	}
 
-	public void onWakeupCallback(int lastActiveRound) {		
+	public void onWakeupCallback(int lastActiveRound)
+	{
+		
 	}
 		
 	

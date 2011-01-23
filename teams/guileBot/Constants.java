@@ -39,7 +39,8 @@ public class Constants
 	public static final int HOME_PROXIMITY = 25; // how far from home the SCV considers 'close enough'
 	public static final int SCRAMBLE_TIME = 2100; // when units should rally to a diametrically opposite location
 	public static final int STUCK_JUMPS = 5; // how many jumps a heavy takes in the same area before considering himself stuck
-	public static final int ARBITER_TIME = 1; // how many units come out before the arbiter (NOT A ROUND NUMBER, SILLY!)
+	//public static final int ARBITER_TIME = 1; // how many units come out before the arbiter (NOT A ROUND NUMBER, SILLY!)
+	public static final int MAX_DRONES = 2; // how many drones to make before arbiterssss
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;

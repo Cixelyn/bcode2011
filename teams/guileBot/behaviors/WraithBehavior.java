@@ -343,7 +343,7 @@ public class WraithBehavior extends Behavior
 	@Override
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_SEND_NUM_FLYER )
+		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			if ( num == -1 )
 			{
