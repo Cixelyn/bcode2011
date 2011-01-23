@@ -249,7 +249,42 @@ public class Cartographer {
 				}
 				return;
 			case SATELLITE:
+				if(!seenNorth) {
+					int dist=scanFirstVoid(Direction.NORTH,10);
+					if(dist>=0) {
+						seenNorth = true;
+						coordNorth = myLoc.y-dist;
+						updateMapCenter();
+					}	
+				}
+				if(!seenSouth) {
+					int dist=scanFirstVoid(Direction.SOUTH,10);
+					if(dist>=0) {
+						seenSouth = true;
+						coordSouth = myLoc.y+dist;
+						updateMapCenter();
+					}	
+				}
+				if(!seenWest)  {
+					int dist=scanFirstVoid(Direction.WEST,10);
+					if(dist>=0) {
+						seenWest = true;
+						coordWest = myLoc.x-dist;
+						updateMapCenter();
+					}	
+				}
+				if(!seenEast)  {
+					int dist=scanFirstVoid(Direction.EAST,10);
+					if(dist>=0) {
+						seenEast = true;
+						coordEast = myLoc.x+dist;
+						updateMapCenter();
+					}		
+				}
+	
+				
 			case TELESCOPE:
+				return;
 			case BUILDING_SENSOR:
 				return;
 					
@@ -258,5 +293,20 @@ public class Cartographer {
 				return;
 			}
 	}
+	
+	
+	public int scanFirstVoid(Direction dir, int dist) {
+		if(myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(dir, dist)) == TerrainTile.OFF_MAP) {
+			while(--dist>=0) {
+				if(myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(dir, dist)) == TerrainTile.LAND) {
+					return dist;
+				}
+			}
+		}
+		
+		return -1;
+	}
+	
+	
 
 }
