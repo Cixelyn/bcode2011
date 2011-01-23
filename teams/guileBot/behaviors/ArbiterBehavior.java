@@ -161,13 +161,6 @@ public class ArbiterBehavior extends Behavior{
 		case SEARCH_AND_DESTROY:
 			Utility.setIndicator(myPlayer, 1, "SEARCH_AND_DESTROY");
 			
-			//////// SPIN AND ATTACK
-			if ( !myPlayer.myMotor.isActive() )
-				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
-			Utility.attackEnemies(myPlayer);
-			
-			
-			
 			
 			//////////////////////////////////////////////////////////////////////////////////
 			// SENSING
@@ -284,7 +277,15 @@ public class ArbiterBehavior extends Behavior{
 			}
 			
 			
-			
+			//////// SPIN AND ATTACK
+			RobotInfo enemyInfo = Utility.attackEnemies(myPlayer);
+			if ( !myPlayer.myMotor.isActive() )
+			{
+				if ( enemyInfo != null )
+					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
+				else
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+			}
 			
 			
 			
