@@ -146,9 +146,19 @@ public class ArbiterBehavior extends Behavior{
 			if ( spawn != -1 )
 			{
 				if ( spawn % 2 == 1 )
-					rally = (spawn + 1) % 8;
+				{
+					if ( num % 2 == 0 )
+						rally = (spawn + 1) % 8;
+					else
+						rally = (spawn + 7) % 8;
+				}
 				else
-					rally = (spawn + 2) % 8;
+				{
+					if ( num % 2 == 0 )
+						rally = (spawn + 2) % 8;
+					else
+						rally = (spawn + 6) % 8;
+				}
 				Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 			}
 			else
@@ -257,17 +267,26 @@ public class ArbiterBehavior extends Behavior{
 				// Off map rerally code
         		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],10)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 6) % 8;
+        			if ( num % 2 == 0 )
+						rally = (spawn + 6) % 8;
+					else
+						rally = (spawn + 2) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 1) % 8;
+        			if ( num % 2 == 0 )
+						rally = (spawn + 1) % 8;
+					else
+						rally = (spawn + 7) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],10)) == TerrainTile.OFF_MAP )
 	        	{
-	        		rally = (rally + 7) % 8;
+        			if ( num % 2 == 0 )
+						rally = (spawn + 7) % 8;
+					else
+						rally = (spawn + 1) % 8;
 	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	        	}
         		else
@@ -308,9 +327,7 @@ public class ArbiterBehavior extends Behavior{
 		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			if ( num == -1 )
-			{
-				num = msg.ints[Messenger.firstData+1] - Constants.NUM_DRONES;
-			}
+				num = msg.ints[Messenger.firstData+1] - Constants.MAX_DRONES;
 		}
 	}
 

@@ -83,12 +83,14 @@ public class FactoryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = FactoryBuildOrder.EQUIP_ARMOR;
-    			else if ( !arbiterMade && currUnit == Constants.ARBITER_TIME )
+    			// uncomment me to make ONLY ONE arbiter
+    			/*else if ( !arbiterMade && currUnit == Constants.ARBITER_TIME )
     			{
     				// does not count towards currUnit
     				Utility.setIndicator(myPlayer, 2, "Making arbiter.");
     				obj = FactoryBuildOrder.MAKE_ARBITER;
-    			}
+    			}*/
+    			// uncomment me to make a wraith
     			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
@@ -100,14 +102,22 @@ public class FactoryBehavior extends Behavior
     				}
     			}
     			else if ( currUnit % 3 == 2 )*/
-    			else if ( currUnit == 1 || currUnit % 3 == 2 )
+				else if ( currUnit == 1 || currUnit % 3 == 2 )
     			{
-    				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-    				if ( r != null && r.getID() != babyDrone )
+    				if ( currDrone < Constants.MAX_DRONES )
     				{
-    					Utility.setIndicator(myPlayer, 2, "Halting for drone.");
-    					babyDrone = r.getID();
-    					currDrone++;
+    					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
+        				if ( r != null && r.getID() != babyDrone )
+        				{
+        					Utility.setIndicator(myPlayer, 2, "Halting for drone.");
+        					babyDrone = r.getID();
+        					currDrone++;
+        				}
+    				}
+    				else
+    				{
+    					Utility.setIndicator(myPlayer, 2, "Making arbiter.");
+    					obj = FactoryBuildOrder.MAKE_ARBITER;
     				}
     			}
     			else
@@ -194,6 +204,7 @@ public class FactoryBehavior extends Behavior
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
     			}
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.HEAVY);
+    			currDrone++;
     			obj = FactoryBuildOrder.EQUIP_UNIT;
     			return;
     			

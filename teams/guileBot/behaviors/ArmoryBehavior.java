@@ -92,7 +92,8 @@ public class ArmoryBehavior extends Behavior
     			
     			if ( !armorEquipped && currUnit == 2 )
     				obj = ArmoryBuildOrder.EQUIP_ARMOR;
-    			else if ( !arbiterEquipped && currUnit == Constants.ARBITER_TIME )
+    			// uncomment to make ONLY ONE arbiter
+    			/*else if ( !arbiterEquipped && currUnit == Constants.ARBITER_TIME )
     			{
     				// does not count towards currUnit
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
@@ -102,7 +103,8 @@ public class ArmoryBehavior extends Behavior
     					babyHeavy = r.getID();
     					obj = ArmoryBuildOrder.EQUIP_ARBITER;
     				}
-    			}
+    			}*/
+    			// uncomment to make a wraith
     			/*if ( currUnit == 1 )
     			{
     				Utility.setIndicator(myPlayer, 2, "Making wraith.");
@@ -111,8 +113,21 @@ public class ArmoryBehavior extends Behavior
     			else if ( currUnit % 3 == 2 )*/
     			else if ( currUnit == 1 || currUnit % 3 == 2 )
     			{
-    				Utility.setIndicator(myPlayer, 2, "Making drone.");
-    				obj = ArmoryBuildOrder.MAKE_DRONE;
+    				if ( currDrone < Constants.MAX_DRONES )
+    				{
+	    				Utility.setIndicator(myPlayer, 2, "Making drone.");
+	    				obj = ArmoryBuildOrder.MAKE_DRONE;
+    				}
+    				else
+    				{
+    					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
+        				if ( r != null && r.getID() != babyHeavy )
+        				{
+        					Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
+        					babyHeavy = r.getID();
+        					obj = ArmoryBuildOrder.EQUIP_ARBITER;
+        				}
+    				}
     			}
     			else
     			{
@@ -327,7 +342,10 @@ public class ArmoryBehavior extends Behavior
 				else if ( !rHasSatellite )
 				{
 					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SATELLITE, RobotLevel.ON_GROUND) )
+					{
+						currDrone++;
 						obj = ArmoryBuildOrder.EQUIP_UNIT;
+					}
 				}
     			return;
     			
