@@ -419,6 +419,12 @@ public class Utility {
 				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
 					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
 			}
+			for ( int j = myPlayer.myHammers.length; --j >= 0 ; )
+			{
+				gun =  myPlayer.myHammers[j];
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+			}
 		}
 		return enemyMin1;
 			
@@ -458,6 +464,7 @@ public class Utility {
     	}
 		if ( rockMin != null )
 		{
+			// NEVER WASTE SMGs ON DEBRIS
 			for ( int j = myPlayer.myBlasters.length; --j>=0;)
 			{
 				gun =  myPlayer.myBlasters[j];
@@ -467,6 +474,12 @@ public class Utility {
 			for ( int j = myPlayer.myRailguns.length; --j>=0;)
 			{
 				gun =  myPlayer.myRailguns[j];
+				if ( !gun.isActive() && gun.withinRange(rockMin.location))
+					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
+			}
+			for ( int j = myPlayer.myHammers.length; --j >= 0 ; )
+			{
+				gun =  myPlayer.myHammers[j];
 				if ( !gun.isActive() && gun.withinRange(rockMin.location))
 					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
 			}
