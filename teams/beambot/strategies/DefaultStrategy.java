@@ -25,7 +25,7 @@ public class DefaultStrategy extends Strategy {
 				//Build testing code here.
 				
 				if(ctype==Chassis.HEAVY) {
-					return new ArbiterBehavior(player);
+					return new ColossusBehavior(player);
 				}
 				
 				

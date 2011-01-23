@@ -89,6 +89,7 @@ public class ColossusBehavior extends Behavior
 			case EQUIPPING:	
 
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
+				num = 5;
 				
 				// Decide what kind of heavy I am
 				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
@@ -251,6 +252,14 @@ public class ColossusBehavior extends Behavior
         				Utility.setIndicator(myPlayer, 2, "Enemy on the horizon, rerallying " + Direction.values()[rally].toString() + ".");
         				// THIS IS NOT A PERMANENT RALLY
         				rallyChanged = true;
+        				
+        				if ( !myPlayer.myMotor.isActive() )
+        				{
+	        				if ( (myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateRight()) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
+	        					myPlayer.myMotor.moveForward();
+	        				else if ( myPlayer.myRC.getDirection() != myPlayer.myLoc.directionTo(enemyInfo.location) )
+	        					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
+        				}
         			}
         			else
         			{
@@ -298,6 +307,7 @@ public class ColossusBehavior extends Behavior
 	    	        		permRally = rally;
 	    	        		rallyChanged = true;
 	    	        	}
+        			}
 	            		
 	        			// Try to jump
 	        			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
@@ -329,7 +339,6 @@ public class ColossusBehavior extends Behavior
 							permRally = rally;
 							rallyChanged = true;
 						}
-        			}
         		}
         		
         		// Enemy in range, either before or after jump. Enable the micros
