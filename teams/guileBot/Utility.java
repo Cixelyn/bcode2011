@@ -654,7 +654,7 @@ public class Utility {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
 				if (!myPlayer.myRC.getDirection().isDiagonal()) {
 					if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
-						while (!myPlayer.myMotor.isActive()) {
+						while (myPlayer.myMotor.isActive()) {
 							myPlayer.sleep();
 						}
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
@@ -665,7 +665,7 @@ public class Utility {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 				if (!myPlayer.myRC.getDirection().isDiagonal()) {
 					if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
-						while (!myPlayer.myMotor.isActive()) {
+						while (myPlayer.myMotor.isActive()) {
 							myPlayer.sleep();
 						}
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
