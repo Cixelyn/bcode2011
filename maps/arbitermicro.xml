@@ -10,7 +10,7 @@
 		<symbol team="A" type="RECYCLER" character="R"/>
 		<symbol team="B" type="RECYCLER" character="r"/>
 		<symbol team="A" type="HEAVY" components="SATELLITE,HAMMER,JUMP,JUMP,CONSTRUCTOR" character="U"/>
-		<symbol team="B" type="CONSTRUCTOR" character="u"/>
+		<symbol team="B" type="LIGHT" components="SIGHT,SHIELD,BLASTER,BLASTER" character="u"/>
 	</symbols>
 	<data>
 <![CDATA[
