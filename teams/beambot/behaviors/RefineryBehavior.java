@@ -264,7 +264,7 @@ public class RefineryBehavior extends Behavior
 						}
 					}
     			}
-    			if ( currHeavy % 3 == 0 )
+    			if ( currHeavy % 3 == 1 )
     			{
     				rHasRadar = false;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -285,11 +285,11 @@ public class RefineryBehavior extends Behavior
 					}
     			}
     			
-    			else if ( currHeavy % 3 == 1 )
+    			else if ( currHeavy % 3 == 2 )
     			{
     				rHasRadar = false;
 					rNumShields = 0;
-					rNumBlasters = 0;
+					rNumHammers = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
@@ -297,12 +297,12 @@ public class RefineryBehavior extends Behavior
 							rHasRadar = true;
 						if ( c == ComponentType.SHIELD )
 							rNumShields++;
-						if ( c == ComponentType.BLASTER )
-							rNumBlasters++;
+						if ( c == ComponentType.HAMMER )
+							rNumHammers++;
 					}
-					if ( rNumBlasters < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-					else if ( rNumShields < 5 )
+					if ( rNumHammers < 4 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HAMMER, RobotLevel.ON_GROUND);
+					else if ( rNumShields < 1 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
 					else if ( !rHasRadar )
 					{
@@ -315,7 +315,7 @@ public class RefineryBehavior extends Behavior
 						}
 					}
     			}
-    			else if ( currHeavy % 3 == 2 )
+    			else if ( currHeavy % 3 == 0 )
     			{
 					rHasRadar = false;
 					rNumSMGs = 0;
