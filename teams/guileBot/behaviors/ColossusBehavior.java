@@ -317,7 +317,7 @@ public class ColossusBehavior extends Behavior
         		}
         		
         		// Enemy in range, either before or after jump. Enable the micros
-        		if ( enemyInfo != null )
+        		if ( enemyInfo != null && myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) <= 25 )
         		{
         			if ( myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) <= 16 )
         			{
