@@ -422,8 +422,8 @@ public class Utility {
 			for ( int j = myPlayer.myHammers.length; --j >= 0 ; )
 			{
 				gun =  myPlayer.myHammers[j];
-				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
-					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location) && enemyMin1.robot.getRobotLevel() == RobotLevel.IN_AIR )
+					gun.attackSquare(enemyMin1.location, RobotLevel.IN_AIR);
 			}
 		}
 		return enemyMin1;
@@ -480,8 +480,8 @@ public class Utility {
 			for ( int j = myPlayer.myHammers.length; --j >= 0 ; )
 			{
 				gun =  myPlayer.myHammers[j];
-				if ( !gun.isActive() && gun.withinRange(rockMin.location))
-					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
+				if ( !gun.isActive() && gun.withinRange(rockMin.location) && rockMin.robot.getRobotLevel() == RobotLevel.IN_AIR )
+					gun.attackSquare(rockMin.location, RobotLevel.IN_AIR);
 			}
 			return rockMin.location;
 		}

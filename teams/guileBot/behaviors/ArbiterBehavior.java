@@ -184,7 +184,7 @@ public class ArbiterBehavior extends Behavior{
 			Mine[] mines = new Mine[64]; int mineIndex = 0;
 			Robot[] enemies = new Robot[64]; int enemyIndex = 0;
 			
-			GameObject onTop;
+			Robot onTop;
 			
 			for ( int i = objects.length ; --i >= 0 ; )
 			{
@@ -200,8 +200,8 @@ public class ArbiterBehavior extends Behavior{
 				else if(obj.getRobotLevel()==RobotLevel.MINE)
 				{
 					// Mine Detected
-					onTop = myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND);
-					if ( !badMines.contains(obj.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent()) )
+					onTop = (Robot)myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND);
+					if ( !badMines.contains(obj.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
 					{
 						mines[mineIndex] = (Mine)obj;
 						mineIndex++;
