@@ -252,7 +252,9 @@ public class ArmoryBehavior extends Behavior
 						if ( c == ComponentType.JUMP )
 							rNumJumps++;
 					}
-					if ( rNumJumps < 2 )
+					if ( rNumJumps < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND);
+					else if ( rNumJumps < 2 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{

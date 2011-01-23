@@ -39,7 +39,7 @@ public class DefaultBehavior extends Behavior
 			{
 				myPlayer.swapBehavior(new WraithBehavior(myPlayer));
 			}
-			else if ( c.type() == ComponentType.SHIELD && myPlayer.myRC.getChassis() == Chassis.HEAVY )
+			else if ( c.type() == ComponentType.RADAR && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 			{
 				myPlayer.swapBehavior(new ColossusBehavior(myPlayer));
 			}
