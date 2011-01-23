@@ -264,26 +264,16 @@ public class RefineryBehavior extends Behavior
 						}
 					}
     			}
-    			else if ( currHeavy % 3 == 0 )
+    			if ( currHeavy % 3 == 0 )
     			{
-					rHasRadar = false;
-					rNumSMGs = 0;
-					rNumShields = 0;
+    				rHasRadar = false;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
 						if ( c == ComponentType.RADAR )
 							rHasRadar = true;
-						if ( c == ComponentType.SMG )
-							rNumSMGs++;
-						if ( c == ComponentType.SHIELD )
-							rNumShields++;
 					}
-					if ( rNumSMGs < 3 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-					else if ( rNumShields < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-					else if ( !rHasRadar )
+					if ( !rHasRadar )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
 						{
@@ -294,6 +284,7 @@ public class RefineryBehavior extends Behavior
 						}
 					}
     			}
+    			
     			else if ( currHeavy % 3 == 1 )
     			{
     				rHasRadar = false;
@@ -326,8 +317,7 @@ public class RefineryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 2 )
     			{
-    				rHasRadar = false;
-    				rNumBlasters = 0;
+					rHasRadar = false;
 					rNumSMGs = 0;
 					rNumShields = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -335,16 +325,12 @@ public class RefineryBehavior extends Behavior
 						c = rInfo.components[j];
 						if ( c == ComponentType.RADAR )
 							rHasRadar = true;
-						if ( c == ComponentType.BLASTER )
-							rNumBlasters++;
 						if ( c == ComponentType.SMG )
 							rNumSMGs++;
 						if ( c == ComponentType.SHIELD )
 							rNumShields++;
 					}
-					if ( rNumBlasters < 3 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BLASTER, RobotLevel.ON_GROUND);
-					else if ( rNumSMGs < 1 )
+					if ( rNumSMGs < 3 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
 					else if ( rNumShields < 1 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);

@@ -41,6 +41,7 @@ public class ArmoryBehavior extends Behavior
 	boolean rHasSatellite;
 	int rNumJumps;
 	int rNumPlasma;
+	int rNumBeams;
 	
 	double minFluxToBuild;
 	
@@ -196,7 +197,7 @@ public class ArmoryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 3 == 0 ) // currHeavy == 0 case is identical
+    			if ( currHeavy == 0 )
     			{
 					rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -206,6 +207,34 @@ public class ArmoryBehavior extends Behavior
 							rNumJumps++;
 					}
 					if ( rNumJumps < 1 )
+					{
+						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
+						{
+							currHeavy++;
+							obj = ArmoryBuildOrder.EQUIP_UNIT;
+						}
+					}
+    			}
+    			else if ( currHeavy % 3 == 0 )
+    			{
+    				rNumPlasma = 0;
+    				rNumBeams = 0;
+    				rNumJumps = 0;
+					for ( int j = rInfo.components.length ; --j >= 0 ; )
+					{
+						c = rInfo.components[j];
+						if ( c == ComponentType.PLASMA )
+							rNumPlasma++;
+						if ( c == ComponentType.BEAM )
+							rNumBeams++;
+						if ( c == ComponentType.JUMP )
+							rNumJumps++;
+					}
+					if ( rNumPlasma < 2 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+					else if ( rNumBeams < 2 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BEAM, RobotLevel.ON_GROUND);
+					else if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -234,19 +263,14 @@ public class ArmoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 2 )
     			{
-    				rNumPlasma = 0;
-    				rNumJumps = 0;
+					rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
-						if ( c == ComponentType.PLASMA )
-							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
 							rNumJumps++;
 					}
-					if ( rNumPlasma < 2 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
-					else if ( rNumJumps < 1 )
+					if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -255,6 +279,7 @@ public class ArmoryBehavior extends Behavior
 						}
 					}
     			}
+    			
     			return;
     			
     		case EQUIP_ARMOR:
