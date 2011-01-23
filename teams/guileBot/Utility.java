@@ -654,7 +654,7 @@ public class Utility {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft());
 				if (!myPlayer.myRC.getDirection().isDiagonal()) {
 					if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
-						while (!myPlayer.myMotor.isActive()) {
+						while (myPlayer.myMotor.isActive()) {
 							myPlayer.sleep();
 						}
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
@@ -665,7 +665,7 @@ public class Utility {
 				myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight());
 				if (!myPlayer.myRC.getDirection().isDiagonal()) {
 					if (myPlayer.myRC.senseTerrainTile(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection(),3)).equals(TerrainTile.OFF_MAP)) {
-						while (!myPlayer.myMotor.isActive()) {
+						while (myPlayer.myMotor.isActive()) {
 							myPlayer.sleep();
 						}
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateLeft().rotateLeft().rotateLeft());
@@ -713,34 +713,18 @@ public class Utility {
 	
 	
 	/**
-	 * Fast method to compare a robotplayer's component load out and check if it's
-	 * equal to a requested loadout.
-	 * @param player
-	 * @param requestedLoadOut
+	 * Fast method to compare two components and ensure that they're equal  
+	 * 
 	 * @return
 	 */
 	public static boolean compareComponents(RobotPlayer player, int[] requestedLoadOut ) {
-		return compareComponents(countComponents(player.myRC.components()),requestedLoadOut);
-	}
-	
-	public static boolean compareComponents(int[] currentLoadOut, ComponentType[] requestedLoadOut) {
-		return compareComponents(currentLoadOut,countComponents(requestedLoadOut));
-	}
-	
-
-	/**
-	 * Overloaded variant of compareComponents that takes in a pre-computed currentLoadOut rather
-	 * than computing it from player.myRC.components().
-	 * @param currentLoadOut
-	 * @param requestedLoadOut
-	 * @return
-	 */
-	public static boolean compareComponents(int[] currentLoadOut, int[] requestedLoadOut ) {
+		
+		int[] currentLoadOut = countComponents(player.myRC.components()); 
+		
 		for(int i=NUM_COMPONENT_TYPES; --i>=0;) {
 			if(currentLoadOut[i]<requestedLoadOut[i]) return false;
 		}
 		return true;
-		
 	}
 	
 	
