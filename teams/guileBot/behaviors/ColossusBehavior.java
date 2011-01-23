@@ -60,6 +60,8 @@ public class ColossusBehavior extends Behavior
 	int westEdge = -1;
 	int spawn = -1;
 	int rally = -1;
+	int permRally = -1;
+	int timeOffPerm = 0;
 	int jump;
 	
 	int numBounces;
@@ -164,6 +166,7 @@ public class ColossusBehavior extends Behavior
 					rally = (2 * num) % 8;
 					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
+				permRally = rally;
 				obj = ColossusBuildOrder.ADVANCE;
 				return;
 				
@@ -202,6 +205,7 @@ public class ColossusBehavior extends Behavior
 								
 								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
 								Utility.setIndicator(myPlayer, 2, "I'm pretty sure the center is " + Direction.values()[rally].toString() + ", rerallying.");
+								permRally = rally;
 								rallyChanged = true;
 								break;
 								
@@ -209,6 +213,7 @@ public class ColossusBehavior extends Behavior
 								
 								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
 								Utility.setIndicator(myPlayer, 2, "I KNOW the center is " + Direction.values()[rally].toString() + ", rerallying.");
+								permRally = rally;
 								rallyChanged = true;
 								break;
 						}
@@ -219,9 +224,17 @@ public class ColossusBehavior extends Behavior
         		enemyInfo = Utility.attackEnemies(myPlayer);
         		
         		// No enemy found
-        		if ( enemyInfo == null )
+        		if ( enemyInfo == null || myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) > 25 )
         		{
-        			
+        			// enemy is sensed but is far
+        			if ( enemyInfo != null )
+        			{
+        				Utility.setIndicator(myPlayer, 2, "Enemy on the horizon, rerallying " + Direction.values()[rally].toString() + ".");
+        				rally = myPlayer.myLoc.directionTo(enemyInfo.location).ordinal();
+        				// THIS IS NOT A PERMANENT RALLY
+        				rallyChanged = true;
+        			}
+        				
         			// Off map rerally code
             		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
     	        	{
@@ -239,6 +252,7 @@ public class ColossusBehavior extends Behavior
     	        		}
     	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
     	        		numBounces++;
+    	        		permRally = rally;
     	        		rallyChanged = true;
     	        	}
             		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
@@ -250,6 +264,7 @@ public class ColossusBehavior extends Behavior
     	        			rally = (rally + 7) % 8;
     	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
     	        		numBounces++;
+    	        		permRally = rally;
     	        		rallyChanged = true;
     	        	}
             		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
@@ -261,6 +276,7 @@ public class ColossusBehavior extends Behavior
     	        			rally = (rally + 1) % 8;
     	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
     	        		numBounces++;
+    	        		permRally = rally;
     	        		rallyChanged = true;
     	        	}
             		
@@ -272,6 +288,14 @@ public class ColossusBehavior extends Behavior
 						prevLocs.add(myPlayer.myLoc);
 						if ( prevLocs.size() > Constants.STUCK_JUMPS )
 							prevLocs.pollFirst();
+						
+						// check if we're pursuing a non-permanent rally
+						timeOffPerm++;
+						if ( timeOffPerm >= Constants.OLD_NEWS )
+						{
+							rally = permRally;
+							timeOffPerm = 0;
+						}
 						
 						// No enemy found before jumping, check again after
 						enemyInfo = Utility.attackEnemies(myPlayer);
@@ -285,6 +309,7 @@ public class ColossusBehavior extends Behavior
 						else if ( num % 2 == 1 )
 							rally = (rally + 5) % 8;
 						Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+						permRally = rally;
 						rallyChanged = true;
 					}
         		}
