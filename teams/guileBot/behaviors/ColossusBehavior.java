@@ -359,7 +359,7 @@ public class ColossusBehavior extends Behavior
 
 	public void newMessageCallback(MsgType t, Message msg)
 	{
-		if ( t == MsgType.MSG_SEND_NUM_HEAVY )
+		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			if ( num == -1 )
 			{

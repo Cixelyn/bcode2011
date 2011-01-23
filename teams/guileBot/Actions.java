@@ -166,7 +166,7 @@ public class Actions {
 		while ( jmpLoc != null )
 		{
 			// also check that we don't jump on a mine
-			if ( canJump(jmpLoc) && myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null )
+			if ( canJump(jmpLoc) ) //&& myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null ) // uncomment me to avoid stepping on mines
 			{
 				// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
 				int newDist = jmpLoc.distanceSquaredTo(m.getLocation());

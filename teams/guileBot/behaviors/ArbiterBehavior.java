@@ -74,6 +74,7 @@ public class ArbiterBehavior extends Behavior{
 	int westEdge = -1;
 	int spawn = -1;
 	int rally = -1;
+	int num = -1;
 
 	public ArbiterBehavior(RobotPlayer player)
 	{
@@ -297,17 +298,30 @@ public class ArbiterBehavior extends Behavior{
 	}
 
 	
-	public void newComponentCallback(ComponentController[] components) {
+	public void newComponentCallback(ComponentController[] components)
+	{
+		
 	}
 
-	public void newMessageCallback(MsgType type, Message msg) {
+	public void newMessageCallback(MsgType t, Message msg)
+	{
+		if ( t == MsgType.MSG_SEND_NUM )
+		{
+			if ( num == -1 )
+			{
+				num = msg.ints[Messenger.firstData+1] - Constants.NUM_DRONES;
+			}
+		}
 	}
 
-	public void onDamageCallback(double damageTaken) {
+	public void onDamageCallback(double damageTaken)
+	{
 		Utility.printMsg(myPlayer, "I GOT HIT!  I shouldn't have been hit. :(");
 	}
 
-	public void onWakeupCallback(int lastActiveRound) {		
+	public void onWakeupCallback(int lastActiveRound)
+	{
+		
 	}
 		
 	
