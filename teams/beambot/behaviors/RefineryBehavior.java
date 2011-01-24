@@ -235,7 +235,7 @@ public class RefineryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy == 0 )
+    			if ( currHeavy % 3 == 0 )
     			{
 					rHasRadar = false;
 					rNumSMGs = 0;
@@ -265,7 +265,7 @@ public class RefineryBehavior extends Behavior
 						}
 					}
     			}
-    			if ( currHeavy % 3 == 1 )
+    			else if ( currHeavy % 3 == 1 )
     			{
     				rHasRadar = false;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -285,42 +285,10 @@ public class RefineryBehavior extends Behavior
 						}
 					}
     			}
-    			
     			else if ( currHeavy % 3 == 2 )
-    			{
-    				rHasRadar = false;
-					rNumShields = 0;
-					rNumHammers = 0;
-					for ( int j = rInfo.components.length ; --j >= 0 ; )
-					{
-						c = rInfo.components[j];
-						if ( c == ComponentType.RADAR )
-							rHasRadar = true;
-						if ( c == ComponentType.SHIELD )
-							rNumShields++;
-						if ( c == ComponentType.HAMMER )
-							rNumHammers++;
-					}
-					if ( rNumHammers < 4 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HAMMER, RobotLevel.ON_GROUND);
-					else if ( rNumShields < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-					else if ( !rHasRadar )
-					{
-						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )
-						{
-							myPlayer.sleep(); // NECESSARY TO GIVE HEAVY TIME TO REALIZE WHO HE IS
-							myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currHeavy, null);
-							currHeavy++;
-							obj = RefineryBuildOrder.EQUIP_UNIT;
-						}
-					}
-    			}
-    			else if ( currHeavy % 3 == 0 )
     			{
 					rHasRadar = false;
 					rNumSMGs = 0;
-					rNumShields = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
@@ -328,13 +296,9 @@ public class RefineryBehavior extends Behavior
 							rHasRadar = true;
 						if ( c == ComponentType.SMG )
 							rNumSMGs++;
-						if ( c == ComponentType.SHIELD )
-							rNumShields++;
 					}
 					if ( rNumSMGs < 3 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
-					else if ( rNumShields < 1 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
 					else if ( !rHasRadar )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )

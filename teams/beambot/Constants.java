@@ -68,18 +68,12 @@ public class Constants
 	                           {ComponentType.RADAR,ComponentType.JUMP,
 								ComponentType.BEAM,ComponentType.BEAM,
 								ComponentType.PLASMA,ComponentType.PLASMA
-								};
+	                            };
   	
-	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 2
-                               {ComponentType.RADAR,ComponentType.JUMP,ComponentType.JUMP,
-  								ComponentType.SHIELD,
-  								ComponentType.HAMMER,ComponentType.HAMMER,ComponentType.HAMMER,ComponentType.HAMMER
-  								};
-  	
-	public static final ComponentType[] heavyLoadout3 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
-	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
+	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
+	                           {ComponentType.RADAR,ComponentType.JUMP,
 								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.HARDENED
+								ComponentType.PLASMA,ComponentType.PLASMA
 								};
 	
 	public static final ComponentType[] arbiterLoadout = new ComponentType[]

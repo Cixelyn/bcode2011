@@ -159,7 +159,7 @@ public class FactoryBehavior extends Behavior
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
     			}
     			Utility.buildChassis(myPlayer, myPlayer.myRC.getDirection(), Chassis.HEAVY);
-    			if ( currHeavy == 0 )
+    			if ( currHeavy % 3 == 0 )
     			{
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
@@ -170,12 +170,7 @@ public class FactoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 2 )
     			{
-    				
-    			}
-    			else if ( currHeavy % 3 == 0 )
-    			{
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
-    				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HARDENED, RobotLevel.ON_GROUND);
     			}
     			currHeavy++;
     			obj = FactoryBuildOrder.EQUIP_UNIT;

@@ -91,7 +91,6 @@ public class ColossusBehavior extends Behavior
 			case EQUIPPING:	
 
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
-				num = 5;
 				
 				// Decide what kind of heavy I am
 				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
@@ -107,11 +106,6 @@ public class ColossusBehavior extends Behavior
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
 				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
-				{
-					maxRange = ComponentType.HAMMER.range;
-					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				}
-				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout3 ) && num != -1 )
 				{
 					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
@@ -428,13 +422,11 @@ public class ColossusBehavior extends Behavior
 			if ( num == -1 )
 			{
 				num = msg.ints[Messenger.firstData+1];
-				if ( num == 0 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railguns all the way!");
+				if ( num % 3 == 0 )
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railgun all the way!");
 				else if ( num % 3 == 1 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", prismatic core online!");
 				else if ( num % 3 == 2 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", rawrrrrrrrr!");
-				else if ( num % 3 == 0 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");
 			}
 		}
