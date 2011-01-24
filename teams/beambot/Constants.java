@@ -20,7 +20,7 @@ public class Constants
 	//Debug Flags
 	public static final boolean DEBUG = true;
 	public static final boolean DEBUG_BYTECODE_OVERFLOW = true;
-	public static final boolean DEBUG_TO_FILE = true;
+	public static final boolean DEBUG_TO_FILE = false;
 	
 	public static final boolean CUSTOM_INDICATORS = false;
 	public static final String INDICATOR0 = "GGGGGGGGGGGGGGGGGGG"; // -____-;;   -JVen
@@ -42,7 +42,7 @@ public class Constants
 	//public static final int ARBITER_TIME = 1; // how many units come out before the arbiter (NOT A ROUND NUMBER, SILLY!)
 	public static final int MAX_DRONES = 2; // how many drones to make before arbiterssss
 	public static final int OLD_NEWS = 2; // how many jumps a colossus should pursue a non-permanent rally
-	public static final int REBUILD_TIME = 1000; // how many rounds before considering building factory/armory
+	public static final int REBUILD_TIME = 1000; // how many rounds an arbiter must be alive before considering building factory/armory
 	public static final double MAD_BANK = 1000; // how much money to have before building factory/armory
 	
 	//Max's Go here
