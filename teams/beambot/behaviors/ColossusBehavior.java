@@ -353,9 +353,7 @@ public class ColossusBehavior extends Behavior
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
         				{
-	        				if ( (myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
-	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateLeft()
-	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateRight() )
+	        				if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
 	        						&& myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite())
 	        						&& myPlayer.myLoc.add(myPlayer.myRC.getDirection().opposite()).distanceSquaredTo(enemyInfo.location) <= maxRange 
 	        						&& jump != Actions.JMP_SUCCESS )
@@ -369,9 +367,7 @@ public class ColossusBehavior extends Behavior
         				Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
         				if ( !myPlayer.myMotor.isActive() )
         				{
-	        				if ( (myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
-	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateLeft()
-	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateRight())
+	        				if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
 	        						&& myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())
 	        						&& jump != Actions.JMP_SUCCESS )
 	        					myPlayer.myMotor.moveForward();
