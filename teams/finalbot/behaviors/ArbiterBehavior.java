@@ -69,6 +69,7 @@ public class ArbiterBehavior extends Behavior{
 	private MapStoreBoolean badMines = new MapStoreBoolean();
 	
 	MapLocation motherLoc;
+	GameObject motherObj;
 	int motherID;
 	
 	MapLocation refineryLoc;
@@ -206,11 +207,15 @@ public class ArbiterBehavior extends Behavior{
 				}
 				
 				// Sense if motherLoc is in range
-				if ( shouldRebuild == 0 && motherLoc != null && myPlayer.mySensor.canSenseSquare(motherLoc) && myPlayer.mySensor.senseObjectAtLocation(motherLoc, RobotLevel.ON_GROUND).getID() != motherID )
+				if ( shouldRebuild == 0 && motherLoc != null && myPlayer.mySensor.canSenseSquare(motherLoc) )
 				{
-					// mother refinery destroyed!!
-					Utility.setIndicator(myPlayer, 0, "THE MOTHER REFINERY WAS DESTROYED! REBUILD!");
-					shouldRebuild = 1;
+					motherObj = myPlayer.mySensor.senseObjectAtLocation(motherLoc, RobotLevel.ON_GROUND);
+					if ( motherObj == null || motherObj.getID() != motherID )
+					{
+						// mother refinery destroyed!!
+						Utility.setIndicator(myPlayer, 0, "THE MOTHER REFINERY WAS DESTROYED! REBUILD!");
+						shouldRebuild = 1;
+					}
 				}
 				
 				//////////////////////////////////////////////////////////////////////////////////
@@ -294,15 +299,15 @@ public class ArbiterBehavior extends Behavior{
 					{
 						Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+						// rebuild main if we should
+						if ( shouldRebuild == 1 )
+						{
+							Utility.setIndicator(myPlayer, 0, "");
+							refineryLoc = minMine.getLocation();
+							state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
+						}
 						minMine = null;
 						lastMineCapped = 0;
-					}
-					// rebuild main if we should
-					if ( shouldRebuild == 1 )
-					{
-						Utility.setIndicator(myPlayer, 0, "");
-						refineryLoc = minMine.getLocation();
-						state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
 					}
 				}
 				else if ( minMine != null )
@@ -613,6 +618,7 @@ public class ArbiterBehavior extends Behavior{
 				num = msg.ints[Messenger.firstData+1] - Constants.MAX_DRONES;
 				motherLoc = msg.locations[Messenger.firstData];
 				motherID = msg.ints[Messenger.firstData];
+				myPlayer.myMessenger.toggleReceive(false);
 			}
 		}
 	}

@@ -443,6 +443,7 @@ public class ColossusBehavior extends Behavior
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", prismatic core online!");
 				else if ( num % 3 == 2 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");
+				myPlayer.myMessenger.toggleReceive(false);
 			}
 		}
 	}

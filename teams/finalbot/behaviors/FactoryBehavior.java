@@ -110,7 +110,7 @@ public class FactoryBehavior extends Behavior
     				if ( currDrone < Constants.MAX_DRONES )
     				{
     					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-        				if ( r != null && r.getID() != babyDrone )
+        				if ( r != null && r.getID() != babyDrone && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() > myPlayer.myRC.getRobot().getID() )
         				{
         					Utility.setIndicator(myPlayer, 2, "Halting for drone.");
         					babyDrone = r.getID();
@@ -233,8 +233,8 @@ public class FactoryBehavior extends Behavior
     							{
     								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
     								unitDock = rInfo.location;
-    								currDrone = 0;
-    								currHeavy = 0;
+    								currDrone = 5;
+    								currHeavy = 10;
     								obj = FactoryBuildOrder.WAIT_FOR_DOCK;
     								return;
     							}
