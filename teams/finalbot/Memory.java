@@ -20,7 +20,7 @@ public class Memory {
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// GAME ROUND MEMORY ///////////////////////////////////////////
-	public static int idxCurrRound = 2;
+	public static int idxCurrRound = 0;
 	
 	/**
 	 * this function should only ever be called once per game.
@@ -34,6 +34,41 @@ public class Memory {
 	public void setNextRound(long num) {
 		myRC.setTeamMemory(idxCurrRound, num);
 	}
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// NUMBER OF GUNS //////////////////////////////////////////////
+	public static int idxNumGuns = 1; //all the way up to 31.
+	
+	
+	public void setNumGuns(int index, int smgs, int blasters, int railguns, int beams, int hammers) {
+		myRC.setTeamMemory(index, 
+			smgs &
+			blasters<<8 &
+			railguns<<16 &
+			beams<<32 &
+			hammers<<40
+		);
+	}
+
+	
+	public int[] getMaxGuns() {
+		
+		int smgs, blasters, railguns, beams, hammers;
+		smgs=blasters=railguns=beams=hammers=0;
+		
+		
+		
+		return new int[]{smgs,blasters,railguns,beams,hammers};
+		
+		
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	
