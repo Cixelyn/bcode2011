@@ -255,6 +255,8 @@ public class ArmoryBehavior extends Behavior
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
+						if ( c == ComponentType.PLASMA )
+							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
 							rNumJumps++;
 					}
