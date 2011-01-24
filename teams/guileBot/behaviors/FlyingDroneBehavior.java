@@ -161,6 +161,17 @@ public class FlyingDroneBehavior extends Behavior {
     			if (initialDirection==null) {
     				initialDirection=myPlayer.myRC.getDirection();
     			}
+    			Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			RobotInfo rInfo;
+    			for (Robot robot: nearbyRobots) {
+    				if (robot.getTeam().equals(myPlayer.myOpponent)) {
+    					rInfo=myPlayer.mySensor.senseRobotInfo(robot);
+    					if (rInfo.chassis.equals(Chassis.HEAVY) || rInfo.chassis.equals(Chassis.MEDIUM)) {
+    						obj=FlyingDroneActions.RUN_AWAY;
+    						return;
+    					}
+    				}
+    			}
     			if (!myPlayer.myMotor.isActive()) {
     				Mine[] detectedMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
         			for (Mine mine : detectedMines) { //look for mines, if we find one, lets go get it
