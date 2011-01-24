@@ -18,6 +18,7 @@ public final class JumpTable {
 	private final boolean isVertical;
 	private final int currX;
 	private final int currY;
+	private final MapLocation myLoc;
 
 	private int idx; //This is the current index we're checking
 	
@@ -27,14 +28,15 @@ public final class JumpTable {
 	 * @param dir
 	 */
 	public JumpTable(MapLocation loc, Direction dir) {
+		myLoc=loc;
 		dx = dir.dx;
 		dy = dir.dy;
 		isDiagonal = dir.isDiagonal();
 		isVertical = (dy!=0);
 		isOmni = (dir==Direction.OMNI);
 		
-		currX = loc.x;
-		currY = loc.y;
+		currX = myLoc.x;
+		currY = myLoc.y;
 		
 		//initialize our index
 		idx = -1;
@@ -64,7 +66,7 @@ public final class JumpTable {
 				case 2:
 					xC = 1; yC = 0; break;
 				case 3:
-					xC = 1; yC = -1; break;
+					xC = 1; yC = 1; break;
 				case 4:
 					xC = 0; yC = 1; break;
 				case 5:
@@ -73,11 +75,13 @@ public final class JumpTable {
 					xC = -1; yC = 0; break;
 				case 7:
 					xC = -1; yC = -1; break;
+				
+				
 				default:
 					return null;
 			}
 			
-			return new MapLocation(currX+xC*dx, currY+yC*dy);
+			return new MapLocation(currX+xC, currY+yC);
 		}
 		
 		//TODO add a modulus operation that allows for the jump tables to changed based on modulus operations
@@ -183,6 +187,7 @@ public final class JumpTable {
 			
 			switch(idx)
 			{
+			
 				case 0:
 					dirVec=4; zeroVec=0; break;
 				case 1:
@@ -249,4 +254,5 @@ public final class JumpTable {
 				return new MapLocation(currX+dirVec*dx, currY+zeroVec);	
 		}
 	}
+	
 }

@@ -89,6 +89,8 @@ public class ArbiterBehavior extends Behavior{
 
 	int lastMineCapped = 0;
 	
+	boolean inMines;
+	
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
 	public ArbiterBehavior(RobotPlayer player)
@@ -195,7 +197,7 @@ public class ArbiterBehavior extends Behavior{
 				
 				Utility.setIndicator(myPlayer, 1, "EXPAND");
 				
-				
+				lastMineCapped++;
 				// Clear badmines if you haven't capped any in a while
 				if ( lastMineCapped > Constants.FORGET_BAD_MINES )
 				{
@@ -216,6 +218,7 @@ public class ArbiterBehavior extends Behavior{
 				
 				Robot onTop;
 				
+				inMines = false; // check if minMine is in mines
 				for ( int i = objects.length ; --i >= 0 ; )
 				{
 					
@@ -235,6 +238,8 @@ public class ArbiterBehavior extends Behavior{
 						if ( !badMines.at(mineLoc) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
 						{
 							mines[mineIndex] = (Mine)obj;
+							if ( ((Mine)obj).equals(minMine) )
+								inMines = true;
 							mineIndex++;
 						}
 					}
@@ -244,8 +249,10 @@ public class ArbiterBehavior extends Behavior{
 					}
 					
 				}
+				if ( !inMines )
+					minMine = null; // if we've lost minMine, reset it
 				
-				Utility.setIndicator(myPlayer, 0, "Number of enemies:"+enemyIndex+", Number of good mines:"+mineIndex);
+				//Utility.setIndicator(myPlayer, 0, "Number of enemies:"+enemyIndex+", Number of good mines:"+mineIndex);
 				
 				// fill in enemyInfos
 				
@@ -273,6 +280,8 @@ public class ArbiterBehavior extends Behavior{
 				
 				if ( minMineDist <= 2 && minMineDist > 0 )
 				{
+					Utility.setIndicator(myPlayer, 2, "Building!!");
+					Utility.setIndicator(myPlayer, 0, "Direction to mine: " + myPlayer.myLoc.directionTo(minMine.getLocation()).toString());
 					// there is a mine, and it's within building range
 					if ( myPlayer.mySensor.senseObjectAtLocation(minMine.getLocation(), RobotLevel.ON_GROUND) == null && myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
 					{
@@ -292,6 +301,7 @@ public class ArbiterBehavior extends Behavior{
 				else if ( minMine != null )
 				{
 					Utility.setIndicator(myPlayer, 2, "Free mine detected!");
+					Utility.setIndicator(myPlayer, 0, "Direction to mine: " + myPlayer.myLoc.directionTo(minMine.getLocation()).toString());
 					// there is a mine, but it's away from building range
 					int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
 					if ( jump == Actions.JMP_NOT_POSSIBLE )
@@ -303,7 +313,7 @@ public class ArbiterBehavior extends Behavior{
 				}
 				else
 				{
-					
+					Utility.setIndicator(myPlayer, 0, "");
 					// no mines
 					
 					
