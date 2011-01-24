@@ -1,12 +1,23 @@
-package finalbot;
+package finalbot; import battlecode.common.*;
 
-import battlecode.common.*;
+/**<pre>
+ *          _   _			JUMPTABLE CLASS:                                       
+ *         (o)-(o)             RIBBIT, RIBBIT!!!!                                     
+ *      .-(   "   )-.                                    
+ *     /  /`'-=-'`\  \                                   
+ *   __\ _\ \___/ /_ /__                                 
+ *     /|  /|\ /|\  |\
+ *     
 
-
-
-/**
- * This class does the calculations necessary to figure out a good jump location
- * Table is fully self sufficient and can be used in doing calculations.
+ *   __
+ *	/  \ NOTES ___________________________________________________________ 
+ *  \__/
+ * 
+ *     This class does the calculations necessary to figure out a good jump
+ *     location. Table is fully self sufficient and is instantiated each
+ *     time you need to return a list of locations to jump to.
+ * 
+ * </pre>
  * @author Cory
  *
  */
