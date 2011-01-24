@@ -128,29 +128,26 @@ public class FlyingDroneBehavior extends Behavior {
 
     	switch (obj) {
     	
-    		case EQUIPPING: {
-    			Utility.setIndicator(myPlayer, 0, "equipping");
+    		case EQUIPPING: { //initial state, will get the sight and constructor that is needed to cap mines!
     			if (spawnLocation==null) {
     				spawnLocation=myPlayer.myRC.getLocation();
     			}
-    			if (hasSight && hasConstructor) { //finally we are good to go!
+    			if (hasSight && hasConstructor) { //finally we are good to go, but we first need to get our ID
     				obj=FlyingDroneActions.FLYING_DRONE_ID;
     			}
     			return;
     		}
-    		case FLYING_DRONE_ID: {
-    			Utility.setIndicator(myPlayer, 0, "waiting for id");
+    		case FLYING_DRONE_ID: {  //receive ID from refinery, the ID will decide the drones initial direction so that we can split up as much as possible
     			if (foundID) {
     				if (!myPlayer.myMotor.isActive()) {
     					setDirectionID(ID);
-    					obj=FlyingDroneActions.EXPAND;
+    					obj=FlyingDroneActions.EXPAND; //Now its time to go expanding!
     				}
     			}
     			return;
     		}
-    		case EXPAND: {
-    			Utility.setIndicator(myPlayer, 0, (Clock.getRoundNum()-myPlayer.myBirthday)+"");
-    			if (Clock.getRoundNum()-myPlayer.myBirthday>Constants.SCRAMBLE_TIME && !hasBeenScrambled) {
+    		case EXPAND: { //Main state where we are searching for mines, if we find a mine, we go to "FOUND_MINE" state
+    			if (Clock.getRoundNum()-myPlayer.myBirthday>Constants.SCRAMBLE_TIME && !hasBeenScrambled) { //after a certain time, the drones will migrate to the center of the map along with the collosus, hopefully taking more mines along the way
     				Utility.setIndicator(myPlayer, 0, "BEEN SCRAMBLED!");
     				hasBeenScrambled=true;
     				while (myPlayer.myMotor.isActive()) {
@@ -158,7 +155,7 @@ public class FlyingDroneBehavior extends Behavior {
     				}
     				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()));
     			}
-    			if (initialDirection==null) {
+    			if (initialDirection==null) { //initial check our initial direction in the direction that was determined by our ID
     				initialDirection=myPlayer.myRC.getDirection();
     			}
     			if (!myPlayer.myMotor.isActive()) {
@@ -166,8 +163,8 @@ public class FlyingDroneBehavior extends Behavior {
         			for (Mine mine : detectedMines) { //look for mines, if we find one, lets go get it
         				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
             					currentMine=mine;
-            					towerDirection=currentMine.getLocation().directionTo(spawnLocation).opposite();
-            					towerPlacement=currentMine.getLocation().add(towerDirection);
+            					towerDirection=currentMine.getLocation().directionTo(spawnLocation).opposite(); //old code when we were actually making towers at expansions
+            					towerPlacement=currentMine.getLocation().add(towerDirection);  //old code when we were actually making towers at expansions
             					currentDirection=myPlayer.myRC.getDirection();
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
