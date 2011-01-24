@@ -33,6 +33,9 @@ package beambot.behaviors; import beambot.*; import battlecode.common.*; import 
  *  
  *  
  * </pre> 
+ * @author Cory
+ * @author Justin
+ *
  */
 public class ColossusBehavior extends Behavior
 {
@@ -65,6 +68,8 @@ public class ColossusBehavior extends Behavior
 	int numStuck;
 	
 	int maxRange;
+	
+	MapLocation currentTarget;
 	
 	boolean rallyChanged = false;
 	
@@ -237,7 +242,13 @@ public class ColossusBehavior extends Behavior
 				}
 				
         		// Attacking code
-        		enemyInfo = Utility.attackEnemies(myPlayer);
+				if (num%3==1) {
+					enemyInfo=Utility.attackEnemiesBeams(myPlayer,currentTarget);
+					currentTarget=enemyInfo.location;
+				}
+				else {
+					enemyInfo = Utility.attackEnemies(myPlayer);
+				}
         		
         		// No enemy found
         		if ( enemyInfo == null || myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) > maxRange )
@@ -306,36 +317,36 @@ public class ColossusBehavior extends Behavior
 	    	        	}
         			}
 	            		
-        			// Try to jump
-        			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
-					if ( jump == Actions.JMP_SUCCESS )
-					{
-						// Jumped successfully
-						prevLocs.add(myPlayer.myLoc);
-						if ( prevLocs.size() > Constants.STUCK_JUMPS )
-							prevLocs.pollFirst();
-						
-						// check if we're pursuing a non-permanent rally
-						timeOffPerm++;
-						if ( timeOffPerm >= Constants.OLD_NEWS )
+	        			// Try to jump
+	        			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
+						if ( jump == Actions.JMP_SUCCESS )
 						{
-							rally = permRally;
-							timeOffPerm = 0;
+							// Jumped successfully
+							prevLocs.add(myPlayer.myLoc);
+							if ( prevLocs.size() > Constants.STUCK_JUMPS )
+								prevLocs.pollFirst();
+							
+							// check if we're pursuing a non-permanent rally
+							timeOffPerm++;
+							if ( timeOffPerm >= Constants.OLD_NEWS )
+							{
+								rally = permRally;
+								timeOffPerm = 0;
+							}
+							
+							// No enemy found before jumping, check again after
+							enemyInfo = Utility.attackEnemies(myPlayer);
 						}
-						
-						// No enemy found before jumping, check again after
-						enemyInfo = Utility.attackEnemies(myPlayer);
-					}
-					else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myPlayer.myLoc) < ComponentType.JUMP.range) )
-					{
-						// "Can't jump there, somethins in the way"
-						prevLocs.clear();
-						rally = (3*numStuck) % 8;
-						numStuck++;
-						Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
-						permRally = rally;
-						rallyChanged = true;
-					}
+						else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myPlayer.myLoc) < ComponentType.JUMP.range) )
+						{
+							// "Can't jump there, somethins in the way"
+							prevLocs.clear();
+							rally = (3*numStuck) % 8;
+							numStuck++;
+							Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+							permRally = rally;
+							rallyChanged = true;
+						}
         		}
         		
         		// Enemy in range, either before or after jump. Enable the micros
@@ -346,7 +357,9 @@ public class ColossusBehavior extends Behavior
         				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
         				{
-	        				if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
+	        				if ( (myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
+	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateLeft()
+	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateRight() )
 	        						&& myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite())
 	        						&& myPlayer.myLoc.add(myPlayer.myRC.getDirection().opposite()).distanceSquaredTo(enemyInfo.location) <= maxRange )
 	        					myPlayer.myMotor.moveBackward();

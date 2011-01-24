@@ -436,6 +436,109 @@ public class Utility {
 			
 	}
 	
+	
+	/**
+	 * Looks for enemies and shoots at the closest one if one is found.
+	 * From there, we continue to shoot the same target unless it changes position.
+	 * ignores armor
+	 * @author Max
+	 * @param myPlayer The robot player, currentTarget, the current target the beam is attacking
+	 * @return The location of a sensed enemy, or null if none are found
+	 */
+	
+	public static RobotInfo attackEnemiesBeams(RobotPlayer myPlayer, MapLocation currentTarget) throws Exception
+	{
+		
+		WeaponController gun;
+		RobotInfo rInfo;
+		Robot r;
+		
+		RobotInfo enemyMin1 = null;
+		RobotInfo enemyMin2 = null;
+		int minDist1 = 9998; // sentinel value
+		int minDist2 = 9999; // sentinel value
+		
+		
+		if (currentTarget!=null) {
+			GameObject objectGround =  myPlayer.mySensor.senseObjectAtLocation(currentTarget, RobotLevel.ON_GROUND);
+			GameObject objectAir =  myPlayer.mySensor.senseObjectAtLocation(currentTarget, RobotLevel.IN_AIR);
+			if (objectGround!=null && objectGround.getTeam().equals(myPlayer.myOpponent)) {
+				r=(Robot) objectGround;
+				enemyMin1=myPlayer.mySensor.senseRobotInfo(r);
+				for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+				{
+					gun =  myPlayer.myBeams[j];
+					if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+						gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+				}
+				return enemyMin1;
+			}
+			
+			
+			if (objectAir!=null && objectAir.getTeam().equals(myPlayer.myOpponent)) {
+				r=(Robot) objectAir;
+				enemyMin1=myPlayer.mySensor.senseRobotInfo(r);
+				for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+				{
+					gun =  myPlayer.myBeams[j];
+					if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+						gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+				}
+				return enemyMin1;
+			}
+		}
+		
+		
+		MapLocation myLoc = myPlayer.myRC.getLocation();
+		
+		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
+		
+		for ( int i = nearbyRobots.length; --i>=0;)
+    	{
+    		r = nearbyRobots[i];
+    		if ( r.getTeam() == myPlayer.myOpponent )
+    		{
+    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    			int dist = myLoc.distanceSquaredTo(rInfo.location);
+    			
+    			if ( dist < minDist1 )
+    			{
+    				if ( enemyMin2 == null )
+    				{
+    					minDist1 = dist;
+    					minDist2 = dist;
+    					enemyMin1 = rInfo;
+    					enemyMin2 = rInfo;
+    				}
+    				else
+    				{
+    					minDist2 = minDist1;
+    					minDist1 = dist;
+    					enemyMin2 = enemyMin1;
+    					enemyMin1 = rInfo;
+    				}
+    			}
+    			else if ( dist < minDist2 )
+    			{
+    				minDist2 = myLoc.distanceSquaredTo(rInfo.location);
+					enemyMin2 = rInfo;
+    			}
+    		}
+    	}
+		if ( enemyMin1 != null )
+		{
+			for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+			{
+				gun =  myPlayer.myBeams[j];
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+			}
+		}
+		return enemyMin1;
+			
+	}
+	
+	
 	/**
 	 * Looks for debris and shoots at the closest one if one is found
 	 * @author JVen
