@@ -16,6 +16,8 @@ public final class JumpTable {
 	private final boolean isOmni;
 	private final boolean isDiagonal;
 	private final boolean isVertical;
+	private final int currX;
+	private final int currY;
 	private final MapLocation myLoc;
 
 	private int idx; //This is the current index we're checking
@@ -33,6 +35,9 @@ public final class JumpTable {
 		isVertical = (dy!=0);
 		isOmni = (dir==Direction.OMNI);
 		
+		currX = myLoc.x;
+		currY = myLoc.y;
+		
 		//initialize our index
 		idx = -1;
 	}
@@ -48,10 +53,10 @@ public final class JumpTable {
 		//increment our index
 		idx++;
 		
-		int xC = 0, yC = 0, dirVec = 0, zeroVec = 0;
-		
 		if(isOmni)
 		{
+			int xC = 0, yC = 0;
+			
 			switch(idx)
 			{
 				case 0:
@@ -76,13 +81,12 @@ public final class JumpTable {
 					return null;
 			}
 			
-			return new MapLocation(myLoc.x+xC*dx, myLoc.y+yC*dy);
+			return new MapLocation(currX+xC*dx, currY+yC*dy);
 		}
 		
 		//TODO add a modulus operation that allows for the jump tables to changed based on modulus operations
 		
-		
-		
+				
 		/////////////////////////////////////////////////////////////////////
 		///////////////////////DIAGONALS/////////////////////////////////////
 		if(isDiagonal)
@@ -91,68 +95,95 @@ public final class JumpTable {
 			switch(idx)
 			{
 				case 0:
-					xC = 3; yC = 2; break;
+					//xC = 3; yC = 2;
+					return new MapLocation(currX + 3*dx, currY + 2*dy);
 				case 1:
-					xC = 2; yC = 3; break;
+					//xC = 2; yC = 3;
+					return new MapLocation(currX + 2*dx, currY + 3*dy);
 				case 2:
-					xC = 1; yC = 3; break;
+					//xC = 1; yC = 3;
+					return new MapLocation(currX +   dx, currY + 3*dy);
 				case 3:
-					xC = 3; yC = 1; break;
+					//xC = 3; yC = 1;
+					return new MapLocation(currX + 3*dx, currY +   dy);
 				case 4:
-					xC = 2; yC = 2; break;
+					//xC = 2; yC = 2;
+					return new MapLocation(currX + 2*dx, currY + 2*dy);
 				case 5:
-					xC = 4; yC = 0; break;
+					//xC = 4; yC = 0;
+					return new MapLocation(currX + 4*dx, currY       );
 				case 6:
-					xC = 0; yC = 4; break;
+					//xC = 0; yC = 4;
+					return new MapLocation(currX       , currY + 4*dy);
 				case 7:
-					xC = 2; yC = 1; break;
+					//xC = 2; yC = 1;
+					return new MapLocation(currX + 2*dx, currY +   dy);
 				case 8:
-					xC = 1; yC = 2; break;
+					//xC = 1; yC = 2;
+					return new MapLocation(currX+  dx, currY+2*dy);
 				case 9:
-					xC = 0; yC = 3; break;
+					//xC = 0; yC = 3;
+					return new MapLocation(currX     , currY+3*dy);
 				case 10:
-					xC = 3; yC = 0; break;
+					//xC = 3; yC = 0;
+					return new MapLocation(currX+3*dx, currY     );
 				case 11:
-					xC = 0; yC = 2; break;
+					//xC = 0; yC = 2;
+					return new MapLocation(currX     , currY+2*dy);
 				case 12:
-					xC = 2; yC = 0; break;
+					//xC = 2; yC = 0;
+					return new MapLocation(currX+2*dx, currY     );
 				case 13:
-					xC = -1; yC = 3; break;
+					//xC = -1; yC = 3;
+					return new MapLocation(currX+ -1*dx, currY+3*dy);
 				case 14:
-					xC = 3; yC = -1; break;
+					//xC = 3; yC = -1;
+					return new MapLocation(currX+ 3*dx, currY+ -1*dy);
 				case 15:
-					xC = 1; yC = 1; break;
+					//xC = 1; yC = 1;
+					return new MapLocation(currX+   dx, currY+   dy);
 				case 16:
-					xC = -1; yC = 2; break;
+					//xC = -1; yC = 2;
+					return new MapLocation(currX+ -1*dx, currY + 2*dy);
 				case 17:
-					xC = 2; yC = -1; break;
+					//xC = 2; yC = -1;
+					return new MapLocation(currX+2*dx, currY+ -1*dy);
 				case 18:
-					xC = 0; yC = 1; break;
+					//xC = 0; yC = 1;
+					return new MapLocation(currX     , currY+dy);
 				case 19:
-					xC = 1; yC = 0; break;
+					//xC = 1; yC = 0;
+					return new MapLocation(currX + dx, currY       );
 				case 20:
-					xC = -2; yC = 3; break;
+					//xC = -2; yC = 3;
+					return new MapLocation(currX + -2*dx, currY + 3*dy);
 				case 21:
-					xC = 3; yC = -2; break;
+					//xC = 3; yC = -2;
+					return new MapLocation(currX+ 3 * dx, currY + -2*dy);
 				case 22:
-					xC = -2; yC = 2; break;
+					//xC = -2; yC = 2;
+					return new MapLocation(currX + -2*dx, currY + 2*dy);
 				case 23:
-					xC = 2; yC = -2; break;
+					//xC = 2; yC = -2;
+					return new MapLocation(currX +  2*dx, currY + -2*dy);
 				case 24:
-					xC = -1; yC = 1; break;
+					//xC = -1; yC = 1;
+					return new MapLocation(currX + -1*dx, currY  +    dy);
 				case 25:
-					xC = 1; yC = -1; break;
-				
-				
+					//xC = 1; yC = -1;
+					return new MapLocation(currX + dx, currY   + -1*dy);
 				default:
 					return null;
 			}
 		}
+		
+		
 		/////////////////////////////////////////////////////////////////////
 		//////////////////////////ORTHOGONALS////////////////////////////////
 		
 		else
 		{
+			int dirVec = 0, zeroVec = 0;
 			
 			switch(idx)
 			{
@@ -216,17 +247,12 @@ public final class JumpTable {
 				default:
 					return null;
 			}
+			
+			if ( isVertical )
+				return new MapLocation(currX+zeroVec, currY+dirVec*dy);
+			else
+				return new MapLocation(currX+dirVec*dx, currY+zeroVec);	
 		}
-		
-		//System.out.println("idx = " + Integer.toString(idx));
-		
-		if ( isDiagonal )
-			return new MapLocation(myLoc.x+xC*dx, myLoc.y+yC*dy);
-		else if ( isVertical )
-			return new MapLocation(myLoc.x+zeroVec, myLoc.y+dirVec*dy);
-		else
-			return new MapLocation(myLoc.x+dirVec*dx, myLoc.y+zeroVec);
-		
 	}
 	
 }
