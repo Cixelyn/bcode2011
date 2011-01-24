@@ -918,7 +918,20 @@ public class Utility {
 			if ( c == ComponentType.JUMP )
 				numJumps++;
 		}
-		return ans + numJumps*ComponentType.JUMP.range + 1;
+		switch ( ans )
+		{
+			case 0:
+				return numJumps*ComponentType.JUMP.range;
+			case 4:
+				return numJumps*ComponentType.JUMP.range + 10;
+			case 16:
+				return numJumps*ComponentType.JUMP.range + 26;
+			case 25:
+				return numJumps*ComponentType.JUMP.range + 41;
+			case 36:
+			default:
+				return numJumps*ComponentType.JUMP.range + 52;
+		}
 
 	}
 	
