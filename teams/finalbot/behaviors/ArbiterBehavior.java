@@ -300,7 +300,6 @@ public class ArbiterBehavior extends Behavior{
 						minMine = null;
 						lastMineCapped = 0;
 					}
-					// FIXME this is not yet tested
 					// rebuild main
 					if ( num == 0 && shouldRebuild == 1 )
 					{
@@ -313,7 +312,7 @@ public class ArbiterBehavior extends Behavior{
 					Utility.setIndicator(myPlayer, 2, "Free mine detected!");
 					Utility.setIndicator(myPlayer, 0, "Direction to mine: " + myPlayer.myLoc.directionTo(minMine.getLocation()).toString());
 					// there is a mine, but it's away from building range
-					int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
+					int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos);
 					if ( jump == Actions.JMP_NOT_POSSIBLE )
 					{
 						badMines.set(minMine.getLocation());

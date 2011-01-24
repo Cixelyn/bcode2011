@@ -393,6 +393,8 @@ public class ArmoryBehavior extends Behavior
     							{
     								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
     								unitDock = rInfo.location;
+    								currDrone = 0;
+    								currHeavy = 0;
     								obj = ArmoryBuildOrder.WAIT_FOR_DOCK;
     								return;
     							}

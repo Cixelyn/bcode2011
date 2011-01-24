@@ -233,6 +233,8 @@ public class FactoryBehavior extends Behavior
     							{
     								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
     								unitDock = rInfo.location;
+    								currDrone = 0;
+    								currHeavy = 0;
     								obj = FactoryBuildOrder.WAIT_FOR_DOCK;
     								return;
     							}

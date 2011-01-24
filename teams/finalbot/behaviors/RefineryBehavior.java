@@ -144,8 +144,6 @@ public class RefineryBehavior extends Behavior
     	    			while ( myPlayer.myMotor.isActive() )
         					myPlayer.sleep();
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-    					currWraith = 0;
-    					currDrone = 0;
     	    			obj = RefineryBuildOrder.EQUIP_UNIT;        // I am one of the first two capped and with least ID
     				}
     				else
@@ -527,6 +525,8 @@ public class RefineryBehavior extends Behavior
     							{
     								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
     								unitDock = rInfo.location;
+    								currDrone = 0; // TODO change me
+    								currHeavy = 0;
     								obj = RefineryBuildOrder.WAIT_FOR_DOCK;
     								return;
     							}
