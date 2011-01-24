@@ -2,62 +2,37 @@ package beambot.behaviors; import beambot.*; import battlecode.common.*; import 
 
 /**
  * <pre>
- *
- *                                                                                                                       
- *                                                                                                                       
- *                                                                     ....                                              
- *                                                                      Z+.                                              
- *                                                                 .:MM..M.                                              
- *                                                            ..  M+      I  ,..            ........                     
- *                                                        .. ..DM      .. M?,8... . .,:~:~=7O8888888.                    
- *                                                        .,DM,,.        .  ..    ..    .. .       M.                    
- *                                                   . ,:NM.,..,D..NN..                          ..M.                    
- *                                                 ,.8M .  ...,M:.:.,.                            .D                     
- *                                                OM  ... + 78. M. . .                            D                      
- *                                             .N.,..    M? ,.   .          ?                    .M .                    
- *                                           . 8.         .  .  . . ..  ,M.D                    .M.                      
- *                                         ., M,.      .,NMMM .. ,MMZ8N  .M                     ,M                       
- *                                         .M8 M.     MD.  . 8= .. ?$O                          M..                      
- *                                       :MMMM M.   ,MMMMN   .M.  . ..                         I?.                       
- *                                    . :?.MM .M.  .M .MD   , M                              .+M.                        
- *                     .  .. .   . ...  M.    N    .O        M:                              ,M                          
- *                       , =77777+ . .  M.  .77 .  +        M$.                           ...M. .                        
- *               .. .8MMMZ . . .    M$..:MMMM .    .M.Z.?MMN                            . .MZ.                           
- *          . ...OMM.           ..Z+,:                    ..  ?                   . ...=MM, . .                          
- *          ..MMZ..,.           .+ ,O.                     ?O,O,                  .IN:...  ,MM                           
- *       . MM=. ,    .  .  ... . 7..M.                       . .  ,~MMI .  . . . .$MMMM$.. .   N,                        
- *    .  MM.     .,.NMMMDZ$?=$8MMMO,.   . ,..            .    .  7M                   .  7MMM:  ,M.                      
- *    .8M.  . ..,MM.              .: .  MZI,   .    . :M.       M                             .MM:MN.    .               
- *    M8.     ?M,....               MNM= ..MIM 7N,M7,M ..   ..+M~.                             .  =M?+NM .               
- *   78.    .NZ .                .....O:      ..   .      $D:. .                                   . MMZ ,               
- *  .M     .MO                .:MM.   ,,D$,.                 .MMMMMMN8$7?~..   ..                    ..M?                
- *   +M    ,M.                MM .    ..  .~.               . . .       ..,DMMMM8~.                  . .NM .             
- *    M?  .M                ?M.       =~Z                              .   ... .,.?MM8..               . ~N.             
- *    .MZ  8:.           .,MM,  ... ,MD.8                       .,8MMNM .             7M$                 M.             
- *      7M ?M          .. M$   ,.MM     D     .. .   ...        .,~M .  .8              IM  .             N.             
- *       .MMM,         , M?  .$M7, .    M.   .Z..  . ...         .  M..  .M              IN.              M              
- *        ,?MM         .M:. ,MM  .      M.    .         ?,          M .   M            . M .           . M .             
- *           NM        M+  NM  .        M.    7         ,Z        . M     M         .  MD          .,. MM,               
- *            OMM. .. MM  OM            ? .    =D  . =: .M        . M.    M     ....MMI.        ....8M7                  
- *          .  .MMZ ..M..=M.            .M     ..?7....  M.        M ..  I      7MM ,.       .,:MMM,.M                   
- *                ....M..MM               M .    . ..OZ.. +,    , M,.   .  =MMM~.,   . .~OMMMZ. .  . M.                  
- *                   .M7.MD           .  .? .      . .. ..D. ...,M,.  :NMMN  .. ?NMMMMMO.            M                   
- *                    +M.MM            .7..O        .. M.,.D .MM  MMMMMMMMMMDOZZ$Z$      .         .I .                  
- *                   ..,MIM            .,MMMMN?..    . O?NMMM ,. .....IM....M . ...                 M..                  
- *                     .,ZMM   .           D MMM8+ZZ7.. ,. .  .. . ,MMI.    M           .M       . M.                    
- *                       . ,MM8.          ,~.     ,8MMMMMMMMMMMMMM,..      :M           .M . .. =MM                      
- *                       . ,., .         .=..    . . .. .  ..N ...,.       IM            M+NNMMM8,:.                     
- *                                      ..= .        . M..  .,..           7M           ..  ... .                        
- *                                         M:.  .  .. .M..   .D            8M                                            
- *                                           IMMMMMMMM8.      M.       ....M.                                            
- *                                           ... . .. ..    ..?7,      ..:OM.                                            
- *                                                            .. DMMMMMO .                                               
- *                                                                                                                       
- *     
+ *                            _______________
+ *                           /               \ 
+ *  ========================[  C O L O S S I  ]===========================    
+ *                           \_______________/
+ *          
+ *      
+ *     "BEEP BEEP BEEP, KILL!!!!!" ~ A colossus.        
+ *      
+ *                           
+ *                             ,----.___________,-,               
+ *     ,__                    (________________|__|               
+ *  __/()(_________________________/o(____)o(__  ``            _  
+ * (__________________________(_(_(_(_(________Y_....-----====//  
+ *               ( , , , , , , (______________)--            ((   
+ *                \_____________|________|[ )) JW  ____   __  \\  
+ *                               |____|    "" \.__-'`". \(__) \\\ 
+ *                               |____|        `""      ```"""=,))
+ *                               |    |                           
+ *                               `====                                                           
+ * 
+ *   __
+ *	/  \ Notes ___________________________________________________________ 
+ *  \__/
+ *  
+ *    The colossus is the workhorse of our army.  Although each unit may 
+ *    vary slightly in weapon and armor loadout, all of them are deadly. 
+ *    It is the job of the colossi to destroy everything in their wake, 
+ *    and bring us victory through  complete elimination of the other team.
  *  
  *  
  * </pre> 
- *
  */
 public class ColossusBehavior extends Behavior
 {

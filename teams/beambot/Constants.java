@@ -42,6 +42,7 @@ public class Constants
 	//public static final int ARBITER_TIME = 1; // how many units come out before the arbiter (NOT A ROUND NUMBER, SILLY!)
 	public static final int MAX_DRONES = 2; // how many drones to make before arbiterssss
 	public static final int OLD_NEWS = 2; // how many jumps a colossus should pursue a non-permanent rally
+	public static final double MAD_BANK = 1000; // how much money to have before building factory/armory
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;
