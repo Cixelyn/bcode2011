@@ -419,6 +419,12 @@ public class Utility {
 				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
 					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
 			}
+			for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+			{
+				gun =  myPlayer.myBeams[j];
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+			}
 			for ( int j = myPlayer.myHammers.length; --j >= 0 ; )
 			{
 				gun =  myPlayer.myHammers[j];
@@ -429,6 +435,109 @@ public class Utility {
 		return enemyMin1;
 			
 	}
+	
+	
+	/**
+	 * Looks for enemies and shoots at the closest one if one is found.
+	 * From there, we continue to shoot the same target unless it changes position.
+	 * ignores armor
+	 * @author Max
+	 * @param myPlayer The robot player, currentTarget, the current target the beam is attacking
+	 * @return The location of a sensed enemy, or null if none are found
+	 */
+	
+	public static RobotInfo attackEnemiesBeams(RobotPlayer myPlayer, MapLocation currentTarget) throws Exception
+	{
+		
+		WeaponController gun;
+		RobotInfo rInfo;
+		Robot r;
+		
+		RobotInfo enemyMin1 = null;
+		RobotInfo enemyMin2 = null;
+		int minDist1 = 9998; // sentinel value
+		int minDist2 = 9999; // sentinel value
+		
+		
+		if (currentTarget!=null) {
+			GameObject objectGround =  myPlayer.mySensor.senseObjectAtLocation(currentTarget, RobotLevel.ON_GROUND);
+			GameObject objectAir =  myPlayer.mySensor.senseObjectAtLocation(currentTarget, RobotLevel.IN_AIR);
+			if (objectGround!=null && objectGround.getTeam().equals(myPlayer.myOpponent)) {
+				r=(Robot) objectGround;
+				enemyMin1=myPlayer.mySensor.senseRobotInfo(r);
+				for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+				{
+					gun =  myPlayer.myBeams[j];
+					if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+						gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+				}
+				return enemyMin1;
+			}
+			
+			
+			if (objectAir!=null && objectAir.getTeam().equals(myPlayer.myOpponent)) {
+				r=(Robot) objectAir;
+				enemyMin1=myPlayer.mySensor.senseRobotInfo(r);
+				for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+				{
+					gun =  myPlayer.myBeams[j];
+					if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+						gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+				}
+				return enemyMin1;
+			}
+		}
+		
+		
+		MapLocation myLoc = myPlayer.myRC.getLocation();
+		
+		Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class); 
+		
+		for ( int i = nearbyRobots.length; --i>=0;)
+    	{
+    		r = nearbyRobots[i];
+    		if ( r.getTeam() == myPlayer.myOpponent )
+    		{
+    			rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    			int dist = myLoc.distanceSquaredTo(rInfo.location);
+    			
+    			if ( dist < minDist1 )
+    			{
+    				if ( enemyMin2 == null )
+    				{
+    					minDist1 = dist;
+    					minDist2 = dist;
+    					enemyMin1 = rInfo;
+    					enemyMin2 = rInfo;
+    				}
+    				else
+    				{
+    					minDist2 = minDist1;
+    					minDist1 = dist;
+    					enemyMin2 = enemyMin1;
+    					enemyMin1 = rInfo;
+    				}
+    			}
+    			else if ( dist < minDist2 )
+    			{
+    				minDist2 = myLoc.distanceSquaredTo(rInfo.location);
+					enemyMin2 = rInfo;
+    			}
+    		}
+    	}
+		if ( enemyMin1 != null )
+		{
+			for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+			{
+				gun =  myPlayer.myBeams[j];
+				if ( !gun.isActive() && gun.withinRange(enemyMin1.location))
+					gun.attackSquare(enemyMin1.location, enemyMin1.robot.getRobotLevel());
+			}
+		}
+		return enemyMin1;
+			
+	}
+	
 	
 	/**
 	 * Looks for debris and shoots at the closest one if one is found
@@ -474,6 +583,12 @@ public class Utility {
 			for ( int j = myPlayer.myRailguns.length; --j>=0;)
 			{
 				gun =  myPlayer.myRailguns[j];
+				if ( !gun.isActive() && gun.withinRange(rockMin.location))
+					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
+			}
+			for ( int j = myPlayer.myBeams.length; --j >= 0 ; )
+			{
+				gun =  myPlayer.myBeams[j];
 				if ( !gun.isActive() && gun.withinRange(rockMin.location))
 					gun.attackSquare(rockMin.location, rockMin.robot.getRobotLevel());
 			}
@@ -791,16 +906,38 @@ public class Utility {
 		if ( !enemyInfo.on )
 			return 0;
 			
-		int ans = 0;
+		int gunRange = 0;
+		int sightRange = 0;
+		int numJumps = 0;
 		ComponentType c;
 		int i = enemyInfo.components.length;
 		while ( --i >= 0 )
 		{
 			c = enemyInfo.components[i];
-			if ( c.componentClass == ComponentClass.WEAPON && c != ComponentType.MEDIC && ans < c.range )
-				ans = c.range;
+			if ( c.componentClass == ComponentClass.WEAPON && c != ComponentType.MEDIC && gunRange < c.range )
+				gunRange = c.range;
+			if ( c.componentClass == ComponentClass.SENSOR && sightRange < c.range )
+				sightRange = c.range;
+			if ( c == ComponentType.JUMP )
+				numJumps++;
 		}
-		return ans;
+		int ans = Math.min(gunRange, sightRange);
+		switch ( ans )
+		{
+			case 0:
+				return numJumps*ComponentType.JUMP.range;
+			case 4:
+				return numJumps*ComponentType.JUMP.range + 10;
+			case 9:
+				return numJumps*ComponentType.JUMP.range + 17;
+			case 16:
+				return numJumps*ComponentType.JUMP.range + 26;
+			case 25:
+				return numJumps*ComponentType.JUMP.range + 41;
+			case 36:
+			default:
+				return numJumps*ComponentType.JUMP.range + 52;
+		}
 
 	}
 	

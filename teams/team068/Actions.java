@@ -147,14 +147,13 @@ public class Actions {
 	
 	public int jumpToMine(Mine m, RobotInfo[] enemyInfos) throws GameActionException
 	{
-		//TODO is passing RobotInfo[]s expensive?
 		
 		// Get a non-active JumpController, if available
 		int jumpEngine = availableJump();
 		
 		
-		// If we're already near the mine or no jumps are available, return
-		if ( myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) <= 2 || jumpEngine == -1 )
+		// If we're already near the mine (but not on it) or no jumps are available, return
+		if ( (myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) <= 2 && myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) > 0) || jumpEngine == -1 )
 			return JMP_NOT_YET;
 		
 		// Otherwise, jump towards the mine
@@ -166,7 +165,7 @@ public class Actions {
 		while ( jmpLoc != null )
 		{
 			// also check that we don't jump on a mine
-			if ( canJump(jmpLoc) && myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null ) // uncomment me to avoid stepping on mines
+			if ( canJump(jmpLoc) && !jmpLoc.equals(m.getLocation()) )//&& myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null ) // uncomment me to avoid stepping on mines
 			{
 				// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
 				int newDist = jmpLoc.distanceSquaredTo(m.getLocation());

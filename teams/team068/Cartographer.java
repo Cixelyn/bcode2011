@@ -17,7 +17,7 @@ import battlecode.common.*;
 public class Cartographer {
 	
 	//Define locations I've visited
-	private boolean[][] hasVisited;
+	private MapStoreBoolean hasVisited;
 	
 	
 	
@@ -49,7 +49,7 @@ public class Cartographer {
 	 */
 	public Cartographer(RobotPlayer player) {
 		//Initialize my visited squares
-		hasVisited = new boolean[GameConstants.MAP_MAX_WIDTH][GameConstants.MAP_MAX_HEIGHT];
+		hasVisited = new MapStoreBoolean();
 		
 		//Initialize the main components
 		myPlayer 	= player;
@@ -162,8 +162,7 @@ public class Cartographer {
 			MapLocation myLoc = myRC.getLocation();
 			Direction myDir = myRC.getDirection();
 			
-			hasVisited[myLoc.x % GameConstants.MAP_MAX_WIDTH]
-			           [myLoc.y % GameConstants.MAP_MAX_HEIGHT] = true;
+			hasVisited.set(myLoc);
 			
 			int dx = myDir.dx;
 			int dy = myDir.dy;
