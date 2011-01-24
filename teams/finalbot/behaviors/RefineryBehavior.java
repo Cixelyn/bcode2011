@@ -491,7 +491,7 @@ public class RefineryBehavior extends Behavior
 					if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.CONSTRUCTOR, RobotLevel.ON_GROUND) )
 					{
 						myPlayer.sleep(); // NECESSARY TO GIVE ARBITER TIME TO REALIZE WHO HE IS
-						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, -1, currDrone, myPlayer.myLoc);
+						myPlayer.myMessenger.sendDoubleIntLoc(MsgType.MSG_SEND_NUM, myPlayer.myRC.getRobot().getID(), currDrone, myPlayer.myLoc);
 						currDrone++;
 						obj = RefineryBuildOrder.EQUIP_UNIT;
 					}

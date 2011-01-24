@@ -69,6 +69,8 @@ public class ArbiterBehavior extends Behavior{
 	private MapStoreBoolean badMines = new MapStoreBoolean();
 	
 	MapLocation motherLoc;
+	int motherID;
+	
 	MapLocation refineryLoc;
 	MapLocation armoryLoc;
 	MapLocation factoryLoc;
@@ -126,13 +128,9 @@ public class ArbiterBehavior extends Behavior{
 		
 			case EQUIPPING:
 				
-				// System.out ???? -JVen
-				//System.out.println(arbiterLoadout);
-				//System.out.println(Utility.countComponents(myPlayer.myRC.components()));
 				Utility.setIndicator(myPlayer, 1, "EQUIPPING ARBITER");
-				if( Utility.compareComponents(myPlayer, arbiterLoadout) ) {
+				if( Utility.compareComponents(myPlayer, arbiterLoadout) )
 					state = ArbiterBuildOrder.DETERMINE_SPAWN;
-				}
 				return;
 			
 			case DETERMINE_SPAWN:
@@ -208,7 +206,7 @@ public class ArbiterBehavior extends Behavior{
 				}
 				
 				// Sense if motherLoc is in range
-				if ( shouldRebuild == 0 && !motherLoc.equals(null) && myPlayer.mySensor.canSenseSquare(motherLoc) && myPlayer.mySensor.senseObjectAtLocation(motherLoc, RobotLevel.ON_GROUND) == null )
+				if ( shouldRebuild == 0 && motherLoc != null && myPlayer.mySensor.canSenseSquare(motherLoc) && myPlayer.mySensor.senseObjectAtLocation(motherLoc, RobotLevel.ON_GROUND).getID() != motherID )
 				{
 					// mother refinery destroyed!!
 					Utility.setIndicator(myPlayer, 0, "THE MOTHER REFINERY WAS DESTROYED! REBUILD!");
@@ -234,13 +232,13 @@ public class ArbiterBehavior extends Behavior{
 					
 					GameObject obj = objects[i];
 					
-					if(obj.getTeam()==myPlayer.myOpponent)
+					if( obj.getTeam() == myPlayer.myOpponent )
 					{ 
 						// Enemy Robot Detected
 						enemies[enemyIndex] = (Robot)obj; //cast it correctly
 						enemyIndex++;					
 					}
-					else if(obj.getRobotLevel()==RobotLevel.MINE)
+					else if ( obj.getRobotLevel() == RobotLevel.MINE )
 					{
 						// Mine Detected
 						MapLocation mineLoc = ((Mine)obj).getLocation();
@@ -291,7 +289,6 @@ public class ArbiterBehavior extends Behavior{
 				if ( minMineDist <= 2 && minMineDist > 0 )
 				{
 					Utility.setIndicator(myPlayer, 2, "Building!!");
-					Utility.setIndicator(myPlayer, 0, "Direction to mine: " + myPlayer.myLoc.directionTo(minMine.getLocation()).toString());
 					// there is a mine, and it's within building range
 					if ( myPlayer.mySensor.senseObjectAtLocation(minMine.getLocation(), RobotLevel.ON_GROUND) == null && myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
 					{
@@ -300,9 +297,10 @@ public class ArbiterBehavior extends Behavior{
 						minMine = null;
 						lastMineCapped = 0;
 					}
-					// rebuild main
-					if ( num == 0 && shouldRebuild == 1 )
+					// rebuild main if we should
+					if ( shouldRebuild == 1 )
 					{
+						Utility.setIndicator(myPlayer, 0, "");
 						refineryLoc = minMine.getLocation();
 						state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
 					}
@@ -310,7 +308,6 @@ public class ArbiterBehavior extends Behavior{
 				else if ( minMine != null )
 				{
 					Utility.setIndicator(myPlayer, 2, "Free mine detected!");
-					Utility.setIndicator(myPlayer, 0, "Direction to mine: " + myPlayer.myLoc.directionTo(minMine.getLocation()).toString());
 					// there is a mine, but it's away from building range
 					int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos);
 					if ( jump == Actions.JMP_NOT_POSSIBLE )
@@ -614,7 +611,8 @@ public class ArbiterBehavior extends Behavior{
 			if ( num == -1 )
 			{
 				num = msg.ints[Messenger.firstData+1] - Constants.MAX_DRONES;
-				motherLoc = msg.locations[Messenger.firstData+1];
+				motherLoc = msg.locations[Messenger.firstData];
+				motherID = msg.ints[Messenger.firstData];
 			}
 		}
 	}
