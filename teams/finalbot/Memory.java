@@ -1,6 +1,7 @@
 package finalbot;
 
 import battlecode.common.*;
+import java.lang.Math;
 
 
 /**
@@ -38,35 +39,50 @@ public class Memory {
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// NUMBER OF GUNS //////////////////////////////////////////////
-	public static int idxNumGuns = 1; //all the way up to 31.
-	
 	
 	public void setNumGuns(int index, int smgs, int blasters, int railguns, int beams, int hammers) {
 		myRC.setTeamMemory(index, 
-			smgs &
-			blasters<<8 &
-			railguns<<16 &
-			beams<<32 &
-			hammers<<40
+			  smgs
+			| blasters<<8
+			| railguns<<16
+			| beams<<24
+			| hammers<<32
 		);
 	}
 
 	
-	public int[] getMaxGuns() {
-		
+	
+	
+	
+	//Easy Access Constants
+	public static final int idxSMG = 0;
+	public static final int idxBlasters = 1;
+	public static final int idxRailguns = 2;
+	public static final int idxBeams = 3;
+	public static final int idxHammers = 4;
+	
+	/**
+	 * This function returns the max number of each gun type seen in the previous round.
+	 * Use the constants idxSMG, idxBlasters, etc. to figure out indicies.
+	 * @return 
+	 */
+	public int[] getMaxNumGuns() {
 		int smgs, blasters, railguns, beams, hammers;
 		smgs=blasters=railguns=beams=hammers=0;
-		
+
+		for(int i=1; i<memory.length; i++) {
+			long data = memory[i];
+			smgs 	= Math.max(smgs 	, (int) (data)     & 0xFF);
+			blasters= Math.max(blasters	, (int) (data>>8)  & 0xFF);
+			railguns= Math.max(railguns , (int) (data>>16) & 0xFF);
+			beams   = Math.max(beams	, (int) (data>>24) & 0xFF);
+			hammers = Math.max(hammers 	, (int) (data>>32) & 0xFF);
+		}
 		
 		
 		return new int[]{smgs,blasters,railguns,beams,hammers};
 		
-		
 	}
-	
-	
-	
-	
 	
 	
 	
