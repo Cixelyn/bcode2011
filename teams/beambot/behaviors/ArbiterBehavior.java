@@ -81,6 +81,7 @@ public class ArbiterBehavior extends Behavior{
 	int rally = -1;
 	int num = -1;
 	int numStuck = 0;
+	boolean hasRebuilt = false;
 
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
@@ -261,7 +262,8 @@ public class ArbiterBehavior extends Behavior{
 						Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 					}
-					if ( Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
+					// rebuild main
+					if ( num == 0 && !hasRebuilt && Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
 					{
 						refineryLoc = minMine.getLocation();
 						state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
