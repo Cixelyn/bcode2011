@@ -82,6 +82,10 @@ public class ArbiterBehavior extends Behavior{
 	int num = -1;
 	int numStuck = 0;
 	boolean hasRebuilt = false;
+	
+	Mine minMine;
+	Mine m;
+	int minMineDist;
 
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
@@ -195,31 +199,31 @@ public class ArbiterBehavior extends Behavior{
 				//   NOTE: everything is filled in and accessed backwards,
 				//   so we can break when a null is detected :D
 				//
-				GameObject[] stateects = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
+				GameObject[] objects = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
 				
 				Mine[] mines = new Mine[64]; int mineIndex = 0;
 				Robot[] enemies = new Robot[64]; int enemyIndex = 0;
 				
 				Robot onTop;
 				
-				for ( int i = stateects.length ; --i >= 0 ; )
+				for ( int i = objects.length ; --i >= 0 ; )
 				{
 					
-					GameObject state = stateects[i];
+					GameObject obj = objects[i];
 					
-					if(state.getTeam()==myPlayer.myOpponent)
+					if(obj.getTeam()==myPlayer.myOpponent)
 					{ 
 						// Enemy Robot Detected
-						enemies[enemyIndex] = (Robot)state; //cast it correctly
+						enemies[enemyIndex] = (Robot)obj; //cast it correctly
 						enemyIndex++;					
 					}
-					else if(state.getRobotLevel()==RobotLevel.MINE)
+					else if(obj.getRobotLevel()==RobotLevel.MINE)
 					{
 						// Mine Detected
-						onTop = (Robot)myPlayer.mySensor.senseObjectAtLocation(((Mine)state).getLocation(), RobotLevel.ON_GROUND);
-						if ( !badMines.contains(state.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
+						onTop = (Robot)myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND);
+						if ( !badMines.contains(obj.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
 						{
-							mines[mineIndex] = (Mine)state;
+							mines[mineIndex] = (Mine)obj;
 							mineIndex++;
 						}
 					}
@@ -230,7 +234,7 @@ public class ArbiterBehavior extends Behavior{
 					
 				}
 				
-				Utility.setIndicator(myPlayer, 0, "E:"+enemyIndex+" M:"+mineIndex);
+				Utility.setIndicator(myPlayer, 0, "Number of enemies:"+enemyIndex+", Number of good mines:"+mineIndex);
 				
 				// fill in enemyInfos
 				
@@ -238,21 +242,23 @@ public class ArbiterBehavior extends Behavior{
 				for ( int i = -1 ; ++i < enemyIndex ; )
 					enemyInfos[i] = myPlayer.mySensor.senseRobotInfo(enemies[i]);
 				
-				// get closest mine
-				
-				int minMineDist = 9999; // sentinel value
-				Mine minMine = null;
-				Mine m;
-				
-				for ( int i = -1 ; ++i < mineIndex ; )
+				// get closest mine if we're not currently pursuing one
+				if ( minMine == null )
 				{
-					m = mines[i];
-					if ( myPlayer.myLoc.distanceSquaredTo(m.getLocation()) < minMineDist )
+					minMineDist = 9999; // sentinel value
+					
+					for ( int i = -1 ; ++i < mineIndex ; )
 					{
-						minMine = m;
-						minMineDist = myPlayer.myLoc.distanceSquaredTo(m.getLocation());
+						m = mines[i];
+						if ( myPlayer.myLoc.distanceSquaredTo(m.getLocation()) < minMineDist )
+						{
+							minMine = m;
+							minMineDist = myPlayer.myLoc.distanceSquaredTo(m.getLocation());
+						}
 					}
 				}
+				else
+					minMineDist = myPlayer.myLoc.distanceSquaredTo(minMine.getLocation());
 				
 				if ( minMineDist <= 2 && minMineDist > 0 )
 				{
@@ -261,6 +267,7 @@ public class ArbiterBehavior extends Behavior{
 					{
 						Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+						minMine = null;
 					}
 					// rebuild main
 					if ( num == 0 && !hasRebuilt && Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
@@ -278,6 +285,7 @@ public class ArbiterBehavior extends Behavior{
 					{
 						badMines.add(minMine.getID());
 						myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
+						minMine = null;
 					}
 				}
 				else

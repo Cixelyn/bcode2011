@@ -13,6 +13,7 @@ import battlecode.common.*;
 public final class JumpTable {
 	
 	private final int dx; private final int dy;
+	private final boolean isOmni;
 	private final boolean isDiagonal;
 	private final boolean isVertical;
 	private final MapLocation myLoc;
@@ -30,6 +31,7 @@ public final class JumpTable {
 		dy = dir.dy;
 		isDiagonal = dir.isDiagonal();
 		isVertical = (dy!=0);
+		isOmni = (dir==Direction.OMNI);
 		
 		//initialize our index
 		idx = -1;
@@ -46,11 +48,40 @@ public final class JumpTable {
 		//increment our index
 		idx++;
 		
-		
-		
-		//add a modulus operation that allows for the jump tables to changed based on modulus operations
-		
 		int xC = 0, yC = 0, dirVec = 0, zeroVec = 0;
+		
+		if(isOmni)
+		{
+			switch(idx)
+			{
+				case 0:
+					xC = 0; yC = -1; break;
+				case 1:
+					xC = 1; yC = -1; break;
+				case 2:
+					xC = 1; yC = 0; break;
+				case 3:
+					xC = 1; yC = -1; break;
+				case 4:
+					xC = 0; yC = 1; break;
+				case 5:
+					xC = -1; yC = 1; break;
+				case 6:
+					xC = -1; yC = 0; break;
+				case 7:
+					xC = -1; yC = -1; break;
+				
+				
+				default:
+					return null;
+			}
+			
+			return new MapLocation(myLoc.x+xC*dx, myLoc.y+yC*dy);
+		}
+		
+		//TODO add a modulus operation that allows for the jump tables to changed based on modulus operations
+		
+		
 		
 		/////////////////////////////////////////////////////////////////////
 		///////////////////////DIAGONALS/////////////////////////////////////
