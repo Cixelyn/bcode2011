@@ -211,12 +211,9 @@ public class RobotPlayer implements Runnable {
     	//		DON'T BREAK PLZ OK.
     	//
     	/////////////////////////////////////////////////////////////////////////////////////////////////////
-    	//Setup the initial strategy based on team memory
-    	if(myRC.getTeamMemory()[0]==0) {
-    		myStrategy = new DefaultStrategy();
-    	} else {
-    		myStrategy = null;
-    	}
+    	myStrategy = new DefaultStrategy();
+    	
+    	
     	
     	//Now based on the strategy, get what our behavior should be
     	myBehavior = myStrategy.selectBehavior(this, Clock.getRoundNum());
