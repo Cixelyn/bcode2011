@@ -20,8 +20,8 @@ public class MapStoreBoolean {
 		data = new boolean[maxX][maxY];
 	}
 	
-	public void set(MapLocation loc, boolean flag) {
-		data[loc.x%maxX][loc.y%maxY]= flag; 
+	public void set(MapLocation loc) {
+		data[loc.x%maxX][loc.y%maxY]= true; 
 	}
 	
 	public boolean at(MapLocation loc) {
