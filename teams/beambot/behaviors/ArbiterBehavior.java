@@ -66,7 +66,7 @@ public class ArbiterBehavior extends Behavior{
 	
 	private ArbiterBuildOrder state;
 	private int[] arbiterLoadout;
-	private ArrayList<Integer> badMines = new ArrayList<Integer>(GameConstants.MINES_MAX);
+	private MapStoreBoolean badMines = new MapStoreBoolean();
 	
 	MapLocation refineryLoc;
 	MapLocation armoryLoc;
@@ -216,8 +216,9 @@ public class ArbiterBehavior extends Behavior{
 					else if(state.getRobotLevel()==RobotLevel.MINE)
 					{
 						// Mine Detected
+						MapLocation mineLoc = ((Mine)state).getLocation();
 						onTop = (Robot)myPlayer.mySensor.senseObjectAtLocation(((Mine)state).getLocation(), RobotLevel.ON_GROUND);
-						if ( !badMines.contains(state.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
+						if ( !badMines.at(mineLoc) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
 						{
 							mines[mineIndex] = (Mine)state;
 							mineIndex++;
@@ -276,7 +277,7 @@ public class ArbiterBehavior extends Behavior{
 					int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
 					if ( jump == Actions.JMP_NOT_POSSIBLE )
 					{
-						badMines.add(minMine.getID());
+						badMines.set(minMine.getLocation());
 						myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
 					}
 				}
