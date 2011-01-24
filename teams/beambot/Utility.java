@@ -804,6 +804,7 @@ public class Utility {
 			return 0;
 			
 		int ans = 0;
+		int numJumps = 0;
 		ComponentType c;
 		int i = enemyInfo.components.length;
 		while ( --i >= 0 )
@@ -811,8 +812,10 @@ public class Utility {
 			c = enemyInfo.components[i];
 			if ( c.componentClass == ComponentClass.WEAPON && c != ComponentType.MEDIC && ans < c.range )
 				ans = c.range;
+			if ( c == ComponentType.JUMP )
+				numJumps++;
 		}
-		return ans;
+		return ans + numJumps*ComponentType.JUMP.range + 1;
 
 	}
 	
