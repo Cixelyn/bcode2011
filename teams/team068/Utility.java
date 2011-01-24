@@ -906,37 +906,36 @@ public class Utility {
 		if ( !enemyInfo.on )
 			return 0;
 			
-		int gunRange = 0;
-		int sightRange = 0;
-		int numJumps = 0;
-		ComponentType c;
+		int gunRange = 0; int sightRange = 0; int numJumps = 0; ComponentType c;
+		
 		int i = enemyInfo.components.length;
 		while ( --i >= 0 )
 		{
 			c = enemyInfo.components[i];
 			if ( c.componentClass == ComponentClass.WEAPON && c != ComponentType.MEDIC && gunRange < c.range )
 				gunRange = c.range;
-			if ( c.componentClass == ComponentClass.SENSOR && sightRange < c.range )
+			else if ( c.componentClass == ComponentClass.SENSOR && sightRange < c.range )
 				sightRange = c.range;
-			if ( c == ComponentType.JUMP )
+			else if ( c == ComponentType.JUMP )
 				numJumps++;
 		}
+		
 		int ans = Math.min(gunRange, sightRange);
 		switch ( ans )
 		{
 			case 0:
-				return numJumps*ComponentType.JUMP.range;
+				return numJumps*16;			//NOTE: 16 = ComponentType.JUMP.range
 			case 4:
-				return numJumps*ComponentType.JUMP.range + 10;
+				return numJumps*16 + 10;
 			case 9:
-				return numJumps*ComponentType.JUMP.range + 17;
+				return numJumps*16 + 17;
 			case 16:
-				return numJumps*ComponentType.JUMP.range + 26;
+				return numJumps*16 + 26;
 			case 25:
-				return numJumps*ComponentType.JUMP.range + 41;
+				return numJumps*16 + 41;
 			case 36:
 			default:
-				return numJumps*ComponentType.JUMP.range + 52;
+				return numJumps*16 + 52;
 		}
 
 	}

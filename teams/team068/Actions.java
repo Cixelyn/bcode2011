@@ -158,8 +158,8 @@ public class Actions {
 		int jumpEngine = availableJump();
 		
 		
-		// If we're already near the mine (but not on it) or no jumps are available, return
-		if ( (myLoc.distanceSquaredTo(mineLoc) <= 2 && myLoc.distanceSquaredTo(mineLoc) > 0) || jumpEngine == -1 )
+		// If no jumps are available, return
+		if ( jumpEngine == -1 )
 			return JMP_NOT_YET;
 		
 		// Otherwise, jump towards the mine
@@ -174,8 +174,8 @@ public class Actions {
 			if ( canJump(jmpLoc) && !jmpLoc.equals(mineLoc) )//&& myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null ) // uncomment me to avoid stepping on mines
 			{
 				// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
-				int newDist = jmpLoc.distanceSquaredTo(m.getLocation());
-				if ( (newDist < myLoc.distanceSquaredTo(m.getLocation()) || newDist <= 2) && canJump(jmpLoc) )
+				int newDist = jmpLoc.distanceSquaredTo(mineLoc);
+				if ( (myLoc.distanceSquaredTo(mineLoc) == 0 || newDist < myLoc.distanceSquaredTo(mineLoc) || newDist <= 2) && canJump(jmpLoc) )
 				{
 					enemyNearby = false;
 					// check if there is any enemy near jmpLoc

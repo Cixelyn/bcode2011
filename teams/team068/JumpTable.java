@@ -66,7 +66,7 @@ public final class JumpTable {
 				case 2:
 					xC = 1; yC = 0; break;
 				case 3:
-					xC = 1; yC = -1; break;
+					xC = 1; yC = 1; break;
 				case 4:
 					xC = 0; yC = 1; break;
 				case 5:
@@ -81,7 +81,7 @@ public final class JumpTable {
 					return null;
 			}
 			
-			return new MapLocation(currX+xC*dx, currY+yC*dy);
+			return new MapLocation(currX+xC, currY+yC);
 		}
 		
 		//TODO add a modulus operation that allows for the jump tables to changed based on modulus operations

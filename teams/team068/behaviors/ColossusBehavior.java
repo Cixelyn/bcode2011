@@ -118,7 +118,10 @@ public class ColossusBehavior extends Behavior
 				
 				while ( westEdge == -1 || northEdge == -1 || eastEdge == -1 || southEdge == -1 )
 				{
-					Utility.attackEnemies(myPlayer);
+					if ( enemyInfo == null )
+						enemyInfo = Utility.attackEnemies(myPlayer);
+					else
+						Utility.attackEnemies(myPlayer);
 					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.NORTH, 6)) )
 					{
 						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP )
@@ -182,6 +185,8 @@ public class ColossusBehavior extends Behavior
 					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
 				permRally = rally;
+				if ( enemyInfo != null )
+					rally = myPlayer.myLoc.directionTo(enemyInfo.location).ordinal();
 				obj = ColossusBuildOrder.ADVANCE;
 				return;
 				
