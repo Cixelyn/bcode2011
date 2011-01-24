@@ -141,19 +141,19 @@ public final class JumpTable {
 				case 24:
 					xC = -1; yC = 1; break;
 				case 25:
-					xC = 1; yC = -1; break;
-				
-				
+					xC = 1; yC = -1; break;	
 				default:
 					return null;
 			}
+			return new MapLocation(myLoc.x+xC*dx, myLoc.y+yC*dy);
 		}
+		
+		
 		/////////////////////////////////////////////////////////////////////
 		//////////////////////////ORTHOGONALS////////////////////////////////
 		
 		else
 		{
-			
 			switch(idx)
 			{
 			
@@ -216,17 +216,15 @@ public final class JumpTable {
 				default:
 					return null;
 			}
+			
+			if ( isVertical )
+				return new MapLocation(myLoc.x+zeroVec, myLoc.y+dirVec*dy);
+			else
+				return new MapLocation(myLoc.x+dirVec*dx, myLoc.y+zeroVec);
+			
 		}
-		
+
 		//System.out.println("idx = " + Integer.toString(idx));
-		
-		if ( isDiagonal )
-			return new MapLocation(myLoc.x+xC*dx, myLoc.y+yC*dy);
-		else if ( isVertical )
-			return new MapLocation(myLoc.x+zeroVec, myLoc.y+dirVec*dy);
-		else
-			return new MapLocation(myLoc.x+dirVec*dx, myLoc.y+zeroVec);
-		
 	}
 	
 }
