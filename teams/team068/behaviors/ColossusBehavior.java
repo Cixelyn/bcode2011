@@ -1,5 +1,4 @@
-package team068.behaviors; import team068.*; import battlecode.common.*;
-import java.util.*;
+package team068.behaviors; import team068.*; import battlecode.common.*; import java.util.*;
 
 /**
  * <pre>
@@ -70,6 +69,8 @@ public class ColossusBehavior extends Behavior
 	
 	int maxRange;
 	
+	MapLocation currentTarget;
+	
 	boolean rallyChanged = false;
 	
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
@@ -94,20 +95,23 @@ public class ColossusBehavior extends Behavior
 				// Decide what kind of heavy I am
 				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
 				
-				maxRange = ComponentType.RAILGUN.range;
 				if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout0 ) && num != -1 )
-					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout1 ) && num != -1 )
-					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
-					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout3 ) && num != -1 )
 				{
-					maxRange = ComponentType.BLASTER.range; // no railguns on this bad boy
+					maxRange = ComponentType.RAILGUN.range;
+					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				}
+				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout1 ) && num != -1 )
+				{
+					maxRange = ComponentType.BEAM.range;
+					obj = ColossusBuildOrder.DETERMINE_SPAWN;
+				}
+				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
+				{
+					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
 				return;
-				
+	        	
 			case DETERMINE_SPAWN:
 				
 				Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
@@ -232,7 +236,15 @@ public class ColossusBehavior extends Behavior
 				}
 				
         		// Attacking code
-        		enemyInfo = Utility.attackEnemies(myPlayer);
+				if (num%3==1) {
+					enemyInfo=Utility.attackEnemiesBeams(myPlayer,currentTarget);
+					if (currentTarget!=null) {
+						currentTarget=enemyInfo.location;
+					}
+				}
+				else {
+					enemyInfo = Utility.attackEnemies(myPlayer);
+				}
         		
         		// No enemy found
         		if ( enemyInfo == null || myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) > maxRange )
@@ -412,14 +424,12 @@ public class ColossusBehavior extends Behavior
 			if ( num == -1 )
 			{
 				num = msg.ints[Messenger.firstData+1];
-				if ( num == 0 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railguns all the way!");
-				else if ( num % 3 == 0 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", smudge safeties off!");
+				if ( num % 3 == 0 )
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railgun all the way!");
 				else if ( num % 3 == 1 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", $MG$ R 4 N))B$!");
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", prismatic core online!");
 				else if ( num % 3 == 2 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", tr-tr-triple blaster!");
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");
 			}
 		}
 	}
@@ -441,3 +451,4 @@ public class ColossusBehavior extends Behavior
 	
 	
 }
+

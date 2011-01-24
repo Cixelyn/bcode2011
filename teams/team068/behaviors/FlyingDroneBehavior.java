@@ -153,7 +153,7 @@ public class FlyingDroneBehavior extends Behavior {
     			if (Clock.getRoundNum()-myPlayer.myBirthday>Constants.SCRAMBLE_TIME && !hasBeenScrambled) {
     				Utility.setIndicator(myPlayer, 0, "BEEN SCRAMBLED!");
     				hasBeenScrambled=true;
-    				while (!myPlayer.myMotor.isActive()) {
+    				while (myPlayer.myMotor.isActive()) {
     					myPlayer.sleep();
     				}
     				myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(myPlayer.myCartographer.getMapCenter()));

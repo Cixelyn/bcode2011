@@ -16,7 +16,8 @@ public class ArmoryBehavior extends Behavior
 		EQUIP_HEAVY,
 		EQUIP_ARMOR,
 		EQUIP_ARBITER,
-		SLEEP
+		SLEEP,
+		REBUILT
 	}
 	
 	
@@ -41,6 +42,7 @@ public class ArmoryBehavior extends Behavior
 	boolean rHasSatellite;
 	int rNumJumps;
 	int rNumPlasma;
+	int rNumBeams;
 	
 	double minFluxToBuild;
 	
@@ -65,6 +67,8 @@ public class ArmoryBehavior extends Behavior
     			
     			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
     			Utility.setIndicator(myPlayer, 2, "");
+    			
+    			
     			if ( unitDock != null )
     			{
     				while ( myPlayer.myMotor.isActive() )
@@ -80,6 +84,8 @@ public class ArmoryBehavior extends Behavior
     					obj = ArmoryBuildOrder.SLEEP;
     				}
     			}
+    			else if ( Clock.getRoundNum() - myPlayer.myBirthday > Constants.REBUILD_TIME )
+    				obj = ArmoryBuildOrder.REBUILT;
     			return;
     			
     		case EQUIP_UNIT:
@@ -196,7 +202,7 @@ public class ArmoryBehavior extends Behavior
     			}
 				
     			rInfo = myPlayer.mySensor.senseRobotInfo(r);
-    			if ( currHeavy % 3 == 0 ) // currHeavy == 0 case is identical
+    			if ( currHeavy % 3 == 0 )
     			{
 					rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
@@ -216,14 +222,24 @@ public class ArmoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 1 )
     			{
+    				rNumPlasma = 0;
+    				rNumBeams = 0;
     				rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
+						if ( c == ComponentType.PLASMA )
+							rNumPlasma++;
+						if ( c == ComponentType.BEAM )
+							rNumBeams++;
 						if ( c == ComponentType.JUMP )
 							rNumJumps++;
 					}
-					if ( rNumJumps < 1 )
+					if ( rNumPlasma < 2 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+					else if ( rNumBeams < 2 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.BEAM, RobotLevel.ON_GROUND);
+					else if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -235,7 +251,7 @@ public class ArmoryBehavior extends Behavior
     			else if ( currHeavy % 3 == 2 )
     			{
     				rNumPlasma = 0;
-    				rNumJumps = 0;
+					rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
@@ -245,7 +261,7 @@ public class ArmoryBehavior extends Behavior
 							rNumJumps++;
 					}
 					if ( rNumPlasma < 2 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND);
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND );
 					else if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
@@ -255,6 +271,7 @@ public class ArmoryBehavior extends Behavior
 						}
 					}
     			}
+    			
     			return;
     			
     		case EQUIP_ARMOR:
@@ -355,6 +372,35 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 2, "zzzzzzz");
 				myPlayer.myRC.turnOff();
 				return;
+				
+    		case REBUILT:
+    			
+    			Utility.setIndicator(myPlayer, 1, "REBUILT");
+    			Utility.setIndicator(myPlayer, 2, "Proxy!");
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for ( int i = nearbyRobots.length ; --i >= 0 ; )
+    			{
+    				r = nearbyRobots[i];
+    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getRobotLevel() == RobotLevel.ON_GROUND )
+    				{
+    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    					if ( rInfo.chassis == Chassis.HEAVY && rInfo.on )
+    					{
+    						for ( int j = rInfo.components.length ; --j >= 0 ; )
+    						{
+    							c = rInfo.components[j];
+    							if ( c == ComponentType.CONSTRUCTOR )
+    							{
+    								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
+    								unitDock = rInfo.location;
+    								obj = ArmoryBuildOrder.WAIT_FOR_DOCK;
+    								return;
+    							}
+    						}
+    					}
+    				}
+    			}
+    			return;
 				
     	}
 		

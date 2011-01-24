@@ -42,6 +42,8 @@ public class Constants
 	//public static final int ARBITER_TIME = 1; // how many units come out before the arbiter (NOT A ROUND NUMBER, SILLY!)
 	public static final int MAX_DRONES = 2; // how many drones to make before arbiterssss
 	public static final int OLD_NEWS = 2; // how many jumps a colossus should pursue a non-permanent rally
+	public static final int REBUILD_TIME = 1000; // how many rounds an arbiter must be alive before considering building factory/armory
+	public static final double MAD_BANK = 1000; // how much money to have before building factory/armory
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;
@@ -63,28 +65,22 @@ public class Constants
   								ComponentType.RAILGUN,ComponentType.RAILGUN,ComponentType.SMG
   								};
   	
-	public static final ComponentType[] heavyLoadout1 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
-                                 {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-  								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
-  								ComponentType.HARDENED
-  								};
+	public static final ComponentType[] heavyLoadout1 = new ComponentType[]    // currHeavy % 3 == 1
+	                           {ComponentType.RADAR,ComponentType.JUMP,
+								ComponentType.BEAM,ComponentType.BEAM,
+								ComponentType.PLASMA,ComponentType.PLASMA
+	                            };
   	
-	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 1
-                                 {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-  								ComponentType.RAILGUN,ComponentType.BLASTER,
-  								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD
-  								};
-  	
-	public static final ComponentType[] heavyLoadout3 = new ComponentType[]    // currHeavy % 3 == 2  
-  	                           {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
-  								ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.BLASTER,ComponentType.SMG,
-  								ComponentType.PLASMA,ComponentType.PLASMA
-  								};
+	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
+	                           {ComponentType.RADAR,ComponentType.JUMP,
+								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
+								ComponentType.PLASMA,ComponentType.PLASMA
+								};
 	
 	public static final ComponentType[] arbiterLoadout = new ComponentType[]
-	                               {ComponentType.SATELLITE,ComponentType.CONSTRUCTOR,
-									ComponentType.JUMP,ComponentType.JUMP,
-									ComponentType.HAMMER};
+                               {ComponentType.SATELLITE,ComponentType.CONSTRUCTOR,
+								ComponentType.JUMP,ComponentType.JUMP,
+								ComponentType.HAMMER};
 	
 	
 }
