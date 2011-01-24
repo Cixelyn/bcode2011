@@ -81,7 +81,7 @@ public final class JumpTable {
 					return null;
 			}
 			
-			return new MapLocation(currX+xC*dx, currY+yC*dy);
+			return new MapLocation(currX+xC, currY+yC);
 		}
 		
 		//TODO add a modulus operation that allows for the jump tables to changed based on modulus operations
