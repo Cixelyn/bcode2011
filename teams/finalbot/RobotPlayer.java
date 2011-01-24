@@ -32,17 +32,32 @@ package finalbot; import java.util.*; import finalbot.strategies.*; import final
  *  \__/
  *
  * [Main]
- *    RobotPlayer.java
+ *    RobotPlayer.java 		- The Main VM entry-point
  *    
  * [Broadcasting]
- *    Messenger.java
- *    MsgType.java
+ *    Messenger.java		- Messenging send and receive functions
+ *    MsgType.java			- Types of messages you can send and receive.
+ *    Encoder.java			- Does bit-shifting to pack data into ints for messenger
  *    
  * [Navigation]
- *    OldNavigation.java
- *    Cartographer.Java  
+ *    OldNavigation.java	- Implements a rudimentary bugnav
+ *    Cartographer.java  	- Calculates map center based on map edges
+ *    MapStoreBoolean.java	- This class allows a boolean to be set per map location
+ *    JumpTable.java		- This class returns in order the possible jump locations for a robot
  *    
- *  TODO: UPDATE THIS LATER BEFORE SUBMISSION
+ * [Misc]
+ * 	  Utility.java			- We just put a bunch of random stuff in here....
+ *    Constants.java		- All of our tweakables go in here.
+ *    Memory.java			- Round-to-round memory encoding and decoding functions go here.
+ * 
+ * [Behaviors]
+ * 		A behavior is a state machine that defines the actions of a particular unit.
+ * 		All behaviors extend Behavior.java
+ * 
+ * [Strategy]
+ * 		A strategy is a set of behaviors that the bots should run on a particular round.
+ *      All strategies extend Strategy.java
+ *    
  *
  *
  *
