@@ -238,8 +238,11 @@ public class ColossusBehavior extends Behavior
         		// Attacking code
 				if (num%3==1) {
 					enemyInfo=Utility.attackEnemiesBeams(myPlayer,currentTarget);
-					if (currentTarget!=null) {
+					if (enemyInfo!=null) {
 						currentTarget=enemyInfo.location;
+					}
+					else {
+						currentTarget=null;
 					}
 				}
 				else {
