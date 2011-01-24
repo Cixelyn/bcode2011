@@ -84,7 +84,7 @@ public class ArmoryBehavior extends Behavior
     					obj = ArmoryBuildOrder.SLEEP;
     				}
     			}
-    			else if ( Clock.getRoundNum() - myPlayer.myBirthday > Constants.REBUILD_TIME )
+    			else if ( Clock.getRoundNum() > Constants.REBUILD_TIME )
     				obj = ArmoryBuildOrder.REBUILT;
     			return;
     			

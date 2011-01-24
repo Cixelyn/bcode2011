@@ -281,12 +281,13 @@ public class ArbiterBehavior extends Behavior{
 						minMine = null;
 						lastMineCapped = 0;
 					}
-					// rebuild main
+					// FIXME this is not yet tested
+					/*// rebuild main
 					if ( num == 0 && !hasRebuilt && Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
 					{
 						refineryLoc = minMine.getLocation();
 						state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
-					}
+					}*/
 				}
 				else if ( minMine != null )
 				{
@@ -547,14 +548,32 @@ public class ArbiterBehavior extends Behavior{
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
 				}
 				
-				RobotInfo refinery = myPlayer.mySensor.senseRobotInfo((Robot)myPlayer.mySensor.senseObjectAtLocation(refineryLoc, RobotLevel.ON_GROUND));
-				if ( !refinery.location.add(refinery.direction).equals(myPlayer.myLoc) )
+				Robot refinery = (Robot)myPlayer.mySensor.senseObjectAtLocation(refineryLoc, RobotLevel.ON_GROUND);
+				if ( refinery == null )
+				{
+					state = ArbiterBuildOrder.EXPAND;
 					return;
-				RobotInfo factory = myPlayer.mySensor.senseRobotInfo((Robot)myPlayer.mySensor.senseObjectAtLocation(factoryLoc, RobotLevel.ON_GROUND));
-				if ( !factory.location.add(factory.direction).equals(myPlayer.myLoc) )
+				}
+				RobotInfo refineryInfo = myPlayer.mySensor.senseRobotInfo(refinery);
+				if ( !refineryInfo.location.add(refineryInfo.direction).equals(myPlayer.myLoc) )
 					return;
-				RobotInfo armory = myPlayer.mySensor.senseRobotInfo((Robot)myPlayer.mySensor.senseObjectAtLocation(armoryLoc, RobotLevel.ON_GROUND));
-				if ( !armory.location.add(armory.direction).equals(myPlayer.myLoc) )
+				Robot factory = (Robot)myPlayer.mySensor.senseObjectAtLocation(factoryLoc, RobotLevel.ON_GROUND);
+				if ( factory == null )
+				{
+					state = ArbiterBuildOrder.EXPAND;
+					return;
+				}
+				RobotInfo factoryInfo = myPlayer.mySensor.senseRobotInfo(factory);
+				if ( !factoryInfo.location.add(factoryInfo.direction).equals(myPlayer.myLoc) )
+					return;
+				Robot armory = (Robot)myPlayer.mySensor.senseObjectAtLocation(armoryLoc, RobotLevel.ON_GROUND);
+				if ( armory == null )
+				{
+					state = ArbiterBuildOrder.EXPAND;
+					return;
+				}
+				RobotInfo armoryInfo = myPlayer.mySensor.senseRobotInfo(armory);
+				if ( !armoryInfo.location.add(armoryInfo.direction).equals(myPlayer.myLoc) )
 					return;
 				state = ArbiterBuildOrder.EXPAND;
 				return;
