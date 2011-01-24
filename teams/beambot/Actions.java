@@ -105,7 +105,7 @@ public class Actions {
 		
 		//Now lets jump in the direction
 		
-		JumpTable jmp = new JumpTable(myPlayer.myRC.getLocation(),dir);
+		JumpTable jmp = new JumpTable(myPlayer.myLoc,dir);
 		MapLocation jmpLoc = jmp.nextLoc();
 		
 		boolean enemyNearby;
@@ -148,16 +148,22 @@ public class Actions {
 	public int jumpToMine(Mine m, RobotInfo[] enemyInfos) throws GameActionException
 	{
 		
+		// Instantiate local variables to reduce cost
+		RobotController myRC = myPlayer.myRC;
+		MapLocation myLoc = myPlayer.myLoc;
+		MapLocation mineLoc = m.getLocation();
+		
+		
 		// Get a non-active JumpController, if available
 		int jumpEngine = availableJump();
 		
 		
 		// If we're already near the mine (but not on it) or no jumps are available, return
-		if ( (myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) <= 2 && myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) > 0) || jumpEngine == -1 )
+		if ( (myLoc.distanceSquaredTo(mineLoc) <= 2 && myLoc.distanceSquaredTo(mineLoc) > 0) || jumpEngine == -1 )
 			return JMP_NOT_YET;
 		
 		// Otherwise, jump towards the mine
-		JumpTable jmp = new JumpTable(myPlayer.myRC.getLocation(),myPlayer.myRC.getLocation().directionTo(m.getLocation()));
+		JumpTable jmp = new JumpTable(myLoc,myLoc.directionTo(mineLoc));
 		MapLocation jmpLoc = jmp.nextLoc();
 		
 		
@@ -165,11 +171,11 @@ public class Actions {
 		while ( jmpLoc != null )
 		{
 			// also check that we don't jump on a mine
-			if ( canJump(jmpLoc) && !jmpLoc.equals(m.getLocation()) )//&& myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null ) // uncomment me to avoid stepping on mines
+			if ( canJump(jmpLoc) && !jmpLoc.equals(mineLoc) )//&& myPlayer.mySensor.senseObjectAtLocation(jmpLoc, RobotLevel.MINE) == null ) // uncomment me to avoid stepping on mines
 			{
 				// check that jmpLoc is closer to the mine (but not on it) and that we can jump there
 				int newDist = jmpLoc.distanceSquaredTo(m.getLocation());
-				if ( (newDist < myPlayer.myRC.getLocation().distanceSquaredTo(m.getLocation()) || newDist <= 2) && canJump(jmpLoc) )
+				if ( (newDist < myLoc.distanceSquaredTo(m.getLocation()) || newDist <= 2) && canJump(jmpLoc) )
 				{
 					enemyNearby = false;
 					// check if there is any enemy near jmpLoc

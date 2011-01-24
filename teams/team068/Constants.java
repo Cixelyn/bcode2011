@@ -44,6 +44,7 @@ public class Constants
 	public static final int OLD_NEWS = 2; // how many jumps a colossus should pursue a non-permanent rally
 	public static final int REBUILD_TIME = 1000; // how many rounds an arbiter must be alive before considering building factory/armory
 	public static final double MAD_BANK = 1000; // how much money to have before building factory/armory
+	public static final int FORGET_BAD_MINES = 200; // how many rounds until arbiter forgets bad mines
 	
 	//Max's Go here
 	public static final int RUN_AWAY_TIME=5;
