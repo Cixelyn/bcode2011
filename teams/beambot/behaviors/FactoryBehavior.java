@@ -72,7 +72,7 @@ public class FactoryBehavior extends Behavior
     					obj = FactoryBuildOrder.SLEEP;
     				}
     			}
-    			else if ( Clock.getRoundNum() > 1000 )
+    			else if ( Clock.getRoundNum() > Constants.REBUILD_TIME )
     				obj = FactoryBuildOrder.REBUILT;
     			return;
     			

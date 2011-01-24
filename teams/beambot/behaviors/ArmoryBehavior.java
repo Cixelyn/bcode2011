@@ -84,7 +84,7 @@ public class ArmoryBehavior extends Behavior
     					obj = ArmoryBuildOrder.SLEEP;
     				}
     			}
-    			else if ( Clock.getRoundNum() > 1000 )
+    			else if ( Clock.getRoundNum() > Constants.REBUILD_TIME )
     				obj = ArmoryBuildOrder.REBUILT;
     			return;
     			
@@ -255,6 +255,8 @@ public class ArmoryBehavior extends Behavior
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
+						if ( c == ComponentType.PLASMA )
+							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
 							rNumJumps++;
 					}

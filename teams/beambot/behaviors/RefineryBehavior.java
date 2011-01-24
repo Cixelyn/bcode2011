@@ -558,7 +558,7 @@ public class RefineryBehavior extends Behavior
 	public void onWakeupCallback(int lastActiveRound)
 	{
 		hasSlept = true;
-		if ( Clock.getRoundNum() < 500 )
+		if ( Clock.getRoundNum() < Constants.REBUILD_TIME )
 			obj = RefineryBuildOrder.WAIT_FOR_DOCK; // I'm one of the first four refineries
 		else
 			obj = RefineryBuildOrder.REBUILT;
