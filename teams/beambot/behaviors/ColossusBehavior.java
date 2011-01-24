@@ -69,6 +69,8 @@ public class ColossusBehavior extends Behavior
 	
 	int maxRange;
 	
+	MapLocation currentTarget;
+	
 	boolean rallyChanged = false;
 	
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
@@ -240,7 +242,13 @@ public class ColossusBehavior extends Behavior
 				}
 				
         		// Attacking code
-        		enemyInfo = Utility.attackEnemies(myPlayer);
+				if (num%3==1) {
+					enemyInfo=Utility.attackEnemiesBeams(myPlayer,currentTarget);
+					currentTarget=enemyInfo.location;
+				}
+				else {
+					enemyInfo = Utility.attackEnemies(myPlayer);
+				}
         		
         		// No enemy found
         		if ( enemyInfo == null || myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) > maxRange )

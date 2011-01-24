@@ -1,433 +1,374 @@
-package beambot.behaviors; import beambot.*; import battlecode.common.*; import java.util.*;
+package beambot.behaviors; import battlecode.common.*; import beambot.*;
+import java.util.*;
+
+
 
 /**
  * <pre>
- *                            _______________
- *                           /               \ 
- *  ========================[  C O L O S S I  ]===========================    
- *                           \_______________/
- *          
- *      
- *     "BEEP BEEP BEEP, KILL!!!!!" ~ A colossus.        
- *      
- *                           
- *                             ,----.___________,-,               
- *     ,__                    (________________|__|               
- *  __/()(_________________________/o(____)o(__  ``            _  
- * (__________________________(_(_(_(_(________Y_....-----====//  
- *               ( , , , , , , (______________)--            ((   
- *                \_____________|________|[ )) JW  ____   __  \\  
- *                               |____|    "" \.__-'`". \(__) \\\ 
- *                               |____|        `""      ```"""=,))
- *                               |    |                           
- *                               `====                                                           
  * 
- *   __
- *	/  \ Notes ___________________________________________________________ 
- *  \__/
- *  
- *    The colossus is the workhorse of our army.  Although each unit may 
- *    vary slightly in weapon and armor loadout, all of them are deadly. 
- *    It is the job of the colossi to destroy everything in their wake, 
- *    and bring us victory through  complete elimination of the other team.
- *  
- *  
- * </pre> 
- * @author MAX
+ *                                           .                                     
+ *                                       . M..M,                                 
+ *                                          M.  M                                
+ *                                           MM   M.                             
+ *                                             M. ,.M                            
+ *     .MNM                                     N M. M.                          
+ *     M . M.                                   .N MM  M                         
+ *    .M.  .MM                                   .N .MMMM                        
+ *    .M     MM                                  .MM.DM..M.                      
+ *     M      M                                    NM  M, M                      
+ *     MM   .  M .                                  M   M. M.                    
+ *     .M.  N  MM.                                   M. ..M M                    
+ *     .M. M    MM                                   MM .M  M.M                  
+ *     .M.M     .M.                                   MM M.   M.                 
+ *     .M M       M                                    M. .  MDM                 
+ *       M        MMM                                 .M  M. M...M               
+ *       M.   ..M.. M.                                 M .,  M.   M              
+ *      .MM   MN    .MM                     ..         .N  MMM    M,             
+ *        M. .M       MM                 . MNMN MMM..  .M..M M   .M              
+ *        MM M.        MM                M     M    .  .MMMM. M.   M             
+ *         MM.          .M.              N.      M  M   M.  M..M   M             
+ *         M.     .MMM    M...NMM.       N.   MM  MMN .M  .NM. .MNMM             
+ *          M.    M  .MM..MMM   . MM     M    M .M..N.M .M.N M     M.MMM         
+ *          MM  .M      .MM M.     .N    .M.   M M   .M .M  M. ....MM .M         
+ *          .M.  M.       .M M.. . M.M  MMMMM.     MMM M M..MMM.   M .M.         
+ *           M.   M,       ,M. M.  ...MM.MM. MM  .M  .M.M.M .M.N   M MM          
+ *           ,M    M.        M .M. .. .N . . M.MM .M  M ...MMM  MM M.M           
+ *             M   .M..       M  M M,M.M M M .M .M. M M  M M.M..  M.M            
+ *            ..M  M..MMMM,  MM   .M.. MM M .  N:..  MM  .M  M..  MMM            
+ *              .MM        ,..    .NN  M N.M MMM.MM,       M M.    .N            
+ *                M              ,M, NMMM.M.       .M.     .MN..   MM            
+ *                 M.           MN.   M..NM.        .MMM M. MM.. MM.M            
+ *       .MMMMM    .M          M       M   M. ,M..DMMNM.  M MMMMM   .            
+ *      .M   M ,MMMMMM        M         M  M..M.M..   .M . M .M.,M M.            
+ *      .MM .M     MM MM    ,M.           .M.M. MM  M M.M.MM  ...MM              
+ *          .MMMM   M. .M .DMMM          M M  M     MM .MM.N. MM                 
+ *             .  MMMM  ..M M...M      .MMM. .MMMMM.MMMM.M.M N..                 
+ *                    MMM  M  M.M    MM  .M.M M      M .M  M M                   
+ *                       .MM.M.     M    .MM M.       M  .M.M.                   
+ *                         ..MMMMM..M  MM. .          MMMMMM.                    
+ *                             M  M.N,.MM..                                      
+ *                              MN.  .MM. MM                                     
+ *                                MM .. M.MM                                     
+ *                                                                               
+ *                                                                               
+ * 
+ * </pre>
+ * The arbiter is a unit that runs around the map and attempts to destroy mines during the lategame.
+ * @author Cory
+ * @author FiBsTeR (JVen)
+ *
+ *
+ * @see <a href="http://www.youtube.com/watch?v=muitsly5t6M">Arbiterssss</a>
  *
  */
-public class UltraliskBehavior extends Behavior
-{
-	
-	private enum ColossusBuildOrder
-	{
-		EQUIPPING,
-		DETERMINE_SPAWN,
-		ADVANCE,
-		RETREAT
-	}
+public class UltraliskBehavior extends Behavior{
 	
 	
-	ColossusBuildOrder obj = ColossusBuildOrder.EQUIPPING;
+	private ArbiterBuildOrder state;
+	private int[] arbiterLoadout;
+	private ArrayList<Integer> badMines = new ArrayList<Integer>(GameConstants.MINES_MAX);
 	
-	RobotInfo enemyInfo;
-	
-	int num = -1;
 	int northEdge = -1;
 	int eastEdge = -1;
 	int southEdge = -1;
 	int westEdge = -1;
 	int spawn = -1;
 	int rally = -1;
-	int permRally = -1;
-	int timeOffPerm = 0;
-	int jump;
-	
-	int numBounces;
-	int numStuck;
-	
-	int maxRange;
-	
-	boolean rallyChanged = false;
-	
+	int num = -1;
+	int numStuck = 0;
+
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
-	
 	
 	public UltraliskBehavior(RobotPlayer player)
 	{
 		super(player);
+		
+		state = ArbiterBuildOrder.EQUIPPING;									//set our current state
+		arbiterLoadout = Utility.countComponents(Constants.arbiterLoadout);		//precompute our unit loadout
 	}
 
-
-	public void run() throws Exception
+	
+	private enum ArbiterBuildOrder
 	{
-		
-		switch (obj)
-		{
-			
-			case EQUIPPING:	
+		EQUIPPING,
+		DETERMINE_SPAWN,
+		SEARCH_AND_DESTROY
+	}
+	
+	
 
-				Utility.setIndicator(myPlayer, 1, "EQUIPPING ULTRA");
-				
-				// Decide what kind of heavy I am
-				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
-				if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
+	public void run() throws Exception {
+		
+		switch(state) {
+		
+		
+		case EQUIPPING:
+			
+			// System.out ???? -JVen
+			//System.out.println(arbiterLoadout);
+			//System.out.println(Utility.countComponents(myPlayer.myRC.components()));
+			Utility.setIndicator(myPlayer, 1, "EQUIPPING ARBITER");
+			if( Utility.compareComponents(myPlayer, arbiterLoadout) ) {
+				state = ArbiterBuildOrder.DETERMINE_SPAWN;
+			}
+			return;
+		
+		case DETERMINE_SPAWN:
+			
+			Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
+			
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.NORTH, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.NORTH, 10)) == TerrainTile.OFF_MAP )
+					northEdge = 1;
+				else
+					northEdge = 0;
+			}
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.EAST, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.EAST, 10)) == TerrainTile.OFF_MAP )
+					eastEdge = 1;
+				else
+					eastEdge = 0;
+			}
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.SOUTH, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.SOUTH, 10)) == TerrainTile.OFF_MAP )
+					southEdge = 1;
+				else
+					southEdge = 0;
+			}
+			if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.WEST, 10)) )
+			{
+				if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.WEST, 10)) == TerrainTile.OFF_MAP )
+					westEdge = 1;
+				else
+					westEdge = 0;
+			}
+			spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
+			if ( spawn != -1 )
+			{
+				if ( spawn % 2 == 1 )
 				{
-					maxRange = ComponentType.HAMMER.range;
-					obj = ColossusBuildOrder.DETERMINE_SPAWN;
-				}
-				return;
-	        	
-			case DETERMINE_SPAWN:
-				
-				Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
-				
-				while ( westEdge == -1 || northEdge == -1 || eastEdge == -1 || southEdge == -1 )
-				{
-					Utility.attackEnemies(myPlayer);
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.NORTH, 6)) )
-					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.NORTH, 6)) == TerrainTile.OFF_MAP )
-							northEdge = 1;
-						else
-							northEdge = 0;
-					}
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.EAST, 6)) )
-					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.EAST, 6)) == TerrainTile.OFF_MAP )
-							eastEdge = 1;
-						else
-							eastEdge = 0;
-					}
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.SOUTH, 6)) )
-					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.SOUTH, 6)) == TerrainTile.OFF_MAP )
-							southEdge = 1;
-						else
-							southEdge = 0;
-					}
-					if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.WEST, 6)) )
-					{
-						if ( myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.WEST, 6)) == TerrainTile.OFF_MAP )
-							westEdge = 1;
-						else
-							westEdge = 0;
-					}
-					while ( myPlayer.myMotor.isActive() )
-						myPlayer.sleep();
-					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
-					myPlayer.sleep();
-				}
-				spawn = Utility.getSpawn(westEdge, northEdge, eastEdge, southEdge);
-				if ( spawn != -1 )
-				{
-					if ( num < 2 || num >= 6 )
-						rally = (spawn + 4) % 8;
-					else if ( num % 2 == 0 )
-					{
-						numBounces = 3; // automatically patrol the edge of map
-						if ( spawn % 2 == 1 )
-							rally = (spawn + 3) % 8;
-						else
-							rally = (spawn + 2) % 8;
-					}
-					else if ( num % 2 == 1 )
-					{
-						numBounces = 3; // automatically patrol the edge of map
-						if ( spawn % 2 == 1 )
-							rally = (spawn + 5) % 8;
-						else
-							rally = (spawn + 6) % 8;
-					}
-					Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+					if ( num % 2 == 0 )
+						rally = (spawn + 1) % 8;
+					else
+						rally = (spawn + 7) % 8;
 				}
 				else
 				{
-					numBounces = 3; // automatically patrol the edge of map
-					rally = (2 * num) % 8;
-					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
-				}
-				permRally = rally;
-				obj = ColossusBuildOrder.ADVANCE;
-				return;
-				
-			case ADVANCE:	
-				
-				Utility.setIndicator(myPlayer, 1, "ADVANCE");
-				
-				// Rally to center if we're confident enough in where it is
-				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
-				{
-					if ( myPlayer.myLoc.distanceSquaredTo(myPlayer.myCartographer.getMapCenter()) < ComponentType.JUMP.range )
-						Utility.setIndicator(myPlayer, 2, "I'm at the center of the map already!!");
+					if ( num % 2 == 0 )
+						rally = (spawn + 2) % 8;
 					else
+						rally = (spawn + 6) % 8;
+				}
+				Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+			}
+			else
+			{
+				rally = Direction.NORTH.ordinal();
+				Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
+			}
+			state = ArbiterBuildOrder.SEARCH_AND_DESTROY;
+			return;
+			
+		case SEARCH_AND_DESTROY:
+			Utility.setIndicator(myPlayer, 1, "SEARCH_AND_DESTROY");
+			
+			
+			//////////////////////////////////////////////////////////////////////////////////
+			// SENSING
+			//	 this custom sensing code is designed to be as compact and fast as possible.
+			//   NOTE: everything is filled in and accessed backwards,
+			//   so we can break when a null is detected :D
+			//
+			GameObject[] objects = myPlayer.mySensor.senseNearbyGameObjects(GameObject.class);
+			
+			Mine[] mines = new Mine[64]; int mineIndex = 0;
+			Robot[] enemies = new Robot[64]; int enemyIndex = 0;
+			
+			Robot onTop;
+			
+			for ( int i = objects.length ; --i >= 0 ; )
+			{
+				
+				GameObject obj = objects[i];
+				
+				if(obj.getTeam()==myPlayer.myOpponent)
+				{ 
+					// Enemy Robot Detected
+					enemies[enemyIndex] = (Robot)obj; //cast it correctly
+					enemyIndex++;					
+				}
+				else if(obj.getRobotLevel()==RobotLevel.MINE)
+				{
+					// Mine Detected
+					onTop = (Robot)myPlayer.mySensor.senseObjectAtLocation(((Mine)obj).getLocation(), RobotLevel.ON_GROUND);
+					if ( !badMines.contains(obj.getID()) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
 					{
-						switch ( myPlayer.myCartographer.getConfidence() )
-						{
-							case 0:
-								
-								Utility.setIndicator(myPlayer, 2, "I've never seen a map edge before. Are they pretty?");
-								rallyChanged = true;
-								break;
-								
-							case 1:
-								
-								Utility.setIndicator(myPlayer, 2, "I've only seen one map edge, I'm not scrambling.");
-								rallyChanged = true;
-								break;
-								
-							case 2:
-								
-								Utility.setIndicator(myPlayer, 2, "I've seen two map edges, I'd rather not scramble.");
-								rallyChanged = true;
-								break;
-								
-							case 3:
-								
-								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
-								Utility.setIndicator(myPlayer, 2, "I'm pretty sure the center is " + Direction.values()[rally].toString() + ", rerallying.");
-								permRally = rally;
-								rallyChanged = true;
-								break;
-								
-							case 4:
-								
-								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
-								Utility.setIndicator(myPlayer, 2, "I KNOW the center is " + Direction.values()[rally].toString() + ", rerallying.");
-								permRally = rally;
-								rallyChanged = true;
-								break;
-						}
+						mines[mineIndex] = (Mine)obj;
+						mineIndex++;
 					}
 				}
+				else
+				{
+					// Debris Detected, ignore
+				}
 				
-        		// Attacking code
-        		enemyInfo = Utility.attackEnemies(myPlayer);
-        		
-        		// No enemy found
-        		if ( enemyInfo == null || myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) > maxRange )
-        		{
-        			// enemy is sensed but is far
-        			if ( enemyInfo != null )
-        			{
-        				rally = myPlayer.myLoc.directionTo(enemyInfo.location).ordinal();
-        				Utility.setIndicator(myPlayer, 2, "Enemy on the horizon, rerallying " + Direction.values()[rally].toString() + ".");
-        				// THIS IS NOT A PERMANENT RALLY
-        				rallyChanged = true;
-        				
-        				if ( !myPlayer.myMotor.isActive() )
-        				{
-	        				if ( (myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateRight()) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
-	        					myPlayer.myMotor.moveForward();
-	        				else if ( myPlayer.myRC.getDirection() != myPlayer.myLoc.directionTo(enemyInfo.location) )
-	        					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
-        				}
-        			}
-        			else
-        			{
-	        			// Off map rerally code
-	        			if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],6)) == TerrainTile.OFF_MAP )
-	    	        	{
-	    	        		if ( numBounces == 0 )
-	    	        			rally = (rally + 2) % 8; // we have reached the enemy side, everyone search together
-	    	        		else if ( numBounces == 1 )
-	    	        			rally = (rally + 4) % 8; // we have searched one part of the enemy side, everyone go back together
-	    	        		else
-	    	        		{
-	    	        			// we have cleared the enemy side, spread out and patrol the sides of the map
-	    	        			if ( num % 2 == 0 )
-	    		        			rally = (rally + 2) % 8;
-	    		        		else
-	    		        			rally = (rally + 6) % 8;
-	    	        		}
-	    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-	    	        		numBounces++;
-	    	        		permRally = rally;
-	    	        		rallyChanged = true;
-	    	        	}
-	            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],6)) == TerrainTile.OFF_MAP )
-	    	        	{
-	    	        		// we have reached the closest side to the enemy corner, rerally to corner
-	    	        		if ( num % 2 == 0 )
-	    	        			rally = (rally + 1) % 8;
-	    	        		else
-	    	        			rally = (rally + 7) % 8;
-	    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-	    	        		numBounces++;
-	    	        		permRally = rally;
-	    	        		rallyChanged = true;
-	    	        	}
-	            		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],6)) == TerrainTile.OFF_MAP )
-	    	        	{
-	            			// we have reached the closest side to the enemy corner, rerally to corner
-	    	        		if ( num % 2 == 0 )
-	    	        			rally = (rally + 7) % 8;
-	    	        		else
-	    	        			rally = (rally + 1) % 8;
-	    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
-	    	        		numBounces++;
-	    	        		permRally = rally;
-	    	        		rallyChanged = true;
-	    	        	}
-        			}
-	            		
-	        			// Try to jump
-	        			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
-						if ( jump == Actions.JMP_SUCCESS )
-						{
-							// Jumped successfully
-							prevLocs.add(myPlayer.myLoc);
-							if ( prevLocs.size() > Constants.STUCK_JUMPS )
-								prevLocs.pollFirst();
-							
-							// check if we're pursuing a non-permanent rally
-							timeOffPerm++;
-							if ( timeOffPerm >= Constants.OLD_NEWS )
-							{
-								rally = permRally;
-								timeOffPerm = 0;
-							}
-							
-							// No enemy found before jumping, check again after
-							enemyInfo = Utility.attackEnemies(myPlayer);
-						}
-						else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myPlayer.myLoc) < ComponentType.JUMP.range) )
-						{
-							// "Can't jump there, somethins in the way"
-							prevLocs.clear();
-							rally = (3*numStuck) % 8;
-							numStuck++;
-							Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
-							permRally = rally;
-							rallyChanged = true;
-						}
-        		}
-        		
-        		// Enemy in range, either before or after jump. Enable the micros
-        		if ( enemyInfo != null && myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) <= maxRange )
-        		{
-        			if ( myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) < maxRange )
-        			{
-        				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
-        				if ( !myPlayer.myMotor.isActive() )
-        				{
-	        				if ( (myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
-	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateLeft()
-	        						|| myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateRight() )
-	        						&& myPlayer.myMotor.canMove(myPlayer.myRC.getDirection().opposite())
-	        						&& myPlayer.myLoc.add(myPlayer.myRC.getDirection().opposite()).distanceSquaredTo(enemyInfo.location) <= maxRange )
-	        					myPlayer.myMotor.moveBackward();
-	        				else if ( myPlayer.myRC.getDirection() != myPlayer.myLoc.directionTo(enemyInfo.location) )
-	        					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
-        				}
-        			}
-        			else
-        			{
-        				Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
-        				if ( !myPlayer.myMotor.isActive() )
-        				{
-	        				if ( (myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location) || myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateLeft() || myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location).rotateRight()) && myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()))
-	        					myPlayer.myMotor.moveForward();
-	        				else if ( myPlayer.myRC.getDirection() != myPlayer.myLoc.directionTo(enemyInfo.location) )
-	        					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
-        				}
-        			}
-        		}
-        		// No enemy found before/after jumping
-        		else if ( enemyInfo == null && !myPlayer.myMotor.isActive() )
-        		{
-        			if ( !rallyChanged )
-        				Utility.setIndicator(myPlayer, 2, "No enemies detected, rallied " + Direction.values()[rally].toString() + "."	);
-        			// Make sure I'm not getting flanked
-        			if ( myPlayer.hasTakenDamage )
-    	        		myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
-        			// Move forward if you can
-        			else if ( myPlayer.myRC.getDirection() != Direction.values()[rally] )
-        				myPlayer.myMotor.setDirection(Direction.values()[rally]);
-        			else if ( myPlayer.myMotor.canMove(myPlayer.myRC.getDirection()) && jump != Actions.JMP_SUCCESS )
-        				myPlayer.myMotor.moveForward();
-        		}
-        		rallyChanged = false;
-	        	return;	        	     
+			}
+			
+			Utility.setIndicator(myPlayer, 0, "E:"+enemyIndex+" M:"+mineIndex);
+			
+			// fill in enemyInfos
+			
+			RobotInfo[] enemyInfos = new RobotInfo[enemyIndex];
+			for ( int i = -1 ; ++i < enemyIndex ; )
+				enemyInfos[i] = myPlayer.mySensor.senseRobotInfo(enemies[i]);
+			
+			// get closest mine
+			
+			int minMineDist = 9999; // sentinel value
+			Mine minMine = null;
+			Mine m;
+			
+			for ( int i = -1 ; ++i < mineIndex ; )
+			{
+				m = mines[i];
+				if ( myPlayer.myLoc.distanceSquaredTo(m.getLocation()) < minMineDist )
+				{
+					minMine = m;
+					minMineDist = myPlayer.myLoc.distanceSquaredTo(m.getLocation());
+				}
+			}
+			
+			if ( minMineDist <= 2 && minMineDist > 0 )
+			{
+				// there is a mine, and it's within building range
+				if ( myPlayer.mySensor.senseObjectAtLocation(minMine.getLocation(), RobotLevel.ON_GROUND) == null && myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+				{
+					Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				}
+			}
+			else if ( minMine != null )
+			{
+				Utility.setIndicator(myPlayer, 2, "Free mine detected!");
+				// there is a mine, but it's away from building range
+				int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
+				if ( jump == Actions.JMP_NOT_POSSIBLE )
+				{
+					badMines.add(minMine.getID());
+					myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
+				}
+			}
+			else
+			{
+				
+				// no mines
+				
+				
+				// Off map rerally code
+        		if ( rally % 2 == 0 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[rally],10)) == TerrainTile.OFF_MAP )
+	        	{
+        			if ( num % 2 == 0 )
+						rally = (rally + 6) % 8;
+					else
+						rally = (rally + 2) % 8;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        	}
+        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],10)) == TerrainTile.OFF_MAP )
+	        	{
+        			if ( num % 2 == 0 )
+						rally = (rally + 1) % 8;
+					else
+						rally = (rally + 7) % 8;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        	}
+        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],10)) == TerrainTile.OFF_MAP )
+	        	{
+        			if ( num % 2 == 0 )
+						rally = (rally + 7) % 8;
+					else
+						rally = (rally + 1) % 8;
+	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	        	}
+        		else
+        			Utility.setIndicator(myPlayer, 2, "No mines detected, rallied " + Direction.values()[rally].toString() + ".");
+				
+				int jump = myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
+				if ( jump == Actions.JMP_SUCCESS )
+				{
+					// Jumped successfully
+					prevLocs.add(myPlayer.myLoc);
+					if ( prevLocs.size() > Constants.STUCK_JUMPS )
+						prevLocs.pollFirst();
+					
+					// No enemy found before jumping, check again after
+					Utility.attackEnemies(myPlayer);
+				}
+				else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myPlayer.myLoc) < ComponentType.JUMP.range) )
+				{
+					// "Can't jump there, somethins in the way"
+					prevLocs.clear();
+					rally = (3*numStuck) % 8;
+					numStuck++;
+					Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+				}
+				
+			}
+			
+			
+			//////// SPIN AND ATTACK
+			RobotInfo enemyInfo = Utility.attackEnemies(myPlayer);
+			if ( !myPlayer.myMotor.isActive() )
+			{
+				if ( enemyInfo != null )
+					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
+				else
+					myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+			}
+			
+			
+			
+			return;
+		
+		
+		
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	
-
-	
-	
-	public String toString()
+	public void newComponentCallback(ComponentController[] components)
 	{
-		return "ColossusBehavior";
+		
 	}
-
-
-	
-	
 
 	public void newMessageCallback(MsgType t, Message msg)
 	{
 		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			if ( num == -1 )
-			{
-				num = msg.ints[Messenger.firstData+1];
-				if ( num == 0 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railguns all the way!");
-				else if ( num % 3 == 1 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", prismatic core online!");
-				else if ( num % 3 == 2 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", rawrrrrrrrr!");
-				else if ( num % 3 == 0 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");
-			}
+				num = msg.ints[Messenger.firstData+1] - Constants.MAX_DRONES;
 		}
 	}
 
-	public void newComponentCallback(ComponentController[] components)
+	public void onDamageCallback(double damageTaken)
 	{
-		
+		Utility.printMsg(myPlayer, "I GOT HIT!  I shouldn't have been hit. :(");
 	}
-	
+
 	public void onWakeupCallback(int lastActiveRound)
 	{
 		
 	}
-	
-	public void onDamageCallback(double damageTaken)
-	{
 		
+	
+	
+	
+	
+	
+	public String toString() {
+		return "ArbiterBehavior";
 	}
-	
-	
+
 }
