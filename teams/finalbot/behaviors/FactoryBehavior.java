@@ -33,8 +33,7 @@ public class FactoryBehavior extends Behavior
 	int currHeavy;
 	int currUnit;
 	
-	int babyWraith;
-	int babyDrone;
+	int babyUnit;
 	
 	double minFluxToBuild;
 	
@@ -97,10 +96,10 @@ public class FactoryBehavior extends Behavior
     			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-    				if ( r != null && r.getID() != babyWraith )
+    				if ( r != null && r.getID() != babyUnit )
     				{
     					Utility.setIndicator(myPlayer, 2, "Halting for wraith.");
-    					babyWraith = r.getID();
+    					babyUnit = r.getID();
     					currWraith++;
     				}
     			}
@@ -110,10 +109,10 @@ public class FactoryBehavior extends Behavior
     				if ( currDrone < Constants.MAX_DRONES )
     				{
     					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-        				if ( r != null && r.getID() != babyDrone && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() > myPlayer.myRC.getRobot().getID() )
+        				if ( r != null && r.getID() != babyUnit && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() > myPlayer.myRC.getRobot().getID() )
         				{
         					Utility.setIndicator(myPlayer, 2, "Halting for drone.");
-        					babyDrone = r.getID();
+        					babyUnit = r.getID();
         					currDrone++;
         				}
     				}
