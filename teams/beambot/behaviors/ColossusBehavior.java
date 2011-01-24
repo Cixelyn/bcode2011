@@ -306,36 +306,36 @@ public class ColossusBehavior extends Behavior
 	    	        	}
         			}
 	            		
-	        			// Try to jump
-	        			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
-						if ( jump == Actions.JMP_SUCCESS )
+        			// Try to jump
+        			jump = myPlayer.myActions.jumpInDir(Direction.values()[rally]); // myLoc is set here if jump is successful
+					if ( jump == Actions.JMP_SUCCESS )
+					{
+						// Jumped successfully
+						prevLocs.add(myPlayer.myLoc);
+						if ( prevLocs.size() > Constants.STUCK_JUMPS )
+							prevLocs.pollFirst();
+						
+						// check if we're pursuing a non-permanent rally
+						timeOffPerm++;
+						if ( timeOffPerm >= Constants.OLD_NEWS )
 						{
-							// Jumped successfully
-							prevLocs.add(myPlayer.myLoc);
-							if ( prevLocs.size() > Constants.STUCK_JUMPS )
-								prevLocs.pollFirst();
-							
-							// check if we're pursuing a non-permanent rally
-							timeOffPerm++;
-							if ( timeOffPerm >= Constants.OLD_NEWS )
-							{
-								rally = permRally;
-								timeOffPerm = 0;
-							}
-							
-							// No enemy found before jumping, check again after
-							enemyInfo = Utility.attackEnemies(myPlayer);
+							rally = permRally;
+							timeOffPerm = 0;
 						}
-						else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myPlayer.myLoc) < ComponentType.JUMP.range) )
-						{
-							// "Can't jump there, somethins in the way"
-							prevLocs.clear();
-							rally = (3*numStuck) % 8;
-							numStuck++;
-							Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
-							permRally = rally;
-							rallyChanged = true;
-						}
+						
+						// No enemy found before jumping, check again after
+						enemyInfo = Utility.attackEnemies(myPlayer);
+					}
+					else if ( jump == Actions.JMP_NOT_POSSIBLE || (prevLocs.size() >= Constants.STUCK_JUMPS && prevLocs.peekFirst().distanceSquaredTo(myPlayer.myLoc) < ComponentType.JUMP.range) )
+					{
+						// "Can't jump there, somethins in the way"
+						prevLocs.clear();
+						rally = (3*numStuck) % 8;
+						numStuck++;
+						Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+						permRally = rally;
+						rallyChanged = true;
+					}
         		}
         		
         		// Enemy in range, either before or after jump. Enable the micros

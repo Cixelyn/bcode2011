@@ -13,7 +13,8 @@ public class FactoryBehavior extends Behavior
 		MAKE_HEAVY,
 		EQUIP_ARMOR,
 		MAKE_ARBITER,
-		SLEEP
+		SLEEP,
+		REBUILT
 	}
 	
 	
@@ -71,6 +72,8 @@ public class FactoryBehavior extends Behavior
     					obj = FactoryBuildOrder.SLEEP;
     				}
     			}
+    			else if ( Clock.getRoundNum() > 1000 )
+    				obj = FactoryBuildOrder.REBUILT;
     			return;
     			
 			case EQUIP_UNIT:
@@ -214,6 +217,35 @@ public class FactoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 2, "zzzzzzz");
 				myPlayer.myRC.turnOff();
 				return;
+				
+			case REBUILT:
+    			
+    			Utility.setIndicator(myPlayer, 1, "REBUILT");
+    			Utility.setIndicator(myPlayer, 2, "Proxy!");
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for ( int i = nearbyRobots.length ; --i >= 0 ; )
+    			{
+    				r = nearbyRobots[i];
+    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getRobotLevel() == RobotLevel.ON_GROUND )
+    				{
+    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    					if ( rInfo.chassis == Chassis.HEAVY && rInfo.on )
+    					{
+    						for ( int j = rInfo.components.length ; --j >= 0 ; )
+    						{
+    							ComponentType c = rInfo.components[j];
+    							if ( c == ComponentType.CONSTRUCTOR )
+    							{
+    								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
+    								unitDock = rInfo.location;
+    								obj = FactoryBuildOrder.WAIT_FOR_DOCK;
+    								return;
+    							}
+    						}
+    					}
+    				}
+    			}
+    			return;
     			
 		}
 	}
