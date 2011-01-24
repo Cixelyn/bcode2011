@@ -201,7 +201,6 @@ public class RobotPlayer implements Runnable {
     	
     	
     	
-    	
     	//////////////////////////////////////////////////////////////////////////////////////////////////////
     	//
     	//		IF YOU WANT TO CHANGE THE SET OF ROBOT DEFAULT BEHAVIORS
@@ -212,7 +211,6 @@ public class RobotPlayer implements Runnable {
     	//
     	/////////////////////////////////////////////////////////////////////////////////////////////////////
     	myStrategy = new DefaultStrategy();
-    	
     	
     	
     	//Now based on the strategy, get what our behavior should be
