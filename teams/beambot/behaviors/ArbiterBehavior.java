@@ -224,7 +224,7 @@ public class ArbiterBehavior extends Behavior{
 						onTop = (Robot)myPlayer.mySensor.senseObjectAtLocation(mineLoc, RobotLevel.ON_GROUND);
 						if ( !badMines.at(mineLoc) && (onTop == null || onTop.getTeam() == myPlayer.myRC.getTeam().opponent() || myPlayer.mySensor.senseRobotInfo(onTop).chassis != Chassis.BUILDING) )
 						{
-							mines[mineIndex] = (Mine)state;
+							mines[mineIndex] = (Mine)obj;
 							mineIndex++;
 						}
 					}
