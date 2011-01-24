@@ -87,6 +87,8 @@ public class ArbiterBehavior extends Behavior{
 	Mine m;
 	int minMineDist;
 
+	int lastMineCapped = 0;
+	
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
 	public ArbiterBehavior(RobotPlayer player)
@@ -190,8 +192,16 @@ public class ArbiterBehavior extends Behavior{
 				return;
 				
 			case EXPAND:
+				
 				Utility.setIndicator(myPlayer, 1, "EXPAND");
 				
+				
+				// Clear badmines if you haven't capped any in a while
+				if ( lastMineCapped > Constants.FORGET_BAD_MINES )
+				{
+					lastMineCapped = 0;
+					badMines = new MapStoreBoolean();
+				}
 				
 				//////////////////////////////////////////////////////////////////////////////////
 				// SENSING
@@ -269,6 +279,7 @@ public class ArbiterBehavior extends Behavior{
 						Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 						minMine = null;
+						lastMineCapped = 0;
 					}
 					// rebuild main
 					if ( num == 0 && !hasRebuilt && Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
