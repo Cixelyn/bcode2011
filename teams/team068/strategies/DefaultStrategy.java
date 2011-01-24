@@ -15,7 +15,7 @@ public class DefaultStrategy extends Strategy {
 
 	public Behavior selectBehavior(RobotPlayer player, int currTime) {
 		
-		//testing framework code for custom maps.
+		/*//testing framework code for custom maps.
 		if(currTime<10) {
 			Chassis ctype = player.myRC.getChassis();
 			
@@ -25,13 +25,13 @@ public class DefaultStrategy extends Strategy {
 				//Build testing code here.
 				
 				if(ctype==Chassis.HEAVY) {
-					return new ArbiterBehavior(player);
+					return new ColossusBehavior(player);
 				}
 				
 				
 				
 			}
-		}
+		}*/
 		
 		
 		/////////////////////////////////////////////////////////////////

@@ -94,12 +94,14 @@ public class RobotPlayer implements Runnable {
 	private final ArrayList<WeaponController> myRailgunsInternal;
 	private final ArrayList<WeaponController> myMedicsInternal;
 	private final ArrayList<WeaponController> myHammersInternal;
+	private final ArrayList<WeaponController> myBeamsInternal;
 	
 	public WeaponController[] mySMGs;
 	public WeaponController[] myBlasters;
 	public WeaponController[] myRailguns;
 	public WeaponController[] myMedics;
 	public WeaponController[] myHammers;
+	public WeaponController[] myBeams;
 	
 	//Helper Subsystems
 	public final Messenger myMessenger;
@@ -171,11 +173,14 @@ public class RobotPlayer implements Runnable {
     	myRailgunsInternal = new ArrayList<WeaponController>();
     	myMedicsInternal = new ArrayList<WeaponController>();
     	myHammersInternal = new ArrayList<WeaponController>();
+    	myBeamsInternal = new ArrayList<WeaponController>();
     	
     	mySMGs = new WeaponController[0];
     	myBlasters = new WeaponController[0];
     	myRailguns = new WeaponController[0];
+    	myMedics = new WeaponController[0];
     	myHammers = new WeaponController[0];
+    	myBeams = new WeaponController[0];
     	
     	
     	myMessenger = new Messenger(this);
@@ -430,6 +435,9 @@ public class RobotPlayer implements Runnable {
 					case HAMMER:
 						myHammersInternal.add((WeaponController)c);
 						continue;
+					case BEAM:
+						myBeamsInternal.add((WeaponController)c);
+						continue;
 					default:
 						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
 						continue;
@@ -476,6 +484,7 @@ public class RobotPlayer implements Runnable {
 		myMedics = myMedicsInternal.toArray(new WeaponController[myMedicsInternal.size()]);
 		myJumps = myJumpsInternal.toArray(new JumpController[myJumpsInternal.size()]);
 		myHammers = myHammersInternal.toArray(new WeaponController[myHammersInternal.size()]);
+		myBeams = myBeamsInternal.toArray(new WeaponController[myBeamsInternal.size()]);
 	}
 	
 	
