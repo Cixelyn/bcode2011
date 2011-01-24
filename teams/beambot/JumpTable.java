@@ -66,7 +66,7 @@ public final class JumpTable {
 				case 2:
 					xC = 1; yC = 0; break;
 				case 3:
-					xC = 1; yC = -1; break;
+					xC = 1; yC = 1; break;
 				case 4:
 					xC = 0; yC = 1; break;
 				case 5:
