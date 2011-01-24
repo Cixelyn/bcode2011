@@ -68,6 +68,7 @@ public class ArbiterBehavior extends Behavior{
 	private int[] arbiterLoadout;
 	private MapStoreBoolean badMines = new MapStoreBoolean();
 	
+	MapLocation motherLoc;
 	MapLocation refineryLoc;
 	MapLocation armoryLoc;
 	MapLocation factoryLoc;
@@ -81,7 +82,7 @@ public class ArbiterBehavior extends Behavior{
 	int rally = -1;
 	int num = -1;
 	int numStuck = 0;
-	boolean hasRebuilt = false;
+	int shouldRebuild = 0; // 0 means everythings ok, 1 means should rebuild, 2 means rebuilt
 	
 	Mine minMine;
 	Mine m;
@@ -197,12 +198,21 @@ public class ArbiterBehavior extends Behavior{
 				
 				Utility.setIndicator(myPlayer, 1, "EXPAND");
 				
-				lastMineCapped++;
+				
 				// Clear badmines if you haven't capped any in a while
+				lastMineCapped++;
 				if ( lastMineCapped > Constants.FORGET_BAD_MINES )
 				{
 					lastMineCapped = 0;
 					badMines = new MapStoreBoolean();
+				}
+				
+				// Sense if motherLoc is in range
+				if ( shouldRebuild == 0 && !motherLoc.equals(null) && myPlayer.mySensor.canSenseSquare(motherLoc) && myPlayer.mySensor.senseObjectAtLocation(motherLoc, RobotLevel.ON_GROUND) == null )
+				{
+					// mother refinery destroyed!!
+					Utility.setIndicator(myPlayer, 0, "THE MOTHER REFINERY WAS DESTROYED! REBUILD!");
+					shouldRebuild = 1;
 				}
 				
 				//////////////////////////////////////////////////////////////////////////////////
@@ -291,12 +301,12 @@ public class ArbiterBehavior extends Behavior{
 						lastMineCapped = 0;
 					}
 					// FIXME this is not yet tested
-					/*// rebuild main
-					if ( num == 0 && !hasRebuilt && Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
+					// rebuild main
+					if ( num == 0 && shouldRebuild == 1 )
 					{
 						refineryLoc = minMine.getLocation();
 						state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
-					}*/
+					}
 				}
 				else if ( minMine != null )
 				{
@@ -585,6 +595,7 @@ public class ArbiterBehavior extends Behavior{
 				RobotInfo armoryInfo = myPlayer.mySensor.senseRobotInfo(armory);
 				if ( !armoryInfo.location.add(armoryInfo.direction).equals(myPlayer.myLoc) )
 					return;
+				shouldRebuild = 2;
 				state = ArbiterBuildOrder.EXPAND;
 				return;
 				
@@ -602,7 +613,10 @@ public class ArbiterBehavior extends Behavior{
 		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			if ( num == -1 )
+			{
 				num = msg.ints[Messenger.firstData+1] - Constants.MAX_DRONES;
+				motherLoc = msg.locations[Messenger.firstData+1];
+			}
 		}
 	}
 
