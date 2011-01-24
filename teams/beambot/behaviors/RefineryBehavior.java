@@ -20,7 +20,8 @@ public class RefineryBehavior extends Behavior
 		EQUIP_WRAITH,
 		EQUIP_ARMOR,
 		EQUIP_ARBITER,
-		SLEEP
+		SLEEP,
+		REBUILT
 	}
 	
 	RefineryBuildOrder obj = RefineryBuildOrder.INITIALIZE;
@@ -542,6 +543,35 @@ public class RefineryBehavior extends Behavior
 				myPlayer.shutdown();
 				return;
     			
+    		case REBUILT:
+    			
+    			Utility.setIndicator(myPlayer, 1, "REBUILT");
+    			Utility.setIndicator(myPlayer, 2, "Proxy!");
+    			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+    			for ( int i = nearbyRobots.length ; --i >= 0 ; )
+    			{
+    				r = nearbyRobots[i];
+    				if ( r.getTeam() == myPlayer.myRC.getTeam() && r.getRobotLevel() == RobotLevel.ON_GROUND )
+    				{
+    					rInfo = myPlayer.mySensor.senseRobotInfo(r);
+    					if ( rInfo.chassis == Chassis.HEAVY && rInfo.on )
+    					{
+    						for ( int j = rInfo.components.length ; --j >= 0 ; )
+    						{
+    							c = rInfo.components[j];
+    							if ( c == ComponentType.CONSTRUCTOR )
+    							{
+    								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
+    								unitDock = rInfo.location;
+    								obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+    								return;
+    							}
+    						}
+    					}
+    				}
+    			}
+    			return;
+				
     	}
 		
 	}
@@ -564,7 +594,10 @@ public class RefineryBehavior extends Behavior
 	public void onWakeupCallback(int lastActiveRound)
 	{
 		hasSlept = true;
-		obj = RefineryBuildOrder.WAIT_FOR_DOCK;
+		if ( Clock.getRoundNum() < 500 )
+			obj = RefineryBuildOrder.WAIT_FOR_DOCK; // I'm one of the first four refineries
+		else
+			obj = RefineryBuildOrder.REBUILT;
 	}
 	
 	public void onDamageCallback(double damageTaken)
