@@ -261,8 +261,7 @@ public class ArbiterBehavior extends Behavior{
 						Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 					}
-					// TODO check if factory and armory should be made
-					if ( myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
+					if ( Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
 					{
 						refineryLoc = minMine.getLocation();
 						state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
