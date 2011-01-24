@@ -40,13 +40,14 @@ public class Memory {
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// NUMBER OF GUNS //////////////////////////////////////////////
 	
-	public void setNumGuns(int index, int smgs, int blasters, int railguns, int beams, int hammers) {
+	public void setNumGuns(int index, int smgs, int blasters, int railguns, int beams, int hammers, int guns) {
 		myRC.setTeamMemory(index, 
 			  smgs
 			| blasters<<8
 			| railguns<<16
 			| beams<<24
 			| hammers<<32
+			| guns<<40
 		);
 	}
 
@@ -60,6 +61,7 @@ public class Memory {
 	public static final int idxRailguns = 2;
 	public static final int idxBeams = 3;
 	public static final int idxHammers = 4;
+	public static final int idxGuns = 5;
 	
 	/**
 	 * This function returns the max number of each gun type seen in the previous round.
@@ -67,8 +69,8 @@ public class Memory {
 	 * @return 
 	 */
 	public int[] getMaxNumGuns() {
-		int smgs, blasters, railguns, beams, hammers;
-		smgs=blasters=railguns=beams=hammers=0;
+		int smgs, blasters, railguns, beams, hammers, guns;
+		smgs=blasters=railguns=beams=hammers=guns=0;
 
 		for(int i=1; i<memory.length; i++) {
 			long data = memory[i];
@@ -77,10 +79,11 @@ public class Memory {
 			railguns= Math.max(railguns , (int) (data>>16) & 0xFF);
 			beams   = Math.max(beams	, (int) (data>>24) & 0xFF);
 			hammers = Math.max(hammers 	, (int) (data>>32) & 0xFF);
+			guns	= Math.max(guns     , (int) (data>>40) & 0xFF);
 		}
 		
 		
-		return new int[]{smgs,blasters,railguns,beams,hammers};
+		return new int[]{smgs,blasters,railguns,beams,hammers,guns};
 		
 	}
 	
