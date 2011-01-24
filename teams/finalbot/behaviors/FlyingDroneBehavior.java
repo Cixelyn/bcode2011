@@ -403,6 +403,7 @@ public class FlyingDroneBehavior extends Behavior {
 		if (type.equals(MsgType.MSG_SEND_NUM) && ID==-1) {
 			ID=msg.ints[Messenger.firstData+1]%8;
 			foundID=true;
+			myPlayer.myMessenger.toggleReceive(false);
 		}		
 	}
 
