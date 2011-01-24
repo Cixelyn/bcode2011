@@ -9,7 +9,7 @@
 		<symbol team="NEUTRAL" type="DEBRIS" character="+"/>
 		<symbol team="A" type="RECYCLER" character="R"/>
 		<symbol team="B" type="RECYCLER" character="r"/>
-		<symbol team="A" type="HEAVY" components="RADAR,JUMP,JUMP,HAMMER,HAMMER,HAMMER,HAMMER,SHIELD" character="U"/>
+		<symbol team="A" type="HEAVY" components="RADAR,JUMP,BEAM,BEAM,PLASMA,PLASMA" character="U"/>
 		<symbol team="B" type="LIGHT" components="RADAR,BLASTER,SHIELD" character="u"/>
 	</symbols>
 	<data>
