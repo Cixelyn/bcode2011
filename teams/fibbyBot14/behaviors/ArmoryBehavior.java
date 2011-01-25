@@ -16,6 +16,7 @@ public class ArmoryBehavior extends Behavior
 		FIND_TOWER,
 		EQUIP_TOWER,
 		MAKE_HERO_WRAITH,
+		MAKE_MEDIVAC,
 		SLEEP,
 		SUICIDE
 	}
@@ -72,10 +73,20 @@ public class ArmoryBehavior extends Behavior
 				
 			case MAKE_HERO_WRAITH:
 				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_TOWER");
+				Utility.setIndicator(myPlayer, 0, "MAKE_HERO_WRAITH");
 				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
 				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.FLYING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.BEAM, RobotLevel.IN_AIR);
+				obj = ArmoryBuildOrder.MAKE_MEDIVAC;
+				return;
+				
+			case MAKE_MEDIVAC:
+				
+				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC");
+				Utility.setIndicator(myPlayer, 1, "");
+				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
+					myPlayer.sleep();
+				Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.FLYING);
 				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				

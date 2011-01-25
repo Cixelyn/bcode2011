@@ -13,11 +13,12 @@ public class FactoryBehavior extends Behavior
 	
 	private enum FactoryBuildOrder 
 	{
+		EQUIP_MEDIVAC,
 		SLEEP
 	}
 	
 	
-	FactoryBuildOrder obj = FactoryBuildOrder.SLEEP;
+	FactoryBuildOrder obj = FactoryBuildOrder.EQUIP_MEDIVAC;
 
 	public FactoryBehavior(RobotPlayer player)
 	{
@@ -31,6 +32,19 @@ public class FactoryBehavior extends Behavior
 		switch(obj)
     	{
 				
+			case EQUIP_MEDIVAC:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_MEDIVAC");
+				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
+				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.IN_AIR);
+				if ( r != null )
+				{
+					Utility.setIndicator(myPlayer, 1, "Flyer found.");
+					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.MEDIC, RobotLevel.IN_AIR);
+					obj = FactoryBuildOrder.SLEEP;
+				}
+				return;
+			
     		case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 0, "SLEEP");
