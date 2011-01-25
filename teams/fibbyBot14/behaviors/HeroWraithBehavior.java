@@ -52,14 +52,14 @@ public class HeroWraithBehavior extends Behavior {
 				
 				case MOVE_TOWARDS_TOWER:
 					if (!myPlayer.myMotor.isActive()) {
-						if (myPlayer.myRC.getDirection()!=Direction.SOUTH) {
-							myPlayer.myMotor.setDirection(Direction.SOUTH);
+						if (myPlayer.myRC.getDirection()!=Direction.NORTH) {
+							myPlayer.myMotor.setDirection(Direction.NORTH);
 						}
 						else {
 							myPlayer.myMotor.moveForward();
 							steps++;
 						}
-						if (steps==11) {
+						if (steps==9) {
 							steps=0;
 							obj = HeroWraithBuildOrder.FIGHT_TOWER;
 						}
@@ -71,7 +71,7 @@ public class HeroWraithBehavior extends Behavior {
 					}
 					else {
 						if (!myPlayer.myBeams[0].isActive()) {
-							myPlayer.myBeams[0].attackSquare(myPlayer.myRC.getLocation().add(Direction.SOUTH,6), RobotLevel.ON_GROUND);
+							myPlayer.myBeams[0].attackSquare(myPlayer.myRC.getLocation().add(Direction.NORTH,6), RobotLevel.ON_GROUND);
 						}
 					}
 					return;
@@ -79,7 +79,7 @@ public class HeroWraithBehavior extends Behavior {
 					if (!myPlayer.myMotor.isActive()) {
 						myPlayer.myMotor.moveBackward();
 						steps++;
-						if (steps==11) {
+						if (steps==9) {
 							steps=0;
 							obj = HeroWraithBuildOrder.GET_HEALED;
 						}
