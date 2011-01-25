@@ -51,6 +51,7 @@ public class RefineryBehavior extends Behavior
 			case TOWER_TIME:
 				
 				Utility.setIndicator(myPlayer, 0, "TOWER_TIME");
+				Utility.setIndicator(myPlayer, 1, "Waiting...");
 				if ( Clock.getRoundNum() >= Constants.TOWER_TIME )
 				{
 					Utility.setIndicator(myPlayer, 1, "It's tower time!");
@@ -62,6 +63,7 @@ public class RefineryBehavior extends Behavior
 			case SHOW_TIME:
 				
 				Utility.setIndicator(myPlayer, 0, "SHOW_TIME");
+				Utility.setIndicator(myPlayer, 1, "Waiting...");
 				if ( Clock.getRoundNum() >= Constants.SHOW_TIME )
 				{
 					Utility.setIndicator(myPlayer, 1, "It's show time!");
@@ -73,9 +75,11 @@ public class RefineryBehavior extends Behavior
 			case EQUIP_HERO_WRAITH:
 				
 				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH");
+				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
 				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.IN_AIR);
 				if ( r != null )
 				{
+					Utility.setIndicator(myPlayer, 1, "Flyer found.");
 					Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.SHIELD, RobotLevel.IN_AIR);
 					obj = RefineryBuildOrder.SLEEP;
 				}
