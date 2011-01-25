@@ -1,4 +1,4 @@
-package fibbyBot14; import java.util.*; import fibbyBot14.strategies.*; import fibbyBot14.behaviors.*; import battlecode.common.*;
+package fibbyBot14; import java.util.*; import fibbyBot14.behaviors.*; import battlecode.common.*;
 
 /**  
  *<pre>  
@@ -118,12 +118,6 @@ public class RobotPlayer implements Runnable {
 	public WeaponController[] myHammers;
 	public WeaponController[] myBeams;
 	
-	//Helper Subsystems
-	public final Messenger myMessenger;
-	public final Actions myActions;
-	public final Memory myMemory;
-	public final Cartographer myCartographer;
-	
 	
 	//Misc Stats
 	public final int myBirthday;
@@ -151,7 +145,6 @@ public class RobotPlayer implements Runnable {
 	
 	//Higher level strategy
 	public Behavior myBehavior;
-	public final Strategy myStrategy;
 	
 	
 	/**
@@ -197,40 +190,8 @@ public class RobotPlayer implements Runnable {
     	myHammers = new WeaponController[0];
     	myBeams = new WeaponController[0];
     	
-    	
-    	myMessenger = new Messenger(this);
-    	myActions = new Actions(this);
-    	myMemory = new Memory(this);
-    	myCartographer = new Cartographer(this);
-    	
-    	
-    	
-    	
-    	if(Constants.CUSTOM_INDICATORS) {
-    		myRC.setIndicatorString(0, Constants.INDICATOR0);
-    		myRC.setIndicatorString(1, Constants.INDICATOR1);
-    		myRC.setIndicatorString(2, Constants.INDICATOR2);
-    	}
-    	
 
     	
-    	
-    	
-    	//////////////////////////////////////////////////////////////////////////////////////////////////////
-    	//
-    	//		IF YOU WANT TO CHANGE THE SET OF ROBOT DEFAULT BEHAVIORS
-    	//		THEN LOOK AT THE FOLLOWING LINES
-    	//
-    	//		BASICALLY MAKE A NEW STRATEGY THAT DEFINES WHAT ALL THE DEFAULT STRATEGIES SHOULD BE
-    	//		DON'T BREAK PLZ OK.
-    	//
-    	/////////////////////////////////////////////////////////////////////////////////////////////////////
-    	myStrategy = new DefaultStrategy();
-    	
-    	
-    	//Now based on the strategy, get what our behavior should be
-    	myBehavior = myStrategy.selectBehavior(this, Clock.getRoundNum());
-    	////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     }
 
@@ -263,30 +224,6 @@ public class RobotPlayer implements Runnable {
 		
 		
 		
-		/////////////////////////////////////////////////////////////////
-		//Check if we've sustained damage.
-		double damage = lastRoundHP - myRC.getHitpoints();
-		if(damage>0.1) {
-			hasTakenDamage = true;
-			myBehavior.onDamageCallback(damage);
-		}
-		
-		
-		
-		
-		
-		
-		///////////////////////////////////////////////////////////////
-		//Receive all messages
-		if(myMessenger.shouldReceive) {
-			try {
-				myMessenger.receiveAll();
-			} catch(Exception e) {
-				//e.printStackTrace();
-			}
-		}
-
-		
 		
 		///////////////////////////////////////////////////////////////
 		//First check if we've added new components to the robot
@@ -300,12 +237,6 @@ public class RobotPlayer implements Runnable {
 		} catch(Exception e) {
 			//e.printStackTrace();
 		}
-		
-		
-		
-		////////////////////////////////////////////////////////////////
-		//Run the map sensing code
-		if(hasSensor) {myCartographer.runSensor();}
 		
 	}
 	
@@ -343,16 +274,6 @@ public class RobotPlayer implements Runnable {
 	 */
 	private void postRun() {			
 
-		
-		/////////////////////////////////////////////////////////////
-		//Send all messages
-		try {
-			myMessenger.sendAll();
-		} catch(Exception e) {
-			//e.printStackTrace();
-		}
-		
-		
 		
 		
 		//////////////////////////////////////////////////////////////
@@ -466,7 +387,6 @@ public class RobotPlayer implements Runnable {
 				case SENSOR:
 					hasSensor = true;
 					mySensor = (SensorController)c; 					
-					myCartographer.setSensor(mySensor);					
 					continue;					
 				case BUILDER:
 					myBuilder = (BuilderController)c; 					
@@ -476,7 +396,6 @@ public class RobotPlayer implements Runnable {
 					continue;
 				case COMM:
 					myBroadcaster = (BroadcastController)c;
-					myMessenger.enableSender();
 					continue;
 				case ARMOR:
 					continue;

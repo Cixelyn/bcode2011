@@ -15,9 +15,7 @@ package fibbyBot14; import battlecode.common.*; import fibbyBot14.*;
  * 			- run(): the main body / execution block of the behavior
  * 		
  * 		There are also several callbacks that are triggered upon certain events:
- * 			- onDamageCallback() 	: triggered when the unit takes damage
  * 			- newComponentCallback(): triggered when the unit is equipped
- * 			- newMessageCallback()  : triggered when the unit receives a message
  * 			- onWakeupCallback()    : triggered when the unit reactivates from shutdown
  *   
  *   
@@ -27,7 +25,8 @@ package fibbyBot14; import battlecode.common.*; import fibbyBot14.*;
  * @author Cory
  *
  */
-public abstract class Behavior {
+public abstract class Behavior
+{
 	
 	public final RobotPlayer myPlayer;		//Our myplayer object
 	int behaviorStartTime;			//Start of the new behavior
@@ -70,31 +69,12 @@ public abstract class Behavior {
 	 */
 	public abstract void newComponentCallback(ComponentController[] components);
 	
-	
-	
-	/**
-	 * Callback when new messages are received
-	 * @param type the type of message
-	 * @param msg received message (that warrants a callback)
-	 */
-	public abstract void newMessageCallback(MsgType type, Message msg);
-
-
 	/**
 	 * This callback is triggered whenever a unit is reactivated.
 	 * Useful for lategame strategies, etc.
 	 * @param lastActiveRound the last round the robot was reported awake
 	 */
 	public abstract void onWakeupCallback(int lastActiveRound);
-	
-	
-	
-	/**
-	 * Callback when damage is sustained
-	 * @param damageTaken the amount of damage a robot has sustained 
-	 */
-	public abstract void onDamageCallback(double damageTaken);
-	
 	
 	
 
