@@ -55,6 +55,9 @@ public class RefineryBehavior extends Behavior
 	boolean armorEquipped = false;
 	boolean arbiterEquipped = false;
 	
+	int[] memory = myPlayer.myMemory.getMaxNumGuns();
+	int loadout = -1;
+	
 	public RefineryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -142,6 +145,12 @@ public class RefineryBehavior extends Behavior
     	    			while ( myPlayer.myMotor.isActive() )
         					myPlayer.sleep();
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
+    					if ( memory[5] <= 2 )
+    						loadout = 1;
+    					else if ( memory[4] >= 2 )
+    						loadout = 2;
+    					else
+    						loadout = 0;
     	    			obj = RefineryBuildOrder.EQUIP_UNIT;        // I am one of the first two capped and with least ID
     				}
     				else

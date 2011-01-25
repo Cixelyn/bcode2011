@@ -897,12 +897,13 @@ public class Utility {
 	 * Returns the maximum range of an enemy robot. Ignored deactivated robots and medic weapons
 	 * @author JVen
 	 * @param enemyInfo The robotInfo of the enemy robot
+	 * @param num The number of the arbiter calling this function (required for memory)
 	 * @return The maximum distance squared of the enemy robot's weapons
 	 */
 	
 	public static int maxRange(RobotInfo enemyInfo)
 	{
-
+		
 		if ( !enemyInfo.on )
 			return 0;
 			

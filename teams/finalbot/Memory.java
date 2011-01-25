@@ -74,12 +74,12 @@ public class Memory {
 
 		for(int i=1; i<memory.length; i++) {
 			long data = memory[i];
-			smgs 	= Math.max(smgs 	, (int) (data)     & 0xFF);
-			blasters= Math.max(blasters	, (int) (data>>8)  & 0xFF);
-			railguns= Math.max(railguns , (int) (data>>16) & 0xFF);
-			beams   = Math.max(beams	, (int) (data>>24) & 0xFF);
-			hammers = Math.max(hammers 	, (int) (data>>32) & 0xFF);
-			guns	= Math.max(guns     , (int) (data>>40) & 0xFF);
+			smgs 	= Math.max(smgs 	, (int) ((data)     & 0xFF));
+			blasters= Math.max(blasters	, (int) ((data>>8)  & 0xFF));
+			railguns= Math.max(railguns , (int) ((data>>16) & 0xFF));
+			beams   = Math.max(beams	, (int) ((data>>24) & 0xFF));
+			hammers = Math.max(hammers 	, (int) ((data>>32) & 0xFF));
+			guns	= Math.max(guns     , (int) ((data>>40) & 0xFF));
 		}
 		
 		
