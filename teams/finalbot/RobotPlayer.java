@@ -281,7 +281,9 @@ public class RobotPlayer implements Runnable {
 		if(myMessenger.shouldReceive) {
 			try {
 				myMessenger.receiveAll();
-			} catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {
+				//e.printStackTrace();
+			}
 		}
 
 		
@@ -295,7 +297,9 @@ public class RobotPlayer implements Runnable {
 				allocateControllers(components);
 				myBehavior.newComponentCallback(components);
 			}
-		} catch(Exception e) {e.printStackTrace();}
+		} catch(Exception e) {
+			//e.printStackTrace();
+		}
 		
 		
 		
@@ -319,7 +323,9 @@ public class RobotPlayer implements Runnable {
 			
 			try {
 				myBehavior.run();
-			} catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {
+				//e.printStackTrace();
+			}
 			
 			//Run Postflight operations
 			postRun();
@@ -342,7 +348,9 @@ public class RobotPlayer implements Runnable {
 		//Send all messages
 		try {
 			myMessenger.sendAll();
-		} catch(Exception e) {e.printStackTrace();}
+		} catch(Exception e) {
+			//e.printStackTrace();
+		}
 		
 		
 		
@@ -449,7 +457,7 @@ public class RobotPlayer implements Runnable {
 						myBeamsInternal.add((WeaponController)c);
 						continue;
 					default:
-						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
+						//Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
 						continue;
 					}
 					
@@ -458,11 +466,14 @@ public class RobotPlayer implements Runnable {
 				case SENSOR:
 					hasSensor = true;
 					mySensor = (SensorController)c; 					
-					myCartographer.setSensor(mySensor);					continue;					
+					myCartographer.setSensor(mySensor);					
+					continue;					
 				case BUILDER:
-					myBuilder = (BuilderController)c; 					continue;
+					myBuilder = (BuilderController)c; 					
+					continue;
 				case MOTOR:
-					myMotor = (MovementController)c;					continue;
+					myMotor = (MovementController)c;					
+					continue;
 				case COMM:
 					myBroadcaster = (BroadcastController)c;
 					myMessenger.enableSender();
@@ -475,12 +486,15 @@ public class RobotPlayer implements Runnable {
 				case MISC:
 					switch(c.type()) {
 					case PROCESSOR:
-						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	continue;
+						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	
+						continue;
 					case JUMP:
-						myJumpsInternal.add((JumpController)c);					continue;
+						myJumpsInternal.add((JumpController)c);					
+						continue;
 					}
 				default:
-					Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			continue;
+					//Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			
+					continue;
 			}
 		}	
 		
