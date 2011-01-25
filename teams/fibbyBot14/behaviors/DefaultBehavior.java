@@ -37,9 +37,7 @@ public class DefaultBehavior extends Behavior
 			else if ( c == ComponentType.BEAM && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 				myPlayer.swapBehavior(new MissileTurretBehavior(myPlayer));
 			else if ( c == ComponentType.BEAM && myPlayer.myRC.getChassis() == Chassis.FLYING )
-			{
-				//myPlayer.swapBehavior(new HeroWraithBehavior(myPlayer));
-			}
+				myPlayer.swapBehavior(new HeroWraithBehavior(myPlayer));
 		}
 	}
 	
