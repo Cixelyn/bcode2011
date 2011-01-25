@@ -105,7 +105,7 @@ public class AncientProtectorBehavior extends Behavior
 		{
 			case EQUIPPING:
 				
-				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
+				//Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				numBlasters = 0;
 				numShields = 0;
 				hasRadar = false;
@@ -125,7 +125,7 @@ public class AncientProtectorBehavior extends Behavior
 			
 			case DEFENSE:
 				
-				Utility.setIndicator(myPlayer, 1, "DEFENSE");
+				//Utility.setIndicator(myPlayer, 1, "DEFENSE");
 				enemyInfo = Utility.attackEnemies(myPlayer);
 				if ( enemyInfo == null || myPlayer.myRC.getLocation().distanceSquaredTo(enemyInfo.location) > ComponentType.BLASTER.range )
 				{

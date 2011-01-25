@@ -109,7 +109,7 @@ public class MissileTurretBehavior extends Behavior
 			
 			case EQUIPPING:
 				
-				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
+				//Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				hasSensor = false;
 				hasRailgun = false;
 				for ( int i = myPlayer.myRC.components().length ; --i >= 0 ; )
@@ -137,7 +137,7 @@ public class MissileTurretBehavior extends Behavior
 			
 			case DEFENSE:
 				
-				Utility.setIndicator(myPlayer, 1, "DEFENSE");
+				//Utility.setIndicator(myPlayer, 1, "DEFENSE");
 				enemyInfo = Utility.attackEnemies(myPlayer);
 				if ( enemyInfo == null )
 				{
