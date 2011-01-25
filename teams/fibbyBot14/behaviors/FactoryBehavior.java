@@ -13,12 +13,13 @@ public class FactoryBehavior extends Behavior
 	
 	private enum FactoryBuildOrder 
 	{
-		EQUIP_MEDIVAC,
+		EQUIP_MEDIVAC_1,
+		EQUIP_MEDIVAC_2,
 		SLEEP
 	}
 	
 	
-	FactoryBuildOrder obj = FactoryBuildOrder.EQUIP_MEDIVAC;
+	FactoryBuildOrder obj = FactoryBuildOrder.EQUIP_MEDIVAC_1;
 
 	public FactoryBehavior(RobotPlayer player)
 	{
@@ -32,15 +33,28 @@ public class FactoryBehavior extends Behavior
 		switch(obj)
     	{
 				
-			case EQUIP_MEDIVAC:
+			case EQUIP_MEDIVAC_1:
 				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_MEDIVAC");
+				Utility.setIndicator(myPlayer, 0, "EQUIP_MEDIVAC_1");
 				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
 				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.IN_AIR);
 				if ( r != null )
 				{
 					Utility.setIndicator(myPlayer, 1, "Flyer found.");
 					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.MEDIC, RobotLevel.IN_AIR);
+					obj = FactoryBuildOrder.EQUIP_MEDIVAC_2;
+				}
+				return;
+				
+			case EQUIP_MEDIVAC_2:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_MEDIVAC_2");
+				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
+				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_WEST), RobotLevel.IN_AIR);
+				if ( r != null )
+				{
+					Utility.setIndicator(myPlayer, 1, "Flyer found.");
+					Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.MEDIC, RobotLevel.IN_AIR);
 					obj = FactoryBuildOrder.SLEEP;
 				}
 				return;

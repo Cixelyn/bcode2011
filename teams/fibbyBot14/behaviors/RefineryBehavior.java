@@ -15,7 +15,8 @@ public class RefineryBehavior extends Behavior
 		DETERMINE_LEADER,
 		TOWER_TIME,
 		SHOW_TIME,
-		EQUIP_HERO_WRAITH,
+		EQUIP_HERO_WRAITH_1,
+		EQUIP_HERO_WRAITH_2,
 		SLEEP
 	}
 	
@@ -68,19 +69,32 @@ public class RefineryBehavior extends Behavior
 				{
 					Utility.setIndicator(myPlayer, 1, "It's show time!");
 					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.ON_GROUND);
-					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH;
+					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH_1;
 				}
 				return;
 				
-			case EQUIP_HERO_WRAITH:
+			case EQUIP_HERO_WRAITH_1:
 				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH");
+				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH_1");
 				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
 				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.IN_AIR);
 				if ( r != null )
 				{
 					Utility.setIndicator(myPlayer, 1, "Flyer found.");
 					Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.SHIELD, RobotLevel.IN_AIR);
+					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH_2;
+				}
+				return;
+				
+			case EQUIP_HERO_WRAITH_2:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH_2");
+				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
+				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_WEST), RobotLevel.IN_AIR);
+				if ( r != null )
+				{
+					Utility.setIndicator(myPlayer, 1, "Flyer found.");
+					Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.SHIELD, RobotLevel.IN_AIR);
 					obj = RefineryBuildOrder.SLEEP;
 				}
 				return;

@@ -23,6 +23,7 @@ public class Constants
 	public static final int TOWER_TIME = 260; // when SCV should build tower
 	public static final int ATTACK_TIME = 340; // when towers should start attacking
 	public static final int SHOW_TIME = 450; // when to turn on SCV
+	public static final int SECOND_WAVE = 500; // when 2nd round of medivac/hero wraith spawns
 	
 	// Max's constants
 	

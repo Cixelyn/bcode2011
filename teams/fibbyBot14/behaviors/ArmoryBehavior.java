@@ -15,8 +15,10 @@ public class ArmoryBehavior extends Behavior
 	{
 		FIND_TOWER,
 		EQUIP_TOWER,
-		MAKE_HERO_WRAITH,
-		MAKE_MEDIVAC,
+		MAKE_HERO_WRAITH_1,
+		MAKE_MEDIVAC_1,
+		MAKE_HERO_WRAITH_2,
+		MAKE_MEDIVAC_2,
 		SLEEP,
 		SUICIDE
 	}
@@ -71,22 +73,43 @@ public class ArmoryBehavior extends Behavior
 				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				
-			case MAKE_HERO_WRAITH:
+			case MAKE_HERO_WRAITH_1:
 				
-				Utility.setIndicator(myPlayer, 0, "MAKE_HERO_WRAITH");
+				Utility.setIndicator(myPlayer, 0, "MAKE_HERO_WRAITH_1");
 				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
 				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.FLYING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.BEAM, RobotLevel.IN_AIR);
-				obj = ArmoryBuildOrder.MAKE_MEDIVAC;
+				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1;
 				return;
 				
-			case MAKE_MEDIVAC:
+			case MAKE_MEDIVAC_1:
 				
-				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC");
+				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1");
 				Utility.setIndicator(myPlayer, 1, "");
 				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.FLYING);
+				while ( Clock.getRoundNum() < Constants.SECOND_WAVE )
+					myPlayer.sleep();
+				obj = ArmoryBuildOrder.MAKE_HERO_WRAITH_2;
+				return;
+				
+			case MAKE_HERO_WRAITH_2:
+				
+				Utility.setIndicator(myPlayer, 0, "MAKE_HERO_WRAITH_2");
+				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
+				Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.FLYING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH_WEST, ComponentType.BEAM, RobotLevel.IN_AIR);
+				obj = ArmoryBuildOrder.MAKE_MEDIVAC_2;
+				return;
+				
+			case MAKE_MEDIVAC_2:
+				
+				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_2");
+				Utility.setIndicator(myPlayer, 1, "");
+				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
+					myPlayer.sleep();
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.FLYING);
 				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				
@@ -126,7 +149,7 @@ public class ArmoryBehavior extends Behavior
 		{
 			
 			case 1:
-				obj = ArmoryBuildOrder.MAKE_HERO_WRAITH;
+				obj = ArmoryBuildOrder.MAKE_HERO_WRAITH_1;
 				return;
 		}
 	}

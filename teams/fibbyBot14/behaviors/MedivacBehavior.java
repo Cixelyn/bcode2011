@@ -15,6 +15,7 @@ public class MedivacBehavior extends Behavior
 	
 	MapLocation frontlineLoc; 
 	MapLocation heroWraithLoc;
+	int num = -1;
 	
 	private enum MedivacBuildOrder 
 	{
@@ -44,8 +45,19 @@ public class MedivacBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
 				Utility.setIndicator(myPlayer, 1, "Ready for dust off!");
-				frontlineLoc = myPlayer.myLoc.add(0, -5);
-				heroWraithLoc = myPlayer.myLoc.add(1, -8);
+				
+				if ( Clock.getRoundNum() < Constants.SECOND_WAVE )
+				{
+					num = 1;
+					frontlineLoc = myPlayer.myLoc.add(0, -5);
+					heroWraithLoc = myPlayer.myLoc.add(1, -8);
+				}
+				else
+				{
+					num = 2;
+					frontlineLoc = myPlayer.myLoc.add(-6, 0);
+					heroWraithLoc = myPlayer.myLoc.add(-9,1);
+				}
 				obj = MedivacBuildOrder.GO_TO_FRONTLINE;
 				return;
 				
@@ -54,29 +66,62 @@ public class MedivacBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "GO_TO_FRONTLINE");
 				Utility.setIndicator(myPlayer, 1, "Picking up or dropping off?");
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.NORTH);
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
+				if ( num == 1 )
+				{
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(Direction.NORTH);
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+				}
+				else if ( num == 2 )
+				{
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(Direction.WEST);
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+				}
 				
 				obj = MedivacBuildOrder.HEAL_HERO_WRAITH;
 				return;
@@ -93,29 +138,62 @@ public class MedivacBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "RETURN_HOME");
 				Utility.setIndicator(myPlayer, 1, "Somebody get me out of this mess!");
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.SOUTH);
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
+				if ( num == 1 )
+				{
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(Direction.SOUTH);
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+				}
+				else if ( num == 2 )
+				{
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.setDirection(Direction.EAST);
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					myPlayer.myMotor.moveForward();
+				}
 				
 				obj = MedivacBuildOrder.SLEEP;
 				return;

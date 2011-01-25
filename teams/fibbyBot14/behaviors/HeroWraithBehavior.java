@@ -4,14 +4,17 @@ package fibbyBot14.behaviors;
 import fibbyBot14.*;
 import battlecode.common.*;;
 
-public class HeroWraithBehavior extends Behavior {
+public class HeroWraithBehavior extends Behavior
+{
 
+		MapLocation frontlineLoc;
+		MapLocation enemyTowerLoc;
 		
-		int steps=0;
-		
+		int num;
 		
 		private enum HeroWraithBuildOrder
 		{
+			INITIALIZE,
 			EQUIPPING,
 			MOVE_TOWARDS_TOWER,
 			FIGHT_TOWER,
@@ -19,7 +22,7 @@ public class HeroWraithBehavior extends Behavior {
 			GET_HEALED;
 		}
 		
-		HeroWraithBuildOrder obj = HeroWraithBuildOrder.EQUIPPING;
+		HeroWraithBuildOrder obj = HeroWraithBuildOrder.INITIALIZE;
 
 		
 		public HeroWraithBehavior(RobotPlayer player)
@@ -33,8 +36,27 @@ public class HeroWraithBehavior extends Behavior {
 			switch (obj)
 			{
 				
+				case INITIALIZE:
+					
+					Utility.setIndicator(myPlayer, 0, "INITIALIZE");
+					if ( Clock.getRoundNum() < Constants.SECOND_WAVE )
+					{
+						num = 1;
+						frontlineLoc = myPlayer.myLoc.add(0, -9);
+						enemyTowerLoc = frontlineLoc.add(0, -6);
+					}
+					else
+					{
+						num = 2;
+						frontlineLoc = myPlayer.myLoc.add(-9, 0);
+						enemyTowerLoc = frontlineLoc.add(-5, 1);
+					}
+					obj = HeroWraithBuildOrder.EQUIPPING;
+					return;
+				
 				case EQUIPPING:
 					
+					Utility.setIndicator(myPlayer, 0, "EQUIPPING");
 					
 					int numBeams = 0;
 					int numShields = 0;
@@ -45,66 +67,107 @@ public class HeroWraithBehavior extends Behavior {
 						if ( myPlayer.myRC.components()[i].type() == ComponentType.SHIELD)
 							numShields++;
 					}
-					if ( numBeams == 1 && numShields ==1)
+					if ( numBeams == 1 && numShields == 1 )
 						obj = HeroWraithBuildOrder.MOVE_TOWARDS_TOWER;
 						
 					return;
 				
 				case MOVE_TOWARDS_TOWER:
-					if (!myPlayer.myMotor.isActive()) {
-						if (myPlayer.myRC.getDirection()!=Direction.NORTH) {
-							myPlayer.myMotor.setDirection(Direction.NORTH);
-						}
-						else {
+					
+					Utility.setIndicator(myPlayer, 1, "MOVE_TOWARDS_TOWER");
+					
+					while ( myPlayer.myMotor.isActive() )
+						myPlayer.sleep();
+					if ( num == 1 )
+					{
+						myPlayer.myMotor.setDirection(Direction.NORTH);
+						for ( int steps = 0 ; steps < 9 ; steps++ )
+						{
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
 							myPlayer.myMotor.moveForward();
-							steps++;
-						}
-						if (steps==9) {
-							steps=0;
-							obj = HeroWraithBuildOrder.FIGHT_TOWER;
 						}
 					}
+					else if ( num == 2 )
+					{
+						myPlayer.myMotor.setDirection(Direction.WEST);
+						for ( int steps = 0 ; steps < 9 ; steps++ )
+						{
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.moveForward();
+						}
+					}
+					
+					obj = HeroWraithBuildOrder.FIGHT_TOWER;
 					return;
+					
 				case FIGHT_TOWER:
-					if (myPlayer.myRC.getHitpoints()<Constants.THRESHOLD_LIFE) {
-						obj=HeroWraithBuildOrder.GO_HOME;
+					
+					Utility.setIndicator(myPlayer, 0, "FIGHT_TOWER");
+					if ( myPlayer.myRC.getHitpoints() < Constants.THRESHOLD_LIFE )
+					{
+						obj = HeroWraithBuildOrder.GO_HOME;
 					}
-					else {
-						if (!myPlayer.myBeams[0].isActive()) {
-							myPlayer.myBeams[0].attackSquare(myPlayer.myRC.getLocation().add(Direction.NORTH,6), RobotLevel.ON_GROUND);
+					else
+					{
+						if ( !myPlayer.myBeams[0].isActive() )
+						{
+							myPlayer.myBeams[0].attackSquare(enemyTowerLoc, RobotLevel.ON_GROUND);
 						}
 					}
 					return;
+					
 				case GO_HOME:
-					if (!myPlayer.myMotor.isActive()) {
-						myPlayer.myMotor.moveBackward();
-						steps++;
-						if (steps==9) {
-							steps=0;
-							obj = HeroWraithBuildOrder.GET_HEALED;
+					
+					Utility.setIndicator(myPlayer, 0, "GO_HOME");
+					if ( num == 1 )
+					{
+						for ( int steps = 0 ; steps < 9 ; steps++ )
+						{
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.moveBackward();
 						}
 					}
+					else if ( num == 2 )
+					{
+						for ( int steps = 0 ; steps < 9 ; steps++ )
+						{
+							while ( myPlayer.myMotor.isActive() )
+								myPlayer.sleep();
+							myPlayer.myMotor.moveBackward();
+						}
+					}
+					obj = HeroWraithBuildOrder.GET_HEALED;
 					return;
+					
 				case GET_HEALED:
-					if (myPlayer.myRC.getHitpoints()==(myPlayer.myRC.getMaxHp())) {
-						obj=HeroWraithBuildOrder.MOVE_TOWARDS_TOWER;
+					
+					Utility.setIndicator(myPlayer, 0, "GET_HEALED");
+					if ( myPlayer.myRC.getHitpoints() == myPlayer.myRC.getMaxHp() )
+					{
+						obj = HeroWraithBuildOrder.MOVE_TOWARDS_TOWER;
 					}
 					return;
 			}
 		}
 
 		@Override
-		public void newComponentCallback(ComponentController[] components) {
+		public void newComponentCallback(ComponentController[] components)
+		{
 			
 		}
 
 		@Override
-		public void onWakeupCallback(int lastActiveRound) {
+		public void onWakeupCallback(int lastActiveRound)
+		{
 			
 		}
 
 		@Override
-		public String toString() {
-			return null;
+		public String toString()
+		{
+			return "HeroWraithBehavior";
 		}
 }
