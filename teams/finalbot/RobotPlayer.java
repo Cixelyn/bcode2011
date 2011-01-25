@@ -245,7 +245,7 @@ public class RobotPlayer implements Runnable {
 		
 		///////////////////////////////////////////////////////////////
 		//Begin Debug Routines		
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 		
 		
 		///////////////////////////////////////////////////////////////
@@ -349,7 +349,7 @@ public class RobotPlayer implements Runnable {
 		
 		//////////////////////////////////////////////////////////////
 		//Run our debug routines.
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		
 		//////////////////////////////////////////////////////////////
 		// Set some variables and reset some flags.
@@ -385,9 +385,9 @@ public class RobotPlayer implements Runnable {
 	 * since none of the standard message processing or sensor scans happen.
 	 */
 	public void minSleep() {
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		myRC.yield();
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 	}
 	
 	
@@ -397,7 +397,7 @@ public class RobotPlayer implements Runnable {
 	 */
 	public void shutdown() {
 		myRC.turnOff();
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock(); 	//we need to reset our clock.
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock(); 	//we need to reset our clock.
 	}
 	
 	
@@ -508,12 +508,10 @@ public class RobotPlayer implements Runnable {
 	
 	
 	
-	
+	/*
 	public void startClock() {
 		executeStartTime = Clock.getRoundNum();
 		executeStartByte = Clock.getBytecodeNum();
-		
-		
 		
 	}
 	
@@ -523,7 +521,7 @@ public class RobotPlayer implements Runnable {
 				int byteCount = (bytecodeLimit-executeStartByte) + (currRound-executeStartTime-1) * bytecodeLimit + Clock.getBytecodeNum();
 				Utility.printMsg(this,"Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
 		}	
-	}
+	}*/
 	
 	
 	
