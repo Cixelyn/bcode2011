@@ -90,22 +90,22 @@ public class ColossusBehavior extends Behavior
 			
 			case EQUIPPING:	
 
-				Utility.setIndicator(myPlayer, 1, "EQUIPPING");
+				//Utility.setIndicator(myPlayer, 1, "EQUIPPING");
 				
 				// Decide what kind of heavy I am
 				int[] currentLoadOut = Utility.countComponents(myPlayer.myRC.components());
 				
-				if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout0 ) && num != -1 )
+				if ( Utility.compareComponents(currentLoadOut, Constants.heavyLoadout0 ) && num != -1 )
 				{
 					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
-				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout1 ) && num != -1 )
+				else if ( Utility.compareComponents(currentLoadOut, Constants.heavyLoadout1 ) && num != -1 )
 				{
 					maxRange = ComponentType.BEAM.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
-				else if (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
+				else if ( Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
 				{
 					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
@@ -114,7 +114,7 @@ public class ColossusBehavior extends Behavior
 	        	
 			case DETERMINE_SPAWN:
 				
-				Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
+				//Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
 				
 				while ( westEdge == -1 || northEdge == -1 || eastEdge == -1 || southEdge == -1 )
 				{
@@ -176,13 +176,13 @@ public class ColossusBehavior extends Behavior
 						else
 							rally = (spawn + 6) % 8;
 					}
-					Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+					//Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
 				else
 				{
 					numBounces = 3; // automatically patrol the edge of map
 					rally = (2 * num) % 8;
-					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
+					//Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
 				permRally = rally;
 				if ( enemyInfo != null )
@@ -192,39 +192,41 @@ public class ColossusBehavior extends Behavior
 				
 			case ADVANCE:	
 				
-				Utility.setIndicator(myPlayer, 1, "ADVANCE");
+				//Utility.setIndicator(myPlayer, 1, "ADVANCE");
 				
 				// Rally to center if we're confident enough in where it is
 				if ( Clock.getRoundNum() == Constants.SCRAMBLE_TIME )
 				{
 					if ( myPlayer.myLoc.distanceSquaredTo(myPlayer.myCartographer.getMapCenter()) < ComponentType.JUMP.range )
-						Utility.setIndicator(myPlayer, 2, "I'm at the center of the map already!!");
+					{
+						//Utility.setIndicator(myPlayer, 2, "I'm at the center of the map already!!");
+					}
 					else
 					{
 						switch ( myPlayer.myCartographer.getConfidence() )
 						{
 							case 0:
 								
-								Utility.setIndicator(myPlayer, 2, "I've never seen a map edge before. Are they pretty?");
+								//Utility.setIndicator(myPlayer, 2, "I've never seen a map edge before. Are they pretty?");
 								rallyChanged = true;
 								break;
 								
 							case 1:
 								
-								Utility.setIndicator(myPlayer, 2, "I've only seen one map edge, I'm not scrambling.");
+								//Utility.setIndicator(myPlayer, 2, "I've only seen one map edge, I'm not scrambling.");
 								rallyChanged = true;
 								break;
 								
 							case 2:
 								
-								Utility.setIndicator(myPlayer, 2, "I've seen two map edges, I'd rather not scramble.");
+								//Utility.setIndicator(myPlayer, 2, "I've seen two map edges, I'd rather not scramble.");
 								rallyChanged = true;
 								break;
 								
 							case 3:
 								
 								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
-								Utility.setIndicator(myPlayer, 2, "I'm pretty sure the center is " + Direction.values()[rally].toString() + ", rerallying.");
+								//Utility.setIndicator(myPlayer, 2, "I'm pretty sure the center is " + Direction.values()[rally].toString() + ", rerallying.");
 								permRally = rally;
 								rallyChanged = true;
 								break;
@@ -232,7 +234,7 @@ public class ColossusBehavior extends Behavior
 							case 4:
 								
 								rally = myPlayer.myLoc.directionTo(myPlayer.myCartographer.getMapCenter()).ordinal();
-								Utility.setIndicator(myPlayer, 2, "I KNOW the center is " + Direction.values()[rally].toString() + ", rerallying.");
+								//Utility.setIndicator(myPlayer, 2, "I KNOW the center is " + Direction.values()[rally].toString() + ", rerallying.");
 								permRally = rally;
 								rallyChanged = true;
 								break;
@@ -261,7 +263,7 @@ public class ColossusBehavior extends Behavior
         			if ( enemyInfo != null )
         			{
         				rally = myPlayer.myLoc.directionTo(enemyInfo.location).ordinal();
-        				Utility.setIndicator(myPlayer, 2, "Enemy on the horizon, rerallying " + Direction.values()[rally].toString() + ".");
+        				//Utility.setIndicator(myPlayer, 2, "Enemy on the horizon, rerallying " + Direction.values()[rally].toString() + ".");
         				// THIS IS NOT A PERMANENT RALLY
         				rallyChanged = true;
         				
@@ -290,7 +292,7 @@ public class ColossusBehavior extends Behavior
 	    		        		else
 	    		        			rally = (rally + 6) % 8;
 	    	        		}
-	    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	    	        		//Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	    	        		numBounces++;
 	    	        		permRally = rally;
 	    	        		rallyChanged = true;
@@ -302,7 +304,7 @@ public class ColossusBehavior extends Behavior
 	    	        			rally = (rally + 1) % 8;
 	    	        		else
 	    	        			rally = (rally + 7) % 8;
-	    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	    	        		//Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	    	        		numBounces++;
 	    	        		permRally = rally;
 	    	        		rallyChanged = true;
@@ -314,7 +316,7 @@ public class ColossusBehavior extends Behavior
 	    	        			rally = (rally + 7) % 8;
 	    	        		else
 	    	        			rally = (rally + 1) % 8;
-	    	        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+	    	        		//Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 	    	        		numBounces++;
 	    	        		permRally = rally;
 	    	        		rallyChanged = true;
@@ -347,7 +349,7 @@ public class ColossusBehavior extends Behavior
 							prevLocs.clear();
 							rally = (3*numStuck) % 8;
 							numStuck++;
-							Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+							//Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
 							permRally = rally;
 							rallyChanged = true;
 						}
@@ -358,7 +360,7 @@ public class ColossusBehavior extends Behavior
         		{
         			if ( myPlayer.myLoc.distanceSquaredTo(enemyInfo.location) < maxRange )
         			{
-        				Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
+        				//Utility.setIndicator(myPlayer, 2, "Enemy in range, backing up!");
         				if ( !myPlayer.myMotor.isActive() )
         				{
 	        				if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
@@ -372,7 +374,7 @@ public class ColossusBehavior extends Behavior
         			}
         			else
         			{
-        				Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
+        				//Utility.setIndicator(myPlayer, 2, "Enemy detected, engaging.");
         				if ( !myPlayer.myMotor.isActive() )
         				{
 	        				if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(enemyInfo.location)
@@ -388,7 +390,9 @@ public class ColossusBehavior extends Behavior
         		else if ( enemyInfo == null && !myPlayer.myMotor.isActive() )
         		{
         			if ( !rallyChanged )
-        				Utility.setIndicator(myPlayer, 2, "No enemies detected, rallied " + Direction.values()[rally].toString() + "."	);
+        			{
+        				//Utility.setIndicator(myPlayer, 2, "No enemies detected, rallied " + Direction.values()[rally].toString() + ".");
+        			}
         			// Make sure I'm not getting flanked
         			if ( myPlayer.hasTakenDamage )
     	        		myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().opposite());
@@ -434,12 +438,13 @@ public class ColossusBehavior extends Behavior
 			if ( num == -1 )
 			{
 				num = msg.ints[Messenger.firstData+1];
-				if ( num % 3 == 0 )
+				/*if ( num % 3 == 0 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", double railgun all the way!");
 				else if ( num % 3 == 1 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", prismatic core online!");
 				else if ( num % 3 == 2 )
-					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");
+					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");*/
+				myPlayer.myMessenger.toggleReceive(false);
 			}
 		}
 	}

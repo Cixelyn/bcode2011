@@ -1,15 +1,48 @@
-package team068;
-
-import battlecode.common.*;
-
-
-
-
+package team068; import battlecode.common.*;
 /**
- * You start off by thinking the center of the map is you.
- * Then, as you explore the world, you learn that it's not just about you.
+ *<pre>
+ *                             _________________________
+ *                           /                         \ 
+ *  ========================[  C A R T O G R A P H E R  ]===========================    
+ *                           \_________________________/
  * 
- * Deep.....
+ *                                         __                                                  
+ *                                      ,;'--`:.                                               
+ *                                     //      \\                                              
+ *                                    ((   __   ))                                             
+ *                                     \\,'  `.//                                              
+ *                                      ``.__,''                                               
+ *                                      __(  )__                                               
+ *                                  _.-'_......_`-._                                           
+ *                                ,'.;::;''''''::`-.`.                                         
+ *                               / /:;''    N   `':,\ \                                        
+ *                              / /:/ . ,''  ``. , \:\ \                                       
+ *                             : :::   ;.,-  -.;'   ::: :                                      
+ *                             | |:|  : (':,.;') :  |:| |                                      
+ *                             | |:| W:    `'    ;E |:| | 
+ *                             : :::   \        /   ;:; ;                                      
+ *                              \ \:\   `..__..'   /:/ /                                       
+ *                               \ \::.     S    .::/ /                                        
+ *                                 `.::::._  _..:::;,'                                         
+ *                                   `:.::.`''::.:'                                        
+ *                              _..--''.--     --.`--.._                                       
+ *                             `._`--...________...--'_,'                                      
+ *                                ``--...______...--''            
+ * 
+ * 
+ *   __
+ *	/  \ Notes ___________________________________________________________ 
+ *  \__/
+ *  
+ *  	The cartographer class allows for map center estimation based on
+ *  	the number of map edges you've seen, along with a confidence factor.
+ *  
+ *      You start off by thinking the center of the map is you.
+ *      Then, as you explore the world, you learn that it's not just about you.
+ * 
+ *      Deep.....
+ * 
+ *</pre>
  * 
  * @author Cory
  *

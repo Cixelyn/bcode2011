@@ -1,12 +1,28 @@
-package team068;
+package team068; import battlecode.common.*;
 
-import battlecode.common.*;
-
-
-
-/**
- * This class does the calculations necessary to figure out a good jump location
- * Table is fully self sufficient and can be used in doing calculations.
+/**<pre>
+ *                            _________________________
+ *                           /                         \ 
+ *  ========================[    J U M P   T A B L E    ]===========================    
+ *                           \_________________________/
+ * 
+ * 
+ *              _   _			JUMPTABLE CLASS:                                       
+ *             (o)-(o)             RIBBIT, RIBBIT!!!!                                     
+ *          .-(   "   )-.                                    
+ *         /  /`'-=-'`\  \                                   
+ *       __\ _\ \___/ /_ /__                                 
+ *         /|  /|\ /|\  |\
+ *     
+ *   __
+ *	/  \ NOTES ___________________________________________________________ 
+ *  \__/
+ * 
+ *     This class does the calculations necessary to figure out a good jump
+ *     location. Table is fully self sufficient and is instantiated each
+ *     time you need to return a list of locations to jump to.
+ * 
+ * </pre>
  * @author Cory
  *
  */

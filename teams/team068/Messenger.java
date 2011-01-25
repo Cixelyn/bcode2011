@@ -1,20 +1,63 @@
-package team068;
-
-import java.util.ArrayDeque;
-import battlecode.common.*;
-
-
-
+package team068; import java.util.ArrayDeque; import battlecode.common.*;
 /**
- * Messenger Class.  Loosely based on the old Lazer6 messaging code
- * 
- * 
  * <pre>
- * MESSAGE BLOCK FORMAT------------------------------------------|           
- *    idx       0           1            2            3          |
+ *                            ___________________
+ *                           /                   \ 
+ *  ========================[  M E S S E N G E R  ]===========================    
+ *                           \___________________/
+ *
+ *       ,-.                                     
+ *      / \  `.  __..-,O      MESSENGER CLASS: 
+ *     :   \ --''_..-'.'         IT SENDS MESSAGES AND SHIT                
+ *     |    . .-' `. '.      
+ *     :     .     .`.'                          
+ *      \     `.  /  ..               
+ *       \      `.   ' .                         
+ *        `,       `.   \                        
+ *       ,|,`.        `-.\                       
+ *      '.||  ``-...__..-`                       
+ *       |  |                                    
+ *       |__|                                    
+ *       /||\                                    
+ *      //||\\                                   
+ *     // || \\                                  
+ *  __//__||__\\__                               
+ * '--------------'              
+ * 
+ * 
+ * 
+ * 
+ *   __
+ *	/  \ NOTES ___________________________________________________________ 
+ *  \__/
+ * 
+ * This messenger class completely encapsulates the sending and receiving
+ * of messages.  
+ * 
+ * Features:
+ * 		-Distance based outward propagation rebroadcasting
+ * 		-Fast checksum w/ heard table for determining message validity.
+ * 		-Toggle on and off to save bytecodes.
+ * 		-Defense against zero-length and null object attacks.
+ * 
+ * 
+ *   
+ *   __
+ *	/  \ MESSAGE BLOCK FORMAT______________________________________________ 
+ *  \__/
+ *  
+ *  When a message is sent, each Message object is filled in the following
+ *  with the following parameters:
+ *  
+ *          -----------------------------------------------------           
+ *    idx  [   0           1            2            3           |
  *    ints [ hash       , header     , data      , data..........|
  *    locs [ source     , origin     , data      , data..........|
  *    strs [-----------------------------------------------------|
+ *         
+ *         
+ *         
+ * 
  * </pre>
  * @author Cory
  *
@@ -48,7 +91,11 @@ public class Messenger {
 	
 	
 
-	
+	/**
+	 * This instantiates a new message sending interface.  Required if you want
+	 * to be able to send and process messages.
+	 * @param player
+	 */
 	public Messenger(RobotPlayer player) {
 		
 		myPlayer = player;							//Assign the player
@@ -91,8 +138,6 @@ public class Messenger {
 	public void toggleReceive(boolean state) {
 		shouldReceive = state;		
 	}
-	
-	
 	
 	
 	/**
@@ -140,7 +185,21 @@ public class Messenger {
 		m.locations = new MapLocation[minSize+lSize];
 		return m;
 	}
+
 	
+	
+	
+	/**
+	 *   __
+	 *	/  \ MESSAGE SENDING FUNCTIONS__________________________________________ 
+	 *  \__/
+	 * 
+	 *     The following functions sends various different type of messages.
+	 *     Each type of message is a separate function because of the very high
+	 *     cost of completely copying an array.
+	 * 
+	 */
+	 
 	
 	public void sendNotice(MsgType t) {
 		sendMsg(t,buildNewMessage(0,0));
@@ -210,12 +269,18 @@ public class Messenger {
 		sendMsg(t,m);	
 	}
 	
+		
 	
-
-	
-	
-	/**
-	 * Very primitive receive function
+	/**                                                                
+	 *   __
+	 *	/  \ RECEIVE FUNCTION_________________________________________ 
+	 *  \__/
+	 * 
+	 *     This is the main receiving method.  It checksums and processes
+	 *     all messages and passes the message into the robot's callback.
+	 *     
+	 *     
+	 *                                                                
 	 */
 	public void receiveAll() {
 		
@@ -300,8 +365,17 @@ public class Messenger {
 		}
 	}
 	
-	
-	
+	/** 
+	 *   __
+	 *	/  \ SEND FUNCTION_________________________________________ 
+	 *  \__/
+	 * 
+	 *     This function sends the queued messages that are waiting
+	 *     to be send at the end of a robot's turn.
+	 *     
+	 *     
+	 *    
+	 */	
 	public void sendAll() throws Exception{
 		if(canSend && myPlayer.myRC.getTeamResources() > Constants.RESERVE && !messageQueue.isEmpty() && !myPlayer.myBroadcaster.isActive()) {
 			myPlayer.myBroadcaster.broadcast(messageQueue.pop());

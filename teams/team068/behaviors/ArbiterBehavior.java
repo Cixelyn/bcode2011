@@ -68,6 +68,10 @@ public class ArbiterBehavior extends Behavior{
 	private int[] arbiterLoadout;
 	private MapStoreBoolean badMines = new MapStoreBoolean();
 	
+	MapLocation motherLoc;
+	GameObject motherObj;
+	int motherID;
+	
 	MapLocation refineryLoc;
 	MapLocation armoryLoc;
 	MapLocation factoryLoc;
@@ -81,7 +85,7 @@ public class ArbiterBehavior extends Behavior{
 	int rally = -1;
 	int num = -1;
 	int numStuck = 0;
-	boolean hasRebuilt = false;
+	int shouldRebuild = 0; // 0 means everythings ok, 1 means should rebuild, 2 means rebuilt
 	
 	Mine minMine;
 	Mine m;
@@ -125,18 +129,14 @@ public class ArbiterBehavior extends Behavior{
 		
 			case EQUIPPING:
 				
-				// System.out ???? -JVen
-				//System.out.println(arbiterLoadout);
-				//System.out.println(Utility.countComponents(myPlayer.myRC.components()));
-				Utility.setIndicator(myPlayer, 1, "EQUIPPING ARBITER");
-				if( Utility.compareComponents(myPlayer, arbiterLoadout) ) {
+				//Utility.setIndicator(myPlayer, 1, "EQUIPPING ARBITER");
+				if( Utility.compareComponents(myPlayer, arbiterLoadout) )
 					state = ArbiterBuildOrder.DETERMINE_SPAWN;
-				}
 				return;
 			
 			case DETERMINE_SPAWN:
 				
-				Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
+				//Utility.setIndicator(myPlayer, 1, "DETERMINE_SPAWN");
 				
 				if ( myPlayer.mySensor.canSenseSquare(myPlayer.myLoc.add(Direction.NORTH, 10)) )
 				{
@@ -183,26 +183,39 @@ public class ArbiterBehavior extends Behavior{
 						else
 							rally = (spawn + 6) % 8;
 					}
-					Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
+					//Utility.setIndicator(myPlayer, 2, "I KNOW we spawned " + Direction.values()[spawn].toString() + ", heading " + Direction.values()[rally].toString() + ".");
 				}
 				else
 				{
 					rally = Direction.NORTH.ordinal();
-					Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
+					//Utility.setIndicator(myPlayer, 2, "I don't know where we spawned, heading " + Direction.values()[rally].toString() + ".");
 				}
 				state = ArbiterBuildOrder.EXPAND;
 				return;
 				
 			case EXPAND:
 				
-				Utility.setIndicator(myPlayer, 1, "EXPAND");
+				//Utility.setIndicator(myPlayer, 1, "EXPAND");
 				
-				lastMineCapped++;
+				
 				// Clear badmines if you haven't capped any in a while
+				lastMineCapped++;
 				if ( lastMineCapped > Constants.FORGET_BAD_MINES )
 				{
 					lastMineCapped = 0;
 					badMines = new MapStoreBoolean();
+				}
+				
+				// Sense if motherLoc is in range
+				if ( shouldRebuild == 0 && motherLoc != null && myPlayer.mySensor.canSenseSquare(motherLoc) )
+				{
+					motherObj = myPlayer.mySensor.senseObjectAtLocation(motherLoc, RobotLevel.ON_GROUND);
+					if ( motherObj == null || motherObj.getID() != motherID )
+					{
+						// mother refinery destroyed!!
+						//Utility.setIndicator(myPlayer, 0, "THE MOTHER REFINERY WAS DESTROYED! REBUILD!");
+						shouldRebuild = 1;
+					}
 				}
 				
 				//////////////////////////////////////////////////////////////////////////////////
@@ -224,13 +237,13 @@ public class ArbiterBehavior extends Behavior{
 					
 					GameObject obj = objects[i];
 					
-					if(obj.getTeam()==myPlayer.myOpponent)
+					if( obj.getTeam() == myPlayer.myOpponent )
 					{ 
 						// Enemy Robot Detected
 						enemies[enemyIndex] = (Robot)obj; //cast it correctly
 						enemyIndex++;					
 					}
-					else if(obj.getRobotLevel()==RobotLevel.MINE)
+					else if ( obj.getRobotLevel() == RobotLevel.MINE )
 					{
 						// Mine Detected
 						MapLocation mineLoc = ((Mine)obj).getLocation();
@@ -280,30 +293,28 @@ public class ArbiterBehavior extends Behavior{
 				
 				if ( minMineDist <= 2 && minMineDist > 0 )
 				{
-					Utility.setIndicator(myPlayer, 2, "Building!!");
-					Utility.setIndicator(myPlayer, 0, "Direction to mine: " + myPlayer.myLoc.directionTo(minMine.getLocation()).toString());
+					//Utility.setIndicator(myPlayer, 2, "Building!!");
 					// there is a mine, and it's within building range
 					if ( myPlayer.mySensor.senseObjectAtLocation(minMine.getLocation(), RobotLevel.ON_GROUND) == null && myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
 					{
 						Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), Chassis.BUILDING);
 						Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(minMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+						// rebuild main if we should
+						if ( shouldRebuild == 1 )
+						{
+							//Utility.setIndicator(myPlayer, 0, "");
+							refineryLoc = minMine.getLocation();
+							state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
+						}
 						minMine = null;
 						lastMineCapped = 0;
 					}
-					// FIXME this is not yet tested
-					/*// rebuild main
-					if ( num == 0 && !hasRebuilt && Clock.getRoundNum() > Constants.REBUILD_TIME && myPlayer.myRC.getTeamResources() > Constants.MAD_BANK )
-					{
-						refineryLoc = minMine.getLocation();
-						state = ArbiterBuildOrder.COMPUTE_BUILDINGS_1;
-					}*/
 				}
 				else if ( minMine != null )
 				{
-					Utility.setIndicator(myPlayer, 2, "Free mine detected!");
-					Utility.setIndicator(myPlayer, 0, "Direction to mine: " + myPlayer.myLoc.directionTo(minMine.getLocation()).toString());
+					//Utility.setIndicator(myPlayer, 2, "Free mine detected!");
 					// there is a mine, but it's away from building range
-					int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos); // TODO is passing enemyInfos expensive???
+					int jump = myPlayer.myActions.jumpToMine(minMine, enemyInfos);
 					if ( jump == Actions.JMP_NOT_POSSIBLE )
 					{
 						badMines.set(minMine.getLocation());
@@ -313,7 +324,7 @@ public class ArbiterBehavior extends Behavior{
 				}
 				else
 				{
-					Utility.setIndicator(myPlayer, 0, "");
+					//Utility.setIndicator(myPlayer, 0, "");
 					// no mines
 					
 					
@@ -324,7 +335,7 @@ public class ArbiterBehavior extends Behavior{
 							rally = (rally + 6) % 8;
 						else
 							rally = (rally + 2) % 8;
-		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		//Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        	}
 	        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally-1)%8],10)) == TerrainTile.OFF_MAP )
 		        	{
@@ -332,7 +343,7 @@ public class ArbiterBehavior extends Behavior{
 							rally = (rally + 1) % 8;
 						else
 							rally = (rally + 7) % 8;
-		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		//Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        	}
 	        		else if ( rally % 2 == 1 && myPlayer.myRC.senseTerrainTile(myPlayer.myLoc.add(Direction.values()[(rally+1)%8],10)) == TerrainTile.OFF_MAP )
 		        	{
@@ -340,10 +351,12 @@ public class ArbiterBehavior extends Behavior{
 							rally = (rally + 7) % 8;
 						else
 							rally = (rally + 1) % 8;
-		        		Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
+		        		//Utility.setIndicator(myPlayer, 2, "Off map found, rerallying " + Direction.values()[rally].toString() + ".");
 		        	}
 	        		else
-	        			Utility.setIndicator(myPlayer, 2, "No mines detected, rallied " + Direction.values()[rally].toString() + ".");
+	        		{
+	        			//Utility.setIndicator(myPlayer, 2, "No mines detected, rallied " + Direction.values()[rally].toString() + ".");
+	        		}
 					
 					int jump = myPlayer.myActions.jumpInDir(Direction.values()[rally], enemyInfos);
 					if ( jump == Actions.JMP_SUCCESS )
@@ -362,7 +375,7 @@ public class ArbiterBehavior extends Behavior{
 						prevLocs.clear();
 						rally = (3*numStuck) % 8;
 						numStuck++;
-						Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
+						//Utility.setIndicator(myPlayer, 2, "I'm stuck, rerallying " + Direction.values()[rally].toString() + ".");
 					}
 					
 				}
@@ -384,8 +397,8 @@ public class ArbiterBehavior extends Behavior{
 			
 			case COMPUTE_BUILDINGS_1:
 				
-				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_1");
-				Utility.setIndicator(myPlayer, 2, "Trying to get factory and refinery next to armory...");
+				//Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_1");
+				//Utility.setIndicator(myPlayer, 2, "Trying to get factory and refinery next to armory...");
 				d = myPlayer.myLoc.directionTo(refineryLoc);
 				if ( myPlayer.myMotor.canMove(d.rotateLeft()) && myPlayer.myMotor.canMove(d.rotateLeft().rotateLeft()) )
 				{
@@ -432,8 +445,8 @@ public class ArbiterBehavior extends Behavior{
     			
 			case COMPUTE_BUILDINGS_2:
 				
-				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_2");
-				Utility.setIndicator(myPlayer, 2, "Trying to get factory next to armory...");
+				//Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_2");
+				//Utility.setIndicator(myPlayer, 2, "Trying to get factory next to armory...");
 				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
@@ -457,8 +470,8 @@ public class ArbiterBehavior extends Behavior{
     			
 			case COMPUTE_BUILDINGS_3:
 				
-				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_3");
-				Utility.setIndicator(myPlayer, 2, "Trying to get factory next to refinery...");
+				//Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_3");
+				//Utility.setIndicator(myPlayer, 2, "Trying to get factory next to refinery...");
 				d = myPlayer.myLoc.directionTo(refineryLoc);
 				if ( myPlayer.myMotor.canMove(d.rotateLeft()) )
 					factoryLoc = myPlayer.myLoc.add(d.rotateLeft());
@@ -492,34 +505,34 @@ public class ArbiterBehavior extends Behavior{
     			
 			case COMPUTE_BUILDINGS_4:
 				
-				Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_4");
-				Utility.setIndicator(myPlayer, 2, "This map blows! Going for anything I can get...");
+				//Utility.setIndicator(myPlayer, 1, "COMPUTE_BUILDINGS_4");
+				//Utility.setIndicator(myPlayer, 2, "This map blows! Going for anything I can get...");
 				for ( int i = 8 ; --i >= 0 ; )
 				{
 					d = Direction.values()[i];
 					if ( myPlayer.myMotor.canMove(d) && armoryLoc == null )
 					{
-						Utility.setIndicator(myPlayer, 2, "Armory location found!");
+						//Utility.setIndicator(myPlayer, 2, "Armory location found!");
 						armoryLoc = myPlayer.myLoc.add(d);
 					}
 					else if ( myPlayer.myMotor.canMove(d) && factoryLoc == null )
 					{
-						Utility.setIndicator(myPlayer, 2, "Factory location found!");
+						//Utility.setIndicator(myPlayer, 2, "Factory location found!");
 						factoryLoc = myPlayer.myLoc.add(d);
 						state = ArbiterBuildOrder.BUILD_BUILDINGS;
 						return;
 					}
 				}
 				myPlayer.sleep();
-				Utility.setIndicator(myPlayer, 2, "No room for factory and armory. Moving on.");
+				//Utility.setIndicator(myPlayer, 2, "No room for factory and armory. Moving on.");
 				myPlayer.sleep();
 				state = ArbiterBuildOrder.EXPAND;
 				return;
 				
 			case BUILD_BUILDINGS:
 				
-				Utility.setIndicator(myPlayer, 1, "BUILD_BUILDINGS");
-				Utility.setIndicator(myPlayer, 2, "");
+				//Utility.setIndicator(myPlayer, 1, "BUILD_BUILDINGS");
+				//Utility.setIndicator(myPlayer, 2, "");
 				
 				//////// SPIN AND ATTACK
 				enemyInfo = Utility.attackEnemies(myPlayer);
@@ -545,8 +558,8 @@ public class ArbiterBehavior extends Behavior{
 				
 			case WAIT_FOR_ACK:
 				
-				Utility.setIndicator(myPlayer, 1, "WAIT_FOR_ACK");
-				Utility.setIndicator(myPlayer, 2, "");
+				//Utility.setIndicator(myPlayer, 1, "WAIT_FOR_ACK");
+				//Utility.setIndicator(myPlayer, 2, "");
 				
 				//////// SPIN AND ATTACK
 				enemyInfo = Utility.attackEnemies(myPlayer);
@@ -585,6 +598,7 @@ public class ArbiterBehavior extends Behavior{
 				RobotInfo armoryInfo = myPlayer.mySensor.senseRobotInfo(armory);
 				if ( !armoryInfo.location.add(armoryInfo.direction).equals(myPlayer.myLoc) )
 					return;
+				shouldRebuild = 2;
 				state = ArbiterBuildOrder.EXPAND;
 				return;
 				
@@ -602,7 +616,12 @@ public class ArbiterBehavior extends Behavior{
 		if ( t == MsgType.MSG_SEND_NUM )
 		{
 			if ( num == -1 )
+			{
 				num = msg.ints[Messenger.firstData+1] - Constants.MAX_DRONES;
+				motherLoc = msg.locations[Messenger.firstData];
+				motherID = msg.ints[Messenger.firstData];
+				myPlayer.myMessenger.toggleReceive(false);
+			}
 		}
 	}
 

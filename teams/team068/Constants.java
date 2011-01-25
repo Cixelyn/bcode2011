@@ -61,7 +61,7 @@ public class Constants
 	////// HEAVY LOADOUTS ///////////////////////////////////////////////////////////////////
 	
 	
-	public static final ComponentType[] heavyLoadout0 = new ComponentType[]    // currHeavy == 0
+	public static final ComponentType[] heavyLoadout0 = new ComponentType[]    // currHeavy == 0, currHeavy != 0
   		                       {ComponentType.RADAR,ComponentType.JUMP,ComponentType.SHIELD,
   								ComponentType.RAILGUN,ComponentType.RAILGUN,ComponentType.SMG
   								};
@@ -72,10 +72,10 @@ public class Constants
 								ComponentType.PLASMA,ComponentType.PLASMA
 	                            };
   	
-	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 0, currHeavy != 0
+	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 2
 	                           {ComponentType.RADAR,ComponentType.JUMP,
 								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.PLASMA,ComponentType.PLASMA
+								ComponentType.SHIELD,ComponentType.HARDENED
 								};
 	
 	public static final ComponentType[] arbiterLoadout = new ComponentType[]

@@ -32,17 +32,32 @@ package team068; import java.util.*; import team068.strategies.*; import team068
  *  \__/
  *
  * [Main]
- *    RobotPlayer.java
+ *    RobotPlayer.java 		- The Main VM entry-point
  *    
  * [Broadcasting]
- *    Messenger.java
- *    MsgType.java
+ *    Messenger.java		- Messenging send and receive functions
+ *    MsgType.java			- Types of messages you can send and receive.
+ *    Encoder.java			- Does bit-shifting to pack data into ints for messenger
  *    
  * [Navigation]
- *    OldNavigation.java
- *    Cartographer.Java  
+ *    OldNavigation.java	- Implements a rudimentary bugnav
+ *    Cartographer.java  	- Calculates map center based on map edges
+ *    MapStoreBoolean.java	- This class allows a boolean to be set per map location
+ *    JumpTable.java		- This class returns in order the possible jump locations for a robot
  *    
- *  TODO: UPDATE THIS LATER BEFORE SUBMISSION
+ * [Misc]
+ * 	  Utility.java			- We just put a bunch of random stuff in here....
+ *    Constants.java		- All of our tweakables go in here.
+ *    Memory.java			- Round-to-round memory encoding and decoding functions go here.
+ * 
+ * [Behaviors]
+ * 		A behavior is a state machine that defines the actions of a particular unit.
+ * 		All behaviors extend Behavior.java
+ * 
+ * [Strategy]
+ * 		A strategy is a set of behaviors that the bots should run on a particular round.
+ *      All strategies extend Strategy.java
+ *    
  *
  *
  *
@@ -201,7 +216,6 @@ public class RobotPlayer implements Runnable {
     	
     	
     	
-    	
     	//////////////////////////////////////////////////////////////////////////////////////////////////////
     	//
     	//		IF YOU WANT TO CHANGE THE SET OF ROBOT DEFAULT BEHAVIORS
@@ -211,12 +225,8 @@ public class RobotPlayer implements Runnable {
     	//		DON'T BREAK PLZ OK.
     	//
     	/////////////////////////////////////////////////////////////////////////////////////////////////////
-    	//Setup the initial strategy based on team memory
-    	if(myRC.getTeamMemory()[0]==0) {
-    		myStrategy = new DefaultStrategy();
-    	} else {
-    		myStrategy = null;
-    	}
+    	myStrategy = new DefaultStrategy();
+    	
     	
     	//Now based on the strategy, get what our behavior should be
     	myBehavior = myStrategy.selectBehavior(this, Clock.getRoundNum());
@@ -235,7 +245,7 @@ public class RobotPlayer implements Runnable {
 		
 		///////////////////////////////////////////////////////////////
 		//Begin Debug Routines		
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 		
 		
 		///////////////////////////////////////////////////////////////
@@ -271,7 +281,9 @@ public class RobotPlayer implements Runnable {
 		if(myMessenger.shouldReceive) {
 			try {
 				myMessenger.receiveAll();
-			} catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {
+				//e.printStackTrace();
+			}
 		}
 
 		
@@ -285,7 +297,9 @@ public class RobotPlayer implements Runnable {
 				allocateControllers(components);
 				myBehavior.newComponentCallback(components);
 			}
-		} catch(Exception e) {e.printStackTrace();}
+		} catch(Exception e) {
+			//e.printStackTrace();
+		}
 		
 		
 		
@@ -309,7 +323,9 @@ public class RobotPlayer implements Runnable {
 			
 			try {
 				myBehavior.run();
-			} catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {
+				//e.printStackTrace();
+			}
 			
 			//Run Postflight operations
 			postRun();
@@ -332,14 +348,16 @@ public class RobotPlayer implements Runnable {
 		//Send all messages
 		try {
 			myMessenger.sendAll();
-		} catch(Exception e) {e.printStackTrace();}
+		} catch(Exception e) {
+			//e.printStackTrace();
+		}
 		
 		
 		
 		
 		//////////////////////////////////////////////////////////////
 		//Run our debug routines.
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		
 		//////////////////////////////////////////////////////////////
 		// Set some variables and reset some flags.
@@ -375,9 +393,9 @@ public class RobotPlayer implements Runnable {
 	 * since none of the standard message processing or sensor scans happen.
 	 */
 	public void minSleep() {
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
 		myRC.yield();
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 	}
 	
 	
@@ -387,7 +405,7 @@ public class RobotPlayer implements Runnable {
 	 */
 	public void shutdown() {
 		myRC.turnOff();
-		if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock(); 	//we need to reset our clock.
+		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock(); 	//we need to reset our clock.
 	}
 	
 	
@@ -439,7 +457,7 @@ public class RobotPlayer implements Runnable {
 						myBeamsInternal.add((WeaponController)c);
 						continue;
 					default:
-						Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
+						//Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
 						continue;
 					}
 					
@@ -448,11 +466,14 @@ public class RobotPlayer implements Runnable {
 				case SENSOR:
 					hasSensor = true;
 					mySensor = (SensorController)c; 					
-					myCartographer.setSensor(mySensor);					continue;					
+					myCartographer.setSensor(mySensor);					
+					continue;					
 				case BUILDER:
-					myBuilder = (BuilderController)c; 					continue;
+					myBuilder = (BuilderController)c; 					
+					continue;
 				case MOTOR:
-					myMotor = (MovementController)c;					continue;
+					myMotor = (MovementController)c;					
+					continue;
 				case COMM:
 					myBroadcaster = (BroadcastController)c;
 					myMessenger.enableSender();
@@ -465,12 +486,15 @@ public class RobotPlayer implements Runnable {
 				case MISC:
 					switch(c.type()) {
 					case PROCESSOR:
-						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	continue;
+						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	
+						continue;
 					case JUMP:
-						myJumpsInternal.add((JumpController)c);					continue;
+						myJumpsInternal.add((JumpController)c);					
+						continue;
 					}
 				default:
-					Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			continue;
+					//Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			
+					continue;
 			}
 		}	
 		
@@ -498,12 +522,10 @@ public class RobotPlayer implements Runnable {
 	
 	
 	
-	
+	/*
 	public void startClock() {
 		executeStartTime = Clock.getRoundNum();
 		executeStartByte = Clock.getBytecodeNum();
-		
-		
 		
 	}
 	
@@ -513,7 +535,7 @@ public class RobotPlayer implements Runnable {
 				int byteCount = (bytecodeLimit-executeStartByte) + (currRound-executeStartTime-1) * bytecodeLimit + Clock.getBytecodeNum();
 				Utility.printMsg(this,"Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
 		}	
-	}
+	}*/
 	
 	
 	

@@ -1,9 +1,32 @@
-package team068;
-
-import battlecode.common.*;
-
-import team068.*;
-
+package team068; import battlecode.common.*; import team068.*;
+/**
+ *<pre>
+ * 
+ *                             _________________
+ *                           /                   \ 
+ *  ========================[   B E H A V I O R   ]===========================    
+ *                           \___________________/
+ *   
+ *   
+ * 		The abstract behavior class defines the base class for all other
+ * 		types of behaviors.  Several different functions and callbacks are defined.
+ * 
+ * 		The important one:
+ * 			- run(): the main body / execution block of the behavior
+ * 		
+ * 		There are also several callbacks that are triggered upon certain events:
+ * 			- onDamageCallback() 	: triggered when the unit takes damage
+ * 			- newComponentCallback(): triggered when the unit is equipped
+ * 			- newMessageCallback()  : triggered when the unit receives a message
+ * 			- onWakeupCallback()    : triggered when the unit reactivates from shutdown
+ *   
+ *   
+ * 
+ * 
+ * </pre>
+ * @author Cory
+ *
+ */
 public abstract class Behavior {
 	
 	public final RobotPlayer myPlayer;		//Our myplayer object
