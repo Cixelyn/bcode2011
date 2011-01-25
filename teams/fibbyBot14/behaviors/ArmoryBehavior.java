@@ -9,10 +9,13 @@ public class ArmoryBehavior extends Behavior
 	
 	MapLocation towerLoc;
 	
+	int wakeTime = 0;
+	
 	private enum ArmoryBuildOrder 
 	{
 		FIND_TOWER,
 		EQUIP_TOWER,
+		MAKE_HERO_WRAITH,
 		SLEEP,
 		SUICIDE
 	}
@@ -67,6 +70,15 @@ public class ArmoryBehavior extends Behavior
 				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				
+			case MAKE_HERO_WRAITH:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_TOWER");
+				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
+				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.FLYING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.BEAM, RobotLevel.IN_AIR);
+				obj = ArmoryBuildOrder.SLEEP;
+				return;
+				
     		case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 0, "SLEEP");
@@ -98,7 +110,14 @@ public class ArmoryBehavior extends Behavior
 
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		
+		wakeTime++;
+		switch ( wakeTime )
+		{
+			
+			case 1:
+				obj = ArmoryBuildOrder.MAKE_HERO_WRAITH;
+				return;
+		}
 	}
 	
 }

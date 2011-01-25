@@ -72,6 +72,9 @@ public class SCVBehavior extends Behavior
 	MapLocation tower1Loc;
 	MapLocation armory2Loc;
 	MapLocation tower2Loc;
+	MapLocation factoryLoc;
+	
+	int wakeTime = 0;
 	
 	private enum SCVBuildOrder 
 	{
@@ -83,6 +86,8 @@ public class SCVBehavior extends Behavior
 		GO_TO_TOWER_2,
 		BUILD_ARMORY_2,
 		BUILD_TOWER_2,
+		GO_TO_FACTORY,
+		BUILD_FACTORY,
 		SLEEP,
 		SUICIDE
 	}
@@ -111,6 +116,7 @@ public class SCVBehavior extends Behavior
 				tower1Loc = spawnLoc.add(-3,-2);
 				armory2Loc = spawnLoc.add(0,2);
 				tower2Loc = spawnLoc.add(1,2);
+				factoryLoc = spawnLoc.add(-2,-1);
 				obj = SCVBuildOrder.CAP_MINES;
 				return;
 				
@@ -153,7 +159,7 @@ public class SCVBehavior extends Behavior
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 				
-				obj = SCVBuildOrder.GO_TO_TOWER_1;
+				obj = SCVBuildOrder.SLEEP;
 				return;
 				
 			case GO_TO_TOWER_1:
@@ -228,6 +234,44 @@ public class SCVBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_2");
 				Utility.setIndicator(myPlayer, 1, "");
 				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(tower2Loc), Chassis.BUILDING);
+				obj = SCVBuildOrder.GO_TO_FACTORY;
+				return;
+				
+			case GO_TO_FACTORY:
+				
+				Utility.setIndicator(myPlayer, 0, "GO_TO_FACTORY");
+				Utility.setIndicator(myPlayer, 1, "");
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.NORTH);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveForward();
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveForward();
+				
+				myPlayer.sleep();
+				myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.SOUTH_WEST), RobotLevel.ON_GROUND);
+				obj = SCVBuildOrder.SLEEP;
+				return;
+				
+			case BUILD_FACTORY:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_FACTORY");
+				Utility.setIndicator(myPlayer, 1, "");
+				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.FACTORY.cost + Chassis.FLYING.cost + ComponentType.BEAM.cost + ComponentType.SHIELD.cost + Constants.RESERVE )
+					myPlayer.sleep();
+				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(factoryLoc), Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(factoryLoc), ComponentType.FACTORY, RobotLevel.ON_GROUND);
+				myPlayer.myRC.turnOn(armory1Loc, RobotLevel.ON_GROUND);
 				obj = SCVBuildOrder.SLEEP;
 				return;
 				
@@ -266,7 +310,18 @@ public class SCVBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		
+		wakeTime++;
+		switch ( wakeTime )
+		{
+			
+			case 1:
+				obj = SCVBuildOrder.GO_TO_TOWER_1;
+				return;
+				
+			case 2:
+				obj = SCVBuildOrder.BUILD_FACTORY;
+				return;
+		}
 	}
 
 }

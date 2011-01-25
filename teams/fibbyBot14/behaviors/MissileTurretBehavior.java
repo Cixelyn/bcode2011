@@ -167,8 +167,9 @@ public class MissileTurretBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "FIRE");
 				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
+				
 				if ( Clock.getRoundNum() < Constants.ATTACK_TIME )
-					myPlayer.sleep();
+					return;
 				else if ( Clock.getRoundNum() % 2 == 0 )
 				{
 					myPlayer.myBeams[0].attackSquare(choke1, RobotLevel.ON_GROUND);

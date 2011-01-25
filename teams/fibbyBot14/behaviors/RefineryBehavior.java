@@ -8,18 +8,18 @@ public class RefineryBehavior extends Behavior
 {
 	
 	
-	MapLocation refineryLoc;
-	MapLocation spawnLoc;
-	
+	int wakeTime = 0;
 	
 	private enum RefineryBuildOrder 
 	{
 		DETERMINE_LEADER,
-		TURN_ON_SCV,
+		TOWER_TIME,
+		SHOW_TIME,
+		EQUIP_HERO_WRAITH,
 		SLEEP
 	}
 	
-	RefineryBuildOrder obj = RefineryBuildOrder.SLEEP;
+	RefineryBuildOrder obj = RefineryBuildOrder.DETERMINE_LEADER;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -35,12 +35,11 @@ public class RefineryBehavior extends Behavior
 			case DETERMINE_LEADER:
 				
 				Utility.setIndicator(myPlayer, 0, "DETERMINE_LEADER");
-				refineryLoc = myPlayer.myLoc;
-				spawnLoc = refineryLoc.add(Direction.SOUTH_EAST);
-				if ( myPlayer.mySensor.senseObjectAtLocation(refineryLoc.add(Direction.SOUTH), RobotLevel.ON_GROUND) != null )
+				if ( Clock.getRoundNum() > Constants.LEADER_TIME && Clock.getRoundNum() < Constants.TOWER_TIME )
 				{
+					// I'm the 4th refinery
 					Utility.setIndicator(myPlayer, 1, "I'm the leader!");
-					obj = RefineryBuildOrder.TURN_ON_SCV;
+					obj = RefineryBuildOrder.TOWER_TIME;
 				}
 				else
 				{
@@ -49,14 +48,35 @@ public class RefineryBehavior extends Behavior
 				}
 				return;
 				
-			case TURN_ON_SCV:
+			case TOWER_TIME:
 				
-				Utility.setIndicator(myPlayer, 0, "TURN_ON_SCV");
+				Utility.setIndicator(myPlayer, 0, "TOWER_TIME");
+				if ( Clock.getRoundNum() >= Constants.TOWER_TIME )
+				{
+					Utility.setIndicator(myPlayer, 1, "It's tower time!");
+					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
+					obj = RefineryBuildOrder.SLEEP;
+				}
+				return;
+				
+			case SHOW_TIME:
+				
+				Utility.setIndicator(myPlayer, 0, "SHOW_TIME");
 				if ( Clock.getRoundNum() >= Constants.SHOW_TIME )
 				{
 					Utility.setIndicator(myPlayer, 1, "It's show time!");
-					myPlayer.myRC.turnOn(spawnLoc, RobotLevel.ON_GROUND);
-					myPlayer.sleep();
+					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.ON_GROUND);
+					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH;
+				}
+				return;
+				
+			case EQUIP_HERO_WRAITH:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH");
+				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.IN_AIR);
+				if ( r != null )
+				{
+					Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.SHIELD, RobotLevel.IN_AIR);
 					obj = RefineryBuildOrder.SLEEP;
 				}
 				return;
@@ -84,7 +104,12 @@ public class RefineryBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-
+		wakeTime++;
+		switch ( wakeTime )
+		{
+			case 1:
+				obj = RefineryBuildOrder.SHOW_TIME;
+		}
 	}
 	
 

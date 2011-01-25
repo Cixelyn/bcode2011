@@ -26,14 +26,20 @@ public class DefaultBehavior extends Behavior
 		for ( int i = components.length ; --i >= 0 ; )
 		{
 			ComponentType c = components[i].type();
-			if ( c == ComponentType.CONSTRUCTOR )
+			if ( c == ComponentType.CONSTRUCTOR && myPlayer.myRC.getChassis() == Chassis.LIGHT )
 				myPlayer.swapBehavior(new SCVBehavior(myPlayer));
-			else if ( c == ComponentType.RECYCLER )
+			else if ( c == ComponentType.RECYCLER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 				myPlayer.swapBehavior(new RefineryBehavior(myPlayer));
-			else if ( c == ComponentType.ARMORY )
+			else if ( c == ComponentType.ARMORY && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
-			else if ( c == ComponentType.BEAM )
+			else if ( c == ComponentType.FACTORY && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));
+			else if ( c == ComponentType.BEAM && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 				myPlayer.swapBehavior(new MissileTurretBehavior(myPlayer));
+			else if ( c == ComponentType.BEAM && myPlayer.myRC.getChassis() == Chassis.FLYING )
+			{
+				//myPlayer.swapBehavior(new HeroWraithBehavior(myPlayer));
+			}
 		}
 	}
 	
