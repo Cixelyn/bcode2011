@@ -105,10 +105,7 @@ public class ColossusBehavior extends Behavior
 					maxRange = ComponentType.BEAM.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
-				else if ( (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2A) 
-						|| Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2B)
-						|| Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2C))
-						&& num != -1 )
+				else if ( Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
 				{
 					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
@@ -443,6 +440,7 @@ public class ColossusBehavior extends Behavior
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", prismatic core online!");
 				else if ( num % 3 == 2 )
 					Utility.setIndicator(myPlayer, 0, "I'm heavy " + Integer.toString(num) + ", pl4$m4 r 4 n))b$!");
+				myPlayer.myMessenger.toggleReceive(false);
 			}
 		}
 	}

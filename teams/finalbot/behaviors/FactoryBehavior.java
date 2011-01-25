@@ -33,8 +33,7 @@ public class FactoryBehavior extends Behavior
 	int currHeavy;
 	int currUnit;
 	
-	int babyWraith;
-	int babyDrone;
+	int babyUnit;
 	
 	double minFluxToBuild;
 	
@@ -97,10 +96,10 @@ public class FactoryBehavior extends Behavior
     			/*if ( currUnit == 1 )
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-    				if ( r != null && r.getID() != babyWraith )
+    				if ( r != null && r.getID() != babyUnit )
     				{
     					Utility.setIndicator(myPlayer, 2, "Halting for wraith.");
-    					babyWraith = r.getID();
+    					babyUnit = r.getID();
     					currWraith++;
     				}
     			}
@@ -110,10 +109,10 @@ public class FactoryBehavior extends Behavior
     				if ( currDrone < Constants.MAX_DRONES )
     				{
     					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
-        				if ( r != null && r.getID() != babyDrone )
+        				if ( r != null && r.getID() != babyUnit && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() > myPlayer.myRC.getRobot().getID() )
         				{
         					Utility.setIndicator(myPlayer, 2, "Halting for drone.");
-        					babyDrone = r.getID();
+        					babyUnit = r.getID();
         					currDrone++;
         				}
     				}
@@ -171,6 +170,7 @@ public class FactoryBehavior extends Behavior
     			else if ( currHeavy % 3 == 2 )
     			{
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HARDENED, RobotLevel.ON_GROUND);
     			}
     			currHeavy++;
     			obj = FactoryBuildOrder.EQUIP_UNIT;
@@ -233,8 +233,8 @@ public class FactoryBehavior extends Behavior
     							{
     								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
     								unitDock = rInfo.location;
-    								currDrone = 0;
-    								currHeavy = 0;
+    								currDrone = 5;
+    								currHeavy = 10;
     								obj = FactoryBuildOrder.WAIT_FOR_DOCK;
     								return;
     							}

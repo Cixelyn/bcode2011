@@ -37,7 +37,7 @@ public class ArmoryBehavior extends Behavior
 	Robot r;
 	ComponentType c;
 	
-	int babyHeavy;
+	int babyUnit;
 	
 	boolean rHasSatellite;
 	int rNumJumps;
@@ -103,10 +103,10 @@ public class ArmoryBehavior extends Behavior
     			{
     				// does not count towards currUnit
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    				if ( r != null && r.getID() != babyHeavy )
+    				if ( r != null && r.getID() != babyUnit )
     				{
     					Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
-    					babyHeavy = r.getID();
+    					babyUnit = r.getID();
     					obj = ArmoryBuildOrder.EQUIP_ARBITER;
     				}
     			}*/
@@ -127,10 +127,10 @@ public class ArmoryBehavior extends Behavior
     				else
     				{
     					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-        				if ( r != null && r.getID() != babyHeavy )
+        				if ( r != null && r.getID() != babyUnit && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() > myPlayer.myRC.getRobot().getID() )
         				{
         					Utility.setIndicator(myPlayer, 2, "Equipping arbiter.");
-        					babyHeavy = r.getID();
+        					babyUnit = r.getID();
         					obj = ArmoryBuildOrder.EQUIP_ARBITER;
         				}
     				}
@@ -138,10 +138,10 @@ public class ArmoryBehavior extends Behavior
     			else
     			{
     				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    				if ( r != null && r.getID() != babyHeavy )
+    				if ( r != null && r.getID() != babyUnit && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() > myPlayer.myRC.getRobot().getID() )
     				{
     					Utility.setIndicator(myPlayer, 2, "Equipping heavy.");
-    					babyHeavy = r.getID();
+    					babyUnit = r.getID();
     					obj = ArmoryBuildOrder.EQUIP_HEAVY;
     				}
     			}
@@ -195,7 +195,7 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 2, "Equipping heavy " + Integer.toString(currHeavy) + ".");
     			
 				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r == null || r.getID() != babyHeavy )
+    			if ( r == null || r.getID() != babyUnit || r.getTeam() != myPlayer.myRC.getTeam() )
     			{
     				obj = ArmoryBuildOrder.EQUIP_UNIT;
     				return;
@@ -250,19 +250,14 @@ public class ArmoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 2 )
     			{
-    				rNumPlasma = 0;
 					rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
-						if ( c == ComponentType.PLASMA )
-							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
 							rNumJumps++;
 					}
-					if ( rNumPlasma < 2 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND );
-					else if ( rNumJumps < 1 )
+					if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
@@ -337,7 +332,7 @@ public class ArmoryBehavior extends Behavior
     			
 				arbiterEquipped = true;
 				r = (Robot) myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.ON_GROUND);
-    			if ( r == null || r.getID() != babyHeavy )
+    			if ( r == null || r.getID() != babyUnit || r.getTeam() != myPlayer.myRC.getTeam() )
     			{
     				obj = ArmoryBuildOrder.EQUIP_UNIT;
     				return;
@@ -393,8 +388,8 @@ public class ArmoryBehavior extends Behavior
     							{
     								Utility.setIndicator(myPlayer, 2, "Arbiter found.");
     								unitDock = rInfo.location;
-    								currDrone = 0;
-    								currHeavy = 0;
+    								currDrone = 5;
+    								currHeavy = 10;
     								obj = ArmoryBuildOrder.WAIT_FOR_DOCK;
     								return;
     							}
