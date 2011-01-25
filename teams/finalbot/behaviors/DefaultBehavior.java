@@ -13,7 +13,7 @@ public class DefaultBehavior extends Behavior
 	
 	public void run() throws Exception
 	{
-		Utility.setIndicator(myPlayer, 1, "WHO AM I???");
+		//Utility.setIndicator(myPlayer, 1, "WHO AM I???");
 	}
 
 	public String toString()

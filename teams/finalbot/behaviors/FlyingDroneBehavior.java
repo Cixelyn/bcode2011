@@ -147,7 +147,7 @@ public class FlyingDroneBehavior extends Behavior {
     		}
     		case EXPAND: { //Main state where we are searching for mines, if we find a mine, we go to "FOUND_MINE" state
     			if (Clock.getRoundNum()-myPlayer.myBirthday>Constants.SCRAMBLE_TIME && !hasBeenScrambled) { //after a certain time, the drones will migrate to the center of the map along with the collosus, hopefully taking more mines along the way
-    				Utility.setIndicator(myPlayer, 0, "BEEN SCRAMBLED!");
+    				//Utility.setIndicator(myPlayer, 0, "BEEN SCRAMBLED!");
     				hasBeenScrambled=true;
     				while (myPlayer.myMotor.isActive()) {
     					myPlayer.sleep();
@@ -175,7 +175,7 @@ public class FlyingDroneBehavior extends Behavior {
     		}
     		
     		case FOUND_MINE: {
-    			Utility.setIndicator(myPlayer, 0, "found mine");
+    			//Utility.setIndicator(myPlayer, 0, "found mine");
 				if (myPlayer.mySensor.senseObjectAtLocation(currentMine.getLocation(), RobotLevel.ON_GROUND)!=null) { //someone is on our mine, gonna just look for other ones
 					obj=FlyingDroneActions.EXPAND;
 					return;
@@ -310,7 +310,7 @@ public class FlyingDroneBehavior extends Behavior {
     			return;
     		
     		case RUN_AWAY: { //We've been hit, lets do our best to run away from the enemy!
-    			Utility.setIndicator(myPlayer, 0, "run away counter : " + runAwayTime);
+    			//Utility.setIndicator(myPlayer, 0, "run away counter : " + runAwayTime);
     			int totalX=0;
     			int totalY=0;
     			int totalEnemyRobots=0;

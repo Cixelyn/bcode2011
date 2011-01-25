@@ -55,7 +55,7 @@ public class FactoryBehavior extends Behavior
 			
 			case WAIT_FOR_DOCK:
     			
-    			Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
+    			//Utility.setIndicator(myPlayer, 1, "WAIT_FOR_DOCK");
     			if ( unitDock != null )
     			{
     				while ( myPlayer.myMotor.isActive() )
@@ -77,8 +77,8 @@ public class FactoryBehavior extends Behavior
     			
 			case EQUIP_UNIT:
     			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_UNIT");
-    			Utility.setIndicator(myPlayer, 2, "Idle.");
+    			//Utility.setIndicator(myPlayer, 1, "EQUIP_UNIT");
+    			//Utility.setIndicator(myPlayer, 2, "Idle.");
     			
     			// check what unit should be made
     			currUnit = currWraith + currDrone + currHeavy;
@@ -111,28 +111,28 @@ public class FactoryBehavior extends Behavior
     					r = (Robot)myPlayer.mySensor.senseObjectAtLocation(unitDock, RobotLevel.IN_AIR);
         				if ( r != null && r.getID() != babyUnit && r.getTeam() == myPlayer.myRC.getTeam() && r.getID() > myPlayer.myRC.getRobot().getID() )
         				{
-        					Utility.setIndicator(myPlayer, 2, "Halting for drone.");
+        					//Utility.setIndicator(myPlayer, 2, "Halting for drone.");
         					babyUnit = r.getID();
         					currDrone++;
         				}
     				}
     				else
     				{
-    					Utility.setIndicator(myPlayer, 2, "Making arbiter.");
+    					//Utility.setIndicator(myPlayer, 2, "Making arbiter.");
     					obj = FactoryBuildOrder.MAKE_ARBITER;
     				}
     			}
     			else
     			{
-    				Utility.setIndicator(myPlayer, 2, "Making heavy.");
+    				//Utility.setIndicator(myPlayer, 2, "Making heavy.");
     				obj = FactoryBuildOrder.MAKE_HEAVY;
     			}
     			return;
     			
 			case MAKE_HEAVY:
 				
-				Utility.setIndicator(myPlayer, 1, "MAKE_HEAVY");
-    			Utility.setIndicator(myPlayer, 2, "Building heavy " + Integer.toString(currHeavy) + ".");
+				//Utility.setIndicator(myPlayer, 1, "MAKE_HEAVY");
+    			//Utility.setIndicator(myPlayer, 2, "Building heavy " + Integer.toString(currHeavy) + ".");
     			
 				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
 				if ( currHeavy == 0 )
@@ -178,8 +178,8 @@ public class FactoryBehavior extends Behavior
     			
 			case EQUIP_ARMOR:
     			
-    			Utility.setIndicator(myPlayer, 1, "EQUIP_ARMOR");
-    			Utility.setIndicator(myPlayer, 2, "Waiting for plasmas or shields.");
+    			//Utility.setIndicator(myPlayer, 1, "EQUIP_ARMOR");
+    			//Utility.setIndicator(myPlayer, 2, "Waiting for plasmas or shields.");
     			armorEquipped = true;
     			// get plasmas or shields
     			while ( myPlayer.myMotor.isActive() )
@@ -190,8 +190,8 @@ public class FactoryBehavior extends Behavior
     			
 			case MAKE_ARBITER:
 				
-				Utility.setIndicator(myPlayer, 1, "MAKE_ARBITER");
-    			Utility.setIndicator(myPlayer, 2, "Building arbiter.");
+				//Utility.setIndicator(myPlayer, 1, "MAKE_ARBITER");
+    			//Utility.setIndicator(myPlayer, 2, "Building arbiter.");
     			
     			arbiterMade = true;
 				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
@@ -208,15 +208,15 @@ public class FactoryBehavior extends Behavior
     			
 			case SLEEP:
 				
-				Utility.setIndicator(myPlayer, 1, "SLEEP");
-				Utility.setIndicator(myPlayer, 2, "zzzzzzz");
+				//Utility.setIndicator(myPlayer, 1, "SLEEP");
+				//Utility.setIndicator(myPlayer, 2, "zzzzzzz");
 				myPlayer.myRC.turnOff();
 				return;
 				
 			case REBUILT:
     			
-    			Utility.setIndicator(myPlayer, 1, "REBUILT");
-    			Utility.setIndicator(myPlayer, 2, "Proxy!");
+    			//Utility.setIndicator(myPlayer, 1, "REBUILT");
+    			//Utility.setIndicator(myPlayer, 2, "Proxy!");
     			nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
     			for ( int i = nearbyRobots.length ; --i >= 0 ; )
     			{
