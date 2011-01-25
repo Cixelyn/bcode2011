@@ -83,8 +83,7 @@ public class FlyingDroneBehavior extends Behavior {
 
 	}
 	
-	
-	//TODO remember past mines, perhaps fix if we run into someone as we are running away
+
 	
 	static FlyingDroneActions obj = FlyingDroneActions.EQUIPPING;
 	
@@ -165,12 +164,12 @@ public class FlyingDroneBehavior extends Behavior {
             					currentMine=mine;
             					towerDirection=currentMine.getLocation().directionTo(spawnLocation).opposite(); //old code when we were actually making towers at expansions
             					towerPlacement=currentMine.getLocation().add(towerDirection);  //old code when we were actually making towers at expansions
-            					currentDirection=myPlayer.myRC.getDirection();
+            					currentDirection=myPlayer.myRC.getDirection(); //store the drection we were going so we can continue going in that direction after we take the mine
             					obj=FlyingDroneActions.FOUND_MINE;
             					return;
         				}
         			}
-        			droneGeneralNav(ID);
+        			droneGeneralNav(ID); //if we don't find a mine, just look around as normal with some zig zagging.
     			}
     			return;
     		}
@@ -183,7 +182,7 @@ public class FlyingDroneBehavior extends Behavior {
 				}
 				Robot[] nearbyRobots= myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
 				RobotInfo rInfo;
-				for (Robot robot : nearbyRobots) {
+				for (Robot robot : nearbyRobots) {  //check to make sure one of our own flyers isn't already taking the mine i'm taking
 					rInfo=myPlayer.mySensor.senseRobotInfo(robot);
 					if (robot.getTeam().equals(myPlayer.myRC.getTeam()) && rInfo.chassis.equals(Chassis.FLYING)) {
 						currentDirection=Direction.NORTH;
@@ -196,24 +195,25 @@ public class FlyingDroneBehavior extends Behavior {
 	        					obj=FlyingDroneActions.EXPAND;
 	        					return;
 							}
+							currentDirection=currentDirection.rotateRight();
 						}
 					}
 				}
 				if (currentMine.getLocation().equals(myPlayer.myRC.getLocation().add(myPlayer.myRC.getDirection())) || (myPlayer.myRC.getLocation().equals(currentMine.getLocation()))) { //i'm right by the mine, build recycler!
     					if ( myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()){
-    						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING);
-    						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+    						Utility.buildChassis(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), Chassis.BUILDING); //build building chassis 
+    						Utility.buildComponent(myPlayer, myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()), ComponentType.RECYCLER, RobotLevel.ON_GROUND); //build recycler chassis
     	        			
     	        			
         						Mine[] nearbyMines = myPlayer.mySensor.senseNearbyGameObjects(Mine.class);
-        	        			for (Mine mine : nearbyMines) { //look for mines, if we find one, lets go get it
+        	        			for (Mine mine : nearbyMines) { //look for mines while we are here, if we find one, lets go get it
         	        				if (myPlayer.mySensor.senseObjectAtLocation(mine.getLocation(), RobotLevel.ON_GROUND)==null) {
         	        					while (myPlayer.myMotor.isActive()) {
         	        						myPlayer.sleep();
         	        					}
         	        					
         	        					
-        	        					if (mine.getLocation().equals(myPlayer.myRC.getLocation())) {
+        	        					if (mine.getLocation().equals(myPlayer.myRC.getLocation())) { //I'm right on top of a mine !
         	        						while (myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE && !myPlayer.myMotor.isActive()) {
                         						myPlayer.sleep();
                         					}
@@ -237,7 +237,7 @@ public class FlyingDroneBehavior extends Behavior {
         					}
         					myPlayer.myMotor.setDirection(currentDirection);
     					/*	if (steps>Constants.STEPS) {
-    							obj =  FlyingDroneActions.BUILD_TOWER;
+    							obj =  FlyingDroneActions.BUILD_TOWER;  //old code when we built towers
     						}*/
 /*    						else {*/
     							obj = FlyingDroneActions.EXPAND;
@@ -249,7 +249,7 @@ public class FlyingDroneBehavior extends Behavior {
     					if (myPlayer.myRC.getDirection().equals(myPlayer.myRC.getLocation().directionTo(currentMine.getLocation()))) {
             				if (myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
             					myPlayer.myMotor.moveForward();
-            					steps=steps+1;
+            					steps=steps+1;  //for zigzagging
             				}
     					}
     					else {
@@ -260,11 +260,8 @@ public class FlyingDroneBehavior extends Behavior {
     			}
     			return;
     		}
-    		case BUILD_TOWER:
-    			Utility.setIndicator(myPlayer, 0, "building AP");
-    			Utility.setIndicator(myPlayer, 1, "tower Location:" + towerPlacement);
-    			Utility.setIndicator(myPlayer, 2, "my Location:" + myPlayer.myRC.getLocation());
-    			if (triedDirections==7) {
+    		case BUILD_TOWER: //OLD CODE, we no longer build towers
+    			if (triedDirections==7) {  
     				obj= FlyingDroneActions.EXPAND;
     			}
     			else if (myPlayer.mySensor.withinRange(towerPlacement)) {
@@ -312,7 +309,7 @@ public class FlyingDroneBehavior extends Behavior {
     			}
     			return;
     		
-    		case RUN_AWAY: {
+    		case RUN_AWAY: { //We've been hit, lets do our best to run away from the enemy!
     			Utility.setIndicator(myPlayer, 0, "run away counter : " + runAwayTime);
     			int totalX=0;
     			int totalY=0;
@@ -328,7 +325,7 @@ public class FlyingDroneBehavior extends Behavior {
     				return;
     			}
     			Robot[] detectedRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
-    			for (Robot robot : detectedRobots) {
+    			for (Robot robot : detectedRobots) {  //get average map location of all the enemies in vision
     				rInfo=myPlayer.mySensor.senseRobotInfo(robot);
     				if (robot.getTeam().equals(myPlayer.myRC.getTeam().opponent()) && rInfo.on) {
     					totalX=totalX+rInfo.location.x;
@@ -337,7 +334,7 @@ public class FlyingDroneBehavior extends Behavior {
     					enemyInFront=true;
     				}
     			}
-    			if (enemyInFront) {
+    			if (enemyInFront) { //we see an enemy, lets turn around in the correct direction!
     				MapLocation vector=new MapLocation(totalX/totalEnemyRobots,totalY/totalEnemyRobots);
     				Direction runAway=myPlayer.myRC.getLocation().directionTo(vector).opposite();
     				if (runAway.equals(Direction.OMNI) || runAway.equals(Direction.NONE)) {
@@ -359,7 +356,7 @@ public class FlyingDroneBehavior extends Behavior {
     					return;
     				}
     			}
-    			else {
+    			else { //we don't see any enemies, lets just fly over the zone with the most voids
     				if (!foundVoids) {
     					if (!myPlayer.myMotor.isActive()) {
     						Direction voidDirection=getMostVoidsDirection();
@@ -417,19 +414,19 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	public void droneGeneralNav(int ID) throws GameActionException {
 		try {
-			if (zigzagCounter==Constants.ZIGZAG_STEPS) {
+			if (zigzagCounter==Constants.ZIGZAG_STEPS) { // We are ready to zig or zag!
 				zigzagCounter=0;
-				if (zigzag==1) {
+				if (zigzag==1) { //ZIG
 					Utility.bounceNavForFlyers(myPlayer,zigzag);
 					zigzag=2;
 				}
-				else if (zigzag==2) {
+				else if (zigzag==2) { //ZAG
 					Utility.bounceNavForFlyers(myPlayer,zigzag);
 					zigzag=1;
 				}
 			}
-			else {
-				int bounce = Utility.bounceNavForFlyers(myPlayer, 0);
+			else { //otherwise just bounce smartly
+				int bounce = Utility.bounceNavForFlyers(myPlayer, 0); 
 				if (bounce!=0) {
 					zigzagCounter=0;
 					zigzag=bounce;
@@ -445,7 +442,7 @@ public class FlyingDroneBehavior extends Behavior {
 	}
 	
 	
-	public void setDirectionID(int ID) throws GameActionException {
+	public void setDirectionID(int ID) throws GameActionException {  //set initial direction from our given ID
 		if (myPlayer.myRC.getTeam().equals(Team.A)) {
 			myPlayer.myMotor.setDirection(Direction.values()[((ID*3)+4)%8]);
 		}
@@ -456,7 +453,7 @@ public class FlyingDroneBehavior extends Behavior {
 	
 	
 	
-	public Direction getMostVoidsDirection() {
+	public Direction getMostVoidsDirection() {  //function for finding the most voids in our direction.
 		int leftCount=0;
 		int frontCount=0;
 		int rightCount=0;
@@ -542,15 +539,13 @@ public class FlyingDroneBehavior extends Behavior {
 		}
 	}
 
-	public void onDamageCallback(double damageTaken) {
+	public void onDamageCallback(double damageTaken) { //will be called when we take damage
 		if (!obj.equals(FlyingDroneActions.EQUIPPING) && !obj.equals(FlyingDroneActions.FLYING_DRONE_ID)) {
 			obj=FlyingDroneActions.RUN_AWAY;
 		}
 	}
 	@Override
-	public void onWakeupCallback(int lastActiveRound) {
-		// TODO Auto-generated method stub
-		
+	public void onWakeupCallback(int lastActiveRound) {		
 	}
 
 }
