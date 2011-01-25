@@ -35,7 +35,6 @@ public class HeroWraithBehavior extends Behavior {
 				
 				case EQUIPPING:
 					
-					Utility.setIndicator(myPlayer, 0, "EQUIPPING");
 					
 					int numBeams = 0;
 					int numShields = 0;
@@ -90,6 +89,7 @@ public class HeroWraithBehavior extends Behavior {
 					if (myPlayer.myRC.getHitpoints()==(myPlayer.myRC.getMaxHp())) {
 						obj=HeroWraithBuildOrder.MOVE_TOWARDS_TOWER;
 					}
+					return;
 			}
 		}
 
