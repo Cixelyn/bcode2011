@@ -19,7 +19,7 @@ public class Constants
 	
 	public static final double RESERVE = 1.0; // min flux after spending
 	public static final int SHOW_TIME = 270; // when to turn on SCV
-	public static final int ATTACK_TIME = 340; // when towers should start attacking
+	public static final int ATTACK_TIME = 330; // when towers should start attacking
 
 	
 }

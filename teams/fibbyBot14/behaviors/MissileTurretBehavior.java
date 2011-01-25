@@ -123,30 +123,44 @@ public class MissileTurretBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "DETERMINE_CHOKEPOINTS");
 				Utility.setIndicator(myPlayer, 1, "Looking for armory...");
-				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.WEST), RobotLevel.ON_GROUND);
-				if ( r != null && r.getID() < myPlayer.myRC.getRobot().getID() )
+				
+				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
-					Utility.setIndicator(myPlayer, 1, "Armory found.");
-					choke1 = myPlayer.myLoc.add(5,-2);
-					choke2 = myPlayer.myLoc.add(-2,5);
-					if ( Constants.ATTACK_TIME % 2 == 0 )
-						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
-					else
-						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
-					obj = MissileTurretBuildOrder.FIRE;
+					Direction d = Direction.values()[i];
+					Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(d), RobotLevel.ON_GROUND);
+					if ( r != null )
+					{
+						RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(r);
+						if ( rInfo.chassis == Chassis.BUILDING )
+						{
+							Utility.setIndicator(myPlayer, 1, "Armory found.");
+							if ( d == Direction.WEST )
+							{
+								choke1 = myPlayer.myLoc.add(5,-2);
+								choke2 = myPlayer.myLoc.add(-2,5);
+								if ( Constants.ATTACK_TIME % 2 == 0 )
+									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
+								else
+									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
+								obj = MissileTurretBuildOrder.FIRE;
+								return;
+							}
+							else if ( d == Direction.EAST )
+							{
+								Utility.setIndicator(myPlayer, 1, "Armory found.");
+								choke1 = myPlayer.myLoc.add(-5,2);
+								choke2 = myPlayer.myLoc.add(2,-5);
+								if ( Constants.ATTACK_TIME % 2 == 0 )
+									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
+								else
+									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
+								obj = MissileTurretBuildOrder.FIRE;
+								return;
+							}
+						}
+					}
 				}
-				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.SOUTH_EAST), RobotLevel.ON_GROUND);
-				if ( r != null && r.getID() < myPlayer.myRC.getRobot().getID() )
-				{
-					Utility.setIndicator(myPlayer, 1, "Armory found.");
-					choke1 = myPlayer.myLoc.add(-5,2);
-					choke2 = myPlayer.myLoc.add(2,-5);
-					if ( Constants.ATTACK_TIME % 2 == 0 )
-						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
-					else
-						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
-					obj = MissileTurretBuildOrder.FIRE;
-				}
+				
 				return;
 				
 			case FIRE:

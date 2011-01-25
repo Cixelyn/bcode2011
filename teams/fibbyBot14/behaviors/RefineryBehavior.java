@@ -19,7 +19,7 @@ public class RefineryBehavior extends Behavior
 		SLEEP
 	}
 	
-	RefineryBuildOrder obj = RefineryBuildOrder.DETERMINE_LEADER;
+	RefineryBuildOrder obj = RefineryBuildOrder.SLEEP;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{

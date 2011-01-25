@@ -76,6 +76,7 @@ public class SCVBehavior extends Behavior
 	private enum SCVBuildOrder 
 	{
 		INITIALIZE,
+		CAP_MINES,
 		GO_TO_TOWER_1,
 		BUILD_ARMORY_1,
 		BUILD_TOWER_1,
@@ -106,11 +107,53 @@ public class SCVBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
 				Utility.setIndicator(myPlayer, 1, "");
 				spawnLoc = myPlayer.myLoc;
-				armory1Loc = spawnLoc.add(0,1);
-				tower1Loc = spawnLoc.add(1,1);
-				armory2Loc = spawnLoc.add(-2,-2);
-				tower2Loc = spawnLoc.add(-3,-3);
-				obj = SCVBuildOrder.SLEEP;
+				armory1Loc = spawnLoc.add(-2,-2);
+				tower1Loc = spawnLoc.add(-3,-2);
+				armory2Loc = spawnLoc.add(0,2);
+				tower2Loc = spawnLoc.add(1,2);
+				obj = SCVBuildOrder.CAP_MINES;
+				return;
+				
+			case CAP_MINES:
+				
+				Utility.setIndicator(myPlayer, 0, "CAP_MINES");
+				Utility.setIndicator(myPlayer, 1, "");
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveForward();
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.SOUTH_WEST);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveForward();
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.SOUTH);
+				
+				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+					myPlayer.sleep();
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveBackward();
+				
+				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
+					myPlayer.sleep();
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				
+				obj = SCVBuildOrder.GO_TO_TOWER_1;
 				return;
 				
 			case GO_TO_TOWER_1:
@@ -124,6 +167,8 @@ public class SCVBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_1");
 				Utility.setIndicator(myPlayer, 1, "");
+				while ( myPlayer.myRC.getTeamResources() < 4*Chassis.BUILDING.cost + 2*ComponentType.ARMORY.cost + 8*ComponentType.BEAM.cost + Constants.RESERVE )
+					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(armory1Loc), Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(armory1Loc), ComponentType.ARMORY, RobotLevel.ON_GROUND);
 				obj = SCVBuildOrder.BUILD_TOWER_1;
@@ -144,7 +189,7 @@ public class SCVBehavior extends Behavior
 				
 				while ( myPlayer.myMotor.isActive() )
 					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.NORTH);
+				myPlayer.myMotor.setDirection(Direction.EAST);
 				
 				while ( myPlayer.myMotor.isActive() )
 					myPlayer.sleep();
@@ -152,11 +197,15 @@ public class SCVBehavior extends Behavior
 				
 				while ( myPlayer.myMotor.isActive() )
 					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+				myPlayer.myMotor.setDirection(Direction.SOUTH_EAST);
 				
 				while ( myPlayer.myMotor.isActive() )
 					myPlayer.sleep();
 				myPlayer.myMotor.moveForward();
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.SOUTH);
 				
 				while ( myPlayer.myMotor.isActive() )
 					myPlayer.sleep();
@@ -217,7 +266,7 @@ public class SCVBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		obj = SCVBuildOrder.GO_TO_TOWER_1;
+		
 	}
 
 }

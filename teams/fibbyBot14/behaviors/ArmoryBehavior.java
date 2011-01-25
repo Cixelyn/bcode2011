@@ -37,23 +37,23 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIND_TOWER");
 				Utility.setIndicator(myPlayer, 1, "Looking for tower...");
 				
-				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.EAST), RobotLevel.ON_GROUND);
-				
-				if ( r != null && r.getID() > myPlayer.myRC.getRobot().getID() )
+				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
-					Utility.setIndicator(myPlayer, 1, "Tower found.");
-					towerLoc = myPlayer.myLoc.add(Direction.EAST);
-					obj = ArmoryBuildOrder.EQUIP_TOWER;
+					Direction d = Direction.values()[i];
+					Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(d), RobotLevel.ON_GROUND);
+					if ( r != null )
+					{
+						RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(r);
+						if ( rInfo.chassis == Chassis.BUILDING && Utility.totalWeight(rInfo.components) == 0 )
+						{
+							Utility.setIndicator(myPlayer, 1, "Tower found.");
+							towerLoc = myPlayer.myLoc.add(d);
+							obj = ArmoryBuildOrder.EQUIP_TOWER;
+							return;
+						}
+					}
 				}
 				
-				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_WEST), RobotLevel.ON_GROUND);
-				
-				if ( r != null && r.getID() > myPlayer.myRC.getRobot().getID() )
-				{
-					Utility.setIndicator(myPlayer, 1, "Tower found.");
-					towerLoc = myPlayer.myLoc.add(Direction.NORTH_WEST);
-					obj = ArmoryBuildOrder.EQUIP_TOWER;
-				}
 				return;
 			
 			case EQUIP_TOWER:
