@@ -79,9 +79,15 @@ import battlecode.common.*;;
 public class MissileTurretBehavior extends Behavior
 {
 	
+	MapLocation choke1;
+	MapLocation choke2;
+	
+	
 	private enum MissileTurretBuildOrder
 	{
 		EQUIPPING,
+		DETERMINE_CHOKEPOINTS,
+		FIRE
 	}
 	
 	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
@@ -100,8 +106,68 @@ public class MissileTurretBehavior extends Behavior
 			
 			case EQUIPPING:
 				
+				Utility.setIndicator(myPlayer, 0, "EQUIPPING");
+				
+				int numBeams = 0;
+				for ( int i = myPlayer.myRC.components().length ; --i >= 0 ; )
+				{
+					if ( myPlayer.myRC.components()[i].type() == ComponentType.BEAM )
+						numBeams++;
+				}
+				if ( numBeams >= 4 )
+					obj = MissileTurretBuildOrder.DETERMINE_CHOKEPOINTS;
+					
 				return;
 			
+			case DETERMINE_CHOKEPOINTS:
+				
+				Utility.setIndicator(myPlayer, 0, "DETERMINE_CHOKEPOINTS");
+				Utility.setIndicator(myPlayer, 1, "Looking for armory...");
+				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.WEST), RobotLevel.ON_GROUND);
+				if ( r != null && r.getID() < myPlayer.myRC.getRobot().getID() )
+				{
+					Utility.setIndicator(myPlayer, 1, "Armory found.");
+					choke1 = myPlayer.myLoc.add(5,-2);
+					choke2 = myPlayer.myLoc.add(-2,5);
+					if ( Constants.ATTACK_TIME % 2 == 0 )
+						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
+					else
+						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
+					obj = MissileTurretBuildOrder.FIRE;
+				}
+				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.SOUTH_EAST), RobotLevel.ON_GROUND);
+				if ( r != null && r.getID() < myPlayer.myRC.getRobot().getID() )
+				{
+					Utility.setIndicator(myPlayer, 1, "Armory found.");
+					choke1 = myPlayer.myLoc.add(-5,2);
+					choke2 = myPlayer.myLoc.add(2,-5);
+					if ( Constants.ATTACK_TIME % 2 == 0 )
+						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
+					else
+						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
+					obj = MissileTurretBuildOrder.FIRE;
+				}
+				return;
+				
+			case FIRE:
+				
+				Utility.setIndicator(myPlayer, 0, "FIRE");
+				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
+				if ( Clock.getRoundNum() < Constants.ATTACK_TIME )
+					myPlayer.sleep();
+				else if ( Clock.getRoundNum() % 2 == 0 )
+				{
+					myPlayer.myBeams[0].attackSquare(choke1, RobotLevel.ON_GROUND);
+					myPlayer.myBeams[1].attackSquare(choke1, RobotLevel.ON_GROUND);
+					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
+				}
+				else if ( Clock.getRoundNum() % 2 == 1 )
+				{
+					myPlayer.myBeams[2].attackSquare(choke2, RobotLevel.ON_GROUND);
+					myPlayer.myBeams[3].attackSquare(choke2, RobotLevel.ON_GROUND);
+					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
+				}
+				return;
 				
 		}
 	}

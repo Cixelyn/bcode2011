@@ -1,4 +1,4 @@
-package fibbyBot14; import battlecode.common.*; import fibbyBot14.*;
+package fibbyBot14; import battlecode.common.*;
 /**
  *<pre>
  * 
@@ -39,7 +39,8 @@ public abstract class Behavior
 	 * Constructor for the behavior system
 	 * @param player
 	 */
-	public Behavior(RobotPlayer player){
+	public Behavior(RobotPlayer player)
+	{
 		myPlayer = player;
 		behaviorStartTime = Clock.getRoundNum();
 		overrideScanner = false;

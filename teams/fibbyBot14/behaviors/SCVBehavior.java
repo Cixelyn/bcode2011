@@ -67,18 +67,26 @@ import fibbyBot14.*;
 public class SCVBehavior extends Behavior
 {
 	
+	MapLocation spawnLoc;
+	MapLocation armory1Loc;
+	MapLocation tower1Loc;
+	MapLocation armory2Loc;
+	MapLocation tower2Loc;
+	
 	private enum SCVBuildOrder 
 	{
-		SHUT_OFF,
+		INITIALIZE,
 		GO_TO_TOWER_1,
-		BUILD_FACTORY_1,
+		BUILD_ARMORY_1,
 		BUILD_TOWER_1,
 		GO_TO_TOWER_2,
-		BUILD_FACTORY_2,
-		BUILD_TOWER_2
+		BUILD_ARMORY_2,
+		BUILD_TOWER_2,
+		SLEEP,
+		SUICIDE
 	}
 	
-	SCVBuildOrder obj = SCVBuildOrder.SHUT_OFF;
+	SCVBuildOrder obj = SCVBuildOrder.INITIALIZE;
 	
 	public SCVBehavior(RobotPlayer player)
 	{
@@ -93,6 +101,101 @@ public class SCVBehavior extends Behavior
 		switch (obj)
 		{
 			
+			case INITIALIZE:
+				
+				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
+				Utility.setIndicator(myPlayer, 1, "");
+				spawnLoc = myPlayer.myLoc;
+				armory1Loc = spawnLoc.add(0,1);
+				tower1Loc = spawnLoc.add(1,1);
+				armory2Loc = spawnLoc.add(-2,-2);
+				tower2Loc = spawnLoc.add(-3,-3);
+				obj = SCVBuildOrder.SLEEP;
+				return;
+				
+			case GO_TO_TOWER_1:
+				
+				Utility.setIndicator(myPlayer, 0, "GO_TO_TOWER_1");
+				Utility.setIndicator(myPlayer, 1, "");
+				obj = SCVBuildOrder.BUILD_ARMORY_1;
+				return;
+				
+			case BUILD_ARMORY_1:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_1");
+				Utility.setIndicator(myPlayer, 1, "");
+				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(armory1Loc), Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(armory1Loc), ComponentType.ARMORY, RobotLevel.ON_GROUND);
+				obj = SCVBuildOrder.BUILD_TOWER_1;
+				return;
+				
+			case BUILD_TOWER_1:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_1");
+				Utility.setIndicator(myPlayer, 1, "");
+				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(tower1Loc), Chassis.BUILDING);
+				obj = SCVBuildOrder.GO_TO_TOWER_2;
+				return;
+				
+			case GO_TO_TOWER_2:
+				
+				Utility.setIndicator(myPlayer, 0, "GO_TO_TOWER_2");
+				Utility.setIndicator(myPlayer, 1, "");
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.NORTH);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveForward();
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveForward();
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.moveForward();
+				
+				obj = SCVBuildOrder.BUILD_ARMORY_2;
+				return;
+				
+			case BUILD_ARMORY_2:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_2");
+				Utility.setIndicator(myPlayer, 1, "");
+				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(armory2Loc), Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(armory2Loc), ComponentType.ARMORY, RobotLevel.ON_GROUND);
+				obj = SCVBuildOrder.BUILD_TOWER_2;
+				return;
+				
+			case BUILD_TOWER_2:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_2");
+				Utility.setIndicator(myPlayer, 1, "");
+				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(tower2Loc), Chassis.BUILDING);
+				obj = SCVBuildOrder.SLEEP;
+				return;
+				
+			case SLEEP:
+				
+				Utility.setIndicator(myPlayer, 0, "SLEEP");
+				Utility.setIndicator(myPlayer, 1, "zzzzzz");
+				myPlayer.myRC.turnOff();
+				return;
+				
+			case SUICIDE:
+				
+				Utility.setIndicator(myPlayer, 0, "SUICIDE");
+				Utility.setIndicator(myPlayer, 1, ":(");
+				myPlayer.sleep();
+				myPlayer.myRC.suicide();
+				return;
 				
 		}
     	
@@ -114,7 +217,7 @@ public class SCVBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		
+		obj = SCVBuildOrder.GO_TO_TOWER_1;
 	}
 
 }

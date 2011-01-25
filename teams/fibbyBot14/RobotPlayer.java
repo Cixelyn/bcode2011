@@ -123,25 +123,13 @@ public class RobotPlayer implements Runnable {
 	public final int myBirthday;
 	public final MapLocation myBirthplace;
 	
-	private int executeStartTime;
-	private int executeStartByte;
 	private int lastActiveRound;
-	private double lastRoundHP;
 	private int bytecodeLimit;
 	public double myLastRes;
 	public boolean hasTakenDamage;
 	public boolean hasSensor;
 	
 	public MapLocation myLoc;
-	
-	public int numKills;
-	
-	
-	public final Team myOpponent;
-	
-	
-	//Useful Toolkits
-	public final Random myDice;
 	
 	//Higher level strategy
 	public Behavior myBehavior;
@@ -151,7 +139,9 @@ public class RobotPlayer implements Runnable {
 	 * The main entry-point into the battlecode vm.
 	 * @param rc the robot's base robot controller
 	 */
-    public RobotPlayer(RobotController rc) {
+	
+    public RobotPlayer(RobotController rc) 
+    {
     	
     	//this absolutely must be set first
     	myRC = rc;
@@ -159,14 +149,10 @@ public class RobotPlayer implements Runnable {
     	//variables and utilities that other pieces depend on
     	myBirthday = Clock.getRoundNum();
     	myBirthplace = myRC.getLocation();
-    	myDice = new Random(myRC.getRobot().getID()*myBirthday);
     	myLastRes = 9999;
     	bytecodeLimit = GameConstants.BYTECODE_LIMIT_BASE;
     	
-    	myOpponent = myRC.getTeam().opponent();
-    	
     	lastActiveRound = myBirthday;
-    	lastRoundHP = rc.getHitpoints();
     	
     	
     	//initialize base controllers
@@ -190,9 +176,8 @@ public class RobotPlayer implements Runnable {
     	myHammers = new WeaponController[0];
     	myBeams = new WeaponController[0];
     	
-
+    	myBehavior = new DefaultBehavior(this);
     	
-    
     }
 
 
@@ -202,22 +187,23 @@ public class RobotPlayer implements Runnable {
 	 * @see #run()
 	 * @see #postRun()
 	 */
-	private void preRun() {
+    
+	private void preRun()
+	{
 		
-		///////////////////////////////////////////////////////////////
-		//Begin Debug Routines		
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
 		
 		
 		///////////////////////////////////////////////////////////////
 		//Set some global information
+		
 		myLoc = myRC.getLocation();
 		
 		
 		
 		///////////////////////////////////////////////////////////////
 		//Check if we've just woken up
-		if(myRC.wasTurnedOff()){
+		if ( myRC.wasTurnedOff() )
+		{
 			myBehavior.onWakeupCallback(lastActiveRound);
 		}
 		lastActiveRound = Clock.getRoundNum();
@@ -228,14 +214,18 @@ public class RobotPlayer implements Runnable {
 		///////////////////////////////////////////////////////////////
 		//First check if we've added new components to the robot
 		//and execute the necessary callback
-		try{
-			ComponentController[] components=myRC.newComponents();
-			if(components.length!=0) {
+		try
+		{
+			ComponentController[] components = myRC.newComponents();
+			if ( components.length != 0 )
+			{
 				allocateControllers(components);
 				myBehavior.newComponentCallback(components);
 			}
-		} catch(Exception e) {
-			//e.printStackTrace();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 		
 	}
@@ -244,18 +234,24 @@ public class RobotPlayer implements Runnable {
 	/**
 	 * The main run function 
 	 */
-	public void run() {
+	
+	public void run()
+	{
 		
 		//Our Main loop for running code
-		while(true) {
+		while(true)
+		{
 			
 			//Run Preflight Operations
 			preRun();
 			
-			try {
+			try
+			{
 				myBehavior.run();
-			} catch(Exception e) {
-				//e.printStackTrace();
+			}
+			catch ( Exception e )
+			{
+				e.printStackTrace();
 			}
 			
 			//Run Postflight operations
@@ -272,22 +268,10 @@ public class RobotPlayer implements Runnable {
 	 * This function does all the calls that a robot should do after its behaviors.
 	 * @see Messenger#sendAll()
 	 */
-	private void postRun() {			
+	
+	private void postRun()
+	{			
 
-		
-		
-		//////////////////////////////////////////////////////////////
-		//Run our debug routines.
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
-		
-		//////////////////////////////////////////////////////////////
-		// Set some variables and reset some flags.
-		myLastRes = myRC.getTeamResources();
-		lastRoundHP = myRC.getHitpoints(); 
-		hasTakenDamage = false;
-		
-		//////////////////////////////////////////////////////////////
-		
 	}
 	
 	
@@ -300,7 +284,8 @@ public class RobotPlayer implements Runnable {
 	 * @see #postRun()
 	 * @see #preRun()
 	 */
-	public void sleep() {
+	public void sleep()
+	{
 		postRun();
 		myRC.yield();
 		preRun();
@@ -310,36 +295,12 @@ public class RobotPlayer implements Runnable {
 	
 	
 	/**
-	 * Better have a good reason for running <code>minSleep</code> rather than normal {@link #sleep()}
-	 * since none of the standard message processing or sensor scans happen.
-	 */
-	public void minSleep() {
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) stopClock();
-		myRC.yield();
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock();
-	}
-	
-	
-	
-	/**
-	 * This functions turns off a robot, while still allowing for proper byte-code counting.
-	 */
-	public void shutdown() {
-		myRC.turnOff();
-		//if(Constants.DEBUG_BYTECODE_OVERFLOW) startClock(); 	//we need to reset our clock.
-	}
-	
-	
-	
-	
-	
-	
-	/**
 	 * This function swaps the current running behavior of the bot.
 	 * @see #myBehavior
 	 * @param b
 	 */
-	public void swapBehavior(Behavior b) {
+	public void swapBehavior(Behavior b)
+	{
 		myBehavior = b;
 	}
 
@@ -348,42 +309,47 @@ public class RobotPlayer implements Runnable {
 	 * This system allocates the controller stack based on passed in components.  The allocation happens in {@link #preRun()}.
 	 * @param components
 	 */
-	private void allocateControllers(ComponentController[] components) {
+	private void allocateControllers(ComponentController[] components)
+	{
 		
-		//System.out.println("Added: "+java.util.Arrays.toString(components));
-		
-		for(ComponentController c : components) {
-			switch(c.componentClass()) {
+		for ( int i = components.length ; --i >= 0 ; )
+		{
+			ComponentController c = components[i];
+			switch ( c.componentClass() )
+			{
 
 				//////////////////////////////////////////////////////////////////
 				//WEAPONS ALLOCATIONS
 				case WEAPON:
-					switch(c.type()) {
-					case SMG:
-						mySMGsInternal.add((WeaponController)c);		
-						continue;
-					case BLASTER:
-						myBlastersInternal.add((WeaponController)c);	
-						continue;
-					case RAILGUN:
-						myRailgunsInternal.add((WeaponController)c);	
-						continue;
-					case MEDIC:
-						myMedicsInternal.add((WeaponController)c);		
-						continue;
-					case HAMMER:
-						myHammersInternal.add((WeaponController)c);
-						continue;
-					case BEAM:
-						myBeamsInternal.add((WeaponController)c);
-						continue;
-					default:
-						//Utility.printMsg(this, "WTF IS THIS WEAPON?!"); 
-						continue;
+					
+					switch(c.type())
+					{
+						case SMG:
+							mySMGsInternal.add((WeaponController)c);		
+							continue;
+						case BLASTER:
+							myBlastersInternal.add((WeaponController)c);	
+							continue;
+						case RAILGUN:
+							myRailgunsInternal.add((WeaponController)c);	
+							continue;
+						case MEDIC:
+							myMedicsInternal.add((WeaponController)c);		
+							continue;
+						case HAMMER:
+							myHammersInternal.add((WeaponController)c);
+							continue;
+						case BEAM:
+							myBeamsInternal.add((WeaponController)c);
+							continue;
+						default:
+							continue;
 					}
 					
 				/////////////////////////////////////////////////////////////////
 				//SENSOR ALLOCATIONS
+					
+					
 				case SENSOR:
 					hasSensor = true;
 					mySensor = (SensorController)c; 					
@@ -402,17 +368,20 @@ public class RobotPlayer implements Runnable {
 					
 				/////////////////////////////////////////////////////////////////
 				//MISC ALLOCATIONS
+					
 				case MISC:
-					switch(c.type()) {
-					case PROCESSOR:
-						bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	
-						continue;
-					case JUMP:
-						myJumpsInternal.add((JumpController)c);					
-						continue;
+					
+					switch ( c.type() )
+					{
+						case PROCESSOR:
+							bytecodeLimit += GameConstants.BYTECODE_LIMIT_ADDON;	
+							continue;
+						case JUMP:
+							myJumpsInternal.add((JumpController)c);					
+							continue;
 					}
-				default:
-					//Utility.printMsg(this, "WTF IS THIS CONTROLLER?!");			
+					
+				default:		
 					continue;
 			}
 		}	
@@ -435,27 +404,10 @@ public class RobotPlayer implements Runnable {
 	 * Returns the robot's age (number of rounds it has lived)
 	 * @return
 	 */
-	public int getAge() {
+	public int getAge()
+	{
 		return Clock.getRoundNum() - myBirthday;
 	}
-	
-	
-	
-	/*
-	public void startClock() {
-		executeStartTime = Clock.getRoundNum();
-		executeStartByte = Clock.getBytecodeNum();
-		
-	}
-	
-	public void stopClock() {
-		if(executeStartTime!=Clock.getRoundNum()) {
-				int currRound = Clock.getRoundNum();
-				int byteCount = (bytecodeLimit-executeStartByte) + (currRound-executeStartTime-1) * bytecodeLimit + Clock.getBytecodeNum();
-				Utility.printMsg(this,"Warning: Unit over Bytecode Limit @"+executeStartTime+"-"+currRound +":"+ byteCount);
-		}	
-	}*/
-	
 	
 	
 	
