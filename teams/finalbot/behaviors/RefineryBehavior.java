@@ -284,17 +284,22 @@ public class RefineryBehavior extends Behavior
     			else if ( currHeavy % 3 == 2 )
     			{
 					rHasRadar = false;
+					rNumShields = 0;
 					rNumSMGs = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
 						if ( c == ComponentType.RADAR )
 							rHasRadar = true;
+						if ( c == ComponentType.SHIELD )
+							rNumShields++;
 						if ( c == ComponentType.SMG )
 							rNumSMGs++;
 					}
 					if ( rNumSMGs < 3 )
 						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SMG, RobotLevel.ON_GROUND);
+					else if ( rNumShields < 1 )
+						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.SHIELD, RobotLevel.ON_GROUND);
 					else if ( !rHasRadar )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RADAR, RobotLevel.ON_GROUND) )

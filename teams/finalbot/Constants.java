@@ -72,22 +72,10 @@ public class Constants
 								ComponentType.PLASMA,ComponentType.PLASMA
 	                            };
   	
-	public static final ComponentType[] heavyLoadout2A = new ComponentType[]    // currHeavy % 3 == 2
+	public static final ComponentType[] heavyLoadout2 = new ComponentType[]    // currHeavy % 3 == 2
 	                           {ComponentType.RADAR,ComponentType.JUMP,
 								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
 								ComponentType.SHIELD,ComponentType.HARDENED
-								};
-	
-	public static final ComponentType[] heavyLoadout2B = new ComponentType[]    // currHeavy % 3 == 2
-	                           {ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.PLASMA,ComponentType.PLASMA
-								};
-	
-	public static final ComponentType[] heavyLoadout2C = new ComponentType[]    // currHeavy % 3 == 2
-	                           {ComponentType.RADAR,ComponentType.JUMP,
-								ComponentType.RAILGUN,ComponentType.SMG,ComponentType.SMG,ComponentType.SMG,
-								ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD,ComponentType.SHIELD
 								};
 	
 	public static final ComponentType[] arbiterLoadout = new ComponentType[]

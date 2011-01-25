@@ -105,10 +105,7 @@ public class ColossusBehavior extends Behavior
 					maxRange = ComponentType.BEAM.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;
 				}
-				else if ( (Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2A) 
-						|| Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2B)
-						|| Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2C))
-						&& num != -1 )
+				else if ( Utility.compareComponents(currentLoadOut, Constants.heavyLoadout2 ) && num != -1 )
 				{
 					maxRange = ComponentType.RAILGUN.range;
 					obj = ColossusBuildOrder.DETERMINE_SPAWN;

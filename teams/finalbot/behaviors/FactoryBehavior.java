@@ -170,6 +170,7 @@ public class FactoryBehavior extends Behavior
     			else if ( currHeavy % 3 == 2 )
     			{
     				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.RAILGUN, RobotLevel.ON_GROUND);
+    				Utility.buildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.HARDENED, RobotLevel.ON_GROUND);
     			}
     			currHeavy++;
     			obj = FactoryBuildOrder.EQUIP_UNIT;

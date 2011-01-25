@@ -250,19 +250,14 @@ public class ArmoryBehavior extends Behavior
     			}
     			else if ( currHeavy % 3 == 2 )
     			{
-    				rNumPlasma = 0;
 					rNumJumps = 0;
 					for ( int j = rInfo.components.length ; --j >= 0 ; )
 					{
 						c = rInfo.components[j];
-						if ( c == ComponentType.PLASMA )
-							rNumPlasma++;
 						if ( c == ComponentType.JUMP )
 							rNumJumps++;
 					}
-					if ( rNumPlasma < 2 )
-						Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.PLASMA, RobotLevel.ON_GROUND );
-					else if ( rNumJumps < 1 )
+					if ( rNumJumps < 1 )
 					{
 						if ( Utility.tryBuildComponent(myPlayer, myPlayer.myRC.getDirection(), ComponentType.JUMP, RobotLevel.ON_GROUND) )
 						{
