@@ -41,9 +41,6 @@ public class FactoryBehavior extends Behavior
 	boolean armorEquipped = false;
 	boolean arbiterMade = false;
 	
-	int[] memory = myPlayer.myMemory.getMaxNumGuns();
-	int loadout = -1;
-	
 	public FactoryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -66,12 +63,6 @@ public class FactoryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.FACTORY.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-    					if ( memory[5] <= 2 )
-    						loadout = 1;
-    					else if ( memory[4] >= 2 )
-    						loadout = 2;
-    					else
-    						loadout = 0;
         				obj = FactoryBuildOrder.EQUIP_UNIT;
     				}
     				else

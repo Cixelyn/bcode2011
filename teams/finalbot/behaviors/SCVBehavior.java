@@ -124,8 +124,6 @@ public class SCVBehavior extends Behavior
 	int leftRefinery;
 	int rightRefinery;
 	
-	int[] memory = myPlayer.myMemory.getMaxNumGuns();
-	
 	public SCVBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -140,14 +138,12 @@ public class SCVBehavior extends Behavior
 		{
 			case CALCULATE_MEMORY:
 				
-				Utility.setIndicator(myPlayer, 1, "CALCULATE_MEMORY");
-				
 				///////////////////////////////////////
 				//Round number calculations
-				long currRound = myPlayer.myMemory.getCurrRound();
-				Utility.setIndicator(myPlayer, 0, "Current round: " + currRound);
-				myPlayer.myMemory.setNextRound(currRound+1);
-				Utility.setIndicator(myPlayer, 2, "Memory: [" + Integer.toString(memory[0]) + ", " + Integer.toString(memory[1]) + ", " + Integer.toString(memory[2]) + ", " + Integer.toString(memory[3]) + ", " + Integer.toString(memory[4]) + ", " + Integer.toString(memory[5]) + "]");
+					long currRound = myPlayer.myMemory.getCurrRound();
+					Utility.printMsg(myPlayer, "Round: "+currRound);
+					myPlayer.myMemory.setNextRound(currRound+1);
+				
 				obj = SCVBuildOrder.WAIT_FOR_ANTENNA;
 				return;
 		

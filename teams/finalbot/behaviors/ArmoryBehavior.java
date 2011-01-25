@@ -51,9 +51,6 @@ public class ArmoryBehavior extends Behavior
 	boolean nearRefinery;
 	boolean arbiterEquipped = false;
 	
-	int[] memory = myPlayer.myMemory.getMaxNumGuns();
-	int loadout = -1;
-	
 	public ArmoryBehavior(RobotPlayer player)
 	{
 		super(player);
@@ -79,12 +76,6 @@ public class ArmoryBehavior extends Behavior
     				if ( myPlayer.myRC.getLocation().distanceSquaredTo(unitDock) <= ComponentType.ARMORY.range )
     				{
     					myPlayer.myMotor.setDirection(myPlayer.myRC.getLocation().directionTo(unitDock));
-    					if ( memory[5] <= 2 )
-    						loadout = 1;
-    					else if ( memory[4] >= 2 )
-    						loadout = 2;
-    					else
-    						loadout = 0;
         				obj = ArmoryBuildOrder.EQUIP_UNIT;
     				}
     				else

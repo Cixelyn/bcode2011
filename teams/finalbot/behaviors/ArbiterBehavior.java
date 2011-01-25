@@ -94,9 +94,6 @@ public class ArbiterBehavior extends Behavior{
 	int lastMineCapped = 0;
 	
 	boolean inMines;
-	boolean shouldMemorize = false;
-	
-	int[] committed = {0, 0, 0, 0, 0, 0};
 	
 	ArrayDeque<MapLocation> prevLocs = new ArrayDeque<MapLocation>();
 	
@@ -200,8 +197,6 @@ public class ArbiterBehavior extends Behavior{
 				
 				Utility.setIndicator(myPlayer, 1, "EXPAND");
 				
-				// initially, you think you should memorize
-				shouldMemorize = true;
 				
 				// Clear badmines if you haven't capped any in a while
 				lastMineCapped++;
@@ -278,7 +273,6 @@ public class ArbiterBehavior extends Behavior{
 				for ( int i = -1 ; ++i < enemyIndex ; )
 					enemyInfos[i] = myPlayer.mySensor.senseRobotInfo(enemies[i]);
 				
-				
 				// get closest mine if we're not currently pursuing one
 				if ( minMine == null )
 				{
@@ -300,7 +294,6 @@ public class ArbiterBehavior extends Behavior{
 				if ( minMineDist <= 2 && minMineDist > 0 )
 				{
 					Utility.setIndicator(myPlayer, 2, "Building!!");
-					shouldMemorize = false;
 					// there is a mine, and it's within building range
 					if ( myPlayer.mySensor.senseObjectAtLocation(minMine.getLocation(), RobotLevel.ON_GROUND) == null && myPlayer.myRC.getTeamResources() > Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
 					{
@@ -394,60 +387,6 @@ public class ArbiterBehavior extends Behavior{
 						myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyInfo.location));
 					else
 						myPlayer.myMotor.setDirection(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
-				}
-				
-				
-				// check if you should do memory stuff
-				for ( int i = myPlayer.myJumps.length ; --i >= 0 ; )
-				{
-					JumpController j = myPlayer.myJumps[i];
-					if ( j.roundsUntilIdle() <= 5 )
-						shouldMemorize = false;
-				}
-				if ( shouldMemorize && num >= 0 && num <= 30 )
-				{
-					for ( int i = enemyInfos.length ; --i >= 0 ; )
-					{
-						int[] guns = {0, 0, 0, 0, 0, 0};
-						for ( int j = enemyInfos[i].components.length ; --j >= 0 ; )
-						{
-							ComponentType c = enemyInfos[i].components[j];
-							if ( c == ComponentType.SMG )
-							{
-								guns[0]++;
-								guns[5]++;
-							}
-							if ( c == ComponentType.BLASTER )
-							{
-								guns[1]++;
-								guns[5]++;
-							}
-							if ( c == ComponentType.RAILGUN )
-							{
-								guns[2]++;
-								guns[5]++;
-							}
-							if ( c == ComponentType.BEAM )
-							{
-								guns[3]++;
-								guns[5]++;
-							}
-							if ( c == ComponentType.HAMMER )
-							{
-								guns[4]++;
-								guns[5]++;
-							}
-						}
-						for ( int j = guns.length ; --j >= 0 ; )
-						{
-							if ( committed[j] > guns[j] )
-								guns[j] = committed[j];
-							else
-								committed[j] = guns[j];
-						}
-						Utility.setIndicator(myPlayer, 0, "Memory set: " + Integer.toString(guns[0]) + ", " + Integer.toString(guns[1]) + ", " + Integer.toString(guns[2]) + ", " + Integer.toString(guns[3]) + ", " + Integer.toString(guns[4]) + ", " + Integer.toString(guns[5]) + "]");
-						myPlayer.myMemory.setNumGuns(num + 1, guns[0], guns[1], guns[2], guns[3], guns[4], guns[5]);
-					}
 				}
 				
 				
