@@ -1,6 +1,42 @@
-package finalbot;
-import battlecode.common.*;
-
+package finalbot; import battlecode.common.*;
+/**
+ * <pre> 
+ * 
+ * 
+ *                            _________________________
+ *                           /                         \ 
+ *  ========================[      O L D    N A V       ]===========================    
+ *                           \_________________________/
+ * 
+ * 
+ *            ___________                     
+ *     -  ----// --|||-- \\                    
+ *    ---- __//____|||____\\____               
+ *        | _|    " | "   --_  ||              
+ *    ----|/ \______|______/ \_||             >>>TO THE ENEMY?
+ *   ______\_/_____________\_/________________
+ * 
+ * 
+ * 
+ * 
+ * 
+ *   __
+ *	/  \ Notes ___________________________________________________________ 
+ *  \__/
+ *  
+ *    OldNavigation implements a half-working version of bugnav.  It usually
+ *    works but there are quite a few cases in which the code breaks down.   
+ *    Therefore... we jump instead of moving  :P
+ *  
+ * 
+ * 
+ * 
+ * 
+ * </pre>
+ * 
+ * @author Cory
+ *
+ */
 public class OldNavigation {
 	private final RobotPlayer player;
 	private final RobotController myRC;

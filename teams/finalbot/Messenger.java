@@ -1,6 +1,10 @@
 package finalbot; import java.util.ArrayDeque; import battlecode.common.*;
 /**
  * <pre>
+ *                            ___________________
+ *                           /                   \ 
+ *  ========================[  M E S S E N G E R  ]===========================    
+ *                           \___________________/
  *
  *       ,-.                                     
  *      / \  `.  __..-,O      MESSENGER CLASS: 

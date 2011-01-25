@@ -1,7 +1,7 @@
 package finalbot; import battlecode.common.*;
 /**
- *
-*                             _________________________
+ *<pre>
+ *                             _________________________
  *                           /                         \ 
  *  ========================[  C A R T O G R A P H E R  ]===========================    
  *                           \_________________________/
@@ -42,7 +42,7 @@ package finalbot; import battlecode.common.*;
  * 
  *      Deep.....
  * 
- * 
+ *</pre>
  * 
  * @author Cory
  *
