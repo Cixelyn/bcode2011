@@ -13,7 +13,6 @@ public class RefineryBehavior extends Behavior
 	private enum RefineryBuildOrder 
 	{
 		DETERMINE_LEADER,
-		TOWER_TIME,
 		BROADCAST_LOC,
 		SLEEP
 	}
@@ -34,31 +33,19 @@ public class RefineryBehavior extends Behavior
 			case DETERMINE_LEADER:
 				
 				Utility.setIndicator(myPlayer, 0, "DETERMINE_LEADER");
-				if ( Clock.getRoundNum() > Constants.LEADER_TIME && Clock.getRoundNum() < Constants.TOWER_TIME )
+				if ( Clock.getRoundNum() > Constants.LEADER_TIME )
 				{
 					// I'm the 4th refinery
 					Utility.setIndicator(myPlayer, 1, "I'm the leader!");
 					Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
 					myLocMsg = new Message();
 					myLocMsg.locations = new MapLocation[] {myPlayer.myLoc};
-					obj = RefineryBuildOrder.TOWER_TIME;
+					obj = RefineryBuildOrder.BROADCAST_LOC;
 				}
 				else
 				{
 					Utility.setIndicator(myPlayer, 1, "I'm not the leader.");
 					obj = RefineryBuildOrder.SLEEP;
-				}
-				return;
-				
-			case TOWER_TIME:
-				
-				Utility.setIndicator(myPlayer, 0, "TOWER_TIME");
-				Utility.setIndicator(myPlayer, 1, "Waiting...");
-				if ( Clock.getRoundNum() >= Constants.TOWER_TIME )
-				{
-					Utility.setIndicator(myPlayer, 1, "It's tower time!");
-					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
-					obj = RefineryBuildOrder.BROADCAST_LOC;
 				}
 				return;
 				
