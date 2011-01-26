@@ -110,7 +110,7 @@ public class HammerBrothersBehavior extends Behavior
 					
 				case BUM_RUSH:
 					Utility.setIndicator(myPlayer, 0, "BUM RUSH");
-					Utility.setIndicator(myPlayer, 1, "triscuit");
+					Utility.setIndicator(myPlayer, 1, id+"");
 					if (Clock.getRoundNum()>=1000) {
 						if (id==1) {
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
@@ -128,28 +128,35 @@ public class HammerBrothersBehavior extends Behavior
 								myPlayer.sleep();
 							}
 							myPlayer.myMotor.setDirection(Direction.WEST);
-							for (WeaponController hammer : myPlayer.myHammers) {
-								hammer.attackSquare(myPlayer.myLoc.add(Direction.WEST), RobotLevel.ON_GROUND);
+							while (true) {
+								for (WeaponController hammer : myPlayer.myHammers) {
+									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+								}
+								myPlayer.sleep();
 							}
 						}
 						if (id==2) {
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH_WEST);
 							while (myPlayer.myMotor.isActive()) {
 								myPlayer.sleep();
 							}
-							myPlayer.myMotor.setDirection(Direction.WEST);
-							for (WeaponController hammer : myPlayer.myHammers) {
-								hammer.attackSquare(myPlayer.myLoc.add(Direction.WEST), RobotLevel.ON_GROUND);
+							myPlayer.myMotor.setDirection(Direction.EAST);
+							while (true) {
+								for (WeaponController hammer : myPlayer.myHammers) {
+									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+								}
+								myPlayer.sleep();
 							}
 						}
 						if (id==3) {
@@ -163,19 +170,22 @@ public class HammerBrothersBehavior extends Behavior
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							while (myPlayer.myMotor.isActive()) {
 								myPlayer.sleep();
 							}
-							myPlayer.myMotor.setDirection(Direction.WEST);
-							for (WeaponController hammer : myPlayer.myHammers) {
-								hammer.attackSquare(myPlayer.myLoc.add(Direction.WEST), RobotLevel.ON_GROUND);
+							myPlayer.myMotor.setDirection(Direction.NORTH);
+							while (true) {
+								for (WeaponController hammer : myPlayer.myHammers) {
+									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+								}
+								myPlayer.sleep();
 							}
 						}
 						if (id==4) {
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH_WEST);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
@@ -187,9 +197,12 @@ public class HammerBrothersBehavior extends Behavior
 							while (myPlayer.myMotor.isActive()) {
 								myPlayer.sleep();
 							}
-							myPlayer.myMotor.setDirection(Direction.WEST);
-							for (WeaponController hammer : myPlayer.myHammers) {
-								hammer.attackSquare(myPlayer.myLoc.add(Direction.WEST), RobotLevel.ON_GROUND);
+							myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+							while (true) {
+								for (WeaponController hammer : myPlayer.myHammers) {
+									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+								}
+								myPlayer.sleep();
 							}
 						}
 					}

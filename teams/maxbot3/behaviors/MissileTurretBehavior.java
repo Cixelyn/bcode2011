@@ -193,7 +193,10 @@ public class MissileTurretBehavior extends Behavior
 				}
 				else if ( (Clock.getRoundNum() / 250) <= 3 )
 				{*/
-				if ( locNum == 2 )
+				if (Clock.getRoundNum()>=1000) {
+					return;
+				}
+				else if ( locNum == 2 )
 					{
 						if ( Clock.getRoundNum() % 2 == 0 )
 						{

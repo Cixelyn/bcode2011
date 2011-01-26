@@ -351,11 +351,17 @@ public class Utility
 			myPlayer.sleep();
 		}
 		if (myPlayer.myRC.getDirection().equals(direction)) {
+			while (!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
+				myPlayer.sleep();
+			}
 			myPlayer.myMotor.moveForward();
 		}
 		else {
 			myPlayer.myMotor.setDirection(direction);
 			while (myPlayer.myMotor.isActive()) {
+				myPlayer.sleep();
+			}
+			while (!myPlayer.myMotor.canMove(myPlayer.myRC.getDirection())) {
 				myPlayer.sleep();
 			}
 			myPlayer.myMotor.moveForward();
