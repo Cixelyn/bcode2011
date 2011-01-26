@@ -10,6 +10,8 @@ public class ArmoryBehavior extends Behavior
 	
 	int wakeTime = 0;
 	
+	boolean sleepTime;
+	
 	private enum ArmoryBuildOrder 
 	{
 		FIND_TOWER,
@@ -38,9 +40,11 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIND_TOWER");
 				Utility.setIndicator(myPlayer, 1, "Looking for tower...");
 				
+				sleepTime = true;
 				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
 					Direction d = Direction.values()[i];
+					
 					Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(d), RobotLevel.ON_GROUND);
 					if ( r != null )
 					{
@@ -52,8 +56,15 @@ public class ArmoryBehavior extends Behavior
 							obj = ArmoryBuildOrder.EQUIP_TOWER;
 							return;
 						}
+						else
+							sleepTime = false;
 					}
+					else
+						sleepTime = false;
 				}
+				
+				if ( sleepTime )
+					obj = ArmoryBuildOrder.SUICIDE;
 				
 				return;
 			
@@ -99,11 +110,7 @@ public class ArmoryBehavior extends Behavior
 
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		wakeTime++;
-		switch ( wakeTime )
-		{
-			
-		}
+		
 	}
 	
 }
