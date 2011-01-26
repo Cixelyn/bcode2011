@@ -7,7 +7,7 @@ import java.util.*;
 public class RefineryBehavior extends Behavior
 {
 	
-	
+	Message myLocMsg;
 	int wakeTime = 0;
 	
 	private enum RefineryBuildOrder 
@@ -39,6 +39,8 @@ public class RefineryBehavior extends Behavior
 					// I'm the 4th refinery
 					Utility.setIndicator(myPlayer, 1, "I'm the leader!");
 					Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
+					myLocMsg = new Message();
+					myLocMsg.locations = new MapLocation[] {myPlayer.myLoc};
 					obj = RefineryBuildOrder.TOWER_TIME;
 				}
 				else
@@ -64,6 +66,10 @@ public class RefineryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
 				Utility.setIndicator(myPlayer, 1, "");
+				if ( Clock.getRoundNum() % 250 == 0 )
+					myPlayer.myBroadcaster.broadcastTurnOnAll();
+				else
+					myPlayer.myBroadcaster.broadcast(myLocMsg);
 				return;
 				
 			case SLEEP:
