@@ -10,17 +10,16 @@ public class FactoryBehavior extends Behavior
 	MapLocation towerLoc;
 	
 	int wakeTime = 0;
-	int babyMedivac;
+	int numHeavies=0;
 	
 	private enum FactoryBuildOrder 
 	{
-		EQUIP_MEDIVAC_1A,
-		EQUIP_MEDIVAC_1B,
+		MAKE_HAMMER_BROS,
 		SLEEP
 	}
 	
 	
-	FactoryBuildOrder obj = FactoryBuildOrder.EQUIP_MEDIVAC_1A;
+	FactoryBuildOrder obj = FactoryBuildOrder.MAKE_HAMMER_BROS;
 
 	public FactoryBehavior(RobotPlayer player)
 	{
@@ -34,32 +33,22 @@ public class FactoryBehavior extends Behavior
 		switch(obj)
     	{
 				
-			case EQUIP_MEDIVAC_1A:
+			case MAKE_HAMMER_BROS:
 				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_MEDIVAC_1A");
-				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
-				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.IN_AIR);
-				if ( r != null )
-				{
-					babyMedivac = r.getID();
-					Utility.setIndicator(myPlayer, 1, "Flyer found.");
-					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.MEDIC, RobotLevel.IN_AIR);
-					obj = FactoryBuildOrder.EQUIP_MEDIVAC_1B;
+				Utility.setIndicator(myPlayer, 0, "MAKE_HAMMER_BROS");
+				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.EAST), RobotLevel.ON_GROUND);
+				if (r!=null) {
+					myPlayer.sleep();
+				}
+				else {
+					Utility.buildChassis(myPlayer, Direction.EAST, Chassis.HEAVY);
+					numHeavies++;
+					if (numHeavies==4) {
+						obj=FactoryBuildOrder.SLEEP;
+					}		
 				}
 				return;
 				
-			case EQUIP_MEDIVAC_1B:
-				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_MEDIVAC_1B");
-				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
-				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_WEST), RobotLevel.IN_AIR);
-				if ( r != null && r.getID() != babyMedivac )
-				{
-					Utility.setIndicator(myPlayer, 1, "Flyer found.");
-					Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.MEDIC, RobotLevel.IN_AIR);
-					obj = FactoryBuildOrder.SLEEP;
-				}
-				return;
 			
     		case SLEEP:
 				

@@ -15,9 +15,7 @@ public class ArmoryBehavior extends Behavior
 	{
 		FIND_TOWER,
 		EQUIP_TOWER,
-		MAKE_HERO_WRAITH_1,
-		MAKE_MEDIVAC_1A,
-		MAKE_MEDIVAC_1B,
+		EQUIP_HAMMER_BROS,
 		SLEEP,
 		SUICIDE
 	}
@@ -72,32 +70,7 @@ public class ArmoryBehavior extends Behavior
 				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				
-			case MAKE_HERO_WRAITH_1:
-				
-				Utility.setIndicator(myPlayer, 0, "MAKE_HERO_WRAITH_1");
-				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
-				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.FLYING);
-				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.BEAM, RobotLevel.IN_AIR);
-				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1A;
-				return;
-				
-			case MAKE_MEDIVAC_1A:
-				
-				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1A");
-				Utility.setIndicator(myPlayer, 1, "");
-				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.FLYING);
-				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1B;
-				return;
-				
-			case MAKE_MEDIVAC_1B:
-				
-				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1B");
-				Utility.setIndicator(myPlayer, 1, "");
-				while ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC && myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.FLYING);
+			case EQUIP_HAMMER_BROS:
 				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				
@@ -137,7 +110,7 @@ public class ArmoryBehavior extends Behavior
 		{
 			
 			case 1:
-				obj = ArmoryBuildOrder.MAKE_HERO_WRAITH_1;
+				obj = ArmoryBuildOrder.EQUIP_HAMMER_BROS;
 				return;
 		}
 	}

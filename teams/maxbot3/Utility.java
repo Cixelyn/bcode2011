@@ -346,6 +346,22 @@ public class Utility
 		return ans;
 	}
 	
+	public static void moveInDirection(RobotPlayer myPlayer, Direction direction) throws GameActionException {
+		while (myPlayer.myMotor.isActive()) {
+			myPlayer.sleep();
+		}
+		if (myPlayer.myRC.getDirection().equals(direction)) {
+			myPlayer.myMotor.moveForward();
+		}
+		else {
+			myPlayer.myMotor.setDirection(direction);
+			while (myPlayer.myMotor.isActive()) {
+				myPlayer.sleep();
+			}
+			myPlayer.myMotor.moveForward();
+		}
+	}
+	
 }
 
 

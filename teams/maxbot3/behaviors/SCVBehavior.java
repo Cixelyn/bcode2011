@@ -272,7 +272,7 @@ public class SCVBehavior extends Behavior
 				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(factoryLoc), Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(factoryLoc), ComponentType.FACTORY, RobotLevel.ON_GROUND);
 				myPlayer.myRC.turnOn(armory1Loc, RobotLevel.ON_GROUND);
-				obj = SCVBuildOrder.SLEEP;
+				obj = SCVBuildOrder.SUICIDE;
 				return;
 				
 			case SLEEP:

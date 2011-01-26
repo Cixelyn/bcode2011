@@ -14,12 +14,12 @@ public class RefineryBehavior extends Behavior
 	{
 		DETERMINE_LEADER,
 		TOWER_TIME,
-		EQUIP_HERO_WRAITH_1,
-		EQUIP_HERO_WRAITH_2,
+		EQUIP_HAMMER_BROS,
 		SLEEP
 	}
 	
 	RefineryBuildOrder obj = RefineryBuildOrder.DETERMINE_LEADER;
+	int numHammerBros=0;
 	
 	public RefineryBehavior(RobotPlayer player)
 	{
@@ -56,35 +56,36 @@ public class RefineryBehavior extends Behavior
 				{
 					Utility.setIndicator(myPlayer, 1, "It's tower time!");
 					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
-					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH_1;
+					obj = RefineryBuildOrder.EQUIP_HAMMER_BROS;
 				}
 				return;
 				
-			case EQUIP_HERO_WRAITH_1:
+			case EQUIP_HAMMER_BROS:
 				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH_1");
-				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
-				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.IN_AIR);
-				if ( r != null )
+				Utility.setIndicator(myPlayer, 0, "HAMMER_BROTHERS");
+				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.ON_GROUND);
+				if ( r != null)
 				{
-					Utility.setIndicator(myPlayer, 1, "Flyer found.");
-					Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.SHIELD, RobotLevel.IN_AIR);
-					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH_2;
+					RobotInfo rInfo=myPlayer.mySensor.senseRobotInfo(r);
+					if (rInfo.chassis.equals(Chassis.HEAVY)) {
+						Utility.setIndicator(myPlayer, 1, "Heavy Found");
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						numHammerBros++;
+						if (numHammerBros==4) {
+							obj = RefineryBuildOrder.SLEEP;
+						}
+					}
 				}
 				return;
 				
-			case EQUIP_HERO_WRAITH_2:
-				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH_2");
-				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
-				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_WEST), RobotLevel.IN_AIR);
-				if ( r != null )
-				{
-					Utility.setIndicator(myPlayer, 1, "Flyer found.");
-					Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.SHIELD, RobotLevel.IN_AIR);
-					obj = RefineryBuildOrder.SLEEP;
-				}
-				return;
 				
 			case SLEEP:
 				

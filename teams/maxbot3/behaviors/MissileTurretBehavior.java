@@ -91,6 +91,7 @@ public class MissileTurretBehavior extends Behavior
 	}
 	
 	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
+	boolean turnOnRobots=false;
 
 	
 	public MissileTurretBehavior(RobotPlayer player)
@@ -147,6 +148,7 @@ public class MissileTurretBehavior extends Behavior
 							}
 							else if ( d == Direction.EAST )
 							{
+								turnOnRobots=true;
 								Utility.setIndicator(myPlayer, 1, "Armory found.");
 								choke1 = myPlayer.myLoc.add(-5,2);
 								choke2 = myPlayer.myLoc.add(2,-5);
@@ -164,9 +166,16 @@ public class MissileTurretBehavior extends Behavior
 				return;
 				
 			case FIRE:
+				Utility.setIndicator(myPlayer, 0, turnOnRobots+"");
+				Utility.setIndicator(myPlayer, 1, Clock.getRoundNum()+"");
+				if (Clock.getRoundNum()==750 && turnOnRobots) {
+					Utility.printMsg(myPlayer, "hello world");
+					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+1,myPlayer.myLoc.y-2), RobotLevel.ON_GROUND);
+					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+2,myPlayer.myLoc.y-2), RobotLevel.ON_GROUND);
+					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+3,myPlayer.myLoc.y-2), RobotLevel.ON_GROUND);
+					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+2,myPlayer.myLoc.y-3), RobotLevel.ON_GROUND);
+				}
 				
-				Utility.setIndicator(myPlayer, 0, "FIRE");
-				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
 				
 				if ( Clock.getRoundNum() < Constants.ATTACK_TIME )
 					return;
