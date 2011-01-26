@@ -1,7 +1,7 @@
-package fibbyBot15.behaviors;
+package fibbyBot16.behaviors;
 
 
-import fibbyBot15.*;
+import fibbyBot16.*;
 import battlecode.common.*;;
 
 /**
