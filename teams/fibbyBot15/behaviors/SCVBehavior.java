@@ -471,7 +471,7 @@ public class SCVBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_20");
 				
-				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
 				obj = SCVBuildOrder.GO_TO_16;
 				return;
 				
