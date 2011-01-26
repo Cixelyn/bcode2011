@@ -349,7 +349,8 @@ public class SCVBehavior extends Behavior
 				myPlayer.myMotor.setDirection(Direction.WEST);
 				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.FACTORY, RobotLevel.ON_GROUND);
-				obj= SCVBuildOrder.SUICIDE;
+				myPlayer.myRC.suicide();
+				return;
 				
 			case SLEEP:
 				
