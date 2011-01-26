@@ -19,7 +19,7 @@ public class ArmoryBehavior extends Behavior
 	
 	int wakeTime = 0;
 	
-	boolean sleepTime;
+	boolean allEquipped;
 	
 	private enum ArmoryBuildOrder 
 	{
@@ -49,7 +49,7 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIND_TOWER");
 				Utility.setIndicator(myPlayer, 1, "Looking for tower...");
 				
-				sleepTime = true;
+				allEquipped = true;
 				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
 					Direction d = Direction.values()[i];
@@ -58,21 +58,30 @@ public class ArmoryBehavior extends Behavior
 					if ( r != null )
 					{
 						RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(r);
-						if ( rInfo.chassis == Chassis.BUILDING && Utility.totalWeight(rInfo.components) == 0 )
+						if ( rInfo.chassis == Chassis.BUILDING )
 						{
-							Utility.setIndicator(myPlayer, 1, "Tower found.");
-							towerLoc = myPlayer.myLoc.add(d);
-							obj = ArmoryBuildOrder.EQUIP_TOWER;
-							return;
+							if ( Utility.totalWeight(rInfo.components) == 0 )
+							{
+								Utility.setIndicator(myPlayer, 1, "Tower found.");
+								towerLoc = myPlayer.myLoc.add(d);
+								obj = ArmoryBuildOrder.EQUIP_TOWER;
+								return;
+							}
 						}
 						else
-							sleepTime = false;
+						{
+							// non building next to me
+							allEquipped = false;
+						}
 					}
 					else
-						sleepTime = false;
+					{
+						// blank square next to me
+						allEquipped = false;
+					}
 				}
 				
-				if ( sleepTime )
+				if ( allEquipped )
 					obj = ArmoryBuildOrder.SUICIDE;
 				
 				return;

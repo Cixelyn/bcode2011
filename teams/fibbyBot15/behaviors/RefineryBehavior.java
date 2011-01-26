@@ -16,7 +16,6 @@ public class RefineryBehavior extends Behavior
 {
 	
 	Message myLocMsg;
-	int wakeTime = 0;
 	
 	private enum RefineryBuildOrder 
 	{
@@ -92,7 +91,7 @@ public class RefineryBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		wakeTime++;
+		
 	}
 	
 

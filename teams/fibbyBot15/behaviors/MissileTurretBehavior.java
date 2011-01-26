@@ -196,9 +196,9 @@ public class MissileTurretBehavior extends Behavior
 					else
 						obj = MissileTurretBuildOrder.SLEEP;
 				}
-				else if ( (Clock.getRoundNum() / 250) <= 3 )
+				else if ( (Clock.getRoundNum() / 250) < 2*Constants.GREEDY_CYCLES + 1 )
 				{
-					// its the first or second night cycle, hold chokepoints
+					// its a greedy night cycle, hold chokepoints
 					if ( locNum == 2 )
 					{
 						if ( Clock.getRoundNum() % 2 == 0 )
@@ -503,7 +503,7 @@ public class MissileTurretBehavior extends Behavior
 	@Override
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		if ( locNum == 2 || locNum == 22 || ((Clock.getRoundNum()/250) % 2 == 1 && (Clock.getRoundNum()/250) > 3) )
+		if ( locNum == 2 || locNum == 22 || ((Clock.getRoundNum()/250) % 2 == 1 && (Clock.getRoundNum()/250) >= 2*Constants.GREEDY_CYCLES + 1) )
 			obj = MissileTurretBuildOrder.FIRE;
 	}
 

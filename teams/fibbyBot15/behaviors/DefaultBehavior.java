@@ -14,6 +14,9 @@ public class DefaultBehavior extends Behavior
 	public void run() throws Exception
 	{
 		Utility.setIndicator(myPlayer, 0, "WHO AM I???");
+		// new towers should spawn turned off to save flux
+		if ( Clock.getRoundNum() > 500 && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+			myPlayer.myRC.turnOff();
 	}
 
 	public String toString()

@@ -490,14 +490,14 @@ public class SCVBehavior extends Behavior
 				
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.ARMORY, RobotLevel.ON_GROUND);
-				obj = SCVBuildOrder.SLEEP;
+				obj = SCVBuildOrder.BUILD_TOWER_15;
 				return;
 				
 			case BUILD_TOWER_15:
 				
 				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_15");
 				
-				Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
 				obj = SCVBuildOrder.BUILD_TOWER_11;
 				return;
 				
@@ -625,14 +625,17 @@ public class SCVBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		Utility.setIndicator(myPlayer, 1, "");
-		wakeTime++;
-		switch ( wakeTime )
+		if ( (Clock.getRoundNum()/250) % 2 == 0 )
 		{
-			case 1:
-				obj = SCVBuildOrder.BUILD_TOWER_8;break;
-			case 2:
-				obj = SCVBuildOrder.GO_LEFT_7;break;
+			Utility.setIndicator(myPlayer, 1, "");
+			wakeTime++;
+			switch ( wakeTime )
+			{
+				case 1:
+					obj = SCVBuildOrder.BUILD_TOWER_8;break;
+				case 2:
+					obj = SCVBuildOrder.GO_LEFT_7;break;
+			}
 		}
 	}
 
