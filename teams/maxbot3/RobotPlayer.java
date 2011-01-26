@@ -130,6 +130,7 @@ public class RobotPlayer implements Runnable {
 	public boolean hasSensor;
 	
 	public MapLocation myLoc;
+	public MapLocation mainLoc;
 	
 	//Higher level strategy
 	public Behavior myBehavior;
@@ -226,6 +227,16 @@ public class RobotPlayer implements Runnable {
 		catch(Exception e)
 		{
 			e.printStackTrace();
+		}
+		
+		/////////////////////////////////////////////////////
+		// Get messages
+		
+		if ( mainLoc == null )
+		{
+			Message[] msgs = myRC.getAllMessages();
+			if ( msgs.length > 0 )
+				mainLoc = msgs[0].locations[0];
 		}
 		
 	}

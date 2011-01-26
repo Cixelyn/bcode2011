@@ -6,16 +6,16 @@ import maxbot3.*;
 public class ArmoryBehavior extends Behavior
 {
 	
-	
 	MapLocation towerLoc;
 	
 	int wakeTime = 0;
+	
+	boolean sleepTime;
 	
 	private enum ArmoryBuildOrder 
 	{
 		FIND_TOWER,
 		EQUIP_TOWER,
-		EQUIP_HAMMER_BROS,
 		SLEEP,
 		SUICIDE
 	}
@@ -40,9 +40,11 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIND_TOWER");
 				Utility.setIndicator(myPlayer, 1, "Looking for tower...");
 				
+				sleepTime = true;
 				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
 					Direction d = Direction.values()[i];
+					
 					Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(d), RobotLevel.ON_GROUND);
 					if ( r != null )
 					{
@@ -54,8 +56,15 @@ public class ArmoryBehavior extends Behavior
 							obj = ArmoryBuildOrder.EQUIP_TOWER;
 							return;
 						}
+						else
+							sleepTime = false;
 					}
+					else
+						sleepTime = false;
 				}
+				
+				if ( sleepTime )
+					obj = ArmoryBuildOrder.SUICIDE;
 				
 				return;
 			
@@ -67,11 +76,7 @@ public class ArmoryBehavior extends Behavior
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
-				obj = ArmoryBuildOrder.SLEEP;
-				return;
-				
-			case EQUIP_HAMMER_BROS:
-				obj = ArmoryBuildOrder.SLEEP;
+				obj = ArmoryBuildOrder.FIND_TOWER;
 				return;
 				
     		case SLEEP:
@@ -105,14 +110,8 @@ public class ArmoryBehavior extends Behavior
 
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		wakeTime++;
-		switch ( wakeTime )
-		{
-			
-			case 1:
-				obj = ArmoryBuildOrder.EQUIP_HAMMER_BROS;
-				return;
-		}
+		
 	}
 	
 }
+

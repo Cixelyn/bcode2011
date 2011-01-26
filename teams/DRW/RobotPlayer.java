@@ -1,4 +1,4 @@
-package zombieplayer;
+package DRW;
 
 import java.util.ArrayList;
 import java.util.HashSet;
