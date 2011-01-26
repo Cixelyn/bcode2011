@@ -62,7 +62,7 @@ public class RefineryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "");
 				while ( myPlayer.myBroadcaster.isActive() )
 					myPlayer.sleep();
-				if ( Clock.getRoundNum() % 250 == 0 )
+				if ( Clock.getRoundNum() % 500 == 0 || Clock.getRoundNum() % 500 == 250 + timingu() )
 					myPlayer.myBroadcaster.broadcastTurnOnAll();
 				else
 					myPlayer.myBroadcaster.broadcast(myLocMsg);
@@ -79,6 +79,30 @@ public class RefineryBehavior extends Behavior
 		
 	}
 
+	public int timingu()
+	{
+		// this is where the magic happens, baby
+		// depending on what round it is, the spawned units reach us slower
+		// turn on the towers timingu rounds after the night cycle started
+		switch ( (Clock.getRoundNum() / 500) )
+		{
+			case 0:
+				return 30;
+			case 1:
+				return 30;
+			case 2:
+				return 30;
+			case 3:
+				return 130;
+			case 4:
+				return 130;
+			case 5:
+				return 70;
+			default:
+				return 0;
+		}
+	}
+	
 	public String toString()
 	{
 		return "RefineryBehavior";
