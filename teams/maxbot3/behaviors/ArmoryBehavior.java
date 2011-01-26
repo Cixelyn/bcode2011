@@ -17,6 +17,7 @@ public class ArmoryBehavior extends Behavior
 		FIND_TOWER,
 		EQUIP_TOWER,
 		SLEEP,
+		BUILD_FLYER,
 		SUICIDE
 	}
 	
@@ -79,6 +80,12 @@ public class ArmoryBehavior extends Behavior
 				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				
+			case BUILD_FLYER:
+				Utility.setIndicator(myPlayer, 0, "BUILD_FLYER");
+				Utility.setIndicator(myPlayer, 0, Clock.getRoundNum()+"");
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.FLYING);
+				myPlayer.sleep();
+				myPlayer.myRC.suicide();
     		case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 0, "SLEEP");
@@ -110,7 +117,12 @@ public class ArmoryBehavior extends Behavior
 
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		
+		obj=ArmoryBuildOrder.BUILD_FLYER;
+		try {
+			myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+1,myPlayer.myLoc.y+1), RobotLevel.ON_GROUND);
+		} catch (GameActionException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

@@ -38,8 +38,8 @@ public class DefaultBehavior extends Behavior
 				myPlayer.swapBehavior(new MissileTurretBehavior(myPlayer));
 			else if ( c == ComponentType.HAMMER && myPlayer.myRC.getChassis() == Chassis.HEAVY )
 				myPlayer.swapBehavior(new HammerBrothersBehavior(myPlayer));
-			else if ( c == ComponentType.MEDIC && myPlayer.myRC.getChassis() == Chassis.FLYING )
-				myPlayer.swapBehavior(new MedivacBehavior(myPlayer));
+			else if ( c == ComponentType.CONSTRUCTOR && myPlayer.myRC.getChassis() == Chassis.FLYING )
+				myPlayer.swapBehavior(new HeroWraithBehavior(myPlayer));
 		}
 	}
 	
