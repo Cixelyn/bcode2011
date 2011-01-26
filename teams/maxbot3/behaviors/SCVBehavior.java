@@ -80,13 +80,46 @@ public class SCVBehavior extends Behavior
 	{
 		INITIALIZE,
 		CAP_MINES,
-		GO_TO_TOWER_1,
-		BUILD_ARMORY_1,
-		BUILD_TOWER_1,
-		GO_TO_TOWER_2,
-		BUILD_ARMORY_2,
+
+		BUILD_ARMORY_A,
 		BUILD_TOWER_2,
-		GO_TO_FACTORY,
+		GO_TO_17,
+		BUILD_ARMORY_D,
+		BUILD_TOWER_22,
+		GO_TO_9,
+		BUILD_TOWER_8,
+		BUILD_TOWER_3,
+		BUILD_TOWER_4,
+		GO_TO_B,
+		BUILD_TOWER_9,
+		BUILD_TOWER_5,
+		BUILD_TOWER_6,
+		BUILD_TOWER_10,
+		BUILD_TOWER_13,
+		GO_TO_14,
+		BUILD_ARMORY_B,
+		GO_RIGHT_14,
+		BUILD_TOWER_14,
+		GO_TO_C,
+		BUILD_TOWER_19,
+		BUILD_TOWER_23,
+		BUILD_TOWER_24,
+		BUILD_TOWER_16,
+		GO_TO_20,
+		BUILD_ARMORY_C,
+		BUILD_TOWER_21,
+		GO_BELOW_25,
+		BUILD_TOWER_25,
+		BUILD_TOWER_26,
+		GO_TO_11,
+		BUILD_TOWER_15,
+		BUILD_TOWER_12,
+		GO_TO_7,
+		BUILD_TOWER_11,
+		GO_TO_1,
+		BUILD_TOWER_7,
+		GO_ABOVE_1,
+		BUILD_TOWER_1,
 		BUILD_FACTORY,
 		SLEEP,
 		SUICIDE
@@ -110,170 +143,213 @@ public class SCVBehavior extends Behavior
 			case INITIALIZE:
 				
 				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
-				Utility.setIndicator(myPlayer, 1, "");
-				spawnLoc = myPlayer.myLoc;
-				armory1Loc = spawnLoc.add(-2,-2);
-				tower1Loc = spawnLoc.add(-3,-2);
-				armory2Loc = spawnLoc.add(0,2);
-				tower2Loc = spawnLoc.add(1,2);
-				factoryLoc = spawnLoc.add(-2,-1);
 				obj = SCVBuildOrder.CAP_MINES;
 				return;
 				
 			case CAP_MINES:
 				
 				Utility.setIndicator(myPlayer, 0, "CAP_MINES");
-				Utility.setIndicator(myPlayer, 1, "");
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.SOUTH_WEST);
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.SOUTH);
+				turn(Direction.NORTH_WEST);
+				forward();
+				turn(Direction.SOUTH_WEST);
+				forward();
+				turn(Direction.SOUTH);
 				
 				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveBackward();
+				backward();
 				
 				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 				
-				obj = SCVBuildOrder.SLEEP;
+				obj = SCVBuildOrder.BUILD_ARMORY_A;
 				return;
 				
-			case GO_TO_TOWER_1:
+			case BUILD_ARMORY_A:
 				
-				Utility.setIndicator(myPlayer, 0, "GO_TO_TOWER_1");
-				Utility.setIndicator(myPlayer, 1, "");
-				obj = SCVBuildOrder.BUILD_ARMORY_1;
-				return;
+				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_A");
 				
-			case BUILD_ARMORY_1:
-				
-				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_1");
-				Utility.setIndicator(myPlayer, 1, "");
-				while ( myPlayer.myRC.getTeamResources() < 4*Chassis.BUILDING.cost + 2*ComponentType.ARMORY.cost + 8*ComponentType.BEAM.cost + Constants.RESERVE )
+				while ( myPlayer.myRC.getTeamResources() < 4*Chassis.BUILDING.cost + 2*ComponentType.ARMORY.cost + Constants.RESERVE )
 					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(armory1Loc), Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(armory1Loc), ComponentType.ARMORY, RobotLevel.ON_GROUND);
-				obj = SCVBuildOrder.BUILD_TOWER_1;
-				return;
-				
-			case BUILD_TOWER_1:
-				
-				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_1");
-				Utility.setIndicator(myPlayer, 1, "");
-				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(tower1Loc), Chassis.BUILDING);
-				obj = SCVBuildOrder.GO_TO_TOWER_2;
-				return;
-				
-			case GO_TO_TOWER_2:
-				
-				Utility.setIndicator(myPlayer, 0, "GO_TO_TOWER_2");
-				Utility.setIndicator(myPlayer, 1, "");
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.EAST);
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.SOUTH_EAST);
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.SOUTH);
-				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
-				
-				obj = SCVBuildOrder.BUILD_ARMORY_2;
-				return;
-				
-			case BUILD_ARMORY_2:
-				
-				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_2");
-				Utility.setIndicator(myPlayer, 1, "");
-				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(armory2Loc), Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(armory2Loc), ComponentType.ARMORY, RobotLevel.ON_GROUND);
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 				obj = SCVBuildOrder.BUILD_TOWER_2;
 				return;
-				
+
 			case BUILD_TOWER_2:
 				
 				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_2");
-				Utility.setIndicator(myPlayer, 1, "");
-				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(tower2Loc), Chassis.BUILDING);
-				obj = SCVBuildOrder.GO_TO_FACTORY;
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.BUILDING);
+				obj = SCVBuildOrder.GO_TO_17;
 				return;
 				
-			case GO_TO_FACTORY:
+			case GO_TO_17:
 				
-				Utility.setIndicator(myPlayer, 0, "GO_TO_FACTORY");
-				Utility.setIndicator(myPlayer, 1, "");
+				Utility.setIndicator(myPlayer, 0, "GO_TO_17");
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.NORTH);
+				turn(Direction.EAST);
+				forward();
+				turn(Direction.SOUTH_EAST);
+				forward();
+				turn(Direction.SOUTH);
+				forward();
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
+				obj = SCVBuildOrder.BUILD_ARMORY_D;
+				return;
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+			case BUILD_ARMORY_D:
 				
-				while ( myPlayer.myMotor.isActive() )
-					myPlayer.sleep();
-				myPlayer.myMotor.moveForward();
+				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_D");
 				
-				myPlayer.sleep();
-				myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.SOUTH_WEST), RobotLevel.ON_GROUND);
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.ARMORY, RobotLevel.ON_GROUND);
+				obj = SCVBuildOrder.BUILD_TOWER_22;
+				return;
+				
+			case BUILD_TOWER_22:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_22");
+				
+				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
+				obj = SCVBuildOrder.GO_TO_9;
+				return;
+				
+			case GO_TO_9:
+				
+				Utility.setIndicator(myPlayer, 0, "GO_TO_9");
+				
+				turn(Direction.NORTH);
+				forward();
+				turn(Direction.NORTH_WEST);
+				forward();
+				obj = obj = SCVBuildOrder.BUILD_FACTORY;
+				
+			case BUILD_TOWER_8:
+				
 				obj = SCVBuildOrder.BUILD_FACTORY;
 				return;
 				
-			case BUILD_FACTORY:
+			case BUILD_TOWER_3:
 				
-				Utility.setIndicator(myPlayer, 0, "BUILD_FACTORY");
-				Utility.setIndicator(myPlayer, 1, "");
-				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.FACTORY.cost + Chassis.FLYING.cost + ComponentType.BEAM.cost + ComponentType.SHIELD.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, myPlayer.myLoc.directionTo(factoryLoc), Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(factoryLoc), ComponentType.FACTORY, RobotLevel.ON_GROUND);
-				myPlayer.myRC.turnOn(armory1Loc, RobotLevel.ON_GROUND);
-				obj = SCVBuildOrder.SUICIDE;
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_3");
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.BUILDING);
+				obj = SCVBuildOrder.BUILD_TOWER_4;
 				return;
+				
+			case BUILD_TOWER_4:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_4");
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
+				obj = SCVBuildOrder.GO_TO_B;
+				return;
+				
+			case GO_TO_B:
+				
+				obj = SCVBuildOrder.BUILD_FACTORY;
+				return;
+				
+			case BUILD_TOWER_9:
+			
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_9");
+				
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+				obj = SCVBuildOrder.BUILD_TOWER_5;
+				return;
+				
+			case BUILD_TOWER_5:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_5");
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
+				obj = SCVBuildOrder.BUILD_TOWER_6;
+				return;
+				
+			case BUILD_TOWER_6:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_6");
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH_EAST, Chassis.BUILDING);
+				obj = SCVBuildOrder.BUILD_TOWER_10;
+				return;
+				
+			case BUILD_TOWER_10:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_10");
+				
+				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
+				obj = SCVBuildOrder.BUILD_TOWER_13;
+				return;
+				
+			case BUILD_TOWER_13:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_TOWER_13");
+				
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				obj = SCVBuildOrder.GO_TO_14;
+				return;
+				
+			case GO_TO_14:
+				
+				Utility.setIndicator(myPlayer, 0, "GO_TO_14");
+				
+				turn(Direction.NORTH_WEST);
+				backward();
+				obj = SCVBuildOrder.BUILD_ARMORY_B;
+				return;
+				
+			case BUILD_ARMORY_B:
+				
+				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_B");
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.ARMORY, RobotLevel.ON_GROUND);
+				obj = SCVBuildOrder.BUILD_FACTORY;
+				return;
+				
+				/*
+				
+				GO_TO_14,
+				BUILD_ARMORY_B,
+				GO_RIGHT_14,
+				BUILD_TOWER_14,
+				GO_TO_C,
+				BUILD_TOWER_19,
+				BUILD_TOWER_23,
+				BUILD_TOWER_24,
+				BUILD_TOWER_16,
+				GO_TO_20,
+				BUILD_ARMORY_C,
+				BUILD_TOWER_21,
+				GO_BELOW_25,
+				BUILD_TOWER_25,
+				BUILD_TOWER_26,
+				GO_TO_11,
+				BUILD_TOWER_15,
+				BUILD_TOWER_12,
+				GO_TO_7,
+				BUILD_TOWER_11,
+				GO_TO_1,
+				BUILD_TOWER_7,
+				GO_ABOVE_1,
+				BUILD_TOWER_1,*/
+				
+			case BUILD_FACTORY:
+				while (myPlayer.myMotor.isActive()) {
+					myPlayer.sleep();
+				}
+				myPlayer.myMotor.setDirection(Direction.WEST);
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.FACTORY, RobotLevel.ON_GROUND);
+				obj= SCVBuildOrder.SUICIDE;
 				
 			case SLEEP:
 				
@@ -294,7 +370,26 @@ public class SCVBehavior extends Behavior
     	
 	}
 	
+	public void turn(Direction d) throws Exception
+	{
+		while ( myPlayer.myMotor.isActive() )
+			myPlayer.sleep();
+		myPlayer.myMotor.setDirection(d);
+	}
 	
+	public void forward() throws Exception
+	{
+		while ( myPlayer.myMotor.isActive() )
+			myPlayer.sleep();
+		myPlayer.myMotor.moveForward();
+	}
+	
+	public void backward() throws Exception
+	{
+		while ( myPlayer.myMotor.isActive() )
+			myPlayer.sleep();
+		myPlayer.myMotor.moveBackward();
+	}
 	
 	public String toString()
 	{
@@ -314,9 +409,10 @@ public class SCVBehavior extends Behavior
 		switch ( wakeTime )
 		{
 			case 1:
-				obj = SCVBuildOrder.GO_TO_TOWER_1;
-				return;
+				obj = SCVBuildOrder.BUILD_FACTORY;
+				break;
 		}
 	}
 
 }
+

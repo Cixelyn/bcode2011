@@ -79,19 +79,22 @@ import battlecode.common.*;;
 public class MissileTurretBehavior extends Behavior
 {
 	
-	MapLocation choke1;
-	MapLocation choke2;
+	int locNum;
+	MapLocation rockLoc;
+	MapLocation target1;
+	MapLocation target2;
 	
 	
 	private enum MissileTurretBuildOrder
 	{
 		EQUIPPING,
+		INITIALIZE,
 		DETERMINE_CHOKEPOINTS,
-		FIRE
+		FIRE,
+		SLEEP
 	}
 	
 	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
-	boolean turnOnRobots=false;
 
 	
 	public MissileTurretBehavior(RobotPlayer player)
@@ -116,94 +119,383 @@ public class MissileTurretBehavior extends Behavior
 						numBeams++;
 				}
 				if ( numBeams >= 4 )
-					obj = MissileTurretBuildOrder.DETERMINE_CHOKEPOINTS;
+					obj = MissileTurretBuildOrder.INITIALIZE;
 					
 				return;
 			
-			case DETERMINE_CHOKEPOINTS:
+			case INITIALIZE:
 				
-				Utility.setIndicator(myPlayer, 0, "DETERMINE_CHOKEPOINTS");
-				Utility.setIndicator(myPlayer, 1, "Looking for armory...");
-				
-				for ( int i = Direction.values().length; --i >= 0 ; )
+				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
+				if ( myPlayer.mainLoc != null )
 				{
-					Direction d = Direction.values()[i];
-					Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(d), RobotLevel.ON_GROUND);
-					if ( r != null )
-					{
-						RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(r);
-						if ( rInfo.chassis == Chassis.BUILDING )
-						{
-							Utility.setIndicator(myPlayer, 1, "Armory found.");
-							if ( d == Direction.WEST )
-							{
-								choke1 = myPlayer.myLoc.add(5,-2);
-								choke2 = myPlayer.myLoc.add(-2,5);
-								if ( Constants.ATTACK_TIME % 2 == 0 )
-									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
-								else
-									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
-								obj = MissileTurretBuildOrder.FIRE;
-								return;
-							}
-							else if ( d == Direction.EAST )
-							{
-								turnOnRobots=true;
-								Utility.setIndicator(myPlayer, 1, "Armory found.");
-								choke1 = myPlayer.myLoc.add(-5,2);
-								choke2 = myPlayer.myLoc.add(2,-5);
-								if ( Constants.ATTACK_TIME % 2 == 0 )
-									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
-								else
-									myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
-								obj = MissileTurretBuildOrder.FIRE;
-								return;
-							}
-						}
-					}
+					locNum = getLocNum(myPlayer.myLoc, myPlayer.mainLoc);
+					Utility.setIndicator(myPlayer, 2, "I am tower " + Integer.toString(locNum) + ".");
+					setTargets();
+					while ( myPlayer.myBeams[3].isActive() )
+						myPlayer.sleep();
+					obj = MissileTurretBuildOrder.FIRE;
 				}
 				
 				return;
 				
 			case FIRE:
-				Utility.setIndicator(myPlayer, 0, turnOnRobots+"");
-				Utility.setIndicator(myPlayer, 1, Clock.getRoundNum()+"");
-				if (Clock.getRoundNum()==750 && turnOnRobots) {
-					Utility.printMsg(myPlayer, "hello world");
-					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+1,myPlayer.myLoc.y-2), RobotLevel.ON_GROUND);
-					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+2,myPlayer.myLoc.y-2), RobotLevel.ON_GROUND);
-					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+3,myPlayer.myLoc.y-2), RobotLevel.ON_GROUND);
-					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+2,myPlayer.myLoc.y-3), RobotLevel.ON_GROUND);
+				
+				Utility.setIndicator(myPlayer, 0, "FIRE");
+				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
+				
+				if ( (Clock.getRoundNum() / 250) % 2 == 0 )
+				{
+					if ( (locNum == 2 || locNum == 22) && (Clock.getRoundNum() / 250) == 2 )
+					{
+						switch ( (Clock.getRoundNum() / 20) % 25 )
+						{
+							case 0:
+								rockLoc = myPlayer.mainLoc.add(0,-3);break;
+							case 1:
+								rockLoc = myPlayer.mainLoc.add(1,-3);break;
+							case 2:
+								rockLoc = myPlayer.mainLoc.add(2,-3);break;
+							case 3:
+								rockLoc = myPlayer.mainLoc.add(4,-1);break;
+							case 4:
+								rockLoc = myPlayer.mainLoc.add(4,0);break;
+							case 5:
+								rockLoc = myPlayer.mainLoc.add(4,1);break;
+							case 6:
+								rockLoc = myPlayer.mainLoc.add(2,3);break;
+							case 7:
+								rockLoc = myPlayer.mainLoc.add(1,3);break;
+							case 8:
+								rockLoc = myPlayer.mainLoc.add(0,3);break;
+							case 9:
+								rockLoc = myPlayer.mainLoc.add(-2,1);break;
+							case 10:
+								rockLoc = myPlayer.mainLoc.add(-2,0);break;
+							case 11:
+								rockLoc = myPlayer.mainLoc.add(-2,-1);break;
+							default:
+								obj = MissileTurretBuildOrder.SLEEP;
+								return;
+						}
+						if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(rockLoc) )
+						{
+							myPlayer.myBeams[0].attackSquare(rockLoc, RobotLevel.ON_GROUND);
+							myPlayer.myBeams[1].attackSquare(rockLoc, RobotLevel.ON_GROUND);
+							myPlayer.myBeams[2].attackSquare(rockLoc, RobotLevel.ON_GROUND);
+							myPlayer.myBeams[3].attackSquare(rockLoc, RobotLevel.ON_GROUND);
+							myPlayer.sleep();
+						}
+						else
+							myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(rockLoc));
+					}
+					else
+						obj = MissileTurretBuildOrder.SLEEP;
 				}
-				
-				
-				if ( Clock.getRoundNum() < Constants.ATTACK_TIME )
-					return;
+				else if ( (Clock.getRoundNum() / 250) <= 3 )
+				{
+					if ( locNum == 2 )
+					{
+						if ( Clock.getRoundNum() % 2 == 0 )
+						{
+							if ( myPlayer.myRC.getDirection() == Direction.WEST )
+							{
+								myPlayer.myBeams[0].attackSquare(myPlayer.myLoc.add(-5, 2), RobotLevel.ON_GROUND);
+								myPlayer.myBeams[1].attackSquare(myPlayer.myLoc.add(-5, 2), RobotLevel.ON_GROUND);
+							}
+							myPlayer.myMotor.setDirection(Direction.NORTH);
+						}
+						else if ( Clock.getRoundNum() % 2 == 1 )
+						{
+							if ( myPlayer.myRC.getDirection() == Direction.NORTH )
+							{
+								myPlayer.myBeams[2].attackSquare(myPlayer.myLoc.add(2, -5), RobotLevel.ON_GROUND);
+								myPlayer.myBeams[3].attackSquare(myPlayer.myLoc.add(2, -5), RobotLevel.ON_GROUND);
+							}
+							myPlayer.myMotor.setDirection(Direction.WEST);
+						}
+					}
+					else if ( locNum == 22 )
+					{
+						if ( Clock.getRoundNum() % 2 == 0 )
+						{
+							if ( myPlayer.myRC.getDirection() == Direction.EAST )
+							{
+								myPlayer.myBeams[0].attackSquare(myPlayer.myLoc.add(5, -2), RobotLevel.ON_GROUND);
+								myPlayer.myBeams[1].attackSquare(myPlayer.myLoc.add(5, -2), RobotLevel.ON_GROUND);
+							}
+							myPlayer.myMotor.setDirection(Direction.SOUTH);
+						}
+						else if ( Clock.getRoundNum() % 2 == 1 )
+						{
+							if ( myPlayer.myRC.getDirection() == Direction.SOUTH )
+							{
+								myPlayer.myBeams[2].attackSquare(myPlayer.myLoc.add(-2, 5), RobotLevel.ON_GROUND);
+								myPlayer.myBeams[3].attackSquare(myPlayer.myLoc.add(-2, 5), RobotLevel.ON_GROUND);
+							}
+							myPlayer.myMotor.setDirection(Direction.EAST);
+						}
+					}
+					else
+						obj = MissileTurretBuildOrder.SLEEP;
+				}
 				else if ( Clock.getRoundNum() % 2 == 0 )
 				{
-					myPlayer.myBeams[0].attackSquare(choke1, RobotLevel.ON_GROUND);
-					myPlayer.myBeams[1].attackSquare(choke1, RobotLevel.ON_GROUND);
-					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke2));
+					if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(target1) )
+					{
+						myPlayer.myBeams[0].attackSquare(target1, RobotLevel.ON_GROUND);
+						myPlayer.myBeams[1].attackSquare(target1, RobotLevel.ON_GROUND);
+					}
+					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(target2));
 				}
 				else if ( Clock.getRoundNum() % 2 == 1 )
 				{
-					myPlayer.myBeams[2].attackSquare(choke2, RobotLevel.ON_GROUND);
-					myPlayer.myBeams[3].attackSquare(choke2, RobotLevel.ON_GROUND);
-					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
+					if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(target2) )
+					{
+						myPlayer.myBeams[2].attackSquare(target2, RobotLevel.ON_GROUND);
+						myPlayer.myBeams[3].attackSquare(target2, RobotLevel.ON_GROUND);
+					}
+					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(target1));
 				}
+				return;
+				
+			case SLEEP:
+				
+				Utility.setIndicator(myPlayer, 0, "SLEEP");
+				Utility.setIndicator(myPlayer, 1, "zzzzzz");
+				myPlayer.myRC.turnOff();
 				return;
 				
 		}
 	}
 
+	public int getLocNum(MapLocation myLoc, MapLocation mainLoc)
+	{
+		int dx = myLoc.x - mainLoc.x;
+		int dy = myLoc.y - mainLoc.y;
+		switch ( (dx + 2) + 6*(dy + 2) + 1 )
+		{
+			case 1:
+				return 1;
+			case 2:
+				return 2;
+			case 3:
+				return 3;
+			case 4:
+				return 4;
+			case 5:
+				return 5;
+			case 6:
+				return 6;
+			case 7:
+				return 7;
+			case 9:
+				return 8;
+			case 10:
+				return 9;
+			case 12:
+				return 10;
+			case 13:
+				return 11;
+			case 14:
+				return 12;
+			case 17:
+				return 13;
+			case 18:
+				return 14;
+			case 19:
+				return 15;
+			case 20:
+				return 16;
+			case 23:
+				return 17;
+			case 24:
+				return 18;
+			case 25:
+				return 19;
+			case 27:
+				return 20;
+			case 28:
+				return 21;
+			case 30:
+				return 22;
+			case 31:
+				return 23;
+			case 32:
+				return 24;
+			case 33:
+				return 25;
+			case 34:
+				return 26;
+			case 35:
+				return 27;
+			case 36:
+				return 28;
+		}
+		return -1;
+	}
+	
+	public void setTargets()
+	{
+		if ( locNum == -1 )
+			return;
+		switch ( locNum )
+		{
+			case 1:
+				target1 = myPlayer.myLoc.add(0,-2);
+				target2 = myPlayer.myLoc.add(1,-2);
+				return;
+				
+			case 2:
+				target1 = myPlayer.myLoc.add(-2,0);
+				target2 = myPlayer.myLoc.add(-2,-1);
+				return;
+				
+			case 3:
+				target1 = myPlayer.myLoc.add(0,-1);
+				target2 = myPlayer.myLoc.add(0,-2);
+				return;
+				
+			case 4:
+				target1 = myPlayer.myLoc.add(0,-1);
+				target2 = myPlayer.myLoc.add(0,-2);
+				return;
+				
+			case 5:
+				target1 = myPlayer.myLoc.add(2,-1);
+				target2 = myPlayer.myLoc.add(2,0);
+				return;
+				
+			case 6:
+				target1 = myPlayer.myLoc.add(-1,-2);
+				target2 = myPlayer.myLoc.add(0,-2);
+				return;
+				
+			case 7:
+				target1 = myPlayer.myLoc.add(-2,-1);
+				target2 = myPlayer.myLoc.add(-2,0);
+				return;
+				
+			case 8:
+				target1 = myPlayer.myLoc.add(-2,-2);
+				target2 = myPlayer.myLoc.add(-1,-2);
+				return;
+				
+			case 9:
+				target1 = myPlayer.myLoc.add(1,-2);
+				target2 = myPlayer.myLoc.add(2,-2);
+				return;
+				
+			case 10:
+				target1 = myPlayer.myLoc.add(2,-1);
+				target2 = myPlayer.myLoc.add(2,0);
+				return;
+				
+			case 11:
+				target1 = myPlayer.myLoc.add(-2,0);
+				target2 = myPlayer.myLoc.add(-1,0);
+				return;
+				
+			case 12:
+				target1 = myPlayer.myLoc.add(-2,-1);
+				target2 = myPlayer.myLoc.add(-2,-3);
+				return;
+				
+			case 13:
+				target1 = myPlayer.myLoc.add(2,-1);
+				target2 = myPlayer.myLoc.add(2,-3);
+				return;
+				
+			case 14:
+				target1 = myPlayer.myLoc.add(1,0);
+				target2 = myPlayer.myLoc.add(2,0);
+				return;
+				
+			case 15:
+				target1 = myPlayer.myLoc.add(-2,0);
+				target2 = myPlayer.myLoc.add(-1,0);
+				return;
+				
+			case 16:
+				target1 = myPlayer.myLoc.add(-2,1);
+				target2 = myPlayer.myLoc.add(-2,3);
+				return;
+				
+			case 17:
+				target1 = myPlayer.myLoc.add(2,1);
+				target2 = myPlayer.myLoc.add(2,3);
+				return;
+				
+			case 18:
+				target1 = myPlayer.myLoc.add(1,0);
+				target2 = myPlayer.myLoc.add(2,0);
+				return;
+				
+			case 19:
+				target1 = myPlayer.myLoc.add(-2,0);
+				target2 = myPlayer.myLoc.add(-2,1);
+				return;
+				
+			case 20:
+				target1 = myPlayer.myLoc.add(-2,2);
+				target2 = myPlayer.myLoc.add(-1,2);
+				return;
+				
+			case 21:
+				target1 = myPlayer.myLoc.add(1,2);
+				target2 = myPlayer.myLoc.add(2,2);
+				return;
+				
+			case 22:
+				target1 = myPlayer.myLoc.add(2,0);
+				target2 = myPlayer.myLoc.add(2,1);
+				return;
+				
+			case 23:
+				target1 = myPlayer.myLoc.add(0,2);
+				target2 = myPlayer.myLoc.add(1,2);
+				return;
+				
+			case 24:
+				target1 = myPlayer.myLoc.add(-2,0);
+				target2 = myPlayer.myLoc.add(-2,1);
+				return;
+				
+			case 25:
+				target1 = myPlayer.myLoc.add(0,1);
+				target2 = myPlayer.myLoc.add(0,2);
+				return;
+				
+			case 26:
+				target1 = myPlayer.myLoc.add(0,1);
+				target2 = myPlayer.myLoc.add(0,2);
+				return;
+				
+			case 27:
+				target1 = myPlayer.myLoc.add(2,0);
+				target2 = myPlayer.myLoc.add(2,1);
+				return;
+				
+			case 28:
+				target1 = myPlayer.myLoc.add(-1,2);
+				target2 = myPlayer.myLoc.add(0,2);
+				return;
+				
+				
+				
+		}
+	}
+	
 	@Override
-	public void newComponentCallback(ComponentController[] components) {
+	public void newComponentCallback(ComponentController[] components)
+	{
 		
 	}
 
 	@Override
-	public void onWakeupCallback(int lastActiveRound) {
-		 
+	public void onWakeupCallback(int lastActiveRound)
+	{
+		if ( locNum == 2 || locNum == 22 || ((Clock.getRoundNum()/250) % 2 == 1 && (Clock.getRoundNum()/250) > 3) )
+			obj = MissileTurretBuildOrder.FIRE;
 	}
 
 	@Override
@@ -212,3 +504,4 @@ public class MissileTurretBehavior extends Behavior
 		return "MissileTurretBehavior";
 	}
 }
+
