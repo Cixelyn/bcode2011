@@ -36,15 +36,17 @@ public class FactoryBehavior extends Behavior
 			case MAKE_HAMMER_BROS:
 				
 				Utility.setIndicator(myPlayer, 0, "MAKE_HAMMER_BROS");
-				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
+				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.EAST), RobotLevel.ON_GROUND);
 				if (r!=null) {
 					myPlayer.sleep();
 				}
 				else {
-					Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.HEAVY);
-					numHeavies++;
-					if (numHeavies==4) {
-						obj=FactoryBuildOrder.SLEEP;
+					if (myPlayer.myRC.getTeamResources() > Chassis.HEAVY.cost + 20*Constants.RESERVE) {
+						Utility.buildChassis(myPlayer, Direction.EAST, Chassis.HEAVY);
+						numHeavies++;
+						if (numHeavies==4) {
+							obj=FactoryBuildOrder.SLEEP;
+						}		
 					}		
 				}
 				return;
