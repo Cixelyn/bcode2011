@@ -49,6 +49,12 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIND_TOWER");
 				Utility.setIndicator(myPlayer, 1, "Looking for tower...");
 				
+				if ( (Clock.getRoundNum() % 500) == 250 )
+				{
+					obj = ArmoryBuildOrder.SLEEP;
+					return;
+				}
+				
 				allEquipped = true;
 				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
@@ -94,6 +100,7 @@ public class ArmoryBehavior extends Behavior
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				obj = ArmoryBuildOrder.FIND_TOWER;
 				return;
 				
@@ -128,7 +135,8 @@ public class ArmoryBehavior extends Behavior
 
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		
+		if ( Clock.getRoundNum() % 500 < 250 )
+			obj = ArmoryBuildOrder.FIND_TOWER;
 	}
 	
 }

@@ -118,7 +118,7 @@ public class MissileTurretBehavior extends Behavior
 					if ( myPlayer.myRC.components()[i].type() == ComponentType.BEAM )
 						numBeams++;
 				}
-				if ( numBeams >= 4 )
+				if ( numBeams >= 5 )
 					obj = MissileTurretBuildOrder.INITIALIZE;
 					
 				return;
@@ -131,7 +131,7 @@ public class MissileTurretBehavior extends Behavior
 					locNum = getLocNum(myPlayer.myLoc, myPlayer.mainLoc);
 					Utility.setIndicator(myPlayer, 2, "I am tower " + Integer.toString(locNum) + ".");
 					setTargets();
-					while ( myPlayer.myBeams[3].isActive() )
+					while ( myPlayer.myBeams[4].isActive() )
 						myPlayer.sleep();
 					obj = MissileTurretBuildOrder.FIRE;
 				}
@@ -147,7 +147,7 @@ public class MissileTurretBehavior extends Behavior
 				if ( myPlayer.myMotor.isActive() )
 					return;
 				
-				if ( (Clock.getRoundNum() / 250) % 2 == 0 )
+				if ( (Clock.getRoundNum() / 250) % 2 == 0 && (Clock.getRoundNum() / 500) < Constants.ALL_IN )
 				{
 					// its day time
 					if ( (locNum == 2 || locNum == 22) && (Clock.getRoundNum() / 250) == 2 )
@@ -189,6 +189,7 @@ public class MissileTurretBehavior extends Behavior
 							myPlayer.myBeams[1].attackSquare(rockLoc, RobotLevel.ON_GROUND);
 							myPlayer.myBeams[2].attackSquare(rockLoc, RobotLevel.ON_GROUND);
 							myPlayer.myBeams[3].attackSquare(rockLoc, RobotLevel.ON_GROUND);
+							myPlayer.myBeams[4].attackSquare(rockLoc, RobotLevel.ON_GROUND);
 						}
 						else if ( myPlayer.myRC.getDirection() != myPlayer.myLoc.directionTo(rockLoc) )
 							myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(rockLoc));
@@ -216,6 +217,7 @@ public class MissileTurretBehavior extends Behavior
 							{
 								myPlayer.myBeams[2].attackSquare(myPlayer.myLoc.add(2, -5), RobotLevel.ON_GROUND);
 								myPlayer.myBeams[3].attackSquare(myPlayer.myLoc.add(2, -5), RobotLevel.ON_GROUND);
+								myPlayer.myBeams[4].attackSquare(myPlayer.myLoc.add(2, -5), RobotLevel.ON_GROUND);
 							}
 							myPlayer.myMotor.setDirection(Direction.WEST);
 						}
@@ -228,6 +230,7 @@ public class MissileTurretBehavior extends Behavior
 							{
 								myPlayer.myBeams[0].attackSquare(myPlayer.myLoc.add(5, -2), RobotLevel.ON_GROUND);
 								myPlayer.myBeams[1].attackSquare(myPlayer.myLoc.add(5, -2), RobotLevel.ON_GROUND);
+								myPlayer.myBeams[4].attackSquare(myPlayer.myLoc.add(5, -2), RobotLevel.ON_GROUND);
 							}
 							myPlayer.myMotor.setDirection(Direction.SOUTH);
 						}
@@ -260,6 +263,7 @@ public class MissileTurretBehavior extends Behavior
 					{
 						myPlayer.myBeams[2].attackSquare(target2, RobotLevel.ON_GROUND);
 						myPlayer.myBeams[3].attackSquare(target2, RobotLevel.ON_GROUND);
+						myPlayer.myBeams[4].attackSquare(target2, RobotLevel.ON_GROUND);
 					}
 					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(target1));
 				}
