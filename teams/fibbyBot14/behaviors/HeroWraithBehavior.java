@@ -39,17 +39,11 @@ public class HeroWraithBehavior extends Behavior
 				case INITIALIZE:
 					
 					Utility.setIndicator(myPlayer, 0, "INITIALIZE");
-					if ( Clock.getRoundNum() < Constants.SECOND_WAVE )
+					if ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC )
 					{
 						num = 1;
 						frontlineLoc = myPlayer.myLoc.add(0, -9);
 						enemyTowerLoc = frontlineLoc.add(0, -6);
-					}
-					else
-					{
-						num = 2;
-						frontlineLoc = myPlayer.myLoc.add(-9, 0);
-						enemyTowerLoc = frontlineLoc.add(-5, 1);
 					}
 					obj = HeroWraithBuildOrder.EQUIPPING;
 					return;
@@ -88,17 +82,6 @@ public class HeroWraithBehavior extends Behavior
 							myPlayer.myMotor.moveForward();
 						}
 					}
-					else if ( num == 2 )
-					{
-						myPlayer.myMotor.setDirection(Direction.WEST);
-						for ( int steps = 0 ; steps < 9 ; steps++ )
-						{
-							while ( myPlayer.myMotor.isActive() )
-								myPlayer.sleep();
-							myPlayer.myMotor.moveForward();
-						}
-					}
-					
 					obj = HeroWraithBuildOrder.FIGHT_TOWER;
 					return;
 					
@@ -122,15 +105,6 @@ public class HeroWraithBehavior extends Behavior
 					
 					Utility.setIndicator(myPlayer, 0, "GO_HOME");
 					if ( num == 1 )
-					{
-						for ( int steps = 0 ; steps < 9 ; steps++ )
-						{
-							while ( myPlayer.myMotor.isActive() )
-								myPlayer.sleep();
-							myPlayer.myMotor.moveBackward();
-						}
-					}
-					else if ( num == 2 )
 					{
 						for ( int steps = 0 ; steps < 9 ; steps++ )
 						{

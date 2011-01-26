@@ -16,9 +16,8 @@ public class ArmoryBehavior extends Behavior
 		FIND_TOWER,
 		EQUIP_TOWER,
 		MAKE_HERO_WRAITH_1,
-		MAKE_MEDIVAC_1,
-		MAKE_HERO_WRAITH_2,
-		MAKE_MEDIVAC_2,
+		MAKE_MEDIVAC_1A,
+		MAKE_MEDIVAC_1B,
 		SLEEP,
 		SUICIDE
 	}
@@ -79,33 +78,24 @@ public class ArmoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
 				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.FLYING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.BEAM, RobotLevel.IN_AIR);
-				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1;
+				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1A;
 				return;
 				
-			case MAKE_MEDIVAC_1:
+			case MAKE_MEDIVAC_1A:
 				
-				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1");
+				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1A");
 				Utility.setIndicator(myPlayer, 1, "");
 				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.FLYING);
-				while ( Clock.getRoundNum() < Constants.SECOND_WAVE )
+				while ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC )
 					myPlayer.sleep();
-				obj = ArmoryBuildOrder.MAKE_HERO_WRAITH_2;
+				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1B;
 				return;
 				
-			case MAKE_HERO_WRAITH_2:
+			case MAKE_MEDIVAC_1B:
 				
-				Utility.setIndicator(myPlayer, 0, "MAKE_HERO_WRAITH_2");
-				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
-				Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.FLYING);
-				Utility.buildComponent(myPlayer, Direction.SOUTH_WEST, ComponentType.BEAM, RobotLevel.IN_AIR);
-				obj = ArmoryBuildOrder.MAKE_MEDIVAC_2;
-				return;
-				
-			case MAKE_MEDIVAC_2:
-				
-				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_2");
+				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1B");
 				Utility.setIndicator(myPlayer, 1, "");
 				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
 					myPlayer.sleep();

@@ -46,7 +46,7 @@ public class MedivacBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
 				Utility.setIndicator(myPlayer, 1, "Ready for dust off!");
 				
-				if ( Clock.getRoundNum() < Constants.SECOND_WAVE )
+				if ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC )
 				{
 					num = 1;
 					frontlineLoc = myPlayer.myLoc.add(0, -5);
@@ -55,8 +55,8 @@ public class MedivacBehavior extends Behavior
 				else
 				{
 					num = 2;
-					frontlineLoc = myPlayer.myLoc.add(-6, 0);
-					heroWraithLoc = myPlayer.myLoc.add(-9,1);
+					frontlineLoc = myPlayer.myLoc.add(0, -6);
+					heroWraithLoc = myPlayer.myLoc.add(2, -8);
 				}
 				obj = MedivacBuildOrder.GO_TO_FRONTLINE;
 				return;
@@ -96,7 +96,7 @@ public class MedivacBehavior extends Behavior
 				{
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
-					myPlayer.myMotor.setDirection(Direction.WEST);
+					myPlayer.myMotor.setDirection(Direction.NORTH);
 					
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
@@ -168,7 +168,7 @@ public class MedivacBehavior extends Behavior
 				{
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
-					myPlayer.myMotor.setDirection(Direction.EAST);
+					myPlayer.myMotor.setDirection(Direction.SOUTH);
 					
 					while ( myPlayer.myMotor.isActive() )
 						myPlayer.sleep();
