@@ -1,4 +1,4 @@
-package fibbyBot15; import finalbot.MsgType;
+package fibbyBot15;
 import battlecode.common.*;
 /**
  *<pre>
