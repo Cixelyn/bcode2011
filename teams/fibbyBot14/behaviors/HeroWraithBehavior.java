@@ -39,12 +39,9 @@ public class HeroWraithBehavior extends Behavior
 				case INITIALIZE:
 					
 					Utility.setIndicator(myPlayer, 0, "INITIALIZE");
-					if ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC )
-					{
-						num = 1;
-						frontlineLoc = myPlayer.myLoc.add(0, -9);
-						enemyTowerLoc = frontlineLoc.add(0, -6);
-					}
+					num = 1;
+					frontlineLoc = myPlayer.myLoc.add(0, -9);
+					enemyTowerLoc = frontlineLoc.add(0, -6);
 					obj = HeroWraithBuildOrder.EQUIPPING;
 					return;
 				

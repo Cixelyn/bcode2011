@@ -88,8 +88,6 @@ public class ArmoryBehavior extends Behavior
 				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.FLYING);
-				while ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC )
-					myPlayer.sleep();
 				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1B;
 				return;
 				
@@ -97,7 +95,7 @@ public class ArmoryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1B");
 				Utility.setIndicator(myPlayer, 1, "");
-				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
+				while ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC && myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.FLYING);
 				obj = ArmoryBuildOrder.SLEEP;

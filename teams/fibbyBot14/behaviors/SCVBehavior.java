@@ -260,7 +260,7 @@ public class SCVBehavior extends Behavior
 				
 				myPlayer.sleep();
 				myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.SOUTH_WEST), RobotLevel.ON_GROUND);
-				obj = SCVBuildOrder.SLEEP;
+				obj = SCVBuildOrder.BUILD_FACTORY;
 				return;
 				
 			case BUILD_FACTORY:
@@ -313,13 +313,8 @@ public class SCVBehavior extends Behavior
 		wakeTime++;
 		switch ( wakeTime )
 		{
-			
 			case 1:
 				obj = SCVBuildOrder.GO_TO_TOWER_1;
-				return;
-				
-			case 2:
-				obj = SCVBuildOrder.BUILD_FACTORY;
 				return;
 		}
 	}

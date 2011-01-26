@@ -14,7 +14,6 @@ public class RefineryBehavior extends Behavior
 	{
 		DETERMINE_LEADER,
 		TOWER_TIME,
-		SHOW_TIME,
 		EQUIP_HERO_WRAITH_1,
 		EQUIP_HERO_WRAITH_2,
 		SLEEP
@@ -57,18 +56,6 @@ public class RefineryBehavior extends Behavior
 				{
 					Utility.setIndicator(myPlayer, 1, "It's tower time!");
 					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
-					obj = RefineryBuildOrder.SLEEP;
-				}
-				return;
-				
-			case SHOW_TIME:
-				
-				Utility.setIndicator(myPlayer, 0, "SHOW_TIME");
-				Utility.setIndicator(myPlayer, 1, "Waiting...");
-				if ( Clock.getRoundNum() >= Constants.SHOW_TIME )
-				{
-					Utility.setIndicator(myPlayer, 1, "It's show time!");
-					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.ON_GROUND);
 					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH_1;
 				}
 				return;
@@ -123,11 +110,6 @@ public class RefineryBehavior extends Behavior
 	public void onWakeupCallback(int lastActiveRound)
 	{
 		wakeTime++;
-		switch ( wakeTime )
-		{
-			case 1:
-				obj = RefineryBuildOrder.SHOW_TIME;
-		}
 	}
 	
 

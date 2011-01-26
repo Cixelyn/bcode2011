@@ -46,7 +46,7 @@ public class MedivacBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
 				Utility.setIndicator(myPlayer, 1, "Ready for dust off!");
 				
-				if ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC )
+				if ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC ) 
 				{
 					num = 1;
 					frontlineLoc = myPlayer.myLoc.add(0, -5);

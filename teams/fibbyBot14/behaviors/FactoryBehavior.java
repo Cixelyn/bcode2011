@@ -10,6 +10,7 @@ public class FactoryBehavior extends Behavior
 	MapLocation towerLoc;
 	
 	int wakeTime = 0;
+	int babyMedivac;
 	
 	private enum FactoryBuildOrder 
 	{
@@ -40,10 +41,9 @@ public class FactoryBehavior extends Behavior
 				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.IN_AIR);
 				if ( r != null )
 				{
+					babyMedivac = r.getID();
 					Utility.setIndicator(myPlayer, 1, "Flyer found.");
 					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.MEDIC, RobotLevel.IN_AIR);
-					while ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC )
-						myPlayer.sleep();
 					obj = FactoryBuildOrder.EQUIP_MEDIVAC_1B;
 				}
 				return;
@@ -53,7 +53,7 @@ public class FactoryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "EQUIP_MEDIVAC_1B");
 				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
 				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_WEST), RobotLevel.IN_AIR);
-				if ( r != null )
+				if ( r != null && r.getID() != babyMedivac )
 				{
 					Utility.setIndicator(myPlayer, 1, "Flyer found.");
 					Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.MEDIC, RobotLevel.IN_AIR);
