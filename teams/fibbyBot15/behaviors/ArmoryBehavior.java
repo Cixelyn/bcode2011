@@ -6,7 +6,6 @@ import fibbyBot15.*;
 public class ArmoryBehavior extends Behavior
 {
 	
-	
 	MapLocation towerLoc;
 	
 	int wakeTime = 0;
@@ -15,9 +14,6 @@ public class ArmoryBehavior extends Behavior
 	{
 		FIND_TOWER,
 		EQUIP_TOWER,
-		MAKE_HERO_WRAITH_1,
-		MAKE_MEDIVAC_1A,
-		MAKE_MEDIVAC_1B,
 		SLEEP,
 		SUICIDE
 	}
@@ -69,36 +65,7 @@ public class ArmoryBehavior extends Behavior
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
-				obj = ArmoryBuildOrder.SLEEP;
-				return;
-				
-			case MAKE_HERO_WRAITH_1:
-				
-				Utility.setIndicator(myPlayer, 0, "MAKE_HERO_WRAITH_1");
-				Utility.setIndicator(myPlayer, 1, "It's NOT a void ray.");
-				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.FLYING);
-				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.BEAM, RobotLevel.IN_AIR);
-				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1A;
-				return;
-				
-			case MAKE_MEDIVAC_1A:
-				
-				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1A");
-				Utility.setIndicator(myPlayer, 1, "");
-				while ( myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.FLYING);
-				obj = ArmoryBuildOrder.MAKE_MEDIVAC_1B;
-				return;
-				
-			case MAKE_MEDIVAC_1B:
-				
-				Utility.setIndicator(myPlayer, 0, "MAKE_MEDIVAC_1B");
-				Utility.setIndicator(myPlayer, 1, "");
-				while ( Clock.getRoundNum() < Constants.SECOND_MEDIVAC && myPlayer.myRC.getTeamResources() < Chassis.FLYING.cost + ComponentType.MEDIC.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.FLYING);
-				obj = ArmoryBuildOrder.SLEEP;
+				obj = ArmoryBuildOrder.FIND_TOWER;
 				return;
 				
     		case SLEEP:
@@ -136,9 +103,6 @@ public class ArmoryBehavior extends Behavior
 		switch ( wakeTime )
 		{
 			
-			case 1:
-				obj = ArmoryBuildOrder.MAKE_HERO_WRAITH_1;
-				return;
 		}
 	}
 	

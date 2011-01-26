@@ -14,8 +14,7 @@ public class RefineryBehavior extends Behavior
 	{
 		DETERMINE_LEADER,
 		TOWER_TIME,
-		EQUIP_HERO_WRAITH_1,
-		EQUIP_HERO_WRAITH_2,
+		BROADCAST_LOC,
 		SLEEP
 	}
 	
@@ -39,6 +38,7 @@ public class RefineryBehavior extends Behavior
 				{
 					// I'm the 4th refinery
 					Utility.setIndicator(myPlayer, 1, "I'm the leader!");
+					Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ANTENNA, RobotLevel.ON_GROUND);
 					obj = RefineryBuildOrder.TOWER_TIME;
 				}
 				else
@@ -56,34 +56,14 @@ public class RefineryBehavior extends Behavior
 				{
 					Utility.setIndicator(myPlayer, 1, "It's tower time!");
 					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
-					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH_1;
+					obj = RefineryBuildOrder.BROADCAST_LOC;
 				}
 				return;
 				
-			case EQUIP_HERO_WRAITH_1:
+			case BROADCAST_LOC:
 				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH_1");
-				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
-				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.IN_AIR);
-				if ( r != null )
-				{
-					Utility.setIndicator(myPlayer, 1, "Flyer found.");
-					Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.SHIELD, RobotLevel.IN_AIR);
-					obj = RefineryBuildOrder.EQUIP_HERO_WRAITH_2;
-				}
-				return;
-				
-			case EQUIP_HERO_WRAITH_2:
-				
-				Utility.setIndicator(myPlayer, 0, "EQUIP_HERO_WRAITH_2");
-				Utility.setIndicator(myPlayer, 1, "Waiting for flyer...");
-				r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_WEST), RobotLevel.IN_AIR);
-				if ( r != null )
-				{
-					Utility.setIndicator(myPlayer, 1, "Flyer found.");
-					Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.SHIELD, RobotLevel.IN_AIR);
-					obj = RefineryBuildOrder.SLEEP;
-				}
+				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
+				Utility.setIndicator(myPlayer, 1, "");
 				return;
 				
 			case SLEEP:
