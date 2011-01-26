@@ -3,6 +3,15 @@ package fibbyBot15.behaviors;
 import battlecode.common.*;
 import fibbyBot15.*;
 
+
+/**
+ * 
+ * @author FiBsTeR
+ *
+ */
+
+
+
 public class ArmoryBehavior extends Behavior
 {
 	

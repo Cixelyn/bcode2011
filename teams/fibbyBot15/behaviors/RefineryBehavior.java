@@ -4,6 +4,14 @@ import battlecode.common.*;
 import fibbyBot15.*;
 import java.util.*;
 
+
+/**
+ * 
+ * @author FiBsTeR
+ *
+ */
+
+
 public class RefineryBehavior extends Behavior
 {
 	
@@ -53,6 +61,8 @@ public class RefineryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
 				Utility.setIndicator(myPlayer, 1, "");
+				while ( myPlayer.myBroadcaster.isActive() )
+					myPlayer.sleep();
 				if ( Clock.getRoundNum() % 250 == 0 )
 					myPlayer.myBroadcaster.broadcastTurnOnAll();
 				else

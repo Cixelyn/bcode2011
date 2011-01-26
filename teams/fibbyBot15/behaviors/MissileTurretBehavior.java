@@ -71,7 +71,7 @@ import battlecode.common.*;;
  * 
  * </pre>
  * 
- * @author Justin
+ * @author FiBsTeR
  *
  */
 
@@ -143,10 +143,16 @@ public class MissileTurretBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIRE");
 				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
 				
+				// make sure we can turn
+				if ( myPlayer.myMotor.isActive() )
+					return;
+				
 				if ( (Clock.getRoundNum() / 250) % 2 == 0 )
 				{
+					// its day time
 					if ( (locNum == 2 || locNum == 22) && (Clock.getRoundNum() / 250) == 2 )
 					{
+						// its the second day cycle, kill rocks
 						switch ( (Clock.getRoundNum() / 20) % 25 )
 						{
 							case 0:
@@ -177,15 +183,14 @@ public class MissileTurretBehavior extends Behavior
 								obj = MissileTurretBuildOrder.SLEEP;
 								return;
 						}
-						if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(rockLoc) )
+						if ( !myPlayer.myBeams[3].isActive() && myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(rockLoc) )
 						{
 							myPlayer.myBeams[0].attackSquare(rockLoc, RobotLevel.ON_GROUND);
 							myPlayer.myBeams[1].attackSquare(rockLoc, RobotLevel.ON_GROUND);
 							myPlayer.myBeams[2].attackSquare(rockLoc, RobotLevel.ON_GROUND);
 							myPlayer.myBeams[3].attackSquare(rockLoc, RobotLevel.ON_GROUND);
-							myPlayer.sleep();
 						}
-						else
+						else if ( myPlayer.myRC.getDirection() != myPlayer.myLoc.directionTo(rockLoc) )
 							myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(rockLoc));
 					}
 					else
@@ -193,6 +198,7 @@ public class MissileTurretBehavior extends Behavior
 				}
 				else if ( (Clock.getRoundNum() / 250) <= 3 )
 				{
+					// its the first or second night cycle, hold chokepoints
 					if ( locNum == 2 )
 					{
 						if ( Clock.getRoundNum() % 2 == 0 )
@@ -238,6 +244,7 @@ public class MissileTurretBehavior extends Behavior
 					else
 						obj = MissileTurretBuildOrder.SLEEP;
 				}
+				// it's a normal night cycle, protect your base!
 				else if ( Clock.getRoundNum() % 2 == 0 )
 				{
 					if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(target1) )
@@ -270,6 +277,7 @@ public class MissileTurretBehavior extends Behavior
 
 	public int getLocNum(MapLocation myLoc, MapLocation mainLoc)
 	{
+		// black magics
 		int dx = myLoc.x - mainLoc.x;
 		int dy = myLoc.y - mainLoc.y;
 		switch ( (dx + 2) + 6*(dy + 2) + 1 )
@@ -336,6 +344,7 @@ public class MissileTurretBehavior extends Behavior
 	
 	public void setTargets()
 	{
+		// depending on what tower you are, set your target squares
 		if ( locNum == -1 )
 			return;
 		switch ( locNum )
