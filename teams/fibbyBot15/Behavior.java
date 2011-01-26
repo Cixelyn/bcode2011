@@ -1,4 +1,5 @@
-package fibbyBot15; import battlecode.common.*;
+package fibbyBot15; import finalbot.MsgType;
+import battlecode.common.*;
 /**
  *<pre>
  * 
@@ -76,7 +77,7 @@ public abstract class Behavior
 	 * @param lastActiveRound the last round the robot was reported awake
 	 */
 	public abstract void onWakeupCallback(int lastActiveRound);
-	
+
 	
 
 }

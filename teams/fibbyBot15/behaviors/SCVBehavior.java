@@ -175,7 +175,7 @@ public class SCVBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BUILD_ARMORY_A");
 				
-				while ( myPlayer.myRC.getTeamResources() < 4*Chassis.BUILDING.cost + 2*ComponentType.ARMORY.cost + 8*ComponentType.BEAM.cost + Constants.RESERVE )
+				while ( myPlayer.myRC.getTeamResources() < 4*Chassis.BUILDING.cost + 2*ComponentType.ARMORY.cost + Constants.RESERVE )
 					myPlayer.sleep();
 				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.ARMORY, RobotLevel.ON_GROUND);
@@ -229,7 +229,7 @@ public class SCVBehavior extends Behavior
 				forward();
 				turn(Direction.NORTH_WEST);
 				forward();
-				obj = SCVBuildOrder.BUILD_TOWER_8;
+				obj = SCVBuildOrder.SLEEP;
 				
 			case BUILD_TOWER_8:
 				
@@ -406,7 +406,8 @@ public class SCVBehavior extends Behavior
 		wakeTime++;
 		switch ( wakeTime )
 		{
-			
+			case 1:
+				obj = SCVBuildOrder.BUILD_TOWER_8;break;
 		}
 	}
 
