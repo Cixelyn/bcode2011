@@ -9,6 +9,7 @@ public class RefineryBehavior extends Behavior
 	
 	Message myLocMsg;
 	int wakeTime = 0;
+	int numHammerBros=0;
 	
 	private enum RefineryBuildOrder 
 	{
@@ -50,9 +51,29 @@ public class RefineryBehavior extends Behavior
 				return;
 				
 			case BROADCAST_LOC:
-				
 				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
 				Utility.setIndicator(myPlayer, 1, "");
+				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.ON_GROUND);
+				if ( r != null)
+				{
+					RobotInfo rInfo=myPlayer.mySensor.senseRobotInfo(r);
+					if (rInfo.chassis.equals(Chassis.HEAVY)) {
+						Utility.setIndicator(myPlayer, 1, "Heavy Found");
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
+						numHammerBros++;
+						if (numHammerBros==4) {
+							obj = RefineryBuildOrder.SLEEP;
+						}
+					}
+				}
 				if ( Clock.getRoundNum() % 250 == 0 )
 					myPlayer.myBroadcaster.broadcastTurnOnAll();
 				else

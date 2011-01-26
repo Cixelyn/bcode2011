@@ -76,7 +76,7 @@ public class ArmoryBehavior extends Behavior
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(towerLoc), ComponentType.BEAM, RobotLevel.ON_GROUND);
-				obj = ArmoryBuildOrder.FIND_TOWER;
+				obj = ArmoryBuildOrder.SLEEP;
 				return;
 				
     		case SLEEP:

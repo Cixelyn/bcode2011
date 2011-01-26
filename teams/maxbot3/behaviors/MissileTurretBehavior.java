@@ -143,7 +143,7 @@ public class MissileTurretBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIRE");
 				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
 				
-				if ( (Clock.getRoundNum() / 250) % 2 == 0 )
+/*				if ( (Clock.getRoundNum() / 250) % 2 == 0 )
 				{
 					if ( (locNum == 2 || locNum == 22) && (Clock.getRoundNum() / 250) == 2 )
 					{
@@ -192,8 +192,11 @@ public class MissileTurretBehavior extends Behavior
 						obj = MissileTurretBuildOrder.SLEEP;
 				}
 				else if ( (Clock.getRoundNum() / 250) <= 3 )
-				{
-					if ( locNum == 2 )
+				{*/
+				if (Clock.getRoundNum()>=1000) {
+					return;
+				}
+				else if ( locNum == 2 )
 					{
 						if ( Clock.getRoundNum() % 2 == 0 )
 						{
@@ -214,8 +217,8 @@ public class MissileTurretBehavior extends Behavior
 							myPlayer.myMotor.setDirection(Direction.WEST);
 						}
 					}
-					else if ( locNum == 22 )
-					{
+				else if ( locNum == 22 )
+				{
 						if ( Clock.getRoundNum() % 2 == 0 )
 						{
 							if ( myPlayer.myRC.getDirection() == Direction.EAST )
@@ -237,8 +240,7 @@ public class MissileTurretBehavior extends Behavior
 					}
 					else
 						obj = MissileTurretBuildOrder.SLEEP;
-				}
-				else if ( Clock.getRoundNum() % 2 == 0 )
+/*				else if ( Clock.getRoundNum() % 2 == 0 )
 				{
 					if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(target1) )
 					{
@@ -255,7 +257,7 @@ public class MissileTurretBehavior extends Behavior
 						myPlayer.myBeams[3].attackSquare(target2, RobotLevel.ON_GROUND);
 					}
 					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(target1));
-				}
+				}*/
 				return;
 				
 			case SLEEP:

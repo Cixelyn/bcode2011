@@ -229,7 +229,7 @@ public class SCVBehavior extends Behavior
 				forward();
 				turn(Direction.NORTH_WEST);
 				forward();
-				obj = obj = SCVBuildOrder.BUILD_FACTORY;
+				obj = SCVBuildOrder.BUILD_FACTORY;
 				
 			case BUILD_TOWER_8:
 				
@@ -343,6 +343,7 @@ public class SCVBehavior extends Behavior
 				BUILD_TOWER_1,*/
 				
 			case BUILD_FACTORY:
+				Utility.setIndicator(myPlayer, 0, "BUILD_FACTORY");
 				while (myPlayer.myMotor.isActive()) {
 					myPlayer.sleep();
 				}
