@@ -87,10 +87,11 @@ public class MissileTurretBehavior extends Behavior
 	{
 		EQUIPPING,
 		DETERMINE_CHOKEPOINTS,
-		FIRE
+		FIRE,
+		SLEEP
 	}
 	
-	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
+	MissileTurretBuildOrder obj = MissileTurretBuildOrder.SLEEP;
 
 	
 	public MissileTurretBehavior(RobotPlayer player)
@@ -182,6 +183,13 @@ public class MissileTurretBehavior extends Behavior
 					myPlayer.myBeams[3].attackSquare(choke2, RobotLevel.ON_GROUND);
 					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(choke1));
 				}
+				return;
+				
+			case SLEEP:
+				
+				Utility.setIndicator(myPlayer, 0, "SLEEP");
+				Utility.setIndicator(myPlayer, 1, "zzzzzz");
+				myPlayer.myRC.turnOff();
 				return;
 				
 		}
