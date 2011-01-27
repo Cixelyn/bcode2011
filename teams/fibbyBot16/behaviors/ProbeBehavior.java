@@ -73,7 +73,6 @@ public class ProbeBehavior extends Behavior
 	private enum ProbeBuildOrder 
 	{
 		INITIALIZE,
-		CAP_MINES,
 		GO_TO_CAMPSITE,
 		BUILD_CAMP,
 		SLEEP,
@@ -100,40 +99,12 @@ public class ProbeBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
 				while ( myPlayer.myBuilder.isActive() )
 					myPlayer.sleep();
-				obj = ProbeBuildOrder.CAP_MINES;
-				return;
-				
-			case CAP_MINES:
-				
-				Utility.setIndicator(myPlayer, 0, "CAP_MINES");
-				
-				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, Direction.EAST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-				
-				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-				
-				turn(Direction.SOUTH_EAST);
-				backward();
-				myPlayer.sleep();
-				
-				while ( myPlayer.myRC.getTeamResources() < Chassis.BUILDING.cost + ComponentType.RECYCLER.cost + Constants.RESERVE )
-					myPlayer.sleep();
-				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-				
-				
 				obj = ProbeBuildOrder.GO_TO_CAMPSITE;
 				return;
 				
 			case GO_TO_CAMPSITE:
 				
-				Utility.setIndicator(myPlayer, 0, "GO_TO_CAMPSITE");	
-				turn(Direction.NORTH_WEST);
+				Utility.setIndicator(myPlayer, 0, "GO_TO_CAMPSITE");
 				obj = ProbeBuildOrder.BUILD_CAMP;
 				return;
 				

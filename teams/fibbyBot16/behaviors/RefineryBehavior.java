@@ -23,7 +23,6 @@ public class RefineryBehavior extends Behavior
 		DETERMINE_LEADER,
 		BROADCAST_LOC,
 		CAMP_TIME,
-		LAST_STAND,
 		SLEEP
 	}
 	
@@ -64,20 +63,15 @@ public class RefineryBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
 				Utility.setIndicator(myPlayer, 1, "");
 				
+				if ( Clock.getRoundNum() > Constants.CAMP_TIME )
+					obj = RefineryBuildOrder.CAMP_TIME;
+				
 				while ( myPlayer.myBroadcaster.isActive() )
 					myPlayer.sleep();
 				if ( Clock.getRoundNum() > Constants.ALL_ON || Clock.getRoundNum() % 500 == 0 || Clock.getRoundNum() % 500 == 250 + timingu() )
 					myPlayer.myBroadcaster.broadcastTurnOnAll();
 				else
 					myPlayer.myBroadcaster.broadcast(myLocMsg);
-				return;
-				
-			case LAST_STAND:
-				
-				Utility.setIndicator(myPlayer, 0, "LAST_STAND");
-				Utility.setIndicator(myPlayer, 1, "");
-				if ( Clock.getRoundNum() > Constants.CAMP_TIME )
-					obj = RefineryBuildOrder.CAMP_TIME;
 				return;
 				
 			case CAMP_TIME:
@@ -114,11 +108,13 @@ public class RefineryBehavior extends Behavior
 			case 2:
 				return 30;
 			case 3:
-				return 130;
+				return 90;
 			case 4:
 				return 130;
 			case 5:
 				return 70;
+			case 6:
+				return 120;
 			default:
 				return 0;
 		}
@@ -136,8 +132,7 @@ public class RefineryBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		if ( Clock.getRoundNum() >= Constants.ALL_ON )
-			obj = RefineryBuildOrder.LAST_STAND;
+		
 	}
 	
 

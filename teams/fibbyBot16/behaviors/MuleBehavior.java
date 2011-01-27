@@ -53,19 +53,54 @@ public class MuleBehavior extends Behavior
 				turn(Direction.SOUTH_EAST);
 				forward();
 				forward();
+				turn(Direction.SOUTH);
 				forward();
 				myPlayer.sleep();
 				
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.EAST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				
+				turn(Direction.SOUTH);
+				backward();
+				myPlayer.sleep();
+				
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				
+				turn(Direction.SOUTH);
+				backward();
+				myPlayer.sleep();
+				
+				Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
 				
 				turn(Direction.NORTH_WEST);
+				forward();
 				forward();
 				myPlayer.sleep();
 				
 				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				
+				turn(Direction.SOUTH_WEST);
+				forward();
+				forward();
+				myPlayer.sleep();
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH_EAST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
+				
+				turn(Direction.SOUTH_EAST);
+				forward();
+				forward();
+				myPlayer.sleep();
+				
+				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
 				
 				obj = MuleBuildOrder.SUICIDE;
 				return;

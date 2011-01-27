@@ -426,12 +426,12 @@ public class MissileTurretBehavior extends Behavior
 				
 			case 12:
 				target1 = myPlayer.myLoc.add(-2,-1);
-				target2 = myPlayer.myLoc.add(-2,-3);
+				target2 = myPlayer.myLoc.add(-3,-3);
 				return;
 				
 			case 13:
 				target1 = myPlayer.myLoc.add(2,-1);
-				target2 = myPlayer.myLoc.add(2,-3);
+				target2 = myPlayer.myLoc.add(3,-3);
 				return;
 				
 			case 14:
@@ -446,12 +446,12 @@ public class MissileTurretBehavior extends Behavior
 				
 			case 16:
 				target1 = myPlayer.myLoc.add(-2,1);
-				target2 = myPlayer.myLoc.add(-2,3);
+				target2 = myPlayer.myLoc.add(-3,3);
 				return;
 				
 			case 17:
 				target1 = myPlayer.myLoc.add(2,1);
-				target2 = myPlayer.myLoc.add(2,3);
+				target2 = myPlayer.myLoc.add(3,3);
 				return;
 				
 			case 18:
