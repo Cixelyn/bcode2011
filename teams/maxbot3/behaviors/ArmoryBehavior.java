@@ -18,6 +18,7 @@ public class ArmoryBehavior extends Behavior
 		EQUIP_TOWER,
 		SLEEP,
 		BUILD_FLYER,
+		EQUIP_PLASMA,
 		SUICIDE
 	}
 	
@@ -40,6 +41,11 @@ public class ArmoryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "FIND_TOWER");
 				Utility.setIndicator(myPlayer, 1, "Looking for tower...");
+				
+				if (Clock.getRoundNum()>1250) {
+					obj=ArmoryBuildOrder.EQUIP_PLASMA;
+					return;
+				}
 				
 				sleepTime = true;
 				for ( int i = Direction.values().length; --i >= 0 ; )
@@ -86,6 +92,20 @@ public class ArmoryBehavior extends Behavior
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.FLYING);
 				myPlayer.sleep();
 				myPlayer.myRC.suicide();
+				
+			case EQUIP_PLASMA:
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				obj = ArmoryBuildOrder.SLEEP;
+				
+				
     		case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 0, "SLEEP");
