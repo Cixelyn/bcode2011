@@ -134,9 +134,6 @@ public class HammerBrothersBehavior extends Behavior
 						myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+1,myPlayer.myLoc.y+1), RobotLevel.ON_GROUND);
 						finishedTurningOn=true;
 					}
-					if (Clock.getRoundNum()>=1224) {
-						myPlayer.myRC.suicide();
-					}
 					else if (Clock.getRoundNum()>=1000) {
 						if (id==1) {
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
@@ -237,6 +234,9 @@ public class HammerBrothersBehavior extends Behavior
 					return;
 					
 				case ATTACK_TOWER:
+					if (Clock.getRoundNum()>=1224) {
+						myPlayer.myRC.suicide();
+					}
 					if (Clock.getRoundNum()==1250) {
 						myPlayer.myRC.suicide();
 					}
