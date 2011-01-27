@@ -141,60 +141,13 @@ public class MissileTurretBehavior extends Behavior
 			case FIRE:
 				
 				Utility.setIndicator(myPlayer, 0, "FIRE");
-				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
-				
-/*				if ( (Clock.getRoundNum() / 250) % 2 == 0 )
-				{
-					if ( (locNum == 2 || locNum == 22) && (Clock.getRoundNum() / 250) == 2 )
-					{
-						switch ( (Clock.getRoundNum() / 20) % 25 )
-						{
-							case 0:
-								rockLoc = myPlayer.mainLoc.add(0,-3);break;
-							case 1:
-								rockLoc = myPlayer.mainLoc.add(1,-3);break;
-							case 2:
-								rockLoc = myPlayer.mainLoc.add(2,-3);break;
-							case 3:
-								rockLoc = myPlayer.mainLoc.add(4,-1);break;
-							case 4:
-								rockLoc = myPlayer.mainLoc.add(4,0);break;
-							case 5:
-								rockLoc = myPlayer.mainLoc.add(4,1);break;
-							case 6:
-								rockLoc = myPlayer.mainLoc.add(2,3);break;
-							case 7:
-								rockLoc = myPlayer.mainLoc.add(1,3);break;
-							case 8:
-								rockLoc = myPlayer.mainLoc.add(0,3);break;
-							case 9:
-								rockLoc = myPlayer.mainLoc.add(-2,1);break;
-							case 10:
-								rockLoc = myPlayer.mainLoc.add(-2,0);break;
-							case 11:
-								rockLoc = myPlayer.mainLoc.add(-2,-1);break;
-							default:
-								obj = MissileTurretBuildOrder.SLEEP;
-								return;
-						}
-						if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(rockLoc) )
-						{
-							myPlayer.myBeams[0].attackSquare(rockLoc, RobotLevel.ON_GROUND);
-							myPlayer.myBeams[1].attackSquare(rockLoc, RobotLevel.ON_GROUND);
-							myPlayer.myBeams[2].attackSquare(rockLoc, RobotLevel.ON_GROUND);
-							myPlayer.myBeams[3].attackSquare(rockLoc, RobotLevel.ON_GROUND);
-							myPlayer.sleep();
-						}
-						else
-							myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(rockLoc));
-					}
-					else
-						obj = MissileTurretBuildOrder.SLEEP;
+				Utility.setIndicator(myPlayer, 1,  Clock.getRoundNum()+"");
+				if (Clock.getRoundNum()==950) {
+					Utility.printMsg(myPlayer, Clock.getRoundNum()+"");
+					myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x,myPlayer.myLoc.y+1), RobotLevel.ON_GROUND);
 				}
-				else if ( (Clock.getRoundNum() / 250) <= 3 )
-				{*/
 				if (Clock.getRoundNum()>=1000) {
-					return;
+					myPlayer.myRC.suicide();
 				}
 				else if ( locNum == 2 )
 					{
@@ -240,24 +193,6 @@ public class MissileTurretBehavior extends Behavior
 					}
 					else
 						obj = MissileTurretBuildOrder.SLEEP;
-/*				else if ( Clock.getRoundNum() % 2 == 0 )
-				{
-					if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(target1) )
-					{
-						myPlayer.myBeams[0].attackSquare(target1, RobotLevel.ON_GROUND);
-						myPlayer.myBeams[1].attackSquare(target1, RobotLevel.ON_GROUND);
-					}
-					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(target2));
-				}
-				else if ( Clock.getRoundNum() % 2 == 1 )
-				{
-					if ( myPlayer.myRC.getDirection() == myPlayer.myLoc.directionTo(target2) )
-					{
-						myPlayer.myBeams[2].attackSquare(target2, RobotLevel.ON_GROUND);
-						myPlayer.myBeams[3].attackSquare(target2, RobotLevel.ON_GROUND);
-					}
-					myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(target1));
-				}*/
 				return;
 				
 			case SLEEP:

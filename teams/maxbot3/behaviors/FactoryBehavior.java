@@ -44,7 +44,7 @@ public class FactoryBehavior extends Behavior
 					if (myPlayer.myRC.getTeamResources() > Chassis.HEAVY.cost + 20*Constants.RESERVE) {
 						Utility.buildChassis(myPlayer, Direction.EAST, Chassis.HEAVY);
 						numHeavies++;
-						if (numHeavies==4) {
+						if (numHeavies==5) {
 							obj=FactoryBuildOrder.SLEEP;
 						}		
 					}		

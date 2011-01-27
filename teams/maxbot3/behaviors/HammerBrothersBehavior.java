@@ -12,6 +12,8 @@ public class HammerBrothersBehavior extends Behavior
 		
 		int num;
 		int id=0;
+		int numOfAttacks=0;
+		boolean finishedTurningOn=false;
 		
 		private enum HammerBrothersBuildOrder
 		{
@@ -19,6 +21,7 @@ public class HammerBrothersBehavior extends Behavior
 			EQUIPPING,
 			GET_IN_POSITION,
 			BUM_RUSH,
+			ATTACK_TOWER,
 			SLEEPING;
 		}
 		
@@ -68,6 +71,15 @@ public class HammerBrothersBehavior extends Behavior
 					}
 					Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
 					Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
+					while (myPlayer.myMotor.isActive()) {
+						myPlayer.sleep();
+					}
+					myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
+					if (!myPlayer.myMotor.canMove(Direction.NORTH_WEST)) {
+						id=5;
+						obj=HammerBrothersBuildOrder.SLEEPING;
+						return;
+					}
 					Utility.moveInDirection(myPlayer, Direction.NORTH_WEST);
 					while (myPlayer.myMotor.isActive()) {
 						myPlayer.sleep();
@@ -78,6 +90,10 @@ public class HammerBrothersBehavior extends Behavior
 						obj=HammerBrothersBuildOrder.SLEEPING;
 					}
 					else {
+						while (myPlayer.myMotor.isActive()) {
+							myPlayer.sleep();
+						}
+						myPlayer.myMotor.setDirection(Direction.WEST);
 						while (myPlayer.myMotor.isActive()) {
 							myPlayer.sleep();
 						}
@@ -97,13 +113,10 @@ public class HammerBrothersBehavior extends Behavior
 							}
 						}
 						else {
-							while (Clock.getRoundNum()!=750) {
-								myPlayer.sleep();
-							}
 							id=4;
-							myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x-1,myPlayer.myLoc.y), RobotLevel.ON_GROUND);
-							myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x-1,myPlayer.myLoc.y-1), RobotLevel.ON_GROUND);
+							Utility.setIndicator(myPlayer, 1, id + "");
 							obj=HammerBrothersBuildOrder.BUM_RUSH;
+							return;
 						}
 					}
 					return;
@@ -111,34 +124,20 @@ public class HammerBrothersBehavior extends Behavior
 				case BUM_RUSH:
 					Utility.setIndicator(myPlayer, 0, "BUM RUSH");
 					Utility.setIndicator(myPlayer, 1, id+"");
-					if (Clock.getRoundNum()>=1000) {
+					Utility.setIndicator(myPlayer, 2, Clock.getRoundNum()+"");
+					while (Clock.getRoundNum()<=900) {
+						myPlayer.sleep();
+					}
+					if (id==4 && !finishedTurningOn) {
+						myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x-1,myPlayer.myLoc.y), RobotLevel.ON_GROUND);
+						myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x-1,myPlayer.myLoc.y-1), RobotLevel.ON_GROUND);
+						myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+1,myPlayer.myLoc.y+1), RobotLevel.ON_GROUND);
+						finishedTurningOn=true;
+					}
+					else if (Clock.getRoundNum()>=1000) {
 						if (id==1) {
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
-							while (myPlayer.myMotor.isActive()) {
-								myPlayer.sleep();
-							}
-							myPlayer.myMotor.setDirection(Direction.WEST);
-							while (true) {
-								for (WeaponController hammer : myPlayer.myHammers) {
-									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-								}
-								myPlayer.sleep();
-							}
-						}
-						if (id==2) {
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH);
-							Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
@@ -152,12 +151,25 @@ public class HammerBrothersBehavior extends Behavior
 								myPlayer.sleep();
 							}
 							myPlayer.myMotor.setDirection(Direction.EAST);
-							while (true) {
-								for (WeaponController hammer : myPlayer.myHammers) {
-									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-								}
+							obj = HammerBrothersBuildOrder.ATTACK_TOWER;
+						}
+						if (id==2) {
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH_WEST);
+							while (myPlayer.myMotor.isActive()) {
 								myPlayer.sleep();
 							}
+							myPlayer.myMotor.setDirection(Direction.NORTH_EAST);
+							obj = HammerBrothersBuildOrder.ATTACK_TOWER;
 						}
 						if (id==3) {
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
@@ -175,12 +187,7 @@ public class HammerBrothersBehavior extends Behavior
 								myPlayer.sleep();
 							}
 							myPlayer.myMotor.setDirection(Direction.NORTH);
-							while (true) {
-								for (WeaponController hammer : myPlayer.myHammers) {
-									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-								}
-								myPlayer.sleep();
-							}
+							obj = HammerBrothersBuildOrder.ATTACK_TOWER;
 						}
 						if (id==4) {
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
@@ -194,21 +201,54 @@ public class HammerBrothersBehavior extends Behavior
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH);
 							Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							
+							while (myPlayer.myMotor.isActive()) {
+								myPlayer.sleep();
+							}
+							myPlayer.myMotor.setDirection(Direction.WEST);
+							obj = HammerBrothersBuildOrder.ATTACK_TOWER;
+						}
+						if (id==5) {
+							Utility.moveInDirection(myPlayer, Direction.NORTH_WEST);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH_WEST);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH);
+							Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
+							
 							while (myPlayer.myMotor.isActive()) {
 								myPlayer.sleep();
 							}
 							myPlayer.myMotor.setDirection(Direction.NORTH_WEST);
-							while (true) {
-								for (WeaponController hammer : myPlayer.myHammers) {
-									hammer.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
-								}
-								myPlayer.sleep();
-							}
+							obj = HammerBrothersBuildOrder.ATTACK_TOWER;
 						}
 					}
 					myPlayer.sleep();
 					return;
 					
+				case ATTACK_TOWER:
+					if (Clock.getRoundNum()==1250) {
+						myPlayer.myRC.suicide();
+					}
+					WeaponController gun;
+					Utility.setIndicator(myPlayer, 0, "ATTACKING!");
+					Utility.setIndicator(myPlayer, 1, numOfAttacks+"");
+					for ( int j = myPlayer.myHammers.length; --j >= 0 ; )
+					{
+						gun =  myPlayer.myHammers[j];
+						if ( !gun.isActive() && gun.withinRange(myPlayer.myLoc.add(myPlayer.myRC.getDirection()))) {
+							gun.attackSquare(myPlayer.myLoc.add(myPlayer.myRC.getDirection()), RobotLevel.ON_GROUND);
+							numOfAttacks++;
+						}
+					}
+					return;
 				case SLEEPING:
 					Utility.setIndicator(myPlayer, 0, "SLEEP");
 					Utility.setIndicator(myPlayer, 1, "zzzzzz");
