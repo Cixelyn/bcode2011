@@ -19,8 +19,6 @@ public class ScienceFacilityBehavior extends Behavior
 	
 	int wakeTime = 0;
 	
-	boolean allEquipped;
-	
 	private enum ScienceFacilityBuildOrder 
 	{
 		FIND_BUNKER,
@@ -55,7 +53,6 @@ public class ScienceFacilityBehavior extends Behavior
 					return;
 				}
 				
-				allEquipped = true;
 				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
 					Direction d = Direction.values()[i];
@@ -64,31 +61,15 @@ public class ScienceFacilityBehavior extends Behavior
 					if ( r != null )
 					{
 						RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(r);
-						if ( rInfo.chassis == Chassis.BUILDING )
+						if ( rInfo.chassis == Chassis.BUILDING && Utility.totalWeight(rInfo.components) == 0 )
 						{
-							if ( Utility.totalWeight(rInfo.components) == 0 )
-							{
-								Utility.setIndicator(myPlayer, 1, "Bunker found.");
-								bunkerLoc = myPlayer.myLoc.add(d);
-								obj = ScienceFacilityBuildOrder.EQUIP_BUNKER;
-								return;
-							}
+							Utility.setIndicator(myPlayer, 1, "Bunker found.");
+							bunkerLoc = myPlayer.myLoc.add(d);
+							obj = ScienceFacilityBuildOrder.EQUIP_BUNKER;
+							return;
 						}
-						else
-						{
-							// non building next to me
-							allEquipped = false;
-						}
-					}
-					else
-					{
-						// blank square next to me
-						allEquipped = false;
 					}
 				}
-				
-				if ( allEquipped )
-					obj = ScienceFacilityBuildOrder.SUICIDE;
 				
 				return;
 			
@@ -107,7 +88,7 @@ public class ScienceFacilityBehavior extends Behavior
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(bunkerLoc), ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(bunkerLoc), ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(bunkerLoc), ComponentType.PLASMA, RobotLevel.ON_GROUND);
-				obj = ScienceFacilityBuildOrder.FIND_BUNKER;
+				obj = ScienceFacilityBuildOrder.SUICIDE;
 				return;
 				
     		case SLEEP:

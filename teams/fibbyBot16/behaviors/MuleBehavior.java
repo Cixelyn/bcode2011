@@ -50,53 +50,22 @@ public class MuleBehavior extends Behavior
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.ARMORY, RobotLevel.ON_GROUND);
 				
-				turn(Direction.NORTH);
-				forward();
-				myPlayer.sleep();
-				
-				Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.BUILDING);
-				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
-				
 				turn(Direction.SOUTH_EAST);
 				forward();
 				forward();
-				myPlayer.sleep();
-				
-				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.BUILDING);
-				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
-				
-				turn(Direction.SOUTH_EAST);
-				forward();
-				turn(Direction.SOUTH);
 				forward();
 				myPlayer.sleep();
 				
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 				
-				turn(Direction.SOUTH_EAST);
-				backward();
+				turn(Direction.NORTH_WEST);
+				forward();
 				myPlayer.sleep();
 				
 				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
 				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-				
-				turn(Direction.SOUTH_WEST);
-				forward();
-				turn(Direction.WEST);
-				forward();
-				myPlayer.sleep();
-				
-				Utility.buildChassis(myPlayer, Direction.NORTH_EAST, Chassis.BUILDING);
-				Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
-				
-				turn(Direction.NORTH_WEST);
-				forward();
-				forward();
-				myPlayer.sleep();
-				
-				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
-				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
 				
 				obj = MuleBuildOrder.SUICIDE;
 				return;
