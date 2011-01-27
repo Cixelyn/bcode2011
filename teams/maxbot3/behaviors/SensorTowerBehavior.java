@@ -38,10 +38,14 @@ public class SensorTowerBehavior extends Behavior
 				return;
 				
 			case SLEEP:
-				
-				Utility.setIndicator(myPlayer, 0, "SLEEP");
-				Utility.setIndicator(myPlayer, 1, "zzzzzz");
-				myPlayer.myRC.turnOff();
+				if (Clock.getRoundNum()>=8000) {
+					myPlayer.sleep();
+				}
+				else {
+					Utility.setIndicator(myPlayer, 0, "SLEEP");
+					Utility.setIndicator(myPlayer, 1, "zzzzzz");
+					myPlayer.myRC.turnOff();
+				}
 				return;
 				
     	}
