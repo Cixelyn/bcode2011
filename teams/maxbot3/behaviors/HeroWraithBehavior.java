@@ -6,17 +6,14 @@ import battlecode.common.*;;
 
 public class HeroWraithBehavior extends Behavior
 {
-
-		MapLocation frontlineLoc;
-		MapLocation enemyTowerLoc;
-		
-		int num;
 		
 		private enum HeroWraithBuildOrder
 		{
 			INITIALIZE,
 			EQUIPPING,
-			BUILD_TOWER
+			BUILD_TOWER,
+			REBUILD_MAIN,
+			SLEEP
 		}
 		
 		HeroWraithBuildOrder obj = HeroWraithBuildOrder.INITIALIZE;
@@ -36,9 +33,6 @@ public class HeroWraithBehavior extends Behavior
 				case INITIALIZE:
 					
 					Utility.setIndicator(myPlayer, 0, "INITIALIZE");
-					num = 1;
-					frontlineLoc = myPlayer.myLoc.add(0, -9);
-					enemyTowerLoc = frontlineLoc.add(0, -6);
 					obj = HeroWraithBuildOrder.EQUIPPING;
 					return;
 				
@@ -58,29 +52,82 @@ public class HeroWraithBehavior extends Behavior
 					return;
 				
 				case BUILD_TOWER:
-					Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
-					Utility.moveInDirection(myPlayer, Direction.NORTH_EAST);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
-					Utility.moveInDirection(myPlayer, Direction.NORTH);
+					
+					Utility.setIndicator(myPlayer, 0, "BUILD_TOWER");
+					
+					turn(Direction.NORTH_EAST);
+					forward();
+					forward();
+					turn(Direction.NORTH);
+					for ( int i = 15; --i >= 0 ; )
+						forward();
+					myPlayer.sleep();
+					
 					Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
-					myPlayer.myRC.suicide();
+					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+					
+					turn(Direction.NORTH);
+					forward();
+					forward();
+					
+					obj = HeroWraithBuildOrder.SLEEP;
+					return;
+					
+				case REBUILD_MAIN:
+					
+					Utility.setIndicator(myPlayer, 0, "BUILD_TOWER");
+					
+					turn(Direction.SOUTH);
+					for ( int i = 19; --i >= 0 ; )
+						forward();
+					myPlayer.sleep();
+					
+					Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+					Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+					Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, Direction.SOUTH_WEST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+					Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+					
+					turn(Direction.NORTH);
+					for ( int i = 19; --i >= 0 ; )
+						forward();
+					obj = HeroWraithBuildOrder.SLEEP;
+					return;
+					
+				case SLEEP:
+					
+					Utility.setIndicator(myPlayer, 0, "SLEEP");
+					Utility.setIndicator(myPlayer, 1, "zzzzzz");
+					myPlayer.myRC.turnOff();
+					return;
+					
 			}
 		}
 
+		public void turn(Direction d) throws Exception
+		{
+			while ( myPlayer.myMotor.isActive() )
+				myPlayer.sleep();
+			myPlayer.myMotor.setDirection(d);
+		}
+		
+		public void forward() throws Exception
+		{
+			while ( myPlayer.myMotor.isActive() )
+				myPlayer.sleep();
+			myPlayer.myMotor.moveForward();
+		}
+		
+		public void backward() throws Exception
+		{
+			while ( myPlayer.myMotor.isActive() )
+				myPlayer.sleep();
+			myPlayer.myMotor.moveBackward();
+		}
+		
 		@Override
 		public void newComponentCallback(ComponentController[] components)
 		{
@@ -90,7 +137,7 @@ public class HeroWraithBehavior extends Behavior
 		@Override
 		public void onWakeupCallback(int lastActiveRound)
 		{
-			
+			obj = HeroWraithBuildOrder.REBUILD_MAIN;
 		}
 
 		@Override

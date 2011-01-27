@@ -21,6 +21,7 @@ public class Constants
 	public static final double RESERVE = 5.0; // min flux after spending
 	public static final int LEADER_TIME = 120; // when leader refinery is made
 	public static final int SECOND_MEDIVAC = 380; // when second medivac spawns
+	public static final int LAST_LEADER = 1600; // time after which no leader refineries will be made
 	
 	// Max's constants
 	

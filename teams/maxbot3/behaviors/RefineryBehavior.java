@@ -35,7 +35,7 @@ public class RefineryBehavior extends Behavior
 			case DETERMINE_LEADER:
 				
 				Utility.setIndicator(myPlayer, 0, "DETERMINE_LEADER");
-				if ( Clock.getRoundNum() > Constants.LEADER_TIME )
+				if ( Clock.getRoundNum() > Constants.LEADER_TIME && Clock.getRoundNum() < Constants.LAST_LEADER )
 				{
 					// I'm the 4th refinery
 					Utility.setIndicator(myPlayer, 1, "I'm the leader!");
@@ -52,13 +52,15 @@ public class RefineryBehavior extends Behavior
 				return;
 				
 			case BROADCAST_LOC:
+				
 				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
 				Utility.setIndicator(myPlayer, 1, "");
 				Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.NORTH_EAST), RobotLevel.ON_GROUND);
 				if ( r != null)
 				{
 					RobotInfo rInfo=myPlayer.mySensor.senseRobotInfo(r);
-					if (rInfo.chassis.equals(Chassis.HEAVY)) {
+					if (rInfo.chassis.equals(Chassis.HEAVY))
+					{
 						Utility.setIndicator(myPlayer, 1, "Heavy Found");
 						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
 						Utility.buildComponent(myPlayer, Direction.NORTH_EAST, ComponentType.HAMMER, RobotLevel.ON_GROUND);
@@ -75,16 +77,27 @@ public class RefineryBehavior extends Behavior
 						}
 					}
 				}
-				myPlayer.myBroadcaster.broadcast(myLocMsg);
+				if ( !myPlayer.myBroadcaster.isActive() )
+				{
+					if ( Clock.getRoundNum() % 500 < 20 && Clock.getRoundNum() / 500 >= 3 )
+						myPlayer.myBroadcaster.broadcastTurnOnAll();
+					else
+						myPlayer.myBroadcaster.broadcast(myLocMsg);
+				}
 				return;
 				
 			case EQUIP_FLYER:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_FLYER");
+				Utility.setIndicator(myPlayer, 1, "");
+				
 				Robot robot = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(Direction.WEST), RobotLevel.IN_AIR);
 				if ( robot != null) {
 					Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.CONSTRUCTOR, RobotLevel.IN_AIR);
 					obj = RefineryBuildOrder.SLEEP;
 				}
 				return;
+				
 			case SLEEP:
 				
 				Utility.setIndicator(myPlayer, 0, "SLEEP");
@@ -108,8 +121,8 @@ public class RefineryBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		obj=RefineryBuildOrder.EQUIP_FLYER;
 		wakeTime++;
+		obj = RefineryBuildOrder.EQUIP_FLYER;
 	}
 	
 
