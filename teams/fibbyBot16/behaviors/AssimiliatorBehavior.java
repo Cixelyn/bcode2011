@@ -67,13 +67,12 @@ public class AssimiliatorBehavior extends Behavior
 	
 	MapLocation pylonLoc;
 	
-	boolean allEquipped;
+	int pylonsEquipped;
 	
 	private enum AssimilatorBuildOrder 
 	{
 		FIND_PYLON,
 		EQUIP_PYLON,
-		NEW_DAWN,
 		SLEEP,
 		SUICIDE
 	}
@@ -97,43 +96,30 @@ public class AssimiliatorBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "FIND_PYLON");
 				Utility.setIndicator(myPlayer, 1, "Looking for pylon...");
 				
-				allEquipped = true;
+				if ( Clock.getRoundNum() > 4000 )
+					obj = AssimilatorBuildOrder.SLEEP;
+				
 				for ( int i = Direction.values().length; --i >= 0 ; )
 				{
 					Direction d = Direction.values()[i];
 					
 					Robot r = (Robot)myPlayer.mySensor.senseObjectAtLocation(myPlayer.myLoc.add(d), RobotLevel.ON_GROUND);
-					if ( r != null )
+					if ( r != null && r.getTeam() == myPlayer.myRC.getTeam() )
 					{
 						RobotInfo rInfo = myPlayer.mySensor.senseRobotInfo(r);
-						if ( rInfo.chassis == Chassis.BUILDING )
+						if ( rInfo.chassis == Chassis.BUILDING && Utility.totalWeight(rInfo.components) == 0 )
 						{
-							if ( Utility.totalWeight(rInfo.components) == 0 )
-							{
-								Utility.setIndicator(myPlayer, 1, "Pylon found.");
-								pylonLoc = myPlayer.myLoc.add(d);
-								obj = AssimilatorBuildOrder.EQUIP_PYLON;
-								return;
-							}
+							Utility.setIndicator(myPlayer, 1, "Pylon found.");
+							pylonLoc = myPlayer.myLoc.add(d);
+							obj = AssimilatorBuildOrder.EQUIP_PYLON;
+							pylonsEquipped++;
+							return;
 						}
-						else
-						{
-							// non building next to me
-							allEquipped = false;
-						}
-					}
-					else
-					{
-						// blank square next to me
-						allEquipped = false;
 					}
 				}
 				
-				if ( allEquipped )
-					obj = AssimilatorBuildOrder.NEW_DAWN;
-				
-				if ( Clock.getRoundNum() > Constants.BUNKER_TIME )
-					obj = AssimilatorBuildOrder.SLEEP;
+				if ( pylonsEquipped == 5 || Clock.getRoundNum() % 250 == 0 )
+					obj = AssimilatorBuildOrder.SUICIDE;
 				
 				return;
 			
@@ -141,42 +127,9 @@ public class AssimiliatorBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "EQUIP_PYLON");
 				Utility.setIndicator(myPlayer, 1, "Equipping pylon.");
-				// 4 shield, 16 plating
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.SHIELD, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
-				Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.PLATING, RobotLevel.ON_GROUND);
+				for ( int i = 10 ; --i >= 0 ; )
+					Utility.buildComponent(myPlayer, myPlayer.myLoc.directionTo(pylonLoc), ComponentType.HAMMER, RobotLevel.ON_GROUND);
 				obj = AssimilatorBuildOrder.FIND_PYLON;
-				return;
-				
-			case NEW_DAWN:
-				
-				Utility.setIndicator(myPlayer, 0, "NEW_DAWN");
-				Utility.setIndicator(myPlayer, 1, "Whethering the zombie apocalypse...");
-				if ( Clock.getRoundNum() > Constants.BUNKER_TIME + 20 )
-				{
-					Utility.setIndicator(myPlayer, 1, "Almost there...");
-					myPlayer.sleep();
-					Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.LIGHT);
-					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.CONSTRUCTOR, RobotLevel.ON_GROUND);
-					obj = AssimilatorBuildOrder.SUICIDE;
-				}
 				return;
 				
 			case SLEEP:

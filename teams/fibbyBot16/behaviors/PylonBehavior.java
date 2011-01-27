@@ -100,16 +100,13 @@ public class PylonBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "EQUIPPING");
 				
-				int numShields = 0;
-				int numPlatings = 0;
+				int numHammers = 0;
 				for ( int i = myPlayer.myRC.components().length ; --i >= 0 ; )
 				{
-					if ( myPlayer.myRC.components()[i].type() == ComponentType.SHIELD )
-						numShields++;
-					if ( myPlayer.myRC.components()[i].type() == ComponentType.PLATING )
-						numPlatings++;
+					if ( myPlayer.myRC.components()[i].type() == ComponentType.HAMMER )
+						numHammers++;
 				}
-				if ( numShields >= 4 && numPlatings >= 16 )
+				if ( numHammers >= 1 )
 					obj = PylonBuildOrder.SUP;
 					
 				return;
@@ -117,7 +114,26 @@ public class PylonBehavior extends Behavior
 			case SUP:
 				
 				Utility.setIndicator(myPlayer, 0, "SUP");
-				if ( Clock.getRoundNum() >= Constants.BUNKER_TIME )
+				Robot[] nearbyRobots = myPlayer.mySensor.senseNearbyGameObjects(Robot.class);
+				MapLocation enemyLoc = null;
+				for ( Robot r : nearbyRobots )
+				{
+					if ( r.getTeam() == myPlayer.myRC.getTeam().opponent() )
+						enemyLoc = myPlayer.mySensor.senseLocationOf(r);
+				}
+				if ( enemyLoc == null )
+					enemyLoc = myPlayer.myLoc.add(Direction.NORTH, 2);
+				
+				while ( myPlayer.myMotor.isActive() )
+					myPlayer.sleep();
+				myPlayer.myMotor.setDirection(myPlayer.myLoc.directionTo(enemyLoc));
+				
+				for ( WeaponController c : myPlayer.myHammers )
+				{
+					if ( !c.isActive() )
+						c.attackSquare(enemyLoc, RobotLevel.ON_GROUND);
+				}
+				if ( Clock.getRoundNum() % 250 == 0 )
 					obj = PylonBuildOrder.SUICIDE;
 				return;
 				

@@ -23,6 +23,8 @@ public class ArmoryBehavior extends Behavior
 	
 	private enum ArmoryBuildOrder 
 	{
+		INITIALIZE,
+		EQUIP_GG,
 		FIND_TOWER,
 		EQUIP_TOWER,
 		SLEEP,
@@ -30,7 +32,7 @@ public class ArmoryBehavior extends Behavior
 	}
 	
 	
-	ArmoryBuildOrder obj = ArmoryBuildOrder.FIND_TOWER;
+	ArmoryBuildOrder obj = ArmoryBuildOrder.INITIALIZE;
 
 	public ArmoryBehavior(RobotPlayer player)
 	{
@@ -43,7 +45,24 @@ public class ArmoryBehavior extends Behavior
 		
 		switch(obj)
     	{
-    			
+    	
+			case INITIALIZE:
+				
+				Utility.setIndicator(myPlayer, 0, "INITIALIZE");
+				if ( Clock.getRoundNum() > 5000 )
+					obj = ArmoryBuildOrder.EQUIP_GG;
+				else
+					obj = ArmoryBuildOrder.FIND_TOWER;
+				return;
+			
+			case EQUIP_GG:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_GG");
+				for ( int i = 10 ; --i >= 0 ; )
+					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				obj = ArmoryBuildOrder.SUICIDE;
+				return;
+				
 			case FIND_TOWER:
 				
 				Utility.setIndicator(myPlayer, 0, "FIND_TOWER");

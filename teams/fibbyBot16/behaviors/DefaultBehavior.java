@@ -33,10 +33,8 @@ public class DefaultBehavior extends Behavior
 			{
 				if ( Clock.getRoundNum() < Constants.CAMP_TIME )
 					myPlayer.swapBehavior(new SCVBehavior(myPlayer));
-				else if ( Clock.getRoundNum() < Constants.BUNKER_TIME )
-					myPlayer.swapBehavior(new ProbeBehavior(myPlayer));
 				else
-					myPlayer.swapBehavior(new MuleBehavior(myPlayer));
+					myPlayer.swapBehavior(new ProbeBehavior(myPlayer));
 			}
 			else if ( c == ComponentType.RECYCLER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
@@ -45,16 +43,13 @@ public class DefaultBehavior extends Behavior
 				else
 					myPlayer.swapBehavior(new AssimiliatorBehavior(myPlayer));
 			}
-			else if ( c == ComponentType.PLATING && myPlayer.myRC.getChassis() == Chassis.BUILDING )
+			else if ( c == ComponentType.HAMMER && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 				myPlayer.swapBehavior(new PylonBehavior(myPlayer));
 			else if ( c == ComponentType.PLASMA && myPlayer.myRC.getChassis() == Chassis.BUILDING )
-				myPlayer.swapBehavior(new BunkerBehavior(myPlayer));
+				myPlayer.swapBehavior(new GGBehavior(myPlayer));
 			else if ( c == ComponentType.ARMORY && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 			{
-				if ( Clock.getRoundNum() < Constants.BUNKER_TIME )
-					myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
-				else
-					myPlayer.swapBehavior(new ScienceFacilityBehavior(myPlayer));
+				myPlayer.swapBehavior(new ArmoryBehavior(myPlayer));
 			}
 			else if ( c == ComponentType.FACTORY && myPlayer.myRC.getChassis() == Chassis.BUILDING )
 				myPlayer.swapBehavior(new FactoryBehavior(myPlayer));

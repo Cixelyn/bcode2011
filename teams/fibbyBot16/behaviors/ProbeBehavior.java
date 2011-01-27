@@ -75,6 +75,8 @@ public class ProbeBehavior extends Behavior
 		INITIALIZE,
 		GO_TO_CAMPSITE,
 		BUILD_CAMP,
+		WAIT,
+		REBUILD_MAIN,
 		SLEEP,
 		SUICIDE
 	}
@@ -105,6 +107,14 @@ public class ProbeBehavior extends Behavior
 			case GO_TO_CAMPSITE:
 				
 				Utility.setIndicator(myPlayer, 0, "GO_TO_CAMPSITE");
+				
+				turn(Direction.NORTH);
+				for ( int i = 12 ; --i >= 0 ; )
+					forward();
+				turn(Direction.NORTH_EAST);
+				forward();
+				forward();
+				
 				obj = ProbeBuildOrder.BUILD_CAMP;
 				return;
 				
@@ -112,35 +122,77 @@ public class ProbeBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BUILD_CAMP");
 				
-				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.BUILDING);
-				Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
-				Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
-				
-				turn(Direction.SOUTH_WEST);
-				forward();
-				myPlayer.sleep();
-				
-				Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
 				Utility.buildChassis(myPlayer, Direction.NORTH_EAST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
 				
-				turn(Direction.NORTH_WEST);
-				forward();
-				forward();
+				turn(Direction.SOUTH_EAST);
+				backward();
 				myPlayer.sleep();
 				
 				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
-				Utility.buildChassis(myPlayer, Direction.EAST, Chassis.BUILDING);
-				
-				turn(Direction.NORTH_EAST);
-				forward();
-				forward();
+				Utility.buildComponent(myPlayer, Direction.SOUTH_EAST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+
+				turn(Direction.SOUTH_WEST);
+				backward();
 				myPlayer.sleep();
 				
 				Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.BUILDING);
-				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
-				Utility.buildChassis(myPlayer, Direction.SOUTH_EAST, Chassis.BUILDING);
+				Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
 				
-				obj = ProbeBuildOrder.SUICIDE;
+				while ( Clock.getRoundNum() % 250 > 0 )
+					myPlayer.sleep();
+				
+				obj = ProbeBuildOrder.WAIT;
+				return;
+				
+			case WAIT:
+				
+				Utility.setIndicator(myPlayer, 0, "WAIT");
+				if ( Clock.getRoundNum() % 500 == 0 )
+					obj = ProbeBuildOrder.REBUILD_MAIN;
+				turn(myPlayer.myRC.getDirection().rotateRight().rotateRight().rotateRight());
+				return;
+				
+			case REBUILD_MAIN:
+				
+				Utility.setIndicator(myPlayer, 0, "REBUILD_MAIN");
+				
+				turn(Direction.SOUTH);
+				for ( int i = 17 ; --i >= 0 ; )
+					forward();
+				myPlayer.sleep();
+				
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				Utility.buildChassis(myPlayer, Direction.SOUTH_WEST, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH_WEST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				Utility.buildChassis(myPlayer, Direction.WEST, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+				
+				turn(Direction.SOUTH);
+				backward();
+				myPlayer.sleep();
+				
+				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.BUILDING);
+				Utility.buildComponent(myPlayer, Direction.SOUTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
+			
+				turn(Direction.SOUTH);
+				for ( int i = 15 ; --i >= 0 ; )
+					backward();
+				
+				if ( Clock.getRoundNum() > 5500 )
+				{
+					myPlayer.sleep();
+					Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
+					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.ARMORY, RobotLevel.ON_GROUND);
+					myPlayer.myRC.suicide();
+				}
+				else
+					backward();
+				
+				obj = ProbeBuildOrder.WAIT;
 				return;
 				
 			case SLEEP:
