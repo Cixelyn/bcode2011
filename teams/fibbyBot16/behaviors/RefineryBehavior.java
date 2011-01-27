@@ -7,6 +7,7 @@ import java.util.*;
 
 /**
  * 
+ * 
  * @author FiBsTeR
  *
  */
@@ -21,6 +22,8 @@ public class RefineryBehavior extends Behavior
 	{
 		DETERMINE_LEADER,
 		BROADCAST_LOC,
+		CAMP_TIME,
+		LAST_STAND,
 		SLEEP
 	}
 	
@@ -60,12 +63,30 @@ public class RefineryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
 				Utility.setIndicator(myPlayer, 1, "");
+				
 				while ( myPlayer.myBroadcaster.isActive() )
 					myPlayer.sleep();
-				if ( Clock.getRoundNum() % 500 == 0 || Clock.getRoundNum() % 500 == 250 + timingu() )
+				if ( Clock.getRoundNum() > Constants.ALL_ON || Clock.getRoundNum() % 500 == 0 || Clock.getRoundNum() % 500 == 250 + timingu() )
 					myPlayer.myBroadcaster.broadcastTurnOnAll();
 				else
 					myPlayer.myBroadcaster.broadcast(myLocMsg);
+				return;
+				
+			case LAST_STAND:
+				
+				Utility.setIndicator(myPlayer, 0, "LAST_STAND");
+				Utility.setIndicator(myPlayer, 1, "");
+				if ( Clock.getRoundNum() > Constants.CAMP_TIME )
+					obj = RefineryBuildOrder.CAMP_TIME;
+				return;
+				
+			case CAMP_TIME:
+				
+				Utility.setIndicator(myPlayer, 0, "CAMP_TIME");
+				Utility.setIndicator(myPlayer, 1, "");
+				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.LIGHT);
+				Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.CONSTRUCTOR, RobotLevel.ON_GROUND);
+				obj = RefineryBuildOrder.SLEEP;
 				return;
 				
 			case SLEEP:
@@ -115,7 +136,8 @@ public class RefineryBehavior extends Behavior
 	
 	public void onWakeupCallback(int lastActiveRound)
 	{
-		
+		if ( Clock.getRoundNum() >= Constants.ALL_ON )
+			obj = RefineryBuildOrder.LAST_STAND;
 	}
 	
 
