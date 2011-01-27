@@ -91,8 +91,7 @@ public class MissileTurretBehavior extends Behavior
 		INITIALIZE,
 		DETERMINE_CHOKEPOINTS,
 		FIRE,
-		SLEEP,
-		SUICIDE
+		SLEEP
 	}
 	
 	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
@@ -143,13 +142,6 @@ public class MissileTurretBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "FIRE");
 				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
-				
-				// see if it's shield/plating time
-				if ( Clock.getRoundNum() > Constants.CAMP_TIME )
-				{
-					obj = MissileTurretBuildOrder.SUICIDE;
-					return;
-				}
 				
 				// make sure we can turn
 				if ( myPlayer.myMotor.isActive() )
@@ -282,14 +274,6 @@ public class MissileTurretBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "SLEEP");
 				Utility.setIndicator(myPlayer, 1, "zzzzzz");
 				myPlayer.myRC.turnOff();
-				return;
-				
-			case SUICIDE:
-				
-				Utility.setIndicator(myPlayer, 0, "SUICIDE");
-				Utility.setIndicator(myPlayer, 1, ":(");
-				myPlayer.sleep();
-				myPlayer.myRC.suicide();
 				return;
 				
 		}
