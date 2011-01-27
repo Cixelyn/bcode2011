@@ -14,6 +14,8 @@ public class DefaultBehavior extends Behavior
 	public void run() throws Exception
 	{
 		Utility.setIndicator(myPlayer, 0, "WHO AM I???");
+		if ( Clock.getRoundNum() > Constants.SENSOR_TOWER_TIME && Clock.getRoundNum() < Constants.SENSOR_TOWER_TIME + 50 )
+			myPlayer.swapBehavior(new SensorTowerBehavior(myPlayer));
 	}
 
 	public String toString()

@@ -77,6 +77,21 @@ public class HeroWraithBehavior extends Behavior
 					
 					Utility.setIndicator(myPlayer, 0, "BUILD_TOWER");
 					
+					// rounds where main is not lost
+					if ( Clock.getRoundNum() / 500 == 5 )
+					{
+						// give refinery some zzz time
+						myPlayer.sleep();
+						myPlayer.sleep();
+						myPlayer.sleep();
+						myPlayer.sleep();
+						myPlayer.sleep();
+						myPlayer.sleep();
+						myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.SOUTH), RobotLevel.ON_GROUND);
+						obj = HeroWraithBuildOrder.SLEEP;
+						return;
+					}
+					
 					turn(Direction.SOUTH);
 					for ( int i = 19; --i >= 0 ; )
 						forward();
@@ -92,8 +107,14 @@ public class HeroWraithBehavior extends Behavior
 					Utility.buildComponent(myPlayer, Direction.WEST, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 					
 					turn(Direction.NORTH);
-					for ( int i = 19; --i >= 0 ; )
+					for ( int i = 17; --i >= 0 ; )
 						forward();
+					myPlayer.sleep();
+					
+					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
+					forward();
+					forward();
+					
 					obj = HeroWraithBuildOrder.SLEEP;
 					return;
 					
