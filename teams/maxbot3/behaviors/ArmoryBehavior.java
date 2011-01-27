@@ -103,6 +103,7 @@ public class ArmoryBehavior extends Behavior
 				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				obj = ArmoryBuildOrder.SLEEP;
 				
 				
