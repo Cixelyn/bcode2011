@@ -7,6 +7,7 @@ import java.util.*;
 
 /**
  * 
+ * 
  * @author FiBsTeR
  *
  */
@@ -21,6 +22,7 @@ public class RefineryBehavior extends Behavior
 	{
 		DETERMINE_LEADER,
 		BROADCAST_LOC,
+		CAMP_TIME,
 		SLEEP
 	}
 	
@@ -60,12 +62,25 @@ public class RefineryBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "BROADCAST_LOC");
 				Utility.setIndicator(myPlayer, 1, "");
+				
+				if ( Clock.getRoundNum() > Constants.CAMP_TIME )
+					obj = RefineryBuildOrder.CAMP_TIME;
+				
 				while ( myPlayer.myBroadcaster.isActive() )
 					myPlayer.sleep();
-				if ( Clock.getRoundNum() % 500 == 0 || Clock.getRoundNum() % 500 == 250 + timingu() )
+				if ( Clock.getRoundNum() > Constants.ALL_ON || Clock.getRoundNum() % 500 == 0 || Clock.getRoundNum() % 500 == 250 + timingu() )
 					myPlayer.myBroadcaster.broadcastTurnOnAll();
 				else
 					myPlayer.myBroadcaster.broadcast(myLocMsg);
+				return;
+				
+			case CAMP_TIME:
+				
+				Utility.setIndicator(myPlayer, 0, "CAMP_TIME");
+				Utility.setIndicator(myPlayer, 1, "");
+				Utility.buildChassis(myPlayer, Direction.NORTH_WEST, Chassis.LIGHT);
+				Utility.buildComponent(myPlayer, Direction.NORTH_WEST, ComponentType.CONSTRUCTOR, RobotLevel.ON_GROUND);
+				obj = RefineryBuildOrder.SLEEP;
 				return;
 				
 			case SLEEP:
@@ -93,11 +108,13 @@ public class RefineryBehavior extends Behavior
 			case 2:
 				return 30;
 			case 3:
-				return 130;
+				return 90;
 			case 4:
 				return 130;
 			case 5:
 				return 70;
+			case 6:
+				return 120;
 			default:
 				return 0;
 		}

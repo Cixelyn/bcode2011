@@ -91,7 +91,8 @@ public class MissileTurretBehavior extends Behavior
 		INITIALIZE,
 		DETERMINE_CHOKEPOINTS,
 		FIRE,
-		SLEEP
+		SLEEP,
+		SUICIDE
 	}
 	
 	MissileTurretBuildOrder obj = MissileTurretBuildOrder.EQUIPPING;
@@ -142,6 +143,13 @@ public class MissileTurretBehavior extends Behavior
 				
 				Utility.setIndicator(myPlayer, 0, "FIRE");
 				Utility.setIndicator(myPlayer, 1, "Attacking ground.");
+				
+				// see if it's shield/plating time
+				if ( Clock.getRoundNum() > Constants.CAMP_TIME )
+				{
+					obj = MissileTurretBuildOrder.SUICIDE;
+					return;
+				}
 				
 				// make sure we can turn
 				if ( myPlayer.myMotor.isActive() )
@@ -274,6 +282,14 @@ public class MissileTurretBehavior extends Behavior
 				Utility.setIndicator(myPlayer, 0, "SLEEP");
 				Utility.setIndicator(myPlayer, 1, "zzzzzz");
 				myPlayer.myRC.turnOff();
+				return;
+				
+			case SUICIDE:
+				
+				Utility.setIndicator(myPlayer, 0, "SUICIDE");
+				Utility.setIndicator(myPlayer, 1, ":(");
+				myPlayer.sleep();
+				myPlayer.myRC.suicide();
 				return;
 				
 		}
@@ -410,12 +426,12 @@ public class MissileTurretBehavior extends Behavior
 				
 			case 12:
 				target1 = myPlayer.myLoc.add(-2,-1);
-				target2 = myPlayer.myLoc.add(-2,-3);
+				target2 = myPlayer.myLoc.add(-3,-3);
 				return;
 				
 			case 13:
 				target1 = myPlayer.myLoc.add(2,-1);
-				target2 = myPlayer.myLoc.add(2,-3);
+				target2 = myPlayer.myLoc.add(3,-3);
 				return;
 				
 			case 14:
@@ -430,12 +446,12 @@ public class MissileTurretBehavior extends Behavior
 				
 			case 16:
 				target1 = myPlayer.myLoc.add(-2,1);
-				target2 = myPlayer.myLoc.add(-2,3);
+				target2 = myPlayer.myLoc.add(-3,3);
 				return;
 				
 			case 17:
 				target1 = myPlayer.myLoc.add(2,1);
-				target2 = myPlayer.myLoc.add(2,3);
+				target2 = myPlayer.myLoc.add(3,3);
 				return;
 				
 			case 18:
