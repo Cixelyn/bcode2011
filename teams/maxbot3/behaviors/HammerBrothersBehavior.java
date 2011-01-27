@@ -125,7 +125,7 @@ public class HammerBrothersBehavior extends Behavior
 					Utility.setIndicator(myPlayer, 0, "BUM RUSH");
 					Utility.setIndicator(myPlayer, 1, id+"");
 					Utility.setIndicator(myPlayer, 2, Clock.getRoundNum()+"");
-					while (Clock.getRoundNum()<=900) {
+					while (Clock.getRoundNum()<1000) {
 						myPlayer.sleep();
 					}
 					if (id==4 && !finishedTurningOn) {
@@ -133,6 +133,9 @@ public class HammerBrothersBehavior extends Behavior
 						myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x-1,myPlayer.myLoc.y-1), RobotLevel.ON_GROUND);
 						myPlayer.myRC.turnOn(new MapLocation(myPlayer.myLoc.x+1,myPlayer.myLoc.y+1), RobotLevel.ON_GROUND);
 						finishedTurningOn=true;
+					}
+					if (Clock.getRoundNum()>=1224) {
+						myPlayer.myRC.suicide();
 					}
 					else if (Clock.getRoundNum()>=1000) {
 						if (id==1) {
