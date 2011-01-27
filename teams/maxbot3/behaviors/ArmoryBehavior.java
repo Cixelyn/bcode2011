@@ -87,13 +87,19 @@ public class ArmoryBehavior extends Behavior
 				return;
 				
 			case BUILD_FLYER:
+				
 				Utility.setIndicator(myPlayer, 0, "BUILD_FLYER");
-				Utility.setIndicator(myPlayer, 0, Clock.getRoundNum()+"");
+				Utility.setIndicator(myPlayer, 1, Clock.getRoundNum()+"");
 				Utility.buildChassis(myPlayer, Direction.SOUTH, Chassis.FLYING);
 				myPlayer.sleep();
 				myPlayer.myRC.suicide();
 				
 			case EQUIP_PLASMA:
+				
+				Utility.setIndicator(myPlayer, 0, "EQUIP_PLASMA");
+				Utility.setIndicator(myPlayer, 1, "");
+				
+				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);
 				Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.PLASMA, RobotLevel.ON_GROUND);

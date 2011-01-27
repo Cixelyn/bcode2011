@@ -64,7 +64,6 @@ public class HeroWraithBehavior extends Behavior
 					myPlayer.sleep();
 					
 					Utility.buildChassis(myPlayer, Direction.NORTH, Chassis.BUILDING);
-					Utility.buildComponent(myPlayer, Direction.NORTH, ComponentType.RECYCLER, RobotLevel.ON_GROUND);
 					
 					turn(Direction.NORTH);
 					forward();
@@ -110,6 +109,13 @@ public class HeroWraithBehavior extends Behavior
 					for ( int i = 17; --i >= 0 ; )
 						forward();
 					myPlayer.sleep();
+					
+					// build plasmas
+					if ( Clock.getRoundNum() / 500 == 14 )
+					{
+						Utility.buildChassis(myPlayer, Direction.OMNI, Chassis.BUILDING);
+						Utility.buildComponent(myPlayer, Direction.OMNI, ComponentType.ARMORY, RobotLevel.ON_GROUND);
+					}
 					
 					myPlayer.myRC.turnOn(myPlayer.myLoc.add(Direction.NORTH), RobotLevel.ON_GROUND);
 					forward();
